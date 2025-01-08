@@ -86,18 +86,19 @@ class DrsValidator:
 
     def validate_directory(self, drs_expression: str):
         return self.validate(drs_expression, self.directory_specs)
+    
+    def validate_dataset_id(self, drs_expression: str):
+        return self.validate(drs_expression, self.dataset_id_specs)
 
 
 if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-            "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923",
-            " CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923  ",
-            "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923/",
-            "/CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923/",
-            "//CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923//"
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.",
+            " CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn"
         ]
     for drs_expression in drs_expressions:
-        validator.validate_directory(drs_expression)
+        validator.validate_dataset_id(drs_expression)
     
