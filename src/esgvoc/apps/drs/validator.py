@@ -1,6 +1,7 @@
 from typing import cast
 from esgvoc.api.models import ProjectSpecs, DrsType, DrsPart, DrsSpecification, DrsPartType, DrsCollection, DrsConstant
 import esgvoc.api.projects as projects
+import esgvoc.apps.drs.constants as constants
 
 class DrsValidator:
     def __init__(self, project_id: str) -> None:
@@ -11,7 +12,7 @@ class DrsValidator:
                 case DrsType.directory:
                     self.directory_specs = specs
                 case DrsType.file_name:
-                    self.filename_specs = specs
+                    self.file_name_specs = specs
                 case DrsType.dataset_id:
                     self.dataset_id_specs = specs
                 case _:
@@ -45,8 +46,15 @@ class DrsValidator:
 
     def validate(self,
                  drs_expression: str,
-                 specs: DrsSpecification):
+                 specs: DrsSpecification,
+                 has_extension: bool):
         drs_expression = DrsValidator.clean_expression(drs_expression, specs.separator)
+        
+        if has_extension:
+            # + 1 for the character dot.
+            last_char_position = -1 * (len(specs.properties[constants.FILE_NAME_EXTENSION_KEY]) + 1)
+            drs_expression = drs_expression[0:last_char_position]
+        
         tokens = self.tokenize(drs_expression, specs.separator)
         token_index = 0
         token_max_index = len(tokens)
@@ -71,34 +79,52 @@ class DrsValidator:
                 print('try to match token with the next part') # DEBUG
             if token_index == token_max_index:
                 break
-        if part_index < part_max_index:
-            # Not enough token.
+        
+        # Cases:
+        # - All tokens and collections have been processed.
+        # - Not enough token to process all collections.
+        # - Extra tokens left whereas all collections have been processed:
+        #   + The last collections are required => report extra tokens.
+        #   + The last collections are not required and these tokens were not validated by them.
+        #     => Should report error even if the collections are not required?
+        if part_index < part_max_index: # Not enough token.
             for index in range(part_index, part_max_index):
                 part = specs.parts[index]
-                # TODO: create error
-                print(f'missing token for collection {part}') # DEBUG
-        elif token_index < token_max_index:
-            # Extra tokens.
+                if part.is_required:
+                    # TODO: create error
+                    print(f'error: missing token for collection {part}') # DEBUG
+                else:
+                    # TODO: create a warning
+                    print(f'warning: missing token for collection {part}') # DEBUG
+        elif token_index < token_max_index: # Extra tokens.
+            part_index -= token_max_index - token_index
             for index in range(token_index, token_max_index):
-                token = tokens[index]
-                # TODO: create error
-                print(f'extra token {token}') # DEBUG
+                token = tokens[token_index]
+                part = specs.parts[part_index]
+                if part.is_required:
+                    # TODO: create error extra token
+                    print(f'error: extra token {token}') # DEBUG
+                else:
+                    # TODO: create error extra token or invalidated token by an optional collection.
+                    print(f'error: extra token {token} or invalidated token by an optional collection {part}') # DEBUG
+                part_index += 1
 
     def validate_directory(self, drs_expression: str):
-        return self.validate(drs_expression, self.directory_specs)
+        return self.validate(drs_expression, self.directory_specs, False)
     
     def validate_dataset_id(self, drs_expression: str):
-        return self.validate(drs_expression, self.dataset_id_specs)
+        return self.validate(drs_expression, self.dataset_id_specs, False)
+
+    def validate_file_name(self, drs_expression: str):
+        return self.validate(drs_expression, self.file_name_specs, True)
 
 
 if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.",
-            " CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn"
+            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212_coucou.nc"
         ]
     for drs_expression in drs_expressions:
-        validator.validate_dataset_id(drs_expression)
+        validator.validate_file_name(drs_expression)
     
