@@ -1,0 +1,1 @@
+FILE_NAME_EXTENSION_KEY = 'file_name_extension'
