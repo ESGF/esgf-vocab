@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class DrsType(str, Enum):
     directory = "directory"
-    filename = "filename"
+    file_name = "file_name"
     dataset_id = "dataset_id"
 
 

@@ -1,10 +1,8 @@
 from typing import cast
 from esgvoc.api.models import ProjectSpecs, DrsType, DrsPart, DrsSpecification, DrsPartType, DrsCollection, DrsConstant
 import esgvoc.api.projects as projects
-from esgvoc.api.projects import MatchingTerm
 
 class DrsValidator:
-    
     def __init__(self, project_id: str) -> None:
         self.project_id = project_id
         project_specs: ProjectSpecs = projects.get_project_specs(project_id)
@@ -12,7 +10,7 @@ class DrsValidator:
             match specs.type:
                 case DrsType.directory:
                     self.directory_specs = specs
-                case DrsType.filename:
+                case DrsType.file_name:
                     self.filename_specs = specs
                 case DrsType.dataset_id:
                     self.dataset_id_specs = specs
@@ -25,9 +23,6 @@ class DrsValidator:
     def clean_expression(drs_expression: str, separator) -> str:
         return drs_expression.strip().strip(separator)
 
-    def validate_directory(self, drs_expression: str):
-        return self.validate(drs_expression, self.directory_specs)
-    
     def validate_token(self, token: str, part: DrsPart) -> bool:
         match part.kind:
             case DrsPartType.collection:
@@ -88,6 +83,9 @@ class DrsValidator:
                 token = tokens[index]
                 # TODO: create error
                 print(f'extra token {token}') # DEBUG
+
+    def validate_directory(self, drs_expression: str):
+        return self.validate(drs_expression, self.directory_specs)
 
 
 if __name__ == "__main__":
