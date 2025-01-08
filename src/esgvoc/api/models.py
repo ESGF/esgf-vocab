@@ -18,12 +18,16 @@ class DrsPartType(str, Enum):
 class DrsConstant(BaseModel):
     value: str
     kind: Literal[DrsPartType.constant] = DrsPartType.constant
+    def __str__(self) -> str:
+        return self.value
 
 
 class DrsCollection(BaseModel):
     collection_id: str
     is_required: bool
     kind: Literal[DrsPartType.collection] = DrsPartType.collection
+    def __str__(self) -> str:
+        return self.collection_id
 
 
 DrsPart = Annotated[DrsConstant | DrsCollection, Field(discriminator="kind")]
