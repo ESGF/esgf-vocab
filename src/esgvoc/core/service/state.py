@@ -89,6 +89,9 @@ class BaseState:
     def check_sync_status(self):
         self.fetch_versions()
         return {
+            "github" : self.github_version if self.github_version else None,
+            "local": self.local_version if self.local_version else None,
+            "db" : self.db_version if self.db_version else None,
             "github_local_sync": self.github_version == self.local_version if self.github_access and self.github_version and self.local_version else None,
             "local_db_sync": self.local_version == self.db_version if self.local_access and self.local_version and self.db_version else None,
 
@@ -132,17 +135,22 @@ class BaseState:
 
     def sync(self):
         summary = self.check_sync_status()
+
         if self.github_access and summary["github_db_sync"] is None and summary["local_db_sync"]is None and summary["github_local_sync"] is None:
             self.clone_remote()
             self.build_db()
         elif self.github_access and not summary["github_db_sync"]:
+            
             if not summary["local_db_sync"] and summary["local_db_sync"] is not None:
+                self.clone_remote()
+                self.build_db()
+            elif not summary["github_local_sync"] and summary["github_local_sync"] is not None:
                 self.clone_remote()
                 self.build_db()
             else: # can be simply build in root and clone if neccessary
                 self.build_db()
         elif self.local_access:
-            if not summary["local_db_sync"] and summary is not None:
+            if not summary["local_db_sync"] and summary["local_db_sync"] is not None:
                 self.build_db()
         elif not self.db_access: # it can happen if the db is created but not filled
             self.build_db()
