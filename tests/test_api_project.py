@@ -176,3 +176,8 @@ def test_valid_term_in_project() -> None:
         assert len(matching_terms) == nb_matching_terms
         if nb_matching_terms == 1:
             assert matching_terms[0].term_id == term_id
+
+
+def test_parse_project_specs(project_id: str) -> None:
+    result = projects.get_project_specs(project_id)
+    assert result is not None

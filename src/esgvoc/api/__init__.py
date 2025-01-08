@@ -27,7 +27,13 @@ from esgvoc.api.projects import (get_all_projects,
                                  valid_term_in_project,
                                  valid_term_in_collection,
                                  valid_term)
-
+from esgvoc.api.models import (DrsType,
+                               DrsPartType,
+                               DrsConstant,
+                               DrsCollection,
+                               DrsPart,
+                               DrsSpecification,
+                               ProjectSpecs)
 
 __all__ = ["MatchingTerm",
            "SearchType",
@@ -59,4 +65,11 @@ __all__ = ["MatchingTerm",
            "valid_term_in_all_projects",
            "valid_term_in_project",
            "valid_term_in_collection",
-           "valid_term"]
+           "valid_term",
+           "DrsType",
+           "DrsPartType",
+           "DrsConstant",
+           "DrsCollection",
+           "DrsPart",
+           "DrsSpecification",
+           "ProjectSpecs"]

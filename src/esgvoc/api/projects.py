@@ -9,12 +9,26 @@ from esgvoc.api._utils import (get_universe_session, instantiate_pydantic_term,
 from esgvoc.api.report import (ProjectTermError, UniverseTermError,
                                ValidationError, ValidationReport)
 from esgvoc.api.search import MatchingTerm, SearchSettings, create_str_comparison_expression
+from esgvoc.api.models import ProjectSpecs
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import Collection, Project, PTerm
 from esgvoc.core.db.models.universe import UTerm
 from pydantic import BaseModel
 from sqlmodel import Session, and_, select
+
+
+def get_project_specs(project_id: str) -> ProjectSpecs:
+    project_specs = find_project(project_id)
+    if not project_specs:
+        msg = f'Unable to find project {project_id}'
+        raise ValueError(msg)
+    try:
+        result = ProjectSpecs(**project_specs)
+    except Exception as e:
+        msg = f'Unable to read specs in project {project_id}'
+        raise RuntimeError(msg) from e
+    return result
 
 
 def _get_project_connection(project_id: str) -> DBConnection|None:
