@@ -47,19 +47,18 @@ class DrsValidator:
     def validate(self,
                  drs_expression: str,
                  specs: DrsSpecification,
-                 has_extension: bool):
+                 has_to_remove_extension: bool):
         drs_expression = DrsValidator.clean_expression(drs_expression, specs.separator)
-        
-        if has_extension:
+        if has_to_remove_extension:
             # + 1 for the character dot.
             last_char_position = -1 * (len(specs.properties[constants.FILE_NAME_EXTENSION_KEY]) + 1)
             drs_expression = drs_expression[0:last_char_position]
-        
         tokens = self.tokenize(drs_expression, specs.separator)
         token_index = 0
         token_max_index = len(tokens)
         part_index = 0
         part_max_index = len(specs.parts)
+        matching_code_mapping = dict()
         while part_index < part_max_index:
             token = tokens[token_index]
             part = specs.parts[part_index]
@@ -67,26 +66,28 @@ class DrsValidator:
             if self.validate_token(token, part):
                 token_index += 1
                 part_index += 1
+                matching_code_mapping[part.__str__()] = 0
                 print('OK') # DEBUG
             elif part.kind == DrsPartType.constant or \
                  cast(DrsCollection, part).is_required:
                 # TODO: create error
                 print(f'error on token {token} concerning collection {part}') # DEBUG
+                matching_code_mapping[part.__str__()] = 1
                 token_index += 1
                 part_index += 1
             else: # The part is not required so try to match the token with the next part.
                 part_index += 1
                 print('try to match token with the next part') # DEBUG
+                matching_code_mapping[part.__str__()] = -1
             if token_index == token_max_index:
                 break
-        
         # Cases:
         # - All tokens and collections have been processed.
         # - Not enough token to process all collections.
         # - Extra tokens left whereas all collections have been processed:
         #   + The last collections are required => report extra tokens.
         #   + The last collections are not required and these tokens were not validated by them.
-        #     => Should report error even if the collections are not required?
+        #     => Should report error even if the collections are not required.
         if part_index < part_max_index: # Not enough token.
             for index in range(part_index, part_max_index):
                 part = specs.parts[index]
@@ -105,8 +106,13 @@ class DrsValidator:
                     # TODO: create error extra token
                     print(f'error: extra token {token}') # DEBUG
                 else:
-                    # TODO: create error extra token or invalidated token by an optional collection.
-                    print(f'error: extra token {token} or invalidated token by an optional collection {part}') # DEBUG
+                    if matching_code_mapping[part.__str__()] < 0:
+                        # TODO: create error extra token or invalidated token by an optional collection.
+                        print(f'error: extra token {token} or invalidated token by an optional ' +
+                              f'collection {part}') # DEBUG
+                    else:
+                        # TODO: create error extra token
+                        print(f'error: extra token {token}') # DEBUG
                 part_index += 1
 
     def validate_directory(self, drs_expression: str):
@@ -123,7 +129,7 @@ if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212_coucou.nc"
+            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212.nc"
         ]
     for drs_expression in drs_expressions:
         validator.validate_file_name(drs_expression)
