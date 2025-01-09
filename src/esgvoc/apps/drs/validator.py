@@ -113,6 +113,9 @@ class DrsValidator:
             last_char_position = -1 * (len(specs.properties[constants.FILE_NAME_EXTENSION_KEY]) + 1)
             drs_expression = drs_expression[0:last_char_position]
         tokens = self.tokenize(drs_expression, specs.separator, specs.type)
+        if not tokens:
+            # TODO: forward error.
+            pass
         token_index = 0
         token_max_index = len(tokens)
         part_index = 0
@@ -188,7 +191,7 @@ if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-            "  CMIP6Plus/CMIP/NCC/MIROC6/amip//r2i2p1f2/ACmon/od550aer/gn/v20190923/ // "
+            "CMIP6Plus/CMIP/NCC/MIROC6/amip//r2i2p1f2/ACmon/od550aer/gn/v20190923//"
         ]
     for drs_expression in drs_expressions:
         validator.validate_directory(drs_expression)
