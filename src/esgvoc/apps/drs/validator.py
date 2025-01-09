@@ -4,8 +4,9 @@ import esgvoc.api.projects as projects
 import esgvoc.apps.drs.constants as constants
 
 class DrsValidator:
-    def __init__(self, project_id: str) -> None:
+    def __init__(self, project_id: str, pedantic: bool = False) -> None:
         self.project_id = project_id
+        self.pedantic = pedantic
         project_specs: ProjectSpecs = projects.get_project_specs(project_id)
         for specs in project_specs.drs_specs:
             match specs.type:
@@ -18,12 +19,71 @@ class DrsValidator:
                 case _:
                     raise ValueError(f'unsupported DRS specs type {specs.type}')
     
-    def tokenize(self, drs_expression: str, separator: str) -> list[str]:
-        return drs_expression.split(separator)
+    def tokenize(self,
+                 drs_expression: str,
+                 separator: str,
+                 drs_type: DrsType) -> list[str]|None:
+        cursor_offset = 0
+        # Spaces at the beginning/end of expression:
+        start_with_space = drs_expression[0].isspace()
+        end_with_space = drs_expression[-1].isspace()
+        if start_with_space or end_with_space:
+            if self.pedantic:
+                # TODO: create error
+                print('tokenizer error: the expression is surrounded by white space[s]') # DEBUG
+            else:
+                # TODO: create warning
+                print('tokenizer warning: the expression is surrounded by white space[s]') # DEBUG
+            if start_with_space:
+                previous_len = len(drs_expression)
+                drs_expression = drs_expression.lstrip()
+                cursor_offset = previous_len - len(drs_expression)
+            if end_with_space:
+                drs_expression = drs_expression.rstrip()
+        tokens = drs_expression.split(separator)
+        if len(tokens) < 2:
+            # TODO: early exit
+            print(f'unable to parse this expression {drs_expression}. Is it a DRS {drs_type} expression?') # DEBUG
+            return None
+        max_token_index = len(tokens)
+        cursor_position = initial_cursor_position = len(drs_expression) + 1
+        has_white_token = False
+        for index in range(max_token_index-1, -1, -1):
+            token = tokens[index]
+            if (is_white_token := token.isspace()) or (not token):
+                has_white_token = has_white_token or is_white_token
+                cursor_position -= len(token) + 1
+                del tokens[index]
+                continue
+            else:
+                break
+        if cursor_position != initial_cursor_position:
+            max_token_index = len(tokens)
+            if (drs_type == DrsType.directory) and (not has_white_token):
+                print('tokenizer warning: extra / at the end of the expression')
+            else:
+                # TODO: create error
+                print(f'tokenizer error: extra token at column {cursor_position+cursor_offset}')
+        for index in range(max_token_index-1, -1, -1):
+            token = tokens[index]
+            len_token = len(token)
+            if not token:
+                column = cursor_position + cursor_offset
+                if (drs_type != DrsType.directory) or self.pedantic or (index == 0):
+                    # TODO: create error
+                    print(f'tokenizer error: extra separator at column {column}')
+                else:
+                    # TODO: create warning
+                    print(f'tokenizer warning: extra separator at column {column}')
+                del tokens[index]
+            if token.isspace():
+                column = cursor_position + cursor_offset - len_token
+                # TODO: create error
+                print(f'tokenizer error: white token at position {column}')
+                del tokens[index]
+            cursor_position -= len_token + 1
+        return tokens
     
-    def clean_expression(drs_expression: str, separator) -> str:
-        return drs_expression.strip().strip(separator)
-
     def validate_token(self, token: str, part: DrsPart) -> bool:
         match part.kind:
             case DrsPartType.collection:
@@ -48,12 +108,11 @@ class DrsValidator:
                  drs_expression: str,
                  specs: DrsSpecification,
                  has_to_remove_extension: bool):
-        drs_expression = DrsValidator.clean_expression(drs_expression, specs.separator)
         if has_to_remove_extension:
             # + 1 for the character dot.
             last_char_position = -1 * (len(specs.properties[constants.FILE_NAME_EXTENSION_KEY]) + 1)
             drs_expression = drs_expression[0:last_char_position]
-        tokens = self.tokenize(drs_expression, specs.separator)
+        tokens = self.tokenize(drs_expression, specs.separator, specs.type)
         token_index = 0
         token_max_index = len(tokens)
         part_index = 0
@@ -129,8 +188,8 @@ if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212.nc"
+            "  CMIP6Plus/CMIP/NCC/MIROC6/amip//r2i2p1f2/ACmon/od550aer/gn/v20190923/ // "
         ]
     for drs_expression in drs_expressions:
-        validator.validate_file_name(drs_expression)
+        validator.validate_directory(drs_expression)
     
