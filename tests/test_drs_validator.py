@@ -104,7 +104,8 @@ def test_directory_validation(directory_expressions):
     project_id, expressions = directory_expressions
     validator = DrsValidator(project_id)
     for expression in expressions:
-        validator.validate_directory(expression)
+        report = validator.validate_directory(expression)
+        assert report and report.nb_warnings == 0
 
 
 def _provide_dataset_id_expressions() -> Generator:
@@ -121,7 +122,8 @@ def test_dataset_id_validation(dataset_id_expressions):
     project_id, expressions = dataset_id_expressions
     validator = DrsValidator(project_id)
     for expression in expressions:
-        validator.validate_dataset_id(expression)
+        report = validator.validate_dataset_id(expression)
+        assert report and report.nb_warnings == 0
 
 
 def _provide_file_name_expressions() -> Generator:
@@ -138,4 +140,5 @@ def test_file_name_validation(file_name_expressions):
     project_id, expressions = file_name_expressions
     validator = DrsValidator(project_id)
     for expression in expressions:
-        validator.validate_file_name(expression)
+        report = validator.validate_file_name(expression)
+        assert report and report.nb_warnings == 0
