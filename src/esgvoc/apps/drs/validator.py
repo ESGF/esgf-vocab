@@ -105,7 +105,7 @@ class DrsValidator:
                 del tokens[index]
             if token.isspace():
                 column = cursor_position + cursor_offset - len_token
-                issue = BlankToken
+                issue = BlankToken(column)
                 errors.append(issue)
                 del tokens[index]
             cursor_position -= len_token + 1
@@ -225,8 +225,10 @@ if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-"CMIP6Plus/CMIP/NCC/MIROC6/amip//r2i2p1f2/ACmon/od550aer/gn/v20190923"
-        ]
+"CMIP6Plus/CMIP/NCC/MIROC6/amip/ /r2i2p1f2/ACmon/od550aer/gn/v20190923",
+"CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923/ /",
+"  CMIP6Plus/CMIP/NCC/MIROC6/amip/  /r2i2p1f2/ACmon/od550aer/gn/v20190923/ // "
+]
     import time
     for drs_expression in drs_expressions:
         start_time = time.perf_counter_ns()

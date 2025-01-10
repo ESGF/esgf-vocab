@@ -52,7 +52,7 @@ class Unparsable(ParserIssue):
 
 
 class ExtraSeparator(ParserIssue):
-    def __init__(self, column: int|None = None) -> None:
+    def __init__(self, column: int) -> None:
         super().__init__(column)
     def accept(self, visitor: DrsIssueVisitor) -> Any:
         return visitor.visit_extra_separator_issue(self)
@@ -61,7 +61,7 @@ class ExtraSeparator(ParserIssue):
 
 
 class ExtraChar(ParserIssue):
-    def __init__(self, column: int|None = None) -> None:
+    def __init__(self, column: int) -> None:
         super().__init__(column)
     def accept(self, visitor: DrsIssueVisitor) -> Any:
         return visitor.visit_extra_char_issue(self)
@@ -70,7 +70,7 @@ class ExtraChar(ParserIssue):
 
 
 class BlankToken(ParserIssue):
-    def __init__(self, column: int|None = None) -> None:
+    def __init__(self, column: int) -> None:
         super().__init__(column)
     def accept(self, visitor: DrsIssueVisitor) -> Any:
         return visitor.visit_blank_token_issue(self)
