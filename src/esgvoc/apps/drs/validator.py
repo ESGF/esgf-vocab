@@ -207,8 +207,8 @@ if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc",
-            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gr.nc"
+"od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_202211-202212.nc",
+"od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_202111-202112.nc",
         ]
     import time
     for drs_expression in drs_expressions:
