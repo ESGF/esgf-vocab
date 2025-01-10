@@ -3,6 +3,7 @@ from esgvoc.api.models import ProjectSpecs, DrsType, DrsPart, DrsSpecification, 
 import esgvoc.api.projects as projects
 import esgvoc.apps.drs.constants as constants
 
+
 class DrsValidator:
     # dict[project_id: dict[collection_id: set[token]]]
     _validated_token_cache: dict[str, dict[str, set[str]]] = dict()
@@ -24,10 +25,10 @@ class DrsValidator:
         if self.project_id not in DrsValidator._validated_token_cache:
             DrsValidator._validated_token_cache[self.project_id] = dict()
     
-    def tokenize(self,
-                 drs_expression: str,
-                 separator: str,
-                 drs_type: DrsType) -> list[str]|None:
+    def parse(self,
+              drs_expression: str,
+              separator: str,
+              drs_type: DrsType) -> list[str]|None:
         cursor_offset = 0
         # Spaces at the beginning/end of expression:
         start_with_space = drs_expression[0].isspace()
@@ -120,7 +121,7 @@ class DrsValidator:
     def validate(self,
                  drs_expression: str,
                  specs: DrsSpecification):
-        tokens = self.tokenize(drs_expression, specs.separator, specs.type)
+        tokens = self.parse(drs_expression, specs.separator, specs.type)
         if not tokens:
             # TODO: forward error.
             pass
