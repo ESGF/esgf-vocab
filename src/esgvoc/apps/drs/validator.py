@@ -1,7 +1,25 @@
 from typing import cast
-from esgvoc.api.models import ProjectSpecs, DrsType, DrsPart, DrsSpecification, DrsPartType, DrsCollection, DrsConstant
+from esgvoc.api.models import (ProjectSpecs,
+                               DrsType,
+                               DrsPart,
+                               DrsSpecification,
+                               DrsPartType,
+                               DrsCollection,
+                               DrsConstant)
 import esgvoc.api.projects as projects
 import esgvoc.apps.drs.constants as constants
+from esgvoc.apps.drs.validation_report import (DrsValidationReport,
+                                               DrsIssue,
+                                               ParserIssue,
+                                               Space,
+                                               Unparsable,
+                                               ExtraSeparator,
+                                               ExtraChar,
+                                               BlankToken,
+                                               UnMatchedToken,
+                                               ExtraToken,
+                                               MissingToken,
+                                               FileNameExtensionIssue)
 
 
 class DrsValidator:
@@ -28,18 +46,21 @@ class DrsValidator:
     def parse(self,
               drs_expression: str,
               separator: str,
-              drs_type: DrsType) -> list[str]|None:
+              drs_type: DrsType) -> tuple[list[str]|None,
+                                          list[ParserIssue],  # Errors
+                                          list[ParserIssue]]: # Warnings
+        errors = list()
+        warnings = list()
         cursor_offset = 0
         # Spaces at the beginning/end of expression:
         start_with_space = drs_expression[0].isspace()
         end_with_space = drs_expression[-1].isspace()
         if start_with_space or end_with_space:
+            issue = Space()
             if self.pedantic:
-                # TODO: create error
-                print('tokenizer error: the expression is surrounded by white space[s]') # DEBUG
+                errors.append(issue)
             else:
-                # TODO: create warning
-                print('tokenizer warning: the expression is surrounded by white space[s]') # DEBUG
+                warnings.append(issue)
             if start_with_space:
                 previous_len = len(drs_expression)
                 drs_expression = drs_expression.lstrip()
@@ -48,9 +69,8 @@ class DrsValidator:
                 drs_expression = drs_expression.rstrip()
         tokens = drs_expression.split(separator)
         if len(tokens) < 2:
-            # TODO: early exit
-            print(f'unable to parse this expression {drs_expression}. Is it a DRS {drs_type} expression?') # DEBUG
-            return None
+            errors.append(Unparsable(drs_type))
+            return None, errors, warnings # Early exit
         max_token_index = len(tokens)
         cursor_position = initial_cursor_position = len(drs_expression) + 1
         has_white_token = False
@@ -65,30 +85,31 @@ class DrsValidator:
                 break
         if cursor_position != initial_cursor_position:
             max_token_index = len(tokens)
+            column = cursor_position+cursor_offset
             if (drs_type == DrsType.directory) and (not has_white_token):
-                print('tokenizer warning: extra / at the end of the expression')
+                issue = ExtraSeparator(column)
+                warnings.append(issue)
             else:
-                # TODO: create error
-                print(f'tokenizer error: extra token at column {cursor_position+cursor_offset}')
+                issue = ExtraChar(column)
+                errors.append(issue)
         for index in range(max_token_index-1, -1, -1):
             token = tokens[index]
             len_token = len(token)
             if not token:
                 column = cursor_position + cursor_offset
+                issue = ExtraSeparator(column)
                 if (drs_type != DrsType.directory) or self.pedantic or (index == 0):
-                    # TODO: create error
-                    print(f'tokenizer error: extra separator at column {column}')
+                    errors.append(issue)
                 else:
-                    # TODO: create warning
-                    print(f'tokenizer warning: extra separator at column {column}')
+                    warnings.append(issue)
                 del tokens[index]
             if token.isspace():
                 column = cursor_position + cursor_offset - len_token
-                # TODO: create error
-                print(f'tokenizer error: white token at position {column}')
+                issue = BlankToken
+                errors.append(issue)
                 del tokens[index]
             cursor_position -= len_token + 1
-        return tokens
+        return tokens, errors, warnings
     
     def validate_token(self, token: str, part: DrsPart) -> bool:
         match part.kind:
@@ -118,13 +139,18 @@ class DrsValidator:
             case _:
                 raise ValueError(f'unsupported DRS specs part type {part.kind}')
 
+    def _create_report(self,
+                       drs_expression: str,
+                       errors: list[DrsIssue],
+                       warnings: list[DrsIssue]) -> DrsValidationReport:
+        return DrsValidationReport(drs_expression, errors, warnings)
+
     def validate(self,
                  drs_expression: str,
                  specs: DrsSpecification):
-        tokens = self.parse(drs_expression, specs.separator, specs.type)
+        tokens, errors, warnings = self.parse(drs_expression, specs.separator, specs.type)
         if not tokens:
-            # TODO: forward error.
-            pass
+            return self._create_report(drs_expression, errors, warnings) # Early exit.
         token_index = 0
         token_max_index = len(tokens)
         part_index = 0
@@ -133,22 +159,19 @@ class DrsValidator:
         while part_index < part_max_index:
             token = tokens[token_index]
             part = specs.parts[part_index]
-            print(f'{token=} part={part}') # DEBUG
             if self.validate_token(token, part):
                 token_index += 1
                 part_index += 1
                 matching_code_mapping[part.__str__()] = 0
-                print('OK') # DEBUG
             elif part.kind == DrsPartType.constant or \
                  cast(DrsCollection, part).is_required:
-                # TODO: create error
-                print(f'error on token {token} concerning collection {part}') # DEBUG
+                issue = UnMatchedToken(token, token_index, part)
+                errors.append(issue)
                 matching_code_mapping[part.__str__()] = 1
                 token_index += 1
                 part_index += 1
             else: # The part is not required so try to match the token with the next part.
                 part_index += 1
-                print('try to match token with the next part') # DEBUG
                 matching_code_mapping[part.__str__()] = -1
             if token_index == token_max_index:
                 break
@@ -159,32 +182,26 @@ class DrsValidator:
         #   + The last collections are required => report extra tokens.
         #   + The last collections are not required and these tokens were not validated by them.
         #     => Should report error even if the collections are not required.
-        if part_index < part_max_index: # Not enough token.
+        if part_index < part_max_index: # Missing tokens.
             for index in range(part_index, part_max_index):
                 part = specs.parts[index]
+                issue = MissingToken(part, index)
                 if part.is_required:
-                    # TODO: create error
-                    print(f'error: missing token for collection {part}') # DEBUG
+                    errors.append(issue)
                 else:
-                    # TODO: create a warning
-                    print(f'warning: missing token for collection {part}') # DEBUG
+                    warnings.append(issue)
         elif token_index < token_max_index: # Extra tokens.
             part_index -= token_max_index - token_index
             for index in range(token_index, token_max_index):
                 token = tokens[token_index]
                 part = specs.parts[part_index]
-                if part.is_required:
-                    # TODO: create error extra token
-                    print(f'error: extra token {token}') # DEBUG
+                if (not part.is_required) and matching_code_mapping[part.__str__()] < 0:
+                    issue = ExtraToken(token, token_index, part)
                 else:
-                    if matching_code_mapping[part.__str__()] < 0:
-                        # TODO: create error extra token or invalidated token by an optional collection.
-                        print(f'error: extra token {token} or invalidated token by an optional ' +
-                              f'collection {part}') # DEBUG
-                    else:
-                        # TODO: create error extra token
-                        print(f'error: extra token {token}') # DEBUG
+                    issue = ExtraToken(token, token_index)
+                errors.append(issue)
                 part_index += 1
+        return self._create_report(drs_expression, errors, warnings)
 
     def validate_directory(self, drs_expression: str):
         return self.validate(drs_expression, self.directory_specs)
@@ -200,21 +217,32 @@ class DrsValidator:
             drs_expression = drs_expression.replace(full_extension, '')
             return self.validate(drs_expression, self.file_name_specs)
         else:
-            # TODO: create error
-            print(f"filename error: filename extension missing or not compliant ('{full_extension}')") # DEBUG
+            issue = FileNameExtensionIssue(full_extension)
+            return self._create_report(drs_expression, [issue], [])
 
 
 if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-"od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_202211-202212.nc",
-"od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_202111-202112.nc",
+"CMIP6Plus/CMIP/NCC/MIROC6/amip//r2i2p1f2/ACmon/od550aer/gn/v20190923"
         ]
     import time
     for drs_expression in drs_expressions:
         start_time = time.perf_counter_ns()
-        validator.validate_file_name(drs_expression)
+        report = validator.validate_directory(drs_expression)
         stop_time = time.perf_counter_ns()
         print(f'elapsed time: {(stop_time-start_time)/1000000}')
+        if report.nb_errors > 0:
+            print(f'error(s): {report.nb_errors}')
+            for error in report.errors:
+                print(error)
+        else:
+            print('error(s): 0')
+        if report.nb_warnings > 0:
+            print(f'warning(s): {report.nb_warnings}')
+            for warning in report.warnings:
+                print(warning)
+        else:
+            print('warning(s): 0')
     
