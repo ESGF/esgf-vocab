@@ -4,6 +4,9 @@ import esgvoc.api.projects as projects
 import esgvoc.apps.drs.constants as constants
 
 class DrsValidator:
+    # dict[project_id: dict[collection_id: set[token]]]
+    _validated_token_cache: dict[str, dict[str, set[str]]] = dict()
+    
     def __init__(self, project_id: str, pedantic: bool = False) -> None:
         self.project_id = project_id
         self.pedantic = pedantic
@@ -18,6 +21,8 @@ class DrsValidator:
                     self.dataset_id_specs = specs
                 case _:
                     raise ValueError(f'unsupported DRS specs type {specs.type}')
+        if self.project_id not in DrsValidator._validated_token_cache:
+            DrsValidator._validated_token_cache[self.project_id] = dict()
     
     def tokenize(self,
                  drs_expression: str,
@@ -88,16 +93,24 @@ class DrsValidator:
         match part.kind:
             case DrsPartType.collection:
                     part: DrsCollection = cast(DrsCollection, part)
-                    # TODO: handle exceptions?
-                    try:
-                        matching_terms = projects.valid_term_in_collection(token,
-                                                                           self.project_id,
-                                                                           part.collection_id)
-                    except Exception as e:
-                        # DEBUG
-                        print(f'problem while validating token: {e}. Pass.')
+                    if part.collection_id not in DrsValidator._validated_token_cache[self.project_id]:
+                        DrsValidator._validated_token_cache[self.project_id][part.collection_id] = set()
+                    if token in DrsValidator._validated_token_cache[self.project_id][part.collection_id]:
                         return True
-                    return len(matching_terms) > 0
+                    else:
+                        # TODO: handle exceptions?
+                        try:
+                            matching_terms = projects.valid_term_in_collection(token,
+                                                                               self.project_id,
+                                                                               part.collection_id)
+                        except Exception as e:
+                            print(f'problem while validating token: {e}. Pass.') # DEBUG
+                            return True # DEBUG
+                        if len(matching_terms) > 0:
+                            DrsValidator._validated_token_cache[self.project_id][part.collection_id].add(token)
+                            return True
+                        else:
+                            return False
             case DrsPartType.constant:
                 part: DrsConstant = cast(DrsConstant, part)
                 return part.value != token
@@ -194,8 +207,13 @@ if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc"
+            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc",
+            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gr.nc"
         ]
+    import time
     for drs_expression in drs_expressions:
+        start_time = time.perf_counter_ns()
         validator.validate_file_name(drs_expression)
+        stop_time = time.perf_counter_ns()
+        print(f'elapsed time: {(stop_time-start_time)/1000000}')
     
