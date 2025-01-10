@@ -106,12 +106,7 @@ class DrsValidator:
 
     def validate(self,
                  drs_expression: str,
-                 specs: DrsSpecification,
-                 has_to_remove_extension: bool):
-        if has_to_remove_extension:
-            # + 1 for the character dot.
-            last_char_position = -1 * (len(specs.properties[constants.FILE_NAME_EXTENSION_KEY]) + 1)
-            drs_expression = drs_expression[0:last_char_position]
+                 specs: DrsSpecification):
         tokens = self.tokenize(drs_expression, specs.separator, specs.type)
         if not tokens:
             # TODO: forward error.
@@ -178,21 +173,29 @@ class DrsValidator:
                 part_index += 1
 
     def validate_directory(self, drs_expression: str):
-        return self.validate(drs_expression, self.directory_specs, False)
+        return self.validate(drs_expression, self.directory_specs)
     
     def validate_dataset_id(self, drs_expression: str):
-        return self.validate(drs_expression, self.dataset_id_specs, False)
+        return self.validate(drs_expression, self.dataset_id_specs)
 
     def validate_file_name(self, drs_expression: str):
-        return self.validate(drs_expression, self.file_name_specs, True)
+        specs = self.file_name_specs
+        full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
+                         specs.properties[constants.FILE_NAME_EXTENSION_KEY]
+        if drs_expression.endswith(full_extension):
+            drs_expression = drs_expression.replace(full_extension, '')
+            return self.validate(drs_expression, self.file_name_specs)
+        else:
+            # TODO: create error
+            print(f"filename error: filename extension missing or not compliant ('{full_extension}')") # DEBUG
 
 
 if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-            "CMIP6Plus/CMIP/NCC/MIROC6/amip//r2i2p1f2/ACmon/od550aer/gn/v20190923//"
+            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc"
         ]
     for drs_expression in drs_expressions:
-        validator.validate_directory(drs_expression)
+        validator.validate_file_name(drs_expression)
     
