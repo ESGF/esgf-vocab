@@ -145,9 +145,9 @@ class DrsValidator:
                        warnings: list[DrsIssue]) -> DrsValidationReport:
         return DrsValidationReport(drs_expression, errors, warnings)
 
-    def validate(self,
-                 drs_expression: str,
-                 specs: DrsSpecification):
+    def _validate(self,
+                  drs_expression: str,
+                  specs: DrsSpecification):
         tokens, errors, warnings = self.parse(drs_expression, specs.separator, specs.type)
         if not tokens:
             return self._create_report(drs_expression, errors, warnings) # Early exit.
@@ -204,10 +204,10 @@ class DrsValidator:
         return self._create_report(drs_expression, errors, warnings)
 
     def validate_directory(self, drs_expression: str):
-        return self.validate(drs_expression, self.directory_specs)
+        return self._validate(drs_expression, self.directory_specs)
     
     def validate_dataset_id(self, drs_expression: str):
-        return self.validate(drs_expression, self.dataset_id_specs)
+        return self._validate(drs_expression, self.dataset_id_specs)
 
     def validate_file_name(self, drs_expression: str):
         specs = self.file_name_specs
@@ -215,10 +215,19 @@ class DrsValidator:
                          specs.properties[constants.FILE_NAME_EXTENSION_KEY]
         if drs_expression.endswith(full_extension):
             drs_expression = drs_expression.replace(full_extension, '')
-            return self.validate(drs_expression, self.file_name_specs)
+            return self._validate(drs_expression, self.file_name_specs)
         else:
             issue = FileNameExtensionIssue(full_extension)
             return self._create_report(drs_expression, [issue], [])
+
+    def validate(self, drs_expression: str, type: DrsType|str):
+        match type:
+            case DrsType.directory:
+                return self.validate_directory(drs_expression)
+            case DrsType.file_name:
+                return self.validate_file_name(drs_expression)
+            case DrsType.dataset_id:
+                return self.validate_dataset_id(drs_expression)
 
 
 if __name__ == "__main__":
