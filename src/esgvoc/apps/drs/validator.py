@@ -120,14 +120,13 @@ class DrsValidator:
                     if token in DrsValidator._validated_token_cache[self.project_id][part.collection_id]:
                         return True
                     else:
-                        # TODO: handle exceptions?
                         try:
                             matching_terms = projects.valid_term_in_collection(token,
                                                                                self.project_id,
                                                                                part.collection_id)
                         except Exception as e:
-                            print(f'problem while validating token: {e}. Pass.') # DEBUG
-                            return True # DEBUG
+                            msg = f'problem while validating token: {e}.Abort.'
+                            raise ValueError(msg) from e
                         if len(matching_terms) > 0:
                             DrsValidator._validated_token_cache[self.project_id][part.collection_id].add(token)
                             return True
