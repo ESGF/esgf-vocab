@@ -92,16 +92,16 @@ class FileNameExtensionIssue(ValidationIssue):
     
 
 class Token(ValidationIssue):
-    def __init__(self, token: str, token_position: int) -> None:
+    def __init__(self, token: str, token_position: int, part: DrsPart) -> None:
         super().__init__()
         self.token: str = token
         self.token_position: int = token_position
+        self.part = part
 
 
 class UnMatchedToken(Token):
     def __init__(self, token: str, token_position: int, part: DrsPart) -> None:
-        super().__init__(token, token_position)
-        self.part = part
+        super().__init__(token, token_position, part)
     def accept(self, visitor: DrsIssueVisitor) -> Any:
         return visitor.visit_unmatched_token_issue(self)
     def __repr__(self):
@@ -110,8 +110,7 @@ class UnMatchedToken(Token):
 
 class ExtraToken(Token):
     def __init__(self, token: str, token_position: int, part: DrsPart = None) -> None:
-        super().__init__(token, token_position)
-        self.part: DrsPart = part
+        super().__init__(token, token_position, part)        
     def accept(self, visitor: DrsIssueVisitor) -> Any:
         return visitor.visit_extra_token_issue(self)
     def __repr__(self):
