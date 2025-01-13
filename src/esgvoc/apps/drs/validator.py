@@ -46,7 +46,7 @@ class DrsValidator:
     def parse(self,
               drs_expression: str,
               separator: str,
-              drs_type: DrsType) -> tuple[list[str]|None,
+              drs_type: DrsType) -> tuple[list[str]|None,     # Tokens
                                           list[ParserIssue],  # Errors
                                           list[ParserIssue]]: # Warnings
         errors = list()
@@ -147,7 +147,7 @@ class DrsValidator:
 
     def _validate(self,
                   drs_expression: str,
-                  specs: DrsSpecification):
+                  specs: DrsSpecification) -> DrsValidationReport:
         tokens, errors, warnings = self.parse(drs_expression, specs.separator, specs.type)
         if not tokens:
             return self._create_report(drs_expression, errors, warnings) # Early exit.
@@ -203,13 +203,13 @@ class DrsValidator:
                 part_index += 1
         return self._create_report(drs_expression, errors, warnings)
 
-    def validate_directory(self, drs_expression: str):
+    def validate_directory(self, drs_expression: str) -> DrsValidationReport:
         return self._validate(drs_expression, self.directory_specs)
     
-    def validate_dataset_id(self, drs_expression: str):
+    def validate_dataset_id(self, drs_expression: str) -> DrsValidationReport:
         return self._validate(drs_expression, self.dataset_id_specs)
 
-    def validate_file_name(self, drs_expression: str):
+    def validate_file_name(self, drs_expression: str) -> DrsValidationReport:
         specs = self.file_name_specs
         full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
                          specs.properties[constants.FILE_NAME_EXTENSION_KEY]
@@ -220,7 +220,7 @@ class DrsValidator:
             issue = FileNameExtensionIssue(full_extension)
             return self._create_report(drs_expression, [issue], [])
 
-    def validate(self, drs_expression: str, type: DrsType|str):
+    def validate(self, drs_expression: str, type: DrsType|str) -> DrsValidationReport:
         match type:
             case DrsType.directory:
                 return self.validate_directory(drs_expression)
