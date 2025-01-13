@@ -165,7 +165,7 @@ class DrsValidator:
                 matching_code_mapping[part.__str__()] = 0
             elif part.kind == DrsPartType.constant or \
                  cast(DrsCollection, part).is_required:
-                issue = UnMatchedToken(token, token_index, part)
+                issue = UnMatchedToken(token, token_index+1, part)
                 errors.append(issue)
                 matching_code_mapping[part.__str__()] = 1
                 token_index += 1
@@ -234,7 +234,9 @@ if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-"CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.hello.world"
+"CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.world",
+"CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.hello.world",
+"Hello.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn"
 ]
     import time
     for drs_expression in drs_expressions:
