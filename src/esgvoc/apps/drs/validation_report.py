@@ -105,7 +105,7 @@ class UnMatchedToken(Token):
     def accept(self, visitor: DrsIssueVisitor) -> Any:
         return visitor.visit_unmatched_token_issue(self)
     def __repr__(self):
-        return f"token {self.token} not compliant with {self.part} at position {self.token_position}"
+        return f"token '{self.token}' not compliant with {self.part} at position {self.token_position}"
 
 
 class ExtraToken(Token):
