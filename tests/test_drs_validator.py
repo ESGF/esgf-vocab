@@ -247,6 +247,83 @@ def test_dataset_id_expression_typo_warning(dataset_id_expression_typo_warning):
     _check_expression(expression, errors, warnings, validator.validate_dataset_id)
 
 
+_SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
+    ("cmip6plus",
+        ("CMIP6Plus_CMIP_IPSL_MIROC6_amip_r2i2p1f2_ACmon_od550aer_gn",
+         [(Unparsable, None)], [])),
+    ("cmip6plus",
+        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.",
+         [(ExtraChar, 59)], [])),
+    ("cmip6plus",
+        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn..",
+         [(ExtraChar, 59)], [])),
+    ("cmip6plus",
+        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.. ",
+         [(ExtraChar, 59)], [(Space, None)])),
+    ("cmip6plus",
+        ("CMIP6Plus.CMIP.IPSL..MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn. ..",
+         [(ExtraChar, 60), (ExtraSeparator, 21)], [])),
+    ("cmip6plus",
+        (".CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+         [(ExtraSeparator, 1)], [])),
+    ("cmip6plus",
+        ("..CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+         [(ExtraSeparator, 2), (ExtraSeparator, 1)], [])),
+    ("cmip6plus",
+        (" ..CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+         [(ExtraSeparator, 3), (ExtraSeparator, 2)], [(Space, None)])),
+    ("cmip6plus",
+        ("CMIP6Plus.CMIP.IPSL..MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+         [(ExtraSeparator, 21)], [])),
+    ("cmip6plus",
+        ("CMIP6Plus.CMIP.IPSL. MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+         [(UnMatchedToken, " MIROC6", 4, "source_id")], [])),
+    ("cmip6plus",
+        ("CMIP6Plus.CMIP.IPSL.  MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+         [(UnMatchedToken, "  MIROC6", 4, "source_id")], [])),
+    ("cmip6plus",
+        ("CMIP6Plus.CMIP.IPSL. .MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+         [(BlankToken, 21)], [])),
+    ("cmip6plus",
+        (".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer.gn. ..",
+         [(ExtraChar, 64), (ExtraSeparator, 37), (BlankToken, 22), (ExtraSeparator, 1)], [])),
+    ("cmip6plus",
+        (".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",
+         [(ExtraSeparator, 64),
+          (BlankToken, 62),
+          (ExtraSeparator, 37),
+          (BlankToken, 22),
+          (ExtraSeparator, 1)], [])),
+    ("cmip6plus",
+        (" .CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",
+         [(ExtraSeparator, 65),
+          (BlankToken, 63),
+          (ExtraSeparator, 38),
+          (BlankToken, 23),
+          (ExtraSeparator, 2)], [(Space, None)])),
+    ("cmip6plus",
+        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer-gn",
+         [(UnMatchedToken, "od550aer-gn", 8, "variable_id"),
+          (MissingToken, "grid_label", 9)], [])),
+    ("cmip6plus",
+        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer/gn",
+         [(UnMatchedToken, "od550aer/gn", 8, "variable_id"),
+          (MissingToken, "grid_label", 9)], [])),
+]
+def _provide_dataset_id_expression_typo_errors() -> Generator:
+    for drs_expression in _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS:
+        yield drs_expression
+@pytest.fixture(params=_provide_dataset_id_expression_typo_errors())
+def dataset_id_expression_typo_error(request) -> tuple[str, tuple]:
+    return request.param
+def test_dataset_id_expression_typo_error(dataset_id_expression_typo_error):
+    project_id, expression_and_expected = dataset_id_expression_typo_error
+    expression, errors, warnings = expression_and_expected
+    validator = DrsValidator(project_id)
+    _check_expression(expression, errors, warnings, validator.validate_dataset_id)
+
+
+
 _SOME_DATASET_ID_EXPRESSION_TOKEN_ERRORS = [
     ("cmip6plus",
         ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer",
@@ -269,6 +346,30 @@ def dataset_id_expression_token_error(request) -> tuple[str, tuple]:
     return request.param
 def test_dataset_id_expression_token_error(dataset_id_expression_token_error):
     project_id, expression_and_expected = dataset_id_expression_token_error
+    expression, errors, warnings = expression_and_expected
+    validator = DrsValidator(project_id)
+    _check_expression(expression, errors, warnings, validator.validate_dataset_id)
+
+
+_SOME_DATASET_ID_EXPRESSION_ERRORS = [
+    ("cmip6plus",
+        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.world",
+         [(UnMatchedToken, "world", 9, "grid_label")], [])),
+    ("cmip6plus",
+        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.hello.world",
+         [(UnMatchedToken, "hello", 8, "variable_id"), (UnMatchedToken, "world", 9, "grid_label")], [])),
+    ("cmip6plus",
+        ("Hello.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+         [(UnMatchedToken, "Hello", 1, "mip_era")], [])),
+]
+def _provide_dataset_id_expression_errors() -> Generator:
+    for drs_expression in _SOME_DATASET_ID_EXPRESSION_ERRORS:
+        yield drs_expression
+@pytest.fixture(params=_provide_dataset_id_expression_errors())
+def dataset_id_expression_error(request) -> tuple[str, tuple]:
+    return request.param
+def test_dataset_id_expression_error(dataset_id_expression_error):
+    project_id, expression_and_expected = dataset_id_expression_error
     expression, errors, warnings = expression_and_expected
     validator = DrsValidator(project_id)
     _check_expression(expression, errors, warnings, validator.validate_dataset_id)
