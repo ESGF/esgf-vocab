@@ -198,13 +198,11 @@ def _valid_value(value: str,
     return result
 
 
-def _check_and_strip_value(value: str) -> str:
-    if not value:
+def _check_value(value: str) -> str:
+    if not value or value.isspace():
         raise ValueError('value should be set')
-    if result:= value.strip():
-        return result
     else:
-        raise ValueError('value should not be empty')
+        return value
 
 
 def _search_plain_term_and_valid_value(value: str,
@@ -294,7 +292,7 @@ def valid_term(value: str,
     :rtype: ValidationReport
     :raises ValueError: If any of the provided ids is not found
     """
-    value = _check_and_strip_value(value)
+    value = _check_value(value)
     with get_universe_session() as universe_session, \
          _get_project_session_with_exception(project_id) as project_session:
         errors = _valid_value_against_given_term(value, collection_id, term_id,
@@ -308,7 +306,7 @@ def _valid_term_in_collection(value: str,
                               universe_session: Session,
                               project_session: Session) \
                                 -> list[MatchingTerm]:
-    value = _check_and_strip_value(value)
+    value = _check_value(value)
     result = list()
     collections = _find_collections_in_project(collection_id,
                                                project_session,
