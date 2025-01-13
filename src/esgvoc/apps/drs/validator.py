@@ -193,12 +193,12 @@ class DrsValidator:
         elif token_index < token_max_index: # Extra tokens.
             part_index -= token_max_index - token_index
             for index in range(token_index, token_max_index):
-                token = tokens[token_index]
+                token = tokens[index]
                 part = specs.parts[part_index]
                 if (not part.is_required) and matching_code_mapping[part.__str__()] < 0:
-                    issue = ExtraToken(token, token_index, part)
+                    issue = ExtraToken(token, index, part)
                 else:
-                    issue = ExtraToken(token, token_index)
+                    issue = ExtraToken(token, index)
                 errors.append(issue)
                 part_index += 1
         return self._create_report(drs_expression, errors, warnings)
@@ -234,9 +234,6 @@ if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-"CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer",
-"CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon",
-"CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.hello",
 "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.hello.world"
 ]
     import time
