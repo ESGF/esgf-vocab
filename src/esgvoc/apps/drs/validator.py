@@ -185,7 +185,7 @@ class DrsValidator:
         if part_index < part_max_index: # Missing tokens.
             for index in range(part_index, part_max_index):
                 part = specs.parts[index]
-                issue = MissingToken(part, index)
+                issue = MissingToken(part, index+1)
                 if part.is_required:
                     errors.append(issue)
                 else:
@@ -234,14 +234,15 @@ if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-"CMIP6Plus/CMIP/NCC/MIROC6/amip/ /r2i2p1f2/ACmon/od550aer/gn/v20190923",
-"CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923/ /",
-"  CMIP6Plus/CMIP/NCC/MIROC6/amip/  /r2i2p1f2/ACmon/od550aer/gn/v20190923/ // "
+"CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer",
+"CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon",
+"CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.hello",
+"CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.hello.world"
 ]
     import time
     for drs_expression in drs_expressions:
         start_time = time.perf_counter_ns()
-        report = validator.validate_directory(drs_expression)
+        report = validator.validate_dataset_id(drs_expression)
         stop_time = time.perf_counter_ns()
         print(f'elapsed time: {(stop_time-start_time)/1000000}')
         if report.nb_errors > 0:
