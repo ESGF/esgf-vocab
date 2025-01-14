@@ -3,6 +3,7 @@ from typing import cast
 import esgvoc.api.projects as projects
 
 from esgvoc.api.models import (ProjectSpecs,
+                               DrsSpecification,
                                DrsType,
                                DrsPartType,
                                DrsCollection,
@@ -29,8 +30,11 @@ class DrsGenerator:
                     raise ValueError(f'unsupported DRS specs type {specs.type}')
     
     def generate_dataset_id_from_mapping(self, mapping: dict[str, str]):
+        return self.generate_from_mapping(mapping, self.dataset_id_specs)
+    
+    def generate_from_mapping(self, mapping: dict[str, str], specs: DrsSpecification):
         drs_expression = ""
-        for part in self.dataset_id_specs.parts:
+        for part in specs.parts:
             if part.kind == DrsPartType.collection:
                 collection_part = cast(DrsCollection, part)
                 collection_id = collection_part.collection_id
@@ -41,19 +45,19 @@ class DrsGenerator:
                                                                        collection_id)
                     if matching_terms:
                         print(f'OK for {collection_id} -> {token}') # DEBUG
-                        drs_expression += token + self.dataset_id_specs.separator
+                        drs_expression += token + specs.separator
                     else:
                         print(f'KO for {collection_id} -> {token}') # DEBUG
-                        drs_expression += DrsGenerator.INVALID_TAG + self.dataset_id_specs.separator
+                        drs_expression += DrsGenerator.INVALID_TAG + specs.separator
                 else:
                     print(f'missing token for collection {collection_part.collection_id}') # DEBUG
-                    drs_expression += DrsGenerator.MISSING_TAG + self.dataset_id_specs.separator
+                    drs_expression += DrsGenerator.MISSING_TAG + specs.separator
             else:
                 constant_part = cast(DrsConstant, part)
-                drs_expression += constant_part.value + self.dataset_id_specs.separator
-        drs_expression = drs_expression[0:len(drs_expression)-len(self.dataset_id_specs.separator)]
+                drs_expression += constant_part.value + specs.separator
+        drs_expression = drs_expression[0:len(drs_expression)-len(specs.separator)]
         return drs_expression
-
+    
 
 if __name__ == "__main__":
     project_id = 'cmip6plus'
