@@ -1,0 +1,73 @@
+from typing import cast
+
+import esgvoc.api.projects as projects
+
+from esgvoc.api.models import (ProjectSpecs,
+                               DrsType,
+                               DrsPartType,
+                               DrsCollection,
+                               DrsConstant)
+
+
+class DrsGenerator:
+    MISSING_TAG = '[MISSING]'
+    INVALID_TAG = '[INVALID]'
+    
+    def __init__(self, project_id: str, pedantic: bool = False) -> None:
+        self.project_id = project_id
+        self.pedantic = pedantic
+        project_specs: ProjectSpecs = projects.get_project_specs(project_id)
+        for specs in project_specs.drs_specs:
+            match specs.type:
+                case DrsType.directory:
+                    self.directory_specs = specs
+                case DrsType.file_name:
+                    self.file_name_specs = specs
+                case DrsType.dataset_id:
+                    self.dataset_id_specs = specs
+                case _:
+                    raise ValueError(f'unsupported DRS specs type {specs.type}')
+    
+    def generate_dataset_id_from_mapping(self, mapping: dict[str, str]):
+        drs_expression = ""
+        for part in self.dataset_id_specs.parts:
+            if part.kind == DrsPartType.collection:
+                collection_part = cast(DrsCollection, part)
+                collection_id = collection_part.collection_id
+                if collection_id in mapping:
+                    token = mapping[collection_id]
+                    matching_terms = projects.valid_term_in_collection(token,
+                                                                       self.project_id,
+                                                                       collection_id)
+                    if matching_terms:
+                        print(f'OK for {collection_id} -> {token}') # DEBUG
+                        drs_expression += token + self.dataset_id_specs.separator
+                    else:
+                        print(f'KO for {collection_id} -> {token}') # DEBUG
+                        drs_expression += DrsGenerator.INVALID_TAG + self.dataset_id_specs.separator
+                else:
+                    print(f'missing token for collection {collection_part.collection_id}') # DEBUG
+                    drs_expression += DrsGenerator.MISSING_TAG + self.dataset_id_specs.separator
+            else:
+                constant_part = cast(DrsConstant, part)
+                drs_expression += constant_part.value + self.dataset_id_specs.separator
+        drs_expression = drs_expression[0:len(drs_expression)-len(self.dataset_id_specs.separator)]
+        return drs_expression
+
+
+if __name__ == "__main__":
+    project_id = 'cmip6plus'
+    generator = DrsGenerator(project_id)
+    mapping = {
+        'mmber_id': 'r2i2p1f2',
+        'activity_id': 'CMIP',
+        'source_id': 'MIROC6',
+        'mip_era': 'CMIP6Plus',
+        'experiment_id': 'amip',
+        'variable_id': 'od550aer',
+        'table_id': 'ACmo',
+        #'grid_label': 'gn',
+        'institution_id': 'IPSL',
+    }
+    drs_expression = generator.generate_dataset_id_from_mapping(mapping)
+    print(drs_expression)
