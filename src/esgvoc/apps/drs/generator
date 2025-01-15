@@ -1,4 +1,4 @@
-from typing import cast
+from typing import cast, Sequence, Mapping
 
 import esgvoc.api.projects as projects
 
@@ -32,7 +32,7 @@ class DrsGenerator:
     def generate_dataset_id_from_mapping(self, mapping: dict[str, str]):
         return self.generate_from_mapping(mapping, self.dataset_id_specs)
     
-    def generate_from_mapping(self, mapping: dict[str, str], specs: DrsSpecification):
+    def generate_from_mapping(self, mapping: Mapping[str, str], specs: DrsSpecification):
         drs_expression = ""
         for part in specs.parts:
             if part.kind == DrsPartType.collection:
@@ -58,20 +58,39 @@ class DrsGenerator:
         drs_expression = drs_expression[0:len(drs_expression)-len(specs.separator)]
         return drs_expression
     
+    def generate_dataset_id_from_bag_of_words(self, words: set[str]):
+        return self.generate_from_bag_of_words(words, self.dataset_id_specs)
+    
+    def generate_from_bag_of_words(self, words: Sequence[str], specs: DrsSpecification):
+        mapping_collection_words: dict[str: set[str]] = dict()
+        mapping_word_collections: dict[str: set[str]] = dict() # Conflicting words control.
+        mapping_word_nb_collections: dict[str: int] = dict()   # Conflicting words control.
+        for word in words:
+            matching_terms = projects.valid_term_in_project(word, self.project_id)
+            for matching_term in matching_terms:
+                if matching_term.collection_id not in mapping_collection_words:
+                    mapping_collection_words[matching_term.collection_id] = set()
+                mapping_collection_words[matching_term.collection_id].add(word)
+        # Detect conflicting words: words that match more than one collection.
+        conflicting_words = set()
+        for word, nb_matched_collections in mapping_word_nb_collections.items():
+            if nb_matched_collections > 1:
+                conflicting_words.add(word)
+
 
 if __name__ == "__main__":
     project_id = 'cmip6plus'
     generator = DrsGenerator(project_id)
-    mapping = {
-        'mmber_id': 'r2i2p1f2',
-        'activity_id': 'CMIP',
-        'source_id': 'MIROC6',
-        'mip_era': 'CMIP6Plus',
-        'experiment_id': 'amip',
-        'variable_id': 'od550aer',
-        'table_id': 'ACmo',
-        #'grid_label': 'gn',
-        'institution_id': 'IPSL',
+    bow = {
+        'r2i2p1f2',
+        'CMIP',
+        'MIROC6',
+        'CMIP6Plus',
+        'amip',
+        'od550aer',
+        'ACmon',
+        'gn',
+        'IPSL',
     }
-    drs_expression = generator.generate_dataset_id_from_mapping(mapping)
+    drs_expression = generator.generate_dataset_id_from_bag_of_words(bow)
     print(drs_expression)
