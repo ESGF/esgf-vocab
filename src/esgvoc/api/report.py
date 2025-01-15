@@ -17,20 +17,6 @@ class ValidationErrorVisitor(ABC):
         pass
 
 
-class BasicValidationErrorVisitor(ValidationErrorVisitor):
-    def visit_universe_term_error(self, error: "UniverseTermError") -> Any:
-        term_id = error.term[api_settings.TERM_ID_JSON_KEY]
-        result = f"The term {term_id} from the data descriptor {error.data_descriptor_id} "+\
-                 f"does not validate the given value '{error.value}'"
-        return result
-
-    def visit_project_term_error(self, error: "ProjectTermError") -> Any:
-        term_id = error.term[api_settings.TERM_ID_JSON_KEY]
-        result = f"The term {term_id} from the collection {error.collection_id} "+\
-                 f"does not validate the given value '{error.value}'"
-        return result
-
-
 class ValidationError(ABC):
     def __init__(self,
                  value: str):
@@ -51,6 +37,12 @@ class UniverseTermError(ValidationError):
 
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         return visitor.visit_universe_term_error(self)
+    
+    def __repr__(self) -> str:
+        term_id = self.term[api_settings.TERM_ID_JSON_KEY]
+        result = f"The term {term_id} from the data descriptor {self.data_descriptor_id} "+\
+                 f"does not validate the given value '{self.value}'"
+        return result
 
 
 class ProjectTermError(ValidationError):
@@ -64,6 +56,12 @@ class ProjectTermError(ValidationError):
 
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         return visitor.visit_project_term_error(self)
+    
+    def __repr__(self) -> str:
+        term_id = self.term[api_settings.TERM_ID_JSON_KEY]
+        result = f"The term {term_id} from the collection {self.collection_id} "+\
+                 f"does not validate the given value '{self.value}'"
+        return result
 
 
 class ValidationReport:

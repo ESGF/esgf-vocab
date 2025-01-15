@@ -860,7 +860,5 @@ if __name__ == "__main__":
         print('OK')
     else:
         print(vr)
-        from esgvoc.api import BasicValidationErrorVisitor
-        visitor = BasicValidationErrorVisitor()
         for error in vr.errors:
-            print(error.accept(visitor))
+            print(error)
