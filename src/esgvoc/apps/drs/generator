@@ -61,21 +61,23 @@ class DrsGenerator:
     def generate_dataset_id_from_bag_of_words(self, words: set[str]):
         return self.generate_from_bag_of_words(words, self.dataset_id_specs)
     
+    def _resolve_conflicts(collection_words_mapping: dict[str, set[str]]) -> dict[str, set[str]]:
+        pass # TODO
+
+    def _check(collection_words_mapping: dict[str, set[str]]) -> dict[str, str]:
+        pass # TODO
+
     def generate_from_bag_of_words(self, words: Sequence[str], specs: DrsSpecification):
-        mapping_collection_words: dict[str: set[str]] = dict()
-        mapping_word_collections: dict[str: set[str]] = dict() # Conflicting words control.
-        mapping_word_nb_collections: dict[str: int] = dict()   # Conflicting words control.
+        collection_words_mapping: dict[str: set[str]] = dict()
         for word in words:
             matching_terms = projects.valid_term_in_project(word, self.project_id)
             for matching_term in matching_terms:
-                if matching_term.collection_id not in mapping_collection_words:
-                    mapping_collection_words[matching_term.collection_id] = set()
-                mapping_collection_words[matching_term.collection_id].add(word)
-        # Detect conflicting words: words that match more than one collection.
-        conflicting_words = set()
-        for word, nb_matched_collections in mapping_word_nb_collections.items():
-            if nb_matched_collections > 1:
-                conflicting_words.add(word)
+                if matching_term.collection_id not in collection_words_mapping:
+                    collection_words_mapping[matching_term.collection_id] = set()
+                collection_words_mapping[matching_term.collection_id].add(word)
+        #collection_words_mapping = DrsGenerator._resolve_conflicts(collection_words_mapping)
+        #mapping = DrsGenerator._check(collection_words_mapping)
+        #return self.generate_from_mapping(mapping, specs)
 
 
 if __name__ == "__main__":
