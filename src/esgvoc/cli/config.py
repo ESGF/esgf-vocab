@@ -34,6 +34,9 @@ def config(key: str |None = typer.Argument(None), value: str|None = typer.Argume
     - With no arguments: display all settings.
     - With one argument (key): display the value of the key.
     - With two arguments (key and value): modify the key's value and save.
+
+    usage : 
+    esgvoc config universe.db_path .cache/dbs/somethingelse
     """
     
     settings = load_settings()

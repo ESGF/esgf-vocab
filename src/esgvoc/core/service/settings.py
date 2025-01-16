@@ -4,7 +4,7 @@ from pathlib import Path
 import toml
 
 
-SETTINGS_FILE = Path(__file__) / "settings.toml"
+SETTINGS_FILE = Path(__file__).parent / "settings.toml"
 
 class ProjectSettings(BaseModel):
     project_name: str
