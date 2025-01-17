@@ -1,4 +1,4 @@
-from typing import cast, Sequence, Mapping
+from typing import cast, Iterable, Mapping
 
 import esgvoc.api.projects as projects
 
@@ -37,22 +37,22 @@ class DrsGenerator:
                 case _:
                     raise ValueError(f'unsupported DRS specs type {specs.type}')
     
-    def generate_directory_from_mapping(self, mapping: dict[str, str]):
+    def generate_directory_from_mapping(self, mapping: Mapping[str, str]):
         return self.generate_from_mapping(mapping, self.directory_specs)
     
-    def generate_directory_from_bag_of_words(self, words: set[str]):
+    def generate_directory_from_bag_of_words(self, words: Iterable[str]):
         return self.generate_from_bag_of_words(words, self.directory_specs)
 
-    def generate_dataset_id_from_mapping(self, mapping: dict[str, str]):
+    def generate_dataset_id_from_mapping(self, mapping: Mapping[str, str]):
         return self.generate_from_mapping(mapping, self.dataset_id_specs)
     
-    def generate_dataset_id_from_bag_of_words(self, words: set[str]):
+    def generate_dataset_id_from_bag_of_words(self, words: Iterable[str]):
         return self.generate_from_bag_of_words(words, self.dataset_id_specs)
     
-    def generate_file_name_from_mapping(self, mapping: dict[str, str]):
+    def generate_file_name_from_mapping(self, mapping: Mapping[str, str]):
         return self.generate_from_mapping(mapping, self.file_name_specs)
     
-    def generate_file_name_from_bag_of_words(self, words: set[str]):
+    def generate_file_name_from_bag_of_words(self, words: Iterable[str]):
         return self.generate_from_bag_of_words(words, self.file_name_specs)
 
     def generate_from_mapping(self, mapping: Mapping[str, str], specs: DrsSpecification):
@@ -81,7 +81,7 @@ class DrsGenerator:
         drs_expression = drs_expression[0:len(drs_expression)-len(specs.separator)]
         return drs_expression
     
-    def generate_from_bag_of_words(self, words: Sequence[str], specs: DrsSpecification):
+    def generate_from_bag_of_words(self, words: Iterable[str], specs: DrsSpecification):
         collection_words_mapping: dict[str: set[str]] = dict()
         for word in words:
             matching_terms = projects.valid_term_in_project(word, self.project_id)
