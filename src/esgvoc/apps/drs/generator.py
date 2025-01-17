@@ -2,15 +2,14 @@ from typing import cast, Iterable, Mapping, Any
 
 import esgvoc.api.projects as projects
 
-from esgvoc.api.models import (ProjectSpecs,
-                               DrsSpecification,
-                               DrsType,
+from esgvoc.api.models import (DrsSpecification,
                                DrsPartType,
                                DrsCollection,
                                DrsConstant)
 
 import esgvoc.apps.drs.constants as constants
 
+from esgvoc.apps.drs.validator import DrsApplication
 from esgvoc.apps.drs.report import DrsGeneratorReport
 
 
@@ -21,22 +20,7 @@ def _get_first_item(items: set[Any]) -> Any:
     return result
 
 
-class DrsGenerator:
-    # TODO: to be factorized with DRSValidator.
-    def __init__(self, project_id: str, pedantic: bool = False) -> None:
-        self.project_id = project_id
-        self.pedantic = pedantic
-        project_specs: ProjectSpecs = projects.get_project_specs(project_id)
-        for specs in project_specs.drs_specs:
-            match specs.type:
-                case DrsType.directory:
-                    self.directory_specs = specs
-                case DrsType.file_name:
-                    self.file_name_specs = specs
-                case DrsType.dataset_id:
-                    self.dataset_id_specs = specs
-                case _:
-                    raise ValueError(f'unsupported DRS specs type {specs.type}')
+class DrsGenerator(DrsApplication):
     
     def generate_directory_from_mapping(self, mapping: Mapping[str, str]):
         return self.generate_from_mapping(mapping, self.directory_specs)

@@ -23,33 +23,11 @@ from esgvoc.apps.drs.report import (DrsValidationReport,
                                     FileNameExtensionIssue)
 
 
-class DrsValidator:
-    """
-    Valid directory, dataset id and file name against a given project DRS specifications.
-
-    :param project_id: The given project id
-    :type project_id: str
-    :param pedantic: Same as the option of GCC: transform warnings into errors
-    :type pedantic: bool
-    :param directory_specs: The directory DRS specifications of the given project.
-    :type directory_specs: dict
-    :param file_name_specs: The file name DRS specifications of the given project.
-    :type file_name_specs: dict
-    :param dataset_id_specs: The dataset id DRS specifications of the given project.
-    :type dataset_id_specs: dict
-    """
+class DrsApplication:
     # TODO: cache has to be moved to project API.
     # dict[project_id: dict[collection_id: set[token]]]
     _validated_token_cache: dict[str, dict[str, set[str]]] = dict()
     
-    # TODO: to be factorize with DrsGenerator.
-    def get_full_file_name_extension(self):
-        specs = self.file_name_specs
-        full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
-                         specs.properties[constants.FILE_NAME_EXTENSION_KEY]
-        return full_extension
-
-    # TODO: to be factorize with DrsGenerator.        
     def __init__(self, project_id: str, pedantic: bool = False) -> None:
         """
         Constructor method.
@@ -75,7 +53,30 @@ class DrsValidator:
                     raise ValueError(f'unsupported DRS specs type {specs.type}')
         if self.project_id not in DrsValidator._validated_token_cache:
             DrsValidator._validated_token_cache[self.project_id] = dict()
-    
+
+    def get_full_file_name_extension(self):
+        specs = self.file_name_specs
+        full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
+                         specs.properties[constants.FILE_NAME_EXTENSION_KEY]
+        return full_extension
+
+
+class DrsValidator(DrsApplication):
+    """
+    Valid directory, dataset id and file name against a given project DRS specifications.
+
+    :param project_id: The given project id
+    :type project_id: str
+    :param pedantic: Same as the option of GCC: transform warnings into errors
+    :type pedantic: bool
+    :param directory_specs: The directory DRS specifications of the given project.
+    :type directory_specs: dict
+    :param file_name_specs: The file name DRS specifications of the given project.
+    :type file_name_specs: dict
+    :param dataset_id_specs: The dataset id DRS specifications of the given project.
+    :type dataset_id_specs: dict
+    """
+   
     def validate_directory(self, drs_expression: str) -> DrsValidationReport:
         """
         Validate a DRS directory expression.
