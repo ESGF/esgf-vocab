@@ -37,7 +37,7 @@ class DrsValidator:
     :param dataset_id_specs: The dataset id DRS specifications of the given project.
     :type dataset_id_specs: dict
     """
-
+    # TODO: cache has to be moved to project API.
     # dict[project_id: dict[collection_id: set[token]]]
     _validated_token_cache: dict[str, dict[str, set[str]]] = dict()
     
