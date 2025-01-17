@@ -55,31 +55,37 @@ class DrsGenerator:
     def generate_file_name_from_bag_of_words(self, words: Iterable[str]):
         return self.generate_from_bag_of_words(words, self.file_name_specs)
 
-    def generate_from_mapping(self, mapping: Mapping[str, str], specs: DrsSpecification):
+    def generate_from_mapping(self, mapping: Mapping[str, str],
+                              specs: DrsSpecification,
+                              has_to_valid_terms: bool = True):
         drs_expression = ""
         for part in specs.parts:
             if part.kind == DrsPartType.collection:
                 collection_part = cast(DrsCollection, part)
                 collection_id = collection_part.collection_id
                 if collection_id in mapping:
-                    token = mapping[collection_id]
-                    matching_terms = projects.valid_term_in_collection(token,
-                                                                       self.project_id,
-                                                                       collection_id)
-                    if matching_terms:
-                        print(f'OK for {collection_id} -> {token}') # DEBUG
-                        drs_expression += token + specs.separator
-                    else:
-                        print(f'KO for {collection_id} -> {token}') # DEBUG
-                        drs_expression += DrsGenerator.INVALID_TAG + specs.separator
+                    part_value = mapping[collection_id]
+                    if has_to_valid_terms:
+                        matching_terms = projects.valid_term_in_collection(part_value,
+                                                                           self.project_id,
+                                                                           collection_id)
+                        if matching_terms:
+                            print(f'OK for {collection_id} -> {part_value}') # DEBUG
+                        else:
+                            print(f'KO for {collection_id} -> {part_value}') # DEBUG
+                            part_value = DrsGenerator.INVALID_TAG
                 elif collection_part.is_required:
                     print(f'ERROR: missing token for required collection {collection_part.collection_id}') # DEBUG
-                    drs_expression += DrsGenerator.MISSING_TAG + specs.separator
+                    part_value = DrsGenerator.MISSING_TAG
                 else:
                     print(f'WARNING: no token provided for optional collection {collection_part.collection_id}') # DEBUG
+                    continue # The for loop.
             else:
                 constant_part = cast(DrsConstant, part)
-                drs_expression += constant_part.value + specs.separator
+                part_value = constant_part.value
+            
+            drs_expression += part_value + specs.separator
+        
         drs_expression = drs_expression[0:len(drs_expression)-len(specs.separator)]
         return drs_expression
     
@@ -93,8 +99,7 @@ class DrsGenerator:
                 collection_words_mapping[matching_term.collection_id].add(word)
         collection_words_mapping = DrsGenerator._resolve_conflicts(collection_words_mapping)
         mapping = DrsGenerator._check(collection_words_mapping)
-        # TODO: word have already been matched to collection. So just build the DRS.
-        return self.generate_from_mapping(mapping, specs)
+        return self.generate_from_mapping(mapping, specs, False)
     
     @staticmethod
     def _resolve_conflicts(collection_words_mapping: dict[str, set[str]]) -> dict[str, set[str]]:
