@@ -11,7 +11,7 @@ from esgvoc.apps.drs.report import (DrsIssue,
                                     ExtraSeparator,
                                     ExtraChar,
                                     BlankToken,
-                                    UnMatchedToken,
+                                    InvalidToken,
                                     ExtraToken,
                                     MissingToken,
                                     FileNameExtensionIssue)
@@ -277,10 +277,10 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
          [(ExtraSeparator, 21)], [])),
     ("cmip6plus",
         ("CMIP6Plus.CMIP.IPSL. MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-         [(UnMatchedToken, " MIROC6", 4, "source_id")], [])),
+         [(InvalidToken, " MIROC6", 4, "source_id")], [])),
     ("cmip6plus",
         ("CMIP6Plus.CMIP.IPSL.  MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-         [(UnMatchedToken, "  MIROC6", 4, "source_id")], [])),
+         [(InvalidToken, "  MIROC6", 4, "source_id")], [])),
     ("cmip6plus",
         ("CMIP6Plus.CMIP.IPSL. .MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
          [(BlankToken, 21)], [])),
@@ -303,11 +303,11 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
           (ExtraSeparator, 2)], [(Space, None)])),
     ("cmip6plus",
         ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer-gn",
-         [(UnMatchedToken, "od550aer-gn", 8, "variable_id"),
+         [(InvalidToken, "od550aer-gn", 8, "variable_id"),
           (MissingToken, "grid_label", 9)], [])),
     ("cmip6plus",
         ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer/gn",
-         [(UnMatchedToken, "od550aer/gn", 8, "variable_id"),
+         [(InvalidToken, "od550aer/gn", 8, "variable_id"),
           (MissingToken, "grid_label", 9)], [])),
 ]
 def _provide_dataset_id_expression_typo_errors() -> Generator:
@@ -354,13 +354,13 @@ def test_dataset_id_expression_token_error(dataset_id_expression_token_error):
 _SOME_DATASET_ID_EXPRESSION_ERRORS = [
     ("cmip6plus",
         ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.world",
-         [(UnMatchedToken, "world", 9, "grid_label")], [])),
+         [(InvalidToken, "world", 9, "grid_label")], [])),
     ("cmip6plus",
         ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.hello.world",
-         [(UnMatchedToken, "hello", 8, "variable_id"), (UnMatchedToken, "world", 9, "grid_label")], [])),
+         [(InvalidToken, "hello", 8, "variable_id"), (InvalidToken, "world", 9, "grid_label")], [])),
     ("cmip6plus",
         ("Hello.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-         [(UnMatchedToken, "Hello", 1, "mip_era")], [])),
+         [(InvalidToken, "Hello", 1, "mip_era")], [])),
 ]
 def _provide_dataset_id_expression_errors() -> Generator:
     for drs_expression in _SOME_DATASET_ID_EXPRESSION_ERRORS:
