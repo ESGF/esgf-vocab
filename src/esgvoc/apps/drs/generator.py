@@ -72,9 +72,11 @@ class DrsGenerator:
                     else:
                         print(f'KO for {collection_id} -> {token}') # DEBUG
                         drs_expression += DrsGenerator.INVALID_TAG + specs.separator
-                else:
-                    print(f'missing token for collection {collection_part.collection_id}') # DEBUG
+                elif collection_part.is_required:
+                    print(f'ERROR: missing token for collection {collection_part.collection_id}') # DEBUG
                     drs_expression += DrsGenerator.MISSING_TAG + specs.separator
+                else:
+                    print(f'WARNING: no token provided for collection {collection_part.collection_id}') # DEBUG
             else:
                 constant_part = cast(DrsConstant, part)
                 drs_expression += constant_part.value + specs.separator
@@ -91,6 +93,7 @@ class DrsGenerator:
                 collection_words_mapping[matching_term.collection_id].add(word)
         collection_words_mapping = DrsGenerator._resolve_conflicts(collection_words_mapping)
         mapping = DrsGenerator._check(collection_words_mapping)
+        # TODO: word have already been matched to collection. So just build the DRS.
         return self.generate_from_mapping(mapping, specs)
     
     @staticmethod
