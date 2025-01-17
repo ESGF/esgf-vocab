@@ -73,10 +73,10 @@ class DrsGenerator:
                         print(f'KO for {collection_id} -> {token}') # DEBUG
                         drs_expression += DrsGenerator.INVALID_TAG + specs.separator
                 elif collection_part.is_required:
-                    print(f'ERROR: missing token for collection {collection_part.collection_id}') # DEBUG
+                    print(f'ERROR: missing token for required collection {collection_part.collection_id}') # DEBUG
                     drs_expression += DrsGenerator.MISSING_TAG + specs.separator
                 else:
-                    print(f'WARNING: no token provided for collection {collection_part.collection_id}') # DEBUG
+                    print(f'WARNING: no token provided for optional collection {collection_part.collection_id}') # DEBUG
             else:
                 constant_part = cast(DrsConstant, part)
                 drs_expression += constant_part.value + specs.separator
