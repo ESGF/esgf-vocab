@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Any, Mapping, Iterable
+from typing import Any, Mapping, Iterable, Protocol
 from esgvoc.api.models import DrsType, DrsPart
 
-
-class ParserIssueVisitor(ABC):
+class ParserIssueVisitor(Protocol):
     def visit_space_issue(self, issue: "Space") -> Any: ...
     def visit_unparsable_issue(self, issue: "Unparsable") -> Any: ...
     def visit_extra_separator_issue(self, issue: "ExtraSeparator") -> Any: ...
@@ -11,26 +10,24 @@ class ParserIssueVisitor(ABC):
     def visit_blank_token_issue(self, issue: "BlankToken") -> Any: ...
 
 
-class ValidationIssueVisitor(ABC):
+class ValidationIssueVisitor(Protocol):
     def visit_filename_extension_issue(self, issue: "FileNameExtensionIssue") -> Any: ...
-    def visit_unmatched_token_issue(self, issue: "UnMatchedToken") -> Any: ...
+    def visit_invalid_token_issue(self, issue: "InvalidToken") -> Any: ...
     def visit_extra_token_issue(self, issue: "ExtraToken") -> Any: ...
     def visit_missing_token_issue(self, issue: "MissingToken") -> Any: ...
 
 
-class DrsIssueVisitor(ParserIssueVisitor, ValidationIssueVisitor): ...
-
-
 class DrsIssue(ABC):
     @abstractmethod
-    def accept(self, visitor: DrsIssueVisitor) -> Any: ...
+    def accept(self, visitor) -> Any: ...
 
 
 class ParserIssue(DrsIssue):
     def __init__(self, column: int|None = None) -> None:
         super().__init__()
         self.column: int|None = column
-
+    @abstractmethod
+    def accept(self, visitor: ParserIssueVisitor) -> Any: ...
 
 class Space(ParserIssue):
     def __init__(self) -> None:
@@ -78,7 +75,9 @@ class BlankToken(ParserIssue):
         return f"blank token at column {self.column}"
 
 
-class ValidationIssue(DrsIssue): ...
+class ValidationIssue(DrsIssue):
+    @abstractmethod
+    def accept(self, visitor: ValidationIssueVisitor) -> Any: ...
 
 
 class FileNameExtensionIssue(ValidationIssue):
@@ -99,11 +98,24 @@ class Token(ValidationIssue):
         self.part = part
 
 
-class UnMatchedToken(Token):
+class GeneratorIssueVisitor(Protocol):
+    def visit_invalid_token_issue(self, issue: "InvalidToken") -> Any: ...
+    def visit_missing_token_issue(self, issue: "MissingToken") -> Any: ...
+    def visit_too_many_words_collection_issue(self, issue: "TooManyWordsCollection") -> Any: ...
+    def visit_conflicting_collections_issue(self, issue: "ConflictingCollections") -> Any: ...
+    def visit_assign_word_issue(self, issue: "AssignedWord") -> Any: ...
+
+
+class GeneratorIssue(DrsIssue):
+    @abstractmethod
+    def accept(self, visitor: GeneratorIssueVisitor) -> Any: ...
+
+
+class InvalidToken(Token, GeneratorIssue):
     def __init__(self, token: str, token_position: int, part: DrsPart) -> None:
         super().__init__(token, token_position, part)
-    def accept(self, visitor: ValidationIssueVisitor) -> Any:
-        return visitor.visit_unmatched_token_issue(self)
+    def accept(self, visitor: ValidationIssueVisitor|GeneratorIssueVisitor) -> Any:
+        return visitor.visit_invalid_token_issue(self)
     def __repr__(self):
         return f"token '{self.token}' not compliant with {self.part} at position {self.token_position}"
 
@@ -120,16 +132,61 @@ class ExtraToken(Token):
         return repr + f" at position {self.token_position}"
 
 
-class MissingToken(ValidationIssue):
+class MissingToken(ValidationIssue, GeneratorIssue):
     def __init__(self, part: DrsPart, part_position: int) -> None:
         super().__init__()
         self.part: DrsPart = part
         self.part_position: int = part_position
-    def accept(self, visitor: ValidationIssueVisitor) -> Any:
+    def accept(self, visitor: ValidationIssueVisitor|GeneratorIssueVisitor) -> Any:
         return visitor.visit_missing_token_issue(self)
     def __repr__(self):
         return f'missing token for {self.part} at position {self.part_position}'
     
+
+class TooManyWordsCollection(GeneratorIssue):
+    def __init__(self, collection_id: str, words: set[str]) -> None:
+        super().__init__()
+        self.collection_id: str = collection_id
+        self.words: set[str] = words
+
+    def accept(self, visitor: GeneratorIssueVisitor) -> Any:
+        return visitor.visit_too_many_words_collection_issue(self)
+
+    def __repr__(self):
+        words_str = ", ".join(word for word in self.words)
+        result = f'collection {self.collection_id} has more than one word ({words_str})'
+        return result
+
+
+class ConflictingCollections(GeneratorIssue):
+    def __init__(self, collection_ids: list[str], words: set[str]) -> None:
+        super().__init__()
+        self.collection_ids: list[str] = collection_ids
+        self.word: set[str] = words
+        
+    def accept(self, visitor: GeneratorIssueVisitor) -> Any:
+        return visitor.visit_conflicting_collections_issue(self)
+
+    def __repr__(self):
+        collection_ids_str = ", ".join(collection_id for collection_id in self.collection_ids)
+        words_str = ", ".join(word for word in self.words)
+        result = f"collections {collection_ids_str} are competing for the same word(s) {words_str}"
+        return result
+
+
+class AssignedWord(GeneratorIssue):
+    def __init__(self, collection_id: str, word: str) -> None:
+        super().__init__()
+        self.collection_id: str = collection_id
+        self.word: str = word
+
+    def accept(self, visitor: GeneratorIssueVisitor) -> Any:
+        return visitor.visit_assign_word_issue(self)
+
+    def __repr__(self):
+        result = f"assign word {self.word} for collection {self.collection_id}"
+        return result
+
 
 class DrsReport:
     def __init__(self,
