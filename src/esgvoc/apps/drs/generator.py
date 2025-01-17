@@ -10,7 +10,14 @@ from esgvoc.api.models import (DrsSpecification,
 import esgvoc.apps.drs.constants as constants
 
 from esgvoc.apps.drs.validator import DrsApplication
-from esgvoc.apps.drs.report import DrsGeneratorReport
+from esgvoc.apps.drs.report import (DrsGeneratorReport,
+                                    GeneratorIssue,
+                                    TooManyWordsCollection,
+                                    InvalidToken,
+                                    MissingToken,
+                                    ConflictingCollections,
+                                    AssignedWord)
+
 
 
 def _get_first_item(items: set[Any]) -> Any:
@@ -22,40 +29,61 @@ def _get_first_item(items: set[Any]) -> Any:
 
 class DrsGenerator(DrsApplication):
     
-    def generate_directory_from_mapping(self, mapping: Mapping[str, str]):
+    def generate_directory_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
         return self.generate_from_mapping(mapping, self.directory_specs)
     
-    def generate_directory_from_bag_of_words(self, words: Iterable[str]):
+    def generate_directory_from_bag_of_words(self, words: Iterable[str]) -> DrsGeneratorReport:
         return self.generate_from_bag_of_words(words, self.directory_specs)
 
-    def generate_dataset_id_from_mapping(self, mapping: Mapping[str, str]):
+    def generate_dataset_id_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
         return self.generate_from_mapping(mapping, self.dataset_id_specs)
     
-    def generate_dataset_id_from_bag_of_words(self, words: Iterable[str]):
+    def generate_dataset_id_from_bag_of_words(self, words: Iterable[str]) -> DrsGeneratorReport:
         return self.generate_from_bag_of_words(words, self.dataset_id_specs)
     
     # Without file name extension.
-    def generate_file_name_from_mapping(self, mapping: Mapping[str, str]):
-        file_name_drs_expression = self.generate_from_mapping(mapping, self.file_name_specs)
-        return file_name_drs_expression + self.get_full_file_name_extension()
+    def generate_file_name_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
+        report = self.generate_from_mapping(mapping, self.file_name_specs)
+        report.computed_drs_expression = report.computed_drs_expression + self.get_full_file_name_extension()
+        return report 
     
     # Without file name extension.
-    def generate_file_name_from_bag_of_words(self, words: Iterable[str]):
-        file_name_drs_expression = self.generate_from_bag_of_words(words, self.file_name_specs)
-        return file_name_drs_expression + self.get_full_file_name_extension()
-
-    # TODO: to be factorize with DrsGenerator.
-    def get_full_file_name_extension(self):
-        specs = self.file_name_specs
-        full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
-                         specs.properties[constants.FILE_NAME_EXTENSION_KEY]
-        return full_extension
+    def generate_file_name_from_bag_of_words(self, words: Iterable[str]) -> DrsGeneratorReport:
+        report = self.generate_from_bag_of_words(words, self.file_name_specs)
+        report.computed_drs_expression = report.computed_drs_expression + self.get_full_file_name_extension()
+        return report 
 
     def generate_from_mapping(self, mapping: Mapping[str, str],
-                              specs: DrsSpecification,
-                              has_to_valid_terms: bool = True):
+                              specs: DrsSpecification) -> DrsGeneratorReport:
+        drs_expression, errors, warnings = self._generate_from_mapping(mapping, specs, True)
+        return DrsGeneratorReport(mapping, mapping, drs_expression, errors, warnings)
+    
+    def generate_from_bag_of_words(self, words: Iterable[str], specs: DrsSpecification) \
+                                                        -> DrsGeneratorReport:
+        collection_words_mapping: dict[str, set[str]] = dict()
+        for word in words:
+            matching_terms = projects.valid_term_in_project(word, self.project_id)
+            for matching_term in matching_terms:
+                if matching_term.collection_id not in collection_words_mapping:
+                    collection_words_mapping[matching_term.collection_id] = set()
+                collection_words_mapping[matching_term.collection_id].add(word)
+        collection_words_mapping, warnings = DrsGenerator._resolve_conflicts(collection_words_mapping)
+        mapping, errors = DrsGenerator._check(collection_words_mapping)
+        drs_expression, errs, warns = self._generate_from_mapping(mapping, specs, False)
+        errors.extend(errs)
+        warnings.extend(warns)
+        return DrsGeneratorReport(mapping, mapping, drs_expression, errors, warnings)
+
+    def _generate_from_mapping(self, mapping: Mapping[str, str],
+                               specs: DrsSpecification,
+                               has_to_valid_terms: bool)\
+                                   -> tuple[str, list[GeneratorIssue], list[GeneratorIssue]]:
+        errors: list[GeneratorIssue] = list()
+        warnings: list[GeneratorIssue] = list()
         drs_expression = ""
+        part_position: int = 0
         for part in specs.parts:
+            part_position += 1
             if part.kind == DrsPartType.collection:
                 collection_part = cast(DrsCollection, part)
                 collection_id = collection_part.collection_id
@@ -65,17 +93,18 @@ class DrsGenerator(DrsApplication):
                         matching_terms = projects.valid_term_in_collection(part_value,
                                                                            self.project_id,
                                                                            collection_id)
-                        if matching_terms:
-                            print(f'OK for {collection_id} -> {part_value}') # DEBUG
-                        else:
-                            print(f'KO for {collection_id} -> {part_value}') # DEBUG
+                        if not matching_terms:
+                            issue = InvalidToken(part_value, part_position, collection_id)
+                            errors.append(issue)
                             part_value = DrsGeneratorReport.INVALID_TAG
-                elif collection_part.is_required:
-                    print(f'ERROR: missing token for required collection {collection_part.collection_id}') # DEBUG
-                    part_value = DrsGeneratorReport.MISSING_TAG
                 else:
-                    print(f'WARNING: no token provided for optional collection {collection_part.collection_id}') # DEBUG
-                    continue # The for loop.
+                    other_issue = MissingToken(collection_id, part_position)
+                    if collection_part.is_required:
+                        errors.append(other_issue)
+                        part_value = DrsGeneratorReport.MISSING_TAG
+                    else:
+                        warnings.append(other_issue)
+                        continue # The for loop.
             else:
                 constant_part = cast(DrsConstant, part)
                 part_value = constant_part.value
@@ -83,22 +112,12 @@ class DrsGenerator(DrsApplication):
             drs_expression += part_value + specs.separator
         
         drs_expression = drs_expression[0:len(drs_expression)-len(specs.separator)]
-        return drs_expression
-    
-    def generate_from_bag_of_words(self, words: Iterable[str], specs: DrsSpecification):
-        collection_words_mapping: dict[str, set[str]] = dict()
-        for word in words:
-            matching_terms = projects.valid_term_in_project(word, self.project_id)
-            for matching_term in matching_terms:
-                if matching_term.collection_id not in collection_words_mapping:
-                    collection_words_mapping[matching_term.collection_id] = set()
-                collection_words_mapping[matching_term.collection_id].add(word)
-        collection_words_mapping = DrsGenerator._resolve_conflicts(collection_words_mapping)
-        mapping = DrsGenerator._check(collection_words_mapping)
-        return self.generate_from_mapping(mapping, specs, False)
+        return drs_expression, errors, warnings
     
     @staticmethod
-    def _resolve_conflicts(collection_words_mapping: dict[str, set[str]]) -> dict[str, set[str]]:
+    def _resolve_conflicts(collection_words_mapping: dict[str, set[str]]) \
+                                            -> tuple[dict[str, set[str]], list[GeneratorIssue]]:
+        warnings: list[GeneratorIssue] = list()
         conflicting_collection_ids_list: list[list[str]] = list()
         collection_ids: list[str] = list(collection_words_mapping.keys())
         len_collection_ids: int = len(collection_ids)
@@ -170,11 +189,9 @@ class DrsGenerator(DrsApplication):
                 for collection_id in collection_ids:
                     if len(collection_words_mapping[collection_id]) == 1:
                         wining_collection_ids.append(collection_id)
-                        # DEBUG ->
                         word = _get_first_item(collection_words_mapping[collection_id])
-                        msg = f"WARNING: assign word {word} to collection {collection_id}"
-                        print(msg)
-                        # <- DEBUG
+                        issue = AssignedWord(collection_id, word)
+                        warnings.append(issue)
             # 3.b Update conflicting collections.
             if wining_collection_ids:
                 DrsGenerator._remove_ids_from_conflicts(conflicting_collection_ids_list,
@@ -207,10 +224,8 @@ class DrsGenerator(DrsApplication):
                     wining_collection_ids.append(collection_id)
                     collection_words_mapping[collection_id].clear()
                     collection_words_mapping[collection_id].add(word)
-                    # DEBUG ->
-                    msg = f"WARNING: assign word {word} to collection {collection_id}"
-                    print(msg)
-                    # <- DEBUG
+                    issue = AssignedWord(collection_id, word)
+                    warnings.append(issue)
                 DrsGenerator._remove_ids_from_conflicts(conflicting_collection_ids_list,
                                                         wining_collection_ids)
                 DrsGenerator._remove_word_from_other_word_sets(collection_words_mapping,
@@ -218,10 +233,12 @@ class DrsGenerator(DrsApplication):
                 continue
             else:
                 break # Stop the loop when no progress is made.
-        return collection_words_mapping
+        return collection_words_mapping, warnings
 
     @staticmethod
-    def _check(collection_words_mapping: dict[str, set[str]]) -> dict[str, str]:
+    def _check(collection_words_mapping: dict[str, set[str]]) \
+                                    -> tuple[dict[str, str], list[GeneratorIssue]]:
+        errors: list[GeneratorIssue] = list()
         # 1. Looking for collections that share strictly the same word(s).
         collection_ids: list[str] = list(collection_words_mapping.keys())
         len_collection_ids: int = len(collection_ids)
@@ -244,13 +261,9 @@ class DrsGenerator(DrsApplication):
                     if not_registered:
                         faulty_collections_list.append({l_collection_id, r_collection_id})
         for faulty_collections in faulty_collections_list:
-            # DEBUG ->
-            collection_ids_str = ", ".join(collection_id for collection_id in faulty_collections)
             words = collection_words_mapping[_get_first_item(faulty_collections)]
-            words_str = ", ".join(word for word in words)
-            msg = f"ERROR: collections {collection_ids_str} are competing for word(s) {words_str}"
-            print(msg)
-             # <- DEBUG
+            issue = ConflictingCollections(list(faulty_collections), list(words))
+            errors.append(issue)
             for collection_id in faulty_collections:
                 del collection_words_mapping[collection_id]
         
@@ -260,12 +273,9 @@ class DrsGenerator(DrsApplication):
             if len(word_set) == 1:
                 result[collection_id] = _get_first_item(word_set)
             else:
-                # DEBUG ->
-                words_str = ", ".join(word for word in word_set)
-                msg = f'ERROR: collection {collection_id} has more than one word ({words_str})'
-                print(msg)
-                # <- DEBUG
-        return result
+                other_issue = TooManyWordsCollection(collection_id, list(word_set))
+                errors.append(other_issue)
+        return result, errors
 
     @staticmethod
     def _remove_word_from_other_word_sets(collection_words_mapping: dict[str, set[str]],

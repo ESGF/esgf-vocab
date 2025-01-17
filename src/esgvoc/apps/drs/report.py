@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Mapping, Iterable, Protocol
+from typing import Any, Mapping, Iterable, Protocol, cast
 from esgvoc.api.models import DrsType
 
 class ParserIssueVisitor(Protocol):
@@ -145,10 +145,10 @@ class MissingToken(ValidationIssue, GeneratorIssue):
     
 
 class TooManyWordsCollection(GeneratorIssue):
-    def __init__(self, collection_id: str, words: set[str]) -> None:
+    def __init__(self, collection_id: str, words: list[str]) -> None:
         super().__init__()
         self.collection_id: str = collection_id
-        self.words: set[str] = words
+        self.words: list[str] = words
 
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_too_many_words_collection_issue(self)
@@ -160,10 +160,10 @@ class TooManyWordsCollection(GeneratorIssue):
 
 
 class ConflictingCollections(GeneratorIssue):
-    def __init__(self, collection_ids: list[str], words: set[str]) -> None:
+    def __init__(self, collection_ids: list[str], words: list[str]) -> None:
         super().__init__()
         self.collection_ids: list[str] = collection_ids
-        self.word: set[str] = words
+        self.word: list[str] = words
         
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_conflicting_collections_issue(self)
@@ -224,11 +224,14 @@ class DrsGeneratorReport(DrsReport):
     def __init__(self,
                  given_mapping_or_bag_of_words: Mapping|Iterable,
                  mapping_used: Mapping,
-                 errors: list[DrsIssue],
-                 warnings: list[DrsIssue]):
-        super().__init__(errors, warnings)
+                 computed_drs_expression: str,
+                 errors: list[GeneratorIssue],
+                 warnings: list[GeneratorIssue]):
+        # Mypy can't figure out that GeneratorIssue is an DrsIssue...
+        super().__init__(cast(list[DrsIssue], errors), cast(list[DrsIssue], warnings))
         self.given_mapping_or_bag_of_words: Mapping|Iterable = given_mapping_or_bag_of_words
         self.mapping_used: Mapping = mapping_used
+        self.computed_drs_expression = computed_drs_expression
         self.message = f"'{self.given_mapping_or_bag_of_words}' has {self.nb_errors} error(s) and " + \
                        f"{self.nb_warnings} warning(s)"
     def __repr__(self) -> str:
