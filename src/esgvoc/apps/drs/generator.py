@@ -11,6 +11,8 @@ from esgvoc.api.models import (ProjectSpecs,
 
 import esgvoc.apps.drs.constants as constants
 
+from esgvoc.apps.drs.report import DrsGeneratorReport
+
 
 def _get_first_item(items: set[Any]) -> Any:
     result = None
@@ -20,9 +22,6 @@ def _get_first_item(items: set[Any]) -> Any:
 
 
 class DrsGenerator:
-    MISSING_TAG = '[MISSING]' # TODO: to be moved to report.
-    INVALID_TAG = '[INVALID]' # TODO: to be moved to report.
-    
     # TODO: to be factorized with DRSValidator.
     def __init__(self, project_id: str, pedantic: bool = False) -> None:
         self.project_id = project_id
@@ -86,10 +85,10 @@ class DrsGenerator:
                             print(f'OK for {collection_id} -> {part_value}') # DEBUG
                         else:
                             print(f'KO for {collection_id} -> {part_value}') # DEBUG
-                            part_value = DrsGenerator.INVALID_TAG
+                            part_value = DrsGeneratorReport.INVALID_TAG
                 elif collection_part.is_required:
                     print(f'ERROR: missing token for required collection {collection_part.collection_id}') # DEBUG
-                    part_value = DrsGenerator.MISSING_TAG
+                    part_value = DrsGeneratorReport.MISSING_TAG
                 else:
                     print(f'WARNING: no token provided for optional collection {collection_part.collection_id}') # DEBUG
                     continue # The for loop.

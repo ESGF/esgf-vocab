@@ -160,6 +160,9 @@ class DrsValidationReport(DrsReport):
 
 
 class DrsGeneratorReport(DrsReport):
+    MISSING_TAG: str = '[MISSING]'
+    INVALID_TAG: str = '[INVALID]'
+    
     def __init__(self,
                  given_mapping_or_bag_of_words: Mapping|Iterable,
                  mapping_used: Mapping,
