@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Mapping, Iterable, Protocol
-from esgvoc.api.models import DrsType, DrsPart
+from esgvoc.api.models import DrsType
 
 class ParserIssueVisitor(Protocol):
     def visit_space_issue(self, issue: "Space") -> Any: ...
@@ -91,11 +91,10 @@ class FileNameExtensionIssue(ValidationIssue):
     
 
 class Token(ValidationIssue):
-    def __init__(self, token: str, token_position: int, part: DrsPart|None) -> None:
+    def __init__(self, token: str, token_position: int) -> None:
         super().__init__()
         self.token: str = token
         self.token_position: int = token_position
-        self.part = part
 
 
 class GeneratorIssueVisitor(Protocol):
@@ -112,35 +111,37 @@ class GeneratorIssue(DrsIssue):
 
 
 class InvalidToken(Token, GeneratorIssue):
-    def __init__(self, token: str, token_position: int, part: DrsPart) -> None:
-        super().__init__(token, token_position, part)
+    def __init__(self, token: str, token_position: int, collection_id_or_constant_value: str) -> None:
+        super().__init__(token, token_position)
+        self.collection_id_or_constant_value = collection_id_or_constant_value
     def accept(self, visitor: ValidationIssueVisitor|GeneratorIssueVisitor) -> Any:
         return visitor.visit_invalid_token_issue(self)
     def __repr__(self):
-        return f"token '{self.token}' not compliant with {self.part} at position {self.token_position}"
+        return f"token '{self.token}' not compliant with {self.collection_id_or_constant_value} at position {self.token_position}"
 
 
 class ExtraToken(Token):
-    def __init__(self, token: str, token_position: int, part: DrsPart|None = None) -> None:
-        super().__init__(token, token_position, part)
+    def __init__(self, token: str, token_position: int, collection_id: str|None) -> None:
+        super().__init__(token, token_position)
+        self.collection_id = collection_id
     def accept(self, visitor: ValidationIssueVisitor) -> Any:
         return visitor.visit_extra_token_issue(self)
     def __repr__(self):
         repr = f"extra token {self.token}"
-        if self.part:
-            repr += f" invalidated by the optional collection {self.part}"
+        if self.collection_id:
+            repr += f" invalidated by the optional collection {self.collection_id}"
         return repr + f" at position {self.token_position}"
 
 
 class MissingToken(ValidationIssue, GeneratorIssue):
-    def __init__(self, part: DrsPart, part_position: int) -> None:
+    def __init__(self, collection_id: str, collection_position: int) -> None:
         super().__init__()
-        self.part: DrsPart = part
-        self.part_position: int = part_position
+        self.collection_id: str = collection_id
+        self.collection_position: int = collection_position
     def accept(self, visitor: ValidationIssueVisitor|GeneratorIssueVisitor) -> Any:
         return visitor.visit_missing_token_issue(self)
     def __repr__(self):
-        return f'missing token for {self.part} at position {self.part_position}'
+        return f'missing token for {self.collection_id} at position {self.collection_position}'
     
 
 class TooManyWordsCollection(GeneratorIssue):

@@ -261,7 +261,7 @@ class DrsValidator(DrsApplication):
                 matching_code_mapping[part.__str__()] = 0
             elif part.kind == DrsPartType.constant or \
                  cast(DrsCollection, part).is_required:
-                issue: ValidationIssue = InvalidToken(token, token_index+1, part)
+                issue: ValidationIssue = InvalidToken(token, token_index+1, str(part))
                 errors.append(issue)
                 matching_code_mapping[part.__str__()] = 1
                 token_index += 1
@@ -295,9 +295,9 @@ class DrsValidator(DrsApplication):
                 if part.kind != DrsPartType.constant           and \
                    (not cast(DrsCollection, part).is_required) and \
                     matching_code_mapping[part.__str__()] < 0:
-                    issue = ExtraToken(token, index, part)
+                    issue = ExtraToken(token, index, str(part))
                 else:
-                    issue = ExtraToken(token, index)
+                    issue = ExtraToken(token, index, None)
                 errors.append(issue)
                 part_index += 1
         return self._create_report(drs_expression, errors, warnings)

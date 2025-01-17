@@ -25,14 +25,18 @@ def _check_issue(issue: DrsIssue, expected_result: tuple[type, Any]):
         issue = cast(Token, issue)
         assert issue.token == expected_result[1]
         assert issue.token_position == expected_result[2]
-        if issue.part:
-            assert str(issue.part) == expected_result[3]
+        
+        if isinstance(issue, InvalidToken):
+            assert issue.collection_id_or_constant_value == expected_result[3] 
         else:
-            assert issue.part is None
+            if issue.collection_id:
+                assert issue.collection_id == expected_result[3]
+            else:
+                assert issue.collection_id is None
     elif issubclass(type(issue), MissingToken):
         issue = cast(MissingToken, issue)
-        assert str(issue.part) == expected_result[1]
-        assert issue.part_position == expected_result[2]
+        assert str(issue.collection_id) == expected_result[1]
+        assert issue.collection_position == expected_result[2]
     elif issubclass(type(issue), FileNameExtensionIssue):
         pass # Nothing to do.
     else:
