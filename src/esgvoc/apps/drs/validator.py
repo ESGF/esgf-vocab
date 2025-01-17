@@ -11,6 +11,7 @@ import esgvoc.apps.drs.constants as constants
 from esgvoc.apps.drs.report import (DrsValidationReport,
                                     DrsIssue,
                                     ParserIssue,
+                                    ValidationIssue,
                                     Space,
                                     Unparsable,
                                     ExtraSeparator,
@@ -111,10 +112,11 @@ class DrsValidator:
         full_extension = self.get_full_file_name_extension()
         if drs_expression.endswith(full_extension):
             drs_expression = drs_expression.replace(full_extension, '')
-            return self._validate(drs_expression, self.file_name_specs)
+            result = self._validate(drs_expression, self.file_name_specs)
         else:
             issue = FileNameExtensionIssue(full_extension)
-            return self._create_report(drs_expression, [issue], [])
+            result = self._create_report(drs_expression, [issue], [])
+        return result
 
     def validate(self, drs_expression: str, type: DrsType|str) -> DrsValidationReport:
         """
@@ -134,21 +136,23 @@ class DrsValidator:
                 return self.validate_file_name(drs_expression)
             case DrsType.dataset_id:
                 return self.validate_dataset_id(drs_expression)
+            case _:
+                raise ValueError(f'unsupported DRS type {type}')
     
     def parse(self,
               drs_expression: str,
               separator: str,
-              drs_type: DrsType) -> tuple[list[str]|None,     # Tokens
-                                          list[ParserIssue],  # Errors
-                                          list[ParserIssue]]: # Warnings
-        errors = list()
-        warnings = list()
+              drs_type: DrsType) -> tuple[list[str]|None,  # Tokens
+                                          list[DrsIssue],  # Errors
+                                          list[DrsIssue]]: # Warnings
+        errors: list[DrsIssue] = list()
+        warnings: list[DrsIssue] = list()
         cursor_offset = 0
         # Spaces at the beginning/end of expression:
         start_with_space = drs_expression[0].isspace()
         end_with_space = drs_expression[-1].isspace()
         if start_with_space or end_with_space:
-            issue = Space()
+            issue: ParserIssue = Space()
             if self.pedantic:
                 errors.append(issue)
             else:
@@ -206,27 +210,27 @@ class DrsValidator:
     def validate_token(self, token: str, part: DrsPart) -> bool:
         match part.kind:
             case DrsPartType.collection:
-                    part: DrsCollection = cast(DrsCollection, part)
-                    if part.collection_id not in DrsValidator._validated_token_cache[self.project_id]:
-                        DrsValidator._validated_token_cache[self.project_id][part.collection_id] = set()
-                    if token in DrsValidator._validated_token_cache[self.project_id][part.collection_id]:
+                casted_part: DrsCollection = cast(DrsCollection, part)
+                if casted_part.collection_id not in DrsValidator._validated_token_cache[self.project_id]:
+                    DrsValidator._validated_token_cache[self.project_id][casted_part.collection_id] = set()
+                if token in DrsValidator._validated_token_cache[self.project_id][casted_part.collection_id]:
+                    return True
+                else:
+                    try:
+                        matching_terms = projects.valid_term_in_collection(token,
+                                                                           self.project_id,
+                                                                           casted_part.collection_id)
+                    except Exception as e:
+                        msg = f'problem while validating token: {e}.Abort.'
+                        raise ValueError(msg) from e
+                    if len(matching_terms) > 0:
+                        DrsValidator._validated_token_cache[self.project_id][casted_part.collection_id].add(token)
                         return True
                     else:
-                        try:
-                            matching_terms = projects.valid_term_in_collection(token,
-                                                                               self.project_id,
-                                                                               part.collection_id)
-                        except Exception as e:
-                            msg = f'problem while validating token: {e}.Abort.'
-                            raise ValueError(msg) from e
-                        if len(matching_terms) > 0:
-                            DrsValidator._validated_token_cache[self.project_id][part.collection_id].add(token)
-                            return True
-                        else:
-                            return False
+                        return False
             case DrsPartType.constant:
-                part: DrsConstant = cast(DrsConstant, part)
-                return part.value != token
+                part_casted: DrsConstant = cast(DrsConstant, part)
+                return part_casted.value != token
             case _:
                 raise ValueError(f'unsupported DRS specs part type {part.kind}')
 
@@ -256,7 +260,7 @@ class DrsValidator:
                 matching_code_mapping[part.__str__()] = 0
             elif part.kind == DrsPartType.constant or \
                  cast(DrsCollection, part).is_required:
-                issue = UnMatchedToken(token, token_index+1, part)
+                issue: ValidationIssue = UnMatchedToken(token, token_index+1, part)
                 errors.append(issue)
                 matching_code_mapping[part.__str__()] = 1
                 token_index += 1
@@ -277,7 +281,8 @@ class DrsValidator:
             for index in range(part_index, part_max_index):
                 part = specs.parts[index]
                 issue = MissingToken(part, index+1)
-                if part.is_required:
+                if part.kind == DrsPartType.constant or \
+                   cast(DrsCollection, part).is_required:
                     errors.append(issue)
                 else:
                     warnings.append(issue)
@@ -286,7 +291,9 @@ class DrsValidator:
             for index in range(token_index, token_max_index):
                 token = tokens[index]
                 part = specs.parts[part_index]
-                if (not part.is_required) and matching_code_mapping[part.__str__()] < 0:
+                if part.kind != DrsPartType.constant           and \
+                   (not cast(DrsCollection, part).is_required) and \
+                    matching_code_mapping[part.__str__()] < 0:
                     issue = ExtraToken(token, index, part)
                 else:
                     issue = ExtraToken(token, index)

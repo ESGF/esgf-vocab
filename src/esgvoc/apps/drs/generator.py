@@ -1,4 +1,4 @@
-from typing import cast, Iterable, Mapping
+from typing import cast, Iterable, Mapping, Any
 
 import esgvoc.api.projects as projects
 
@@ -12,7 +12,7 @@ from esgvoc.api.models import (ProjectSpecs,
 import esgvoc.apps.drs.constants as constants
 
 
-def _get_first_item(items: set[any]) -> any:
+def _get_first_item(items: set[Any]) -> Any:
     result = None
     for result in items:
         break
@@ -103,7 +103,7 @@ class DrsGenerator:
         return drs_expression
     
     def generate_from_bag_of_words(self, words: Iterable[str], specs: DrsSpecification):
-        collection_words_mapping: dict[str: set[str]] = dict()
+        collection_words_mapping: dict[str, set[str]] = dict()
         for word in words:
             matching_terms = projects.valid_term_in_project(word, self.project_id)
             for matching_term in matching_terms:
@@ -154,12 +154,12 @@ class DrsGenerator:
             #     So stick with one word collections: those collection will be detected in method _check.
             collection_ids_with_len_eq_1_list: list[list[str]] = list()
             for collection_ids in conflicting_collection_ids_list:
-                conflicting_collection_ids: list[str] = list()
+                tmp_conflicting_collection_ids: list[str] = list()
                 for collection_id in collection_ids:
                     if len(collection_words_mapping[collection_id]) == 1:
-                        conflicting_collection_ids.append(collection_id)
-                if len(conflicting_collection_ids) > 1:
-                    collection_ids_with_len_eq_1_list.append(conflicting_collection_ids)
+                        tmp_conflicting_collection_ids.append(collection_id)
+                if len(tmp_conflicting_collection_ids) > 1:
+                    collection_ids_with_len_eq_1_list.append(tmp_conflicting_collection_ids)
             # 2b. As it is not possible to resolve collections sharing the same unique word:
             #     raise errors, remove the faulty collections and their word.
             if collection_ids_with_len_eq_1_list:
@@ -272,7 +272,7 @@ class DrsGenerator:
                 del collection_words_mapping[collection_id]
         
         # 2. Looking for collections with more than one word.
-        result: dict[int, str] = dict()
+        result: dict[str, str] = dict()
         for collection_id, word_set in collection_words_mapping.items():
             if len(word_set) == 1:
                 result[collection_id] = _get_first_item(word_set)
