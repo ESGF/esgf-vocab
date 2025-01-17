@@ -140,7 +140,6 @@ class DrsReport:
         self.nb_errors = len(self.errors) if self.errors else 0
         self.nb_warnings = len(self.warnings) if self.warnings else 0
         self.validated: bool = False if errors else True
-        self.message = f"'{self.expression}' has {self.nb_errors} error(s) and {self.nb_warnings} warning(s)"
     def __len__(self) -> int:
         return self.nb_errors
     def __bool__(self) -> bool:
@@ -149,14 +148,15 @@ class DrsReport:
         return self.message
 
 
-class DrsValidationReport:
+class DrsValidationReport(DrsReport):
     def __init__(self,
                  given_expression: str,
                  errors: list[DrsIssue],
                  warnings: list[DrsIssue]):
-        super.__init__(errors, warnings)
+        super().__init__(errors, warnings)
         self.expression: str = given_expression
-
+        self.message = f"'{self.expression}' has {self.nb_errors} error(s) and " + \
+                       f"{self.nb_warnings} warning(s)"
 
 class DrsGeneratorReport(DrsReport):
     def __init__(self,
