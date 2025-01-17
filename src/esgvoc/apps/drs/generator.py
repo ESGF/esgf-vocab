@@ -9,6 +9,8 @@ from esgvoc.api.models import (ProjectSpecs,
                                DrsCollection,
                                DrsConstant)
 
+import esgvoc.apps.drs.constants as constants
+
 
 def _get_first_item(items: set[any]) -> any:
     result = None
@@ -49,11 +51,22 @@ class DrsGenerator:
     def generate_dataset_id_from_bag_of_words(self, words: Iterable[str]):
         return self.generate_from_bag_of_words(words, self.dataset_id_specs)
     
+    # Without file name extension.
     def generate_file_name_from_mapping(self, mapping: Mapping[str, str]):
-        return self.generate_from_mapping(mapping, self.file_name_specs)
+        file_name_drs_expression = self.generate_from_mapping(mapping, self.file_name_specs)
+        return file_name_drs_expression + self.get_full_file_name_extension()
     
+    # Without file name extension.
     def generate_file_name_from_bag_of_words(self, words: Iterable[str]):
-        return self.generate_from_bag_of_words(words, self.file_name_specs)
+        file_name_drs_expression = self.generate_from_bag_of_words(words, self.file_name_specs)
+        return file_name_drs_expression + self.get_full_file_name_extension()
+
+    # TODO: to be factorize with DrsGenerator.
+    def get_full_file_name_extension(self):
+        specs = self.file_name_specs
+        full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
+                         specs.properties[constants.FILE_NAME_EXTENSION_KEY]
+        return full_extension
 
     def generate_from_mapping(self, mapping: Mapping[str, str],
                               specs: DrsSpecification,

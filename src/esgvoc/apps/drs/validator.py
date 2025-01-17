@@ -41,6 +41,14 @@ class DrsValidator:
     # dict[project_id: dict[collection_id: set[token]]]
     _validated_token_cache: dict[str, dict[str, set[str]]] = dict()
     
+    # TODO: to be factorize with DrsGenerator.
+    def get_full_file_name_extension(self):
+        specs = self.file_name_specs
+        full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
+                         specs.properties[constants.FILE_NAME_EXTENSION_KEY]
+        return full_extension
+
+    # TODO: to be factorize with DrsGenerator.        
     def __init__(self, project_id: str, pedantic: bool = False) -> None:
         """
         Constructor method.
@@ -100,9 +108,7 @@ class DrsValidator:
         :returns: A validation report.
         :rtype: DrsValidationReport
         """
-        specs = self.file_name_specs
-        full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
-                         specs.properties[constants.FILE_NAME_EXTENSION_KEY]
+        full_extension = self.get_full_file_name_extension()
         if drs_expression.endswith(full_extension):
             drs_expression = drs_expression.replace(full_extension, '')
             return self._validate(drs_expression, self.file_name_specs)
