@@ -8,18 +8,18 @@ from esgvoc.api.models import (ProjectSpecs,
                                DrsConstant)
 import esgvoc.api.projects as projects
 import esgvoc.apps.drs.constants as constants
-from esgvoc.apps.drs.validation_report import (DrsValidationReport,
-                                               DrsIssue,
-                                               ParserIssue,
-                                               Space,
-                                               Unparsable,
-                                               ExtraSeparator,
-                                               ExtraChar,
-                                               BlankToken,
-                                               UnMatchedToken,
-                                               ExtraToken,
-                                               MissingToken,
-                                               FileNameExtensionIssue)
+from esgvoc.apps.drs.report import (DrsValidationReport,
+                                    DrsIssue,
+                                    ParserIssue,
+                                    Space,
+                                    Unparsable,
+                                    ExtraSeparator,
+                                    ExtraChar,
+                                    BlankToken,
+                                    UnMatchedToken,
+                                    ExtraToken,
+                                    MissingToken,
+                                    FileNameExtensionIssue)
 
 
 class DrsValidator:

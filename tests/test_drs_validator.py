@@ -3,18 +3,18 @@ import pytest
 from typing import Generator, Callable, cast, Any
 
 from esgvoc.apps.drs.validator import DrsValidator
-from esgvoc.apps.drs.validation_report import (DrsIssue,
-                                               ParserIssue,
-                                               Token,
-                                               Space,
-                                               Unparsable,
-                                               ExtraSeparator,
-                                               ExtraChar,
-                                               BlankToken,
-                                               UnMatchedToken,
-                                               ExtraToken,
-                                               MissingToken,
-                                               FileNameExtensionIssue)
+from esgvoc.apps.drs.report import (DrsIssue,
+                                    ParserIssue,
+                                    Token,
+                                    Space,
+                                    Unparsable,
+                                    ExtraSeparator,
+                                    ExtraChar,
+                                    BlankToken,
+                                    UnMatchedToken,
+                                    ExtraToken,
+                                    MissingToken,
+                                    FileNameExtensionIssue)
 
 
 def _check_issue(issue: DrsIssue, expected_result: tuple[type, Any]):
