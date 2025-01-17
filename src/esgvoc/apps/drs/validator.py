@@ -17,7 +17,7 @@ from esgvoc.apps.drs.report import (DrsValidationReport,
                                     ExtraSeparator,
                                     ExtraChar,
                                     BlankToken,
-                                    UnMatchedToken,
+                                    InvalidToken,
                                     ExtraToken,
                                     MissingToken,
                                     FileNameExtensionIssue)
@@ -261,7 +261,7 @@ class DrsValidator(DrsApplication):
                 matching_code_mapping[part.__str__()] = 0
             elif part.kind == DrsPartType.constant or \
                  cast(DrsCollection, part).is_required:
-                issue: ValidationIssue = UnMatchedToken(token, token_index+1, part)
+                issue: ValidationIssue = InvalidToken(token, token_index+1, part)
                 errors.append(issue)
                 matching_code_mapping[part.__str__()] = 1
                 token_index += 1
