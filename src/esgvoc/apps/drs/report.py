@@ -92,7 +92,7 @@ class FileNameExtensionIssue(ValidationIssue):
     
 
 class Token(ValidationIssue):
-    def __init__(self, token: str, token_position: int, part: DrsPart) -> None:
+    def __init__(self, token: str, token_position: int, part: DrsPart|None) -> None:
         super().__init__()
         self.token: str = token
         self.token_position: int = token_position
@@ -109,8 +109,8 @@ class UnMatchedToken(Token):
 
 
 class ExtraToken(Token):
-    def __init__(self, token: str, token_position: int, part: DrsPart = None) -> None:
-        super().__init__(token, token_position, part)        
+    def __init__(self, token: str, token_position: int, part: DrsPart|None = None) -> None:
+        super().__init__(token, token_position, part)
     def accept(self, visitor: DrsIssueVisitor) -> Any:
         return visitor.visit_extra_token_issue(self)
     def __repr__(self):
@@ -144,8 +144,6 @@ class DrsReport:
         return self.nb_errors
     def __bool__(self) -> bool:
         return self.validated
-    def __repr__(self) -> str:
-        return self.message
 
 
 class DrsValidationReport(DrsReport):
@@ -157,6 +155,9 @@ class DrsValidationReport(DrsReport):
         self.expression: str = given_expression
         self.message = f"'{self.expression}' has {self.nb_errors} error(s) and " + \
                        f"{self.nb_warnings} warning(s)"
+    def __repr__(self) -> str:
+        return self.message
+
 
 class DrsGeneratorReport(DrsReport):
     def __init__(self,
@@ -164,6 +165,10 @@ class DrsGeneratorReport(DrsReport):
                  mapping_used: Mapping,
                  errors: list[DrsIssue],
                  warnings: list[DrsIssue]):
-        super.__init__(errors, warnings)
+        super().__init__(errors, warnings)
         self.given_mapping_or_bag_of_words: Mapping|Iterable = given_mapping_or_bag_of_words
         self.mapping_used: Mapping = mapping_used
+        self.message = f"'{self.given_mapping_or_bag_of_words}' has {self.nb_errors} error(s) and " + \
+                       f"{self.nb_warnings} warning(s)"
+    def __repr__(self) -> str:
+        return self.message
