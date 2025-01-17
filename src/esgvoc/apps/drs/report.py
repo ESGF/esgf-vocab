@@ -35,7 +35,7 @@ class ParserIssue(DrsIssue):
 class Space(ParserIssue):
     def __init__(self) -> None:
         super().__init__()
-    def accept(self, visitor: DrsIssueVisitor) -> Any:
+    def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_space_issue(self)
     def __repr__(self):
         return "expression is surrounded by white space[s]"
@@ -45,7 +45,7 @@ class Unparsable(ParserIssue):
     def __init__(self, expected_drs_type: DrsType) -> None:
         super().__init__()
         self.expected_drs_type = expected_drs_type
-    def accept(self, visitor: DrsIssueVisitor) -> Any:
+    def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_unparsable_issue(self)
     def __repr__(self):
         return "unable to parse this expression"
@@ -54,7 +54,7 @@ class Unparsable(ParserIssue):
 class ExtraSeparator(ParserIssue):
     def __init__(self, column: int) -> None:
         super().__init__(column)
-    def accept(self, visitor: DrsIssueVisitor) -> Any:
+    def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_extra_separator_issue(self)
     def __repr__(self):
         return f"extra separator(s) at column {self.column}"
@@ -63,7 +63,7 @@ class ExtraSeparator(ParserIssue):
 class ExtraChar(ParserIssue):
     def __init__(self, column: int) -> None:
         super().__init__(column)
-    def accept(self, visitor: DrsIssueVisitor) -> Any:
+    def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_extra_char_issue(self)
     def __repr__(self):
         return f"extra character(s) at column {self.column}"
@@ -72,7 +72,7 @@ class ExtraChar(ParserIssue):
 class BlankToken(ParserIssue):
     def __init__(self, column: int) -> None:
         super().__init__(column)
-    def accept(self, visitor: DrsIssueVisitor) -> Any:
+    def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_blank_token_issue(self)
     def __repr__(self):
         return f"blank token at column {self.column}"
@@ -85,7 +85,7 @@ class FileNameExtensionIssue(ValidationIssue):
     def __init__(self, expected_extension: str) -> None:
         super().__init__()
         self.expected_extension = expected_extension
-    def accept(self, visitor: DrsIssueVisitor) -> Any:
+    def accept(self, visitor: ValidationIssueVisitor) -> Any:
         return visitor.visit_filename_extension_issue(self)
     def __repr__(self):
         return f"filename extension missing or not compliant with '{self.expected_extension}'"
@@ -102,7 +102,7 @@ class Token(ValidationIssue):
 class UnMatchedToken(Token):
     def __init__(self, token: str, token_position: int, part: DrsPart) -> None:
         super().__init__(token, token_position, part)
-    def accept(self, visitor: DrsIssueVisitor) -> Any:
+    def accept(self, visitor: ValidationIssueVisitor) -> Any:
         return visitor.visit_unmatched_token_issue(self)
     def __repr__(self):
         return f"token '{self.token}' not compliant with {self.part} at position {self.token_position}"
@@ -111,7 +111,7 @@ class UnMatchedToken(Token):
 class ExtraToken(Token):
     def __init__(self, token: str, token_position: int, part: DrsPart|None = None) -> None:
         super().__init__(token, token_position, part)
-    def accept(self, visitor: DrsIssueVisitor) -> Any:
+    def accept(self, visitor: ValidationIssueVisitor) -> Any:
         return visitor.visit_extra_token_issue(self)
     def __repr__(self):
         repr = f"extra token {self.token}"
@@ -125,7 +125,7 @@ class MissingToken(ValidationIssue):
         super().__init__()
         self.part: DrsPart = part
         self.part_position: int = part_position
-    def accept(self, visitor: DrsIssueVisitor) -> Any:
+    def accept(self, visitor: ValidationIssueVisitor) -> Any:
         return visitor.visit_missing_token_issue(self)
     def __repr__(self):
         return f'missing token for {self.part} at position {self.part_position}'
