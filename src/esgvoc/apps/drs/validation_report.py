@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Mapping, Iterable
 from esgvoc.api.models import DrsType, DrsPart
 
 
@@ -131,12 +131,10 @@ class MissingToken(ValidationIssue):
         return f'missing token for {self.part} at position {self.part_position}'
     
 
-class DrsValidationReport:
+class DrsReport:
     def __init__(self,
-                 given_expression: str,
                  errors: list[DrsIssue],
                  warnings: list[DrsIssue]):
-        self.expression: str = given_expression
         self.errors: list[DrsIssue] = errors
         self.warnings: list[DrsIssue] = warnings
         self.nb_errors = len(self.errors) if self.errors else 0
@@ -149,3 +147,23 @@ class DrsValidationReport:
         return self.validated
     def __repr__(self) -> str:
         return self.message
+
+
+class DrsValidationReport:
+    def __init__(self,
+                 given_expression: str,
+                 errors: list[DrsIssue],
+                 warnings: list[DrsIssue]):
+        super.__init__(errors, warnings)
+        self.expression: str = given_expression
+
+
+class DrsGeneratorReport(DrsReport):
+    def __init__(self,
+                 given_mapping_or_bag_of_words: Mapping|Iterable,
+                 mapping_used: Mapping,
+                 errors: list[DrsIssue],
+                 warnings: list[DrsIssue]):
+        super.__init__(errors, warnings)
+        self.given_mapping_or_bag_of_words: Mapping|Iterable = given_mapping_or_bag_of_words
+        self.mapping_used: Mapping = mapping_used
