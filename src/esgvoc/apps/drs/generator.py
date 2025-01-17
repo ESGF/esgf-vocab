@@ -283,18 +283,5 @@ class DrsGenerator:
 
 
 if __name__ == "__main__":
-    project_id = 'cmip6plus'
-    generator = DrsGenerator(project_id)
-    bow = {
-        'r2i2p1f2',
-        'CMIP',
-        'MIROC6',
-        'CMIP6Plus',
-        'amip',
-        'od550aer',
-        'ACmon',
-        'gn',
-        'IPSL',
-    }
-    drs_expression = generator.generate_dataset_id_from_bag_of_words(bow)
-    print(drs_expression)
+    bow = {"c0": {"w0", "w1"}, "c1": {"w1"}}
+    print(DrsGenerator._resolve_conflicts(bow))
