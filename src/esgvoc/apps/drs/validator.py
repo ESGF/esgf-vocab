@@ -281,7 +281,7 @@ class DrsValidator(DrsApplication):
         if part_index < part_max_index: # Missing tokens.
             for index in range(part_index, part_max_index):
                 part = specs.parts[index]
-                issue = MissingToken(part, index+1)
+                issue = MissingToken(str(part), index+1)
                 if part.kind == DrsPartType.constant or \
                    cast(DrsCollection, part).is_required:
                     errors.append(issue)
