@@ -7,8 +7,6 @@ from esgvoc.api.models import (DrsSpecification,
                                DrsCollection,
                                DrsConstant)
 
-import esgvoc.apps.drs.constants as constants
-
 from esgvoc.apps.drs.validator import DrsApplication
 from esgvoc.apps.drs.report import (DrsGeneratorReport,
                                     GeneratorIssue,
@@ -17,7 +15,6 @@ from esgvoc.apps.drs.report import (DrsGeneratorReport,
                                     MissingToken,
                                     ConflictingCollections,
                                     AssignedWord)
-
 
 
 def _get_first_item(items: set[Any]) -> Any:
