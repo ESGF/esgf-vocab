@@ -109,7 +109,7 @@ _SOME_MAPPINGS = [
     ),
     (
         {'c0': {'w0'}, 'c1': {'w0'}, 'c2': {'w1'}, 'c3': {'w2'}},
-        [(ConflictingCollections, {"c1", "c0"}, {"w0"})],
+        [(ConflictingCollections, ["c0", "c1"], ["w0"])],
         {'c2': 'w1', 'c3': 'w2'}
     ),
     (
@@ -119,28 +119,28 @@ _SOME_MAPPINGS = [
     ),
     (
         {"c0": {"w0"}, "c1": {"w0"}, "c2": {"w0"}},
-        [(ConflictingCollections, {"c0", "c2", "c1"}, {"w0"})],
+        [(ConflictingCollections, ["c0", "c1", "c2"], ["w0"])],
         {}
     ),
     (
         {'c0': {'w0', 'w1'}, 'c1': {'w0', 'w1'}},
-        [(ConflictingCollections, {"c1", "c0"}, {"w0", "w1"})],
+        [(ConflictingCollections, ["c0", "c1"], ["w0", "w1"])],
         {}
     ),
     (
         {'c0': {'w0'}, 'c1': {'w0'}, 'c2': {'w1'}, 'c3': {'w2'}, 'c4': {'w5'}, 'c5': {'w3', 'w4'}, 'c6': {'w7', 'w6'}, 'c7': {'w8'}},
         [
-            (ConflictingCollections, {"c1", "c0"}, {"w0"}),
-            (TooManyWordsCollection, "c5", {"w4", "w3"}),
-            (TooManyWordsCollection, "c6", {"w7", "w6"})
+            (ConflictingCollections, ["c0", "c1"], ["w0"]),
+            (TooManyWordsCollection, "c5", ["w3", "w4"]),
+            (TooManyWordsCollection, "c6", ["w6", "w7"])
         ],
         {'c2': 'w1', 'c3': 'w2', 'c4': 'w5', 'c7': 'w8'}
     ),
     (
         {'c0': {'w0'}, 'c1': {'w0'}, 'c2': {'w0'}, 'c3': {'w2', 'w1'}, 'c4': {'w2', 'w1'}, 'c5': {'w3'}},
         [
-            (ConflictingCollections, {"c1", "c0", "c2"}, {"w0"}),
-            (ConflictingCollections, {"c3", "c4"}, {"w2", "w1"})
+            (ConflictingCollections, ["c0", "c1", "c2"], ["w0"]),
+            (ConflictingCollections, ["c3", "c4"], ["w1", "w2"])
         ],
         {'c5': 'w3'}
     )

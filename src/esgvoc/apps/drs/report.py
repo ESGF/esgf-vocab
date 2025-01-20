@@ -148,7 +148,8 @@ class TooManyWordsCollection(GeneratorIssue):
     def __init__(self, collection_id: str, words: set[str]) -> None:
         super().__init__()
         self.collection_id: str = collection_id
-        self.words: set[str] = words
+        self.words: list[str] = list(words)
+        self.words.sort()
 
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_too_many_words_collection_issue(self)
@@ -162,8 +163,10 @@ class TooManyWordsCollection(GeneratorIssue):
 class ConflictingCollections(GeneratorIssue):
     def __init__(self, collection_ids: set[str], words: set[str]) -> None:
         super().__init__()
-        self.collection_ids: set[str] = collection_ids
-        self.words: set[str] = words
+        self.collection_ids: list[str] = list(collection_ids)
+        self.words: list[str] = list(words)
+        self.collection_ids.sort()
+        self.words.sort()
         
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_conflicting_collections_issue(self)
@@ -205,6 +208,7 @@ class DrsReport:
 
 
 class DrsValidationReport(DrsReport):
+    # TODO: sort errors and warnings.
     def __init__(self,
                  given_expression: str,
                  errors: list[DrsIssue],
@@ -221,6 +225,7 @@ class DrsGeneratorReport(DrsReport):
     MISSING_TAG: str = '[MISSING]'
     INVALID_TAG: str = '[INVALID]'
     
+    # TODO: sort errors and warnings.
     def __init__(self,
                  given_mapping_or_bag_of_words: Mapping|Iterable,
                  mapping_used: Mapping,
