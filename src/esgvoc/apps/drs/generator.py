@@ -238,7 +238,8 @@ class DrsGenerator(DrsApplication):
             for r_collection_index in range(l_collection_index + 1, len_collection_ids):
                 r_collection_id = collection_ids[r_collection_index]
                 r_word_set = collection_words_mapping[r_collection_id]
-                if not l_word_set.difference(r_word_set):
+                # check if the set is empty because the difference will always be an empty set!
+                if l_word_set and (not l_word_set.difference(r_word_set)):
                     not_registered = True
                     for faulty_collections in faulty_collections_list:
                         if l_collection_id in faulty_collections or \
@@ -288,5 +289,5 @@ class DrsGenerator(DrsApplication):
 
 
 if __name__ == "__main__":
-    mapping = {'c0': {'w0'}, 'c1': {'w0'}, 'c2': {'w1'}, 'c3': {'w2'}}
+    mapping = {'c0': {'w0'}, 'c1': set(), 'c2': {'w1'}}
     print(DrsGenerator._check_collection_words_mapping(mapping))
