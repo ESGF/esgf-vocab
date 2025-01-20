@@ -65,7 +65,7 @@ class DrsGenerator(DrsApplication):
                     collection_words_mapping[matching_term.collection_id] = set()
                 collection_words_mapping[matching_term.collection_id].add(word)
         collection_words_mapping, warnings = DrsGenerator._resolve_conflicts(collection_words_mapping)
-        mapping, errors = DrsGenerator._check(collection_words_mapping)
+        mapping, errors = DrsGenerator._check_collection_words_mapping(collection_words_mapping)
         drs_expression, errs, warns = self._generate_from_mapping(mapping, specs, False)
         errors.extend(errs)
         warnings.extend(warns)
@@ -233,8 +233,8 @@ class DrsGenerator(DrsApplication):
         return collection_words_mapping, warnings
 
     @staticmethod
-    def _check(collection_words_mapping: dict[str, set[str]]) \
-                                    -> tuple[dict[str, str], list[GeneratorIssue]]:
+    def _check_collection_words_mapping(collection_words_mapping: dict[str, set[str]]) \
+                                                     -> tuple[dict[str, str], list[GeneratorIssue]]:
         errors: list[GeneratorIssue] = list()
         # 1. Looking for collections that share strictly the same word(s).
         collection_ids: list[str] = list(collection_words_mapping.keys())
