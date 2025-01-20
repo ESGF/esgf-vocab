@@ -57,11 +57,11 @@ class DrsApplication:
 
 class DrsValidator(DrsApplication):
     """
-    Valid directory, dataset id and file name against a given project DRS specifications.
+    Valid a DRS directory, dataset id and file name expression against a given project.
 
     :param project_id: The given project id
     :type project_id: str
-    :param pedantic: Same as the option of GCC: transform warnings into errors
+    :param pedantic: Same as the option of GCC: transform warnings into errors.
     :type pedantic: bool
     :param directory_specs: The directory DRS specifications of the given project.
     :type directory_specs: dict
@@ -115,7 +115,7 @@ class DrsValidator(DrsApplication):
 
     def validate(self, drs_expression: str, type: DrsType|str) -> DrsValidationReport:
         """
-        Validate A DRS expression.
+        Validate a DRS expression.
 
         :param drs_expression: A DRS expression.
         :type drs_expression: str
@@ -134,12 +134,12 @@ class DrsValidator(DrsApplication):
             case _:
                 raise ValueError(f'unsupported DRS type {type}')
     
-    def parse(self,
-              drs_expression: str,
-              separator: str,
-              drs_type: DrsType) -> tuple[list[str]|None,  # Tokens
-                                          list[DrsIssue],  # Errors
-                                          list[DrsIssue]]: # Warnings
+    def _parse(self,
+               drs_expression: str,
+               separator: str,
+               drs_type: DrsType) -> tuple[list[str]|None,  # Tokens
+                                           list[DrsIssue],  # Errors
+                                           list[DrsIssue]]: # Warnings
         errors: list[DrsIssue] = list()
         warnings: list[DrsIssue] = list()
         cursor_offset = 0
@@ -208,7 +208,7 @@ class DrsValidator(DrsApplication):
     def _sort_parser_issues(issues: list[ParserIssue]) -> list[ParserIssue]:
         return sorted(issues, key=lambda issue: issue.column if issue.column else 0)
 
-    def validate_token(self, token: str, part: DrsPart) -> bool:
+    def _validate_token(self, token: str, part: DrsPart) -> bool:
         match part.kind:
             case DrsPartType.collection:
                 casted_part: DrsCollection = cast(DrsCollection, part)
@@ -238,7 +238,7 @@ class DrsValidator(DrsApplication):
     def _validate(self,
                   drs_expression: str,
                   specs: DrsSpecification) -> DrsValidationReport:
-        tokens, errors, warnings = self.parse(drs_expression, specs.separator, specs.type)
+        tokens, errors, warnings = self._parse(drs_expression, specs.separator, specs.type)
         if not tokens:
             return self._create_report(drs_expression, errors, warnings) # Early exit.
         token_index = 0
@@ -249,7 +249,7 @@ class DrsValidator(DrsApplication):
         while part_index < part_max_index:
             token = tokens[token_index]
             part = specs.parts[part_index]
-            if self.validate_token(token, part):
+            if self._validate_token(token, part):
                 token_index += 1
                 part_index += 1
                 matching_code_mapping[part.__str__()] = 0

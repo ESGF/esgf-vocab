@@ -25,14 +25,46 @@ def _get_first_item(items: set[Any]) -> Any:
 
 
 class DrsGenerator(DrsApplication):
+    """
+    Generate a directory, dataset id and file name expression specified by the given project from
+    a mapping of collection ids and terms or an unordered bag of terms.
+
+    :param project_id: The given project id
+    :type project_id: str
+    :param pedantic: Same as the option of GCC: transform warnings into errors.
+    :type pedantic: bool
+    :param directory_specs: The directory DRS specifications of the given project.
+    :type directory_specs: dict
+    :param file_name_specs: The file name DRS specifications of the given project.
+    :type file_name_specs: dict
+    :param dataset_id_specs: The dataset id DRS specifications of the given project.
+    :type dataset_id_specs: dict
+    """
     
     def generate_directory_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
+        """
+        Generate a directory DRS expression from a mapping of collection ids and terms.
+
+        :param mapping: A mapping of collection ids (keys) and terms (values).
+        :type mapping: Mapping[str, str]
+        :returns: A generation report.
+        :rtype: DrsGeneratorReport
+        """
+        
         return self.generate_from_mapping(mapping, self.directory_specs)
     
     def generate_directory_from_bag_of_words(self, words: Iterable[str]) -> DrsGeneratorReport:
         return self.generate_from_bag_of_words(words, self.directory_specs)
 
     def generate_dataset_id_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
+        """
+        Generate a dataset id DRS expression from a mapping of collection ids and terms.
+
+        :param mapping: A mapping of collection ids (keys) and terms (values).
+        :type mapping: Mapping[str, str]
+        :returns: A generation report.
+        :rtype: DrsGeneratorReport
+        """
         return self.generate_from_mapping(mapping, self.dataset_id_specs)
     
     def generate_dataset_id_from_bag_of_words(self, words: Iterable[str]) -> DrsGeneratorReport:
@@ -44,14 +76,34 @@ class DrsGenerator(DrsApplication):
         report.computed_drs_expression = report.computed_drs_expression + self.get_full_file_name_extension()
         return report 
     
-    # Without file name extension.
     def generate_file_name_from_bag_of_words(self, words: Iterable[str]) -> DrsGeneratorReport:
+        """
+        Generate a file name DRS expression from a mapping of collection ids and terms.
+        The file name extension is append automatically, according to the DRS specification,
+        so none of the terms given must include the extension.
+
+        :param mapping: A mapping of collection ids (keys) and terms (values).
+        :type mapping: Mapping[str, str]
+        :returns: A generation report.
+        :rtype: DrsGeneratorReport
+        """
         report = self.generate_from_bag_of_words(words, self.file_name_specs)
         report.computed_drs_expression = report.computed_drs_expression + self.get_full_file_name_extension()
         return report 
 
     def generate_from_mapping(self, mapping: Mapping[str, str],
                               specs: DrsSpecification) -> DrsGeneratorReport:
+        """
+        Generate a DRS expression from a mapping of collection ids and terms.
+
+        :param mapping: A mapping of collection ids (keys) and terms (values).
+        :type mapping: Mapping[str, str]
+        :param specs: a DRS project specification (dataset id, file name or directory).
+        :type specs: DrsSpecification
+        :returns: A generation report.
+        :rtype: DrsGeneratorReport
+        """
+        
         drs_expression, errors, warnings = self._generate_from_mapping(mapping, specs, True)
         if self.pedantic:
             errors.extend(warnings)
@@ -60,6 +112,16 @@ class DrsGenerator(DrsApplication):
     
     def generate_from_bag_of_words(self, words: Iterable[str], specs: DrsSpecification) \
                                                         -> DrsGeneratorReport:
+        """
+        Generate a DRS expression from an unordered bag of terms.
+
+        :param words: An unordered bag of terms.
+        :type mapping: Iterable[str]
+        :param specs: a DRS project specification (dataset id, file name or directory).
+        :type specs: DrsSpecification
+        :returns: A generation report.
+        :rtype: DrsGeneratorReport
+        """
         collection_words_mapping: dict[str, set[str]] = dict()
         for word in words:
             matching_terms = projects.valid_term_in_project(word, self.project_id)
