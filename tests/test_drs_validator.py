@@ -105,18 +105,41 @@ def test_dataset_id_validation(dataset_id_expression):
 
 
 _SOME_DIRECTORY_EXPRESSION_TYPO_WARNINGS = [
-    ("cmip6plus", 
-        ("CMIP6Plus/CMIP/NCC/MIROC6/amip//r2i2p1f2/ACmon/od550aer/gn/v20190923",
-         [], [(ExtraSeparator, 32)])),
-    ("cmip6plus",
-        ("CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923/",
-         [], [(ExtraSeparator, 68)])),
-    ("cmip6plus",
-        ("CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923//",
-         [], [(ExtraSeparator, 68)])),
-    ("cmip6plus",
-        (" CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923//",
-         [], [(Space, None), (ExtraSeparator, 69)]))
+    (
+        "cmip6plus", 
+        (
+            "CMIP6Plus/CMIP/NCC/MIROC6/amip//r2i2p1f2/ACmon/od550aer/gn/v20190923",
+            [],
+            [(ExtraSeparator, 32)]
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923/",
+            [],
+            [(ExtraSeparator, 68)]
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923//",
+            [],
+            [(ExtraSeparator, 68)]
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            " CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923//",
+            [],
+            [
+                (Space, None),
+                (ExtraSeparator, 69)
+            ]
+        )
+    )
 ]
 def _provide_directory_expression_typo_warnings() -> Generator:
     for drs_expression in _SOME_DIRECTORY_EXPRESSION_TYPO_WARNINGS:
@@ -132,15 +155,33 @@ def test_directory_expression_typo_warning(directory_expression_typo_warning):
 
 
 _SOME_DIRECTORY_EXPRESSIONS_TYPO_ERRORS = [
-    ("cmip6plus",
-        ("CMIP6Plus/CMIP/NCC/MIROC6/amip/ /r2i2p1f2/ACmon/od550aer/gn/v20190923",
-         [(BlankToken, 32)], [])),
-    ("cmip6plus",
-        ("CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923/ /",
-         [(ExtraChar, 68)], [])),
-    ("cmip6plus",
-        ("  CMIP6Plus/CMIP/NCC/MIROC6/amip/  /r2i2p1f2/ACmon/od550aer/gn/v20190923/ // ",
-         [(ExtraChar, 73), (BlankToken, 34)], [(Space, None)]))
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus/CMIP/NCC/MIROC6/amip/ /r2i2p1f2/ACmon/od550aer/gn/v20190923",
+            [(BlankToken, 32)],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923/ /",
+            [(ExtraChar, 68)],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "  CMIP6Plus/CMIP/NCC/MIROC6/amip/  /r2i2p1f2/ACmon/od550aer/gn/v20190923/ // ",
+            [
+                (ExtraChar, 73),
+                (BlankToken, 34)
+            ],
+            [(Space, None)]
+        )
+    )
 ]
 def _provide_directory_expression_typo_errors() -> Generator:
     for drs_expression in _SOME_DIRECTORY_EXPRESSIONS_TYPO_ERRORS:
@@ -156,9 +197,14 @@ def test_directory_expression_typo_error(directory_expression_typo_error):
 
 
 _SOME_FILE_NAME_EXPRESSION_WARNINGS = [
-    ("cmip6plus",
-        ("od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc",
-         [], [(MissingToken, "time_range", 7)]))
+    (
+        "cmip6plus",
+        (
+            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc",
+            [],
+            [(MissingToken, "time_range", 7)]
+        )
+    )
 ]
 def _provide_filename_expression_warnings() -> Generator:
     for drs_expression in _SOME_FILE_NAME_EXPRESSION_WARNINGS:
@@ -174,18 +220,38 @@ def test_filename_expression_warning(filename_expression_warning):
 
 
 _SOME_FILE_NAME_EXTENSION_ERRORS = [
-    ("cmip6plus",
-        ("od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn",
-         [(FileNameExtensionIssue, None)], [])),
-    ("cmip6plus",
-        ("od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.md",
-         [(FileNameExtensionIssue, None)], [])),
-    ("cmip6plus",
-        ("od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.n",
-         [(FileNameExtensionIssue, None)], [])),
-    ("cmip6plus",
-        ("od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.n c",
-         [(FileNameExtensionIssue, None)], []))
+    (
+        "cmip6plus",
+        (
+            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn",
+            [(FileNameExtensionIssue, None)],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.md",
+            [(FileNameExtensionIssue, None)],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.n",
+            [(FileNameExtensionIssue, None)],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.n c",
+            [(FileNameExtensionIssue, None)],
+            []
+        )
+    )
 ]
 def _provide_filename_extension_errors() -> Generator:
     for drs_expression in _SOME_FILE_NAME_EXTENSION_ERRORS:
@@ -201,15 +267,30 @@ def test_filename_extension_error(filename_extension_error):
 
 
 _SOME_FILE_NAME_EXPRESSION_EXTRA_TOKEN_ERRORS = [
-    ("cmip6plus",
-        ("od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-20121.nc",
-         [(ExtraToken, "201211-20121", 6, "time_range")], [])),
-    ("cmip6plus",
-        ("od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211- 20121.nc",
-         [(ExtraToken, "201211- 20121", 6, "time_range")], [])),
-    ("cmip6plus",
-        ("od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212_hello.nc",
-         [(ExtraToken, "hello", 7, None)], []))
+    (
+        "cmip6plus",
+        (
+            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-20121.nc",
+            [(ExtraToken, "201211-20121", 6, "time_range")],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211- 20121.nc",
+            [(ExtraToken, "201211- 20121", 6, "time_range")],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212_hello.nc",
+            [(ExtraToken, "hello", 7, None)],
+            []
+        )
+    )
 ]
 def _provide_filename_expression_extra_token_errors() -> Generator:
     for drs_expression in _SOME_FILE_NAME_EXPRESSION_EXTRA_TOKEN_ERRORS:
@@ -225,18 +306,38 @@ def test_filename_expression_extra_token_error(filename_expression_extra_token_e
 
 
 _SOME_DATASET_ID_EXPRESSION_TYPO_WARNINGS = [
-    ("cmip6plus",
-        (" CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-         [], [(Space, None)])),
-    ("cmip6plus",
-        ("  CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-         [], [(Space, None)])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn ",
-         [], [(Space, None)])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn  ",
-        [], [(Space, None)])),
+    (
+        "cmip6plus",
+        (
+            " CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+            [],
+            [(Space, None)]
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "  CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+            [],
+            [(Space, None)]
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn ",
+            [],
+            [(Space, None)]
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn  ",
+            [],
+            [(Space, None)]
+        )
+    ),
 ]
 def _provide_dataset_id_expression_typo_warnings() -> Generator:
     for drs_expression in _SOME_DATASET_ID_EXPRESSION_TYPO_WARNINGS:
@@ -252,67 +353,173 @@ def test_dataset_id_expression_typo_warning(dataset_id_expression_typo_warning):
 
 
 _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
-    ("cmip6plus",
-        ("CMIP6Plus_CMIP_IPSL_MIROC6_amip_r2i2p1f2_ACmon_od550aer_gn",
-         [(Unparsable, None)], [])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.",
-         [(ExtraChar, 59)], [])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn..",
-         [(ExtraChar, 59)], [])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.. ",
-         [(ExtraChar, 59)], [(Space, None)])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL..MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn. ..",
-         [(ExtraChar, 60), (ExtraSeparator, 21)], [])),
-    ("cmip6plus",
-        (".CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-         [(ExtraSeparator, 1)], [])),
-    ("cmip6plus",
-        ("..CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-         [(ExtraSeparator, 2), (ExtraSeparator, 1)], [])),
-    ("cmip6plus",
-        (" ..CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-         [(ExtraSeparator, 3), (ExtraSeparator, 2)], [(Space, None)])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL..MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-         [(ExtraSeparator, 21)], [])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL. MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-         [(InvalidToken, " MIROC6", 4, "source_id")], [])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.  MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-         [(InvalidToken, "  MIROC6", 4, "source_id")], [])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL. .MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-         [(BlankToken, 21)], [])),
-    ("cmip6plus",
-        (".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer.gn. ..",
-         [(ExtraChar, 64), (ExtraSeparator, 37), (BlankToken, 22), (ExtraSeparator, 1)], [])),
-    ("cmip6plus",
-        (".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",
-         [(ExtraSeparator, 64),
-          (BlankToken, 62),
-          (ExtraSeparator, 37),
-          (BlankToken, 22),
-          (ExtraSeparator, 1)], [])),
-    ("cmip6plus",
-        (" .CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",
-         [(ExtraSeparator, 65),
-          (BlankToken, 63),
-          (ExtraSeparator, 38),
-          (BlankToken, 23),
-          (ExtraSeparator, 2)], [(Space, None)])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer-gn",
-         [(InvalidToken, "od550aer-gn", 8, "variable_id"),
-          (MissingToken, "grid_label", 9)], [])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer/gn",
-         [(InvalidToken, "od550aer/gn", 8, "variable_id"),
-          (MissingToken, "grid_label", 9)], [])),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus_CMIP_IPSL_MIROC6_amip_r2i2p1f2_ACmon_od550aer_gn",
+            [(Unparsable, None)],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.",
+            [(ExtraChar, 59)],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn..",
+            [(ExtraChar, 59)],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.. ",
+            [(ExtraChar, 59)],
+            [(Space, None)]
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL..MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn. ..",
+            [
+                (ExtraChar, 60),
+                (ExtraSeparator, 21)
+            ],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            ".CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+            [(ExtraSeparator, 1)],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "..CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+            [
+                (ExtraSeparator, 2),
+                (ExtraSeparator, 1)
+            ],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            " ..CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+            [
+                (ExtraSeparator, 3),
+                (ExtraSeparator, 2)
+            ],
+            [(Space, None)]
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL..MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+            [(ExtraSeparator, 21)],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL. MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+            [(InvalidToken, " MIROC6", 4, "source_id")],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.  MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+            [(InvalidToken, "  MIROC6", 4, "source_id")],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL. .MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+            [(BlankToken, 21)],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            ".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer.gn. ..",
+            [
+                (ExtraChar, 64),
+                (ExtraSeparator, 37),
+                (BlankToken, 22),
+                (ExtraSeparator, 1)
+            ],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            ".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",
+            [
+                (ExtraSeparator, 64),
+                (BlankToken, 62),
+                (ExtraSeparator, 37),
+                (BlankToken, 22),
+                (ExtraSeparator, 1)
+            ],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            " .CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",
+            [
+                (ExtraSeparator, 65),
+                (BlankToken, 63),
+                (ExtraSeparator, 38),
+                (BlankToken, 23),
+                (ExtraSeparator, 2)],
+            [(Space, None)]
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer-gn",
+            [
+                (InvalidToken, "od550aer-gn", 8, "variable_id"),
+                (MissingToken, "grid_label", 9)
+            ],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer/gn",
+            [
+                (InvalidToken, "od550aer/gn", 8, "variable_id"),
+                (MissingToken, "grid_label", 9)
+            ],
+            []
+        )
+    ),
 ]
 def _provide_dataset_id_expression_typo_errors() -> Generator:
     for drs_expression in _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS:
@@ -329,18 +536,44 @@ def test_dataset_id_expression_typo_error(dataset_id_expression_typo_error):
 
 
 _SOME_DATASET_ID_EXPRESSION_TOKEN_ERRORS = [
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer",
-         [(MissingToken, "grid_label", 9)], [])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon",
-         [(MissingToken, "variable_id", 8), (MissingToken, "grid_label", 9)], [])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.hello",
-         [(ExtraToken, "hello", 9)], [])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.hello.world",
-         [(ExtraToken, "hello", 9), (ExtraToken, "world", 10)], []))
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer",
+            [(MissingToken, "grid_label", 9)],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon",
+            [
+                (MissingToken, "variable_id", 8),
+                (MissingToken, "grid_label", 9)
+            ],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.hello",
+            [(ExtraToken, "hello", 9)],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.hello.world",
+            [
+                (ExtraToken, "hello", 9),
+                (ExtraToken, "world", 10)
+            ],
+            []
+        )
+    )
 ]
 def _provide_dataset_id_expression_token_errors() -> Generator:
     for drs_expression in _SOME_DATASET_ID_EXPRESSION_TOKEN_ERRORS:
@@ -356,15 +589,33 @@ def test_dataset_id_expression_token_error(dataset_id_expression_token_error):
 
 
 _SOME_DATASET_ID_EXPRESSION_ERRORS = [
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.world",
-         [(InvalidToken, "world", 9, "grid_label")], [])),
-    ("cmip6plus",
-        ("CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.hello.world",
-         [(InvalidToken, "hello", 8, "variable_id"), (InvalidToken, "world", 9, "grid_label")], [])),
-    ("cmip6plus",
-        ("Hello.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-         [(InvalidToken, "Hello", 1, "mip_era")], [])),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.world",
+            [(InvalidToken, "world", 9, "grid_label")],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.hello.world",
+            [
+                (InvalidToken, "hello", 8, "variable_id"),
+                (InvalidToken, "world", 9, "grid_label")
+            ],
+            []
+        )
+    ),
+    (
+        "cmip6plus",
+        (
+            "Hello.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+            [(InvalidToken, "Hello", 1, "mip_era")],
+            []
+        )
+    ),
 ]
 def _provide_dataset_id_expression_errors() -> Generator:
     for drs_expression in _SOME_DATASET_ID_EXPRESSION_ERRORS:
