@@ -167,14 +167,6 @@ class DrsGenerator(DrsApplication):
                                                             collection_ids_to_be_removed)
                     DrsGenerator._remove_word_from_other_word_sets(collection_words_mapping,
                                                       collection_ids_to_be_removed)
-                    # DEBUG ->
-                    #word = _get_first_item(collection_words_mapping[collection_ids_to_be_removed[0]])
-                    #collection_ids = ', '.join([collection_id for collection_id in collection_ids_to_be_removed])
-                    #msg = f"ERROR: collection {collection_ids} are competing for the word '{word}'"
-                    #print(msg)
-                    # <- DEBUG
-                    #for collection_id_to_be_removed in collection_ids_to_be_removed:
-                        #del collection_words_mapping[collection_id_to_be_removed]
                 # Every time conflicting_collection_ids_list is modified, we must restart the loop,
                 # as conflicting collections may be resolved.
                 continue
@@ -267,11 +259,13 @@ class DrsGenerator(DrsApplication):
         # 2. Looking for collections with more than one word.
         result: dict[str, str] = dict()
         for collection_id, word_set in collection_words_mapping.items():
-            if len(word_set) == 1:
+            len_word_set = len(word_set)
+            if len_word_set == 1:
                 result[collection_id] = _get_first_item(word_set)
-            else:
+            elif len_word_set > 1:
                 other_issue = TooManyWordsCollection(collection_id, list(word_set))
                 errors.append(other_issue)
+            #else: Don't add emptied collection to the result.
         return result, errors
 
     @staticmethod
@@ -294,5 +288,5 @@ class DrsGenerator(DrsApplication):
 
 
 if __name__ == "__main__":
-    bow = {"c0": {"w0", "w1"}, "c1": {"w1"}}
-    print(DrsGenerator._resolve_conflicts(bow))
+    mapping = {'c0': {'w0'}, 'c1': {'w0'}, 'c2': {'w1'}, 'c3': {'w2'}}
+    print(DrsGenerator._check_collection_words_mapping(mapping))
