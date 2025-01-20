@@ -163,7 +163,7 @@ class ConflictingCollections(GeneratorIssue):
     def __init__(self, collection_ids: list[str], words: list[str]) -> None:
         super().__init__()
         self.collection_ids: list[str] = collection_ids
-        self.word: list[str] = words
+        self.words: list[str] = words
         
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_conflicting_collections_issue(self)
