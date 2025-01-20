@@ -145,10 +145,10 @@ class MissingToken(ValidationIssue, GeneratorIssue):
     
 
 class TooManyWordsCollection(GeneratorIssue):
-    def __init__(self, collection_id: str, words: list[str]) -> None:
+    def __init__(self, collection_id: str, words: set[str]) -> None:
         super().__init__()
         self.collection_id: str = collection_id
-        self.words: list[str] = words
+        self.words: set[str] = words
 
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_too_many_words_collection_issue(self)
@@ -160,10 +160,10 @@ class TooManyWordsCollection(GeneratorIssue):
 
 
 class ConflictingCollections(GeneratorIssue):
-    def __init__(self, collection_ids: list[str], words: list[str]) -> None:
+    def __init__(self, collection_ids: set[str], words: set[str]) -> None:
         super().__init__()
-        self.collection_ids: list[str] = collection_ids
-        self.words: list[str] = words
+        self.collection_ids: set[str] = collection_ids
+        self.words: set[str] = words
         
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_conflicting_collections_issue(self)

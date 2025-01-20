@@ -252,7 +252,7 @@ class DrsGenerator(DrsApplication):
                         faulty_collections_list.append({l_collection_id, r_collection_id})
         for faulty_collections in faulty_collections_list:
             words = collection_words_mapping[_get_first_item(faulty_collections)]
-            issue = ConflictingCollections(list(faulty_collections), list(words))
+            issue = ConflictingCollections(faulty_collections, words)
             errors.append(issue)
             for collection_id in faulty_collections:
                 del collection_words_mapping[collection_id]
@@ -264,7 +264,7 @@ class DrsGenerator(DrsApplication):
             if len_word_set == 1:
                 result[collection_id] = _get_first_item(word_set)
             elif len_word_set > 1:
-                other_issue = TooManyWordsCollection(collection_id, list(word_set))
+                other_issue = TooManyWordsCollection(collection_id, word_set)
                 errors.append(other_issue)
             #else: Don't add emptied collection to the result.
         return result, errors
@@ -289,5 +289,5 @@ class DrsGenerator(DrsApplication):
 
 
 if __name__ == "__main__":
-    mapping = {'c0': {'w0'}, 'c1': set(), 'c2': {'w1'}}
+    mapping = {'c0': {'w0'}, 'c1': {'w0'}, 'c2': {'w0'}, 'c3': {'w2', 'w1'}, 'c4': {'w2', 'w1'}, 'c5': {'w3'}}
     print(DrsGenerator._check_collection_words_mapping(mapping))
