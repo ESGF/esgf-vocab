@@ -24,6 +24,7 @@ def _get_first_item(items: set[Any]) -> Any:
     return result
 
 
+# TODO: support pedantic.
 class DrsGenerator(DrsApplication):
     
     def generate_directory_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
@@ -289,5 +290,19 @@ class DrsGenerator(DrsApplication):
 
 
 if __name__ == "__main__":
-    mapping = {'c0': {'w0'}, 'c1': {'w0'}, 'c2': {'w0'}, 'c3': {'w2', 'w1'}, 'c4': {'w2', 'w1'}, 'c5': {'w3'}}
-    print(DrsGenerator._check_collection_words_mapping(mapping))
+    project_id = 'cmip6plus'
+    generator = DrsGenerator(project_id)
+    mapping = \
+    {
+        'member_id': 'r2i2p1f2',
+        'activity_id': 'CMIP',
+        'source_id': 'MIROC6',
+        'mip_era': 'CMIP6Plus',
+        'experiment_id': 'amip',
+        'variable_id': 'od550aer',
+        'table_id': 'ACmon',
+        'grid_label': 'gn',
+        'institution_id': 'IPSL',
+    }
+    report = generator.generate_file_name_from_mapping(mapping)
+    print(report.warnings)

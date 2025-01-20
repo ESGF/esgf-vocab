@@ -225,7 +225,6 @@ class DrsGeneratorReport(DrsReport):
     MISSING_TAG: str = '[MISSING]'
     INVALID_TAG: str = '[INVALID]'
     
-    # TODO: sort errors and warnings.
     def __init__(self,
                  given_mapping_or_bag_of_words: Mapping|Iterable,
                  mapping_used: Mapping,
@@ -237,7 +236,7 @@ class DrsGeneratorReport(DrsReport):
         self.given_mapping_or_bag_of_words: Mapping|Iterable = given_mapping_or_bag_of_words
         self.mapping_used: Mapping = mapping_used
         self.computed_drs_expression = computed_drs_expression
-        self.message = f"'{self.given_mapping_or_bag_of_words}' has {self.nb_errors} error(s) and " + \
+        self.message = f"'{self.computed_drs_expression}' has {self.nb_errors} error(s) and " + \
                        f"{self.nb_warnings} warning(s)"
     def __repr__(self) -> str:
         return self.message
