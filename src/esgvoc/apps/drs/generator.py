@@ -24,7 +24,6 @@ def _get_first_item(items: set[Any]) -> Any:
     return result
 
 
-# TODO: support pedantic.
 class DrsGenerator(DrsApplication):
     
     def generate_directory_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
@@ -54,6 +53,9 @@ class DrsGenerator(DrsApplication):
     def generate_from_mapping(self, mapping: Mapping[str, str],
                               specs: DrsSpecification) -> DrsGeneratorReport:
         drs_expression, errors, warnings = self._generate_from_mapping(mapping, specs, True)
+        if self.pedantic:
+            errors.extend(warnings)
+            warnings.clear()
         return DrsGeneratorReport(mapping, mapping, drs_expression, errors, warnings)
     
     def generate_from_bag_of_words(self, words: Iterable[str], specs: DrsSpecification) \
@@ -70,6 +72,9 @@ class DrsGenerator(DrsApplication):
         drs_expression, errs, warns = self._generate_from_mapping(mapping, specs, False)
         errors.extend(errs)
         warnings.extend(warns)
+        if self.pedantic:
+            errors.extend(warnings)
+            warnings.clear()
         return DrsGeneratorReport(mapping, mapping, drs_expression, errors, warnings)
 
     def _generate_from_mapping(self, mapping: Mapping[str, str],
