@@ -176,8 +176,8 @@ _SOME_DIRECTORY_EXPRESSIONS_TYPO_ERRORS = [
         (
             "  CMIP6Plus/CMIP/NCC/MIROC6/amip/  /r2i2p1f2/ACmon/od550aer/gn/v20190923/ // ",
             [
-                (ExtraChar, 73),
-                (BlankToken, 34)
+                (BlankToken, 34),
+                (ExtraChar, 73)
             ],
             [(Space, None)]
         )
@@ -390,8 +390,8 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
         (
             "CMIP6Plus.CMIP.IPSL..MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn. ..",
             [
-                (ExtraChar, 60),
-                (ExtraSeparator, 21)
+                (ExtraSeparator, 21),
+                (ExtraChar, 60)
             ],
             []
         )
@@ -409,8 +409,8 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
         (
             "..CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
             [
-                (ExtraSeparator, 2),
-                (ExtraSeparator, 1)
+                (ExtraSeparator, 1),
+                (ExtraSeparator, 2)
             ],
             []
         )
@@ -420,8 +420,8 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
         (
             " ..CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
             [
-                (ExtraSeparator, 3),
-                (ExtraSeparator, 2)
+                (ExtraSeparator, 2),
+                (ExtraSeparator, 3)
             ],
             [(Space, None)]
         )
@@ -463,10 +463,10 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
         (
             ".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer.gn. ..",
             [
-                (ExtraChar, 64),
-                (ExtraSeparator, 37),
+                (ExtraSeparator, 1),
                 (BlankToken, 22),
-                (ExtraSeparator, 1)
+                (ExtraSeparator, 37),
+                (ExtraChar, 64)
             ],
             []
         )
@@ -476,11 +476,11 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
         (
             ".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",
             [
-                (ExtraSeparator, 64),
-                (BlankToken, 62),
-                (ExtraSeparator, 37),
+                (ExtraSeparator, 1),
                 (BlankToken, 22),
-                (ExtraSeparator, 1)
+                (ExtraSeparator, 37),
+                (BlankToken, 62),
+                (ExtraSeparator, 64)
             ],
             []
         )
@@ -490,11 +490,12 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
         (
             " .CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",
             [
-                (ExtraSeparator, 65),
-                (BlankToken, 63),
-                (ExtraSeparator, 38),
+                (ExtraSeparator, 2),
                 (BlankToken, 23),
-                (ExtraSeparator, 2)],
+                (ExtraSeparator, 38),
+                (BlankToken, 63),
+                (ExtraSeparator, 65)
+            ],
             [(Space, None)]
         )
     ),

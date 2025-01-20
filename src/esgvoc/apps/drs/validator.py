@@ -206,8 +206,14 @@ class DrsValidator(DrsApplication):
                 errors.append(issue)
                 del tokens[index]
             cursor_position -= len_token + 1
-        return tokens, errors, warnings
+        return tokens, \
+               DrsValidator._sort_parser_issues(errors), \
+               DrsValidator._sort_parser_issues(warnings)
     
+    @staticmethod
+    def _sort_parser_issues(issues: list[ParserIssue]) -> list[ParserIssue]:
+        return sorted(issues, key=lambda issue: issue.column if issue.column else 0)
+
     def validate_token(self, token: str, part: DrsPart) -> bool:
         match part.kind:
             case DrsPartType.collection:
