@@ -18,6 +18,11 @@ from pydantic import BaseModel
 from sqlmodel import Session, and_, select
 
 
+# [OPTIMIZATION]
+_VALID_TERM_IN_COLLECTION_CACHE: dict[str, list[MatchingTerm]] = dict()
+_VALID_VALUE_AGAINST_GIVEN_TERM_CACHE: dict[str, list[ValidationError]] = dict()
+
+
 def get_project_specs(project_id: str) -> ProjectSpecs:
     project_specs = find_project(project_id)
     if not project_specs:
@@ -235,26 +240,33 @@ def _valid_value_against_all_terms_of_collection(value: str,
 
 
 def _valid_value_against_given_term(value: str,
+                                    project_id: str,
                                     collection_id: str,
                                     term_id: str,
                                     universe_session: Session,
                                     project_session: Session)\
                                         -> list[ValidationError]:
-    try:
-        terms = _find_terms_in_collection(collection_id,
-                                          term_id,
-                                          project_session,
-                                          None)
-        if terms:
-            term = terms[0]
-            result = _valid_value(value, term, universe_session, project_session)
-        else:
-            raise ValueError(f'unable to find term {term_id} ' +
-                             f'in collection {collection_id}')
-    except Exception as e:
-        msg = f'unable to valid term {term_id} ' +\
-              f'in collection {collection_id}'
-        raise RuntimeError(msg) from e
+    # [OPTIMIZATION]
+    key = value + project_id + collection_id + term_id
+    if key in _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE:
+        result = _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE[key]
+    else:
+        try:
+            terms = _find_terms_in_collection(collection_id,
+                                              term_id,
+                                              project_session,
+                                              None)
+            if terms:
+                term = terms[0]
+                result = _valid_value(value, term, universe_session, project_session)
+            else:
+                raise ValueError(f'unable to find term {term_id} ' +
+                                 f'in collection {collection_id}')
+        except Exception as e:
+            msg = f'unable to valid term {term_id} ' +\
+                  f'in collection {collection_id}'
+            raise RuntimeError(msg) from e
+        _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE[key] = result
     return result
 
 
@@ -295,7 +307,7 @@ def valid_term(value: str,
     value = _check_value(value)
     with get_universe_session() as universe_session, \
          _get_project_session_with_exception(project_id) as project_session:
-        errors = _valid_value_against_given_term(value, collection_id, term_id,
+        errors = _valid_value_against_given_term(value, project_id, collection_id, term_id,
                                                  universe_session, project_session)
         return ValidationReport(value, errors)
 
@@ -306,28 +318,34 @@ def _valid_term_in_collection(value: str,
                               universe_session: Session,
                               project_session: Session) \
                                 -> list[MatchingTerm]:
-    value = _check_value(value)
-    result = list()
-    collections = _find_collections_in_project(collection_id,
-                                               project_session,
-                                               None)
-    if collections:
-        collection = collections[0]
-        match collection.term_kind:
-            case TermKind.PLAIN:
-                term_id_found = _search_plain_term_and_valid_value(value, collection_id,
-                                                                   project_session)
-                if term_id_found:
-                    result.append(MatchingTerm(project_id, collection_id, term_id_found))
-            case _:
-                term_ids_found = _valid_value_against_all_terms_of_collection(value, collection,
-                                                                              universe_session,
-                                                                              project_session)
-                for term_id_found in term_ids_found:
-                    result.append(MatchingTerm(project_id, collection_id, term_id_found))
+    # [OPTIMIZATION]
+    key = value + project_id + collection_id
+    if key in _VALID_TERM_IN_COLLECTION_CACHE:
+        result = _VALID_TERM_IN_COLLECTION_CACHE[key]
     else:
-        msg = f'unable to find collection {collection_id}'
-        raise ValueError(msg)
+        value = _check_value(value)
+        result = list()
+        collections = _find_collections_in_project(collection_id,
+                                                   project_session,
+                                                   None)
+        if collections:
+            collection = collections[0]
+            match collection.term_kind:
+                case TermKind.PLAIN:
+                    term_id_found = _search_plain_term_and_valid_value(value, collection_id,
+                                                                       project_session)
+                    if term_id_found:
+                        result.append(MatchingTerm(project_id, collection_id, term_id_found))
+                case _:
+                    term_ids_found = _valid_value_against_all_terms_of_collection(value, collection,
+                                                                                  universe_session,
+                                                                                  project_session)
+                    for term_id_found in term_ids_found:
+                        result.append(MatchingTerm(project_id, collection_id, term_id_found))
+        else:
+            msg = f'unable to find collection {collection_id}'
+            raise ValueError(msg)
+        _VALID_TERM_IN_COLLECTION_CACHE[key] = result
     return result
 
 

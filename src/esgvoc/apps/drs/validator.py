@@ -24,10 +24,6 @@ from esgvoc.apps.drs.report import (DrsValidationReport,
 
 
 class DrsApplication:
-    # TODO: cache has to be moved to project API.
-    # dict[project_id: dict[collection_id: set[token]]]
-    _validated_token_cache: dict[str, dict[str, set[str]]] = dict()
-    
     def __init__(self, project_id: str, pedantic: bool = False) -> None:
         """
         Constructor method.
@@ -51,8 +47,6 @@ class DrsApplication:
                     self.dataset_id_specs = specs
                 case _:
                     raise ValueError(f'unsupported DRS specs type {specs.type}')
-        if self.project_id not in DrsValidator._validated_token_cache:
-            DrsValidator._validated_token_cache[self.project_id] = dict()
 
     def get_full_file_name_extension(self):
         specs = self.file_name_specs
@@ -218,23 +212,17 @@ class DrsValidator(DrsApplication):
         match part.kind:
             case DrsPartType.collection:
                 casted_part: DrsCollection = cast(DrsCollection, part)
-                if casted_part.collection_id not in DrsValidator._validated_token_cache[self.project_id]:
-                    DrsValidator._validated_token_cache[self.project_id][casted_part.collection_id] = set()
-                if token in DrsValidator._validated_token_cache[self.project_id][casted_part.collection_id]:
+                try:
+                    matching_terms = projects.valid_term_in_collection(token,
+                                                                       self.project_id,
+                                                                       casted_part.collection_id)
+                except Exception as e:
+                    msg = f'problem while validating token: {e}.Abort.'
+                    raise ValueError(msg) from e
+                if len(matching_terms) > 0:
                     return True
                 else:
-                    try:
-                        matching_terms = projects.valid_term_in_collection(token,
-                                                                           self.project_id,
-                                                                           casted_part.collection_id)
-                    except Exception as e:
-                        msg = f'problem while validating token: {e}.Abort.'
-                        raise ValueError(msg) from e
-                    if len(matching_terms) > 0:
-                        DrsValidator._validated_token_cache[self.project_id][casted_part.collection_id].add(token)
-                        return True
-                    else:
-                        return False
+                    return False
             case DrsPartType.constant:
                 part_casted: DrsConstant = cast(DrsConstant, part)
                 return part_casted.value != token
@@ -313,7 +301,7 @@ if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
     drs_expressions = [
-".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn"
+".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",
 ]
     import time
     for drs_expression in drs_expressions:
@@ -333,4 +321,3 @@ if __name__ == "__main__":
                 print(warning)
         else:
             print('warning(s): 0')
-    
