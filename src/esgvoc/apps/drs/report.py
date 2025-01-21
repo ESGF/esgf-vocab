@@ -268,7 +268,7 @@ class DrsGeneratorReport(DrsReport):
         self.given_mapping_or_bag_of_words: Mapping|Iterable = given_mapping_or_bag_of_words
         """The mapping or the bag of tokens given."""
         self.mapping_used: Mapping = mapping_used
-        """The mapping infered from the given bag of tokens (same mapping otherwise)."""
+        """The mapping inferred from the given bag of tokens (same mapping otherwise)."""
         self.computed_drs_expression = computed_drs_expression # TODO: to be renamed into generated_drs_expression.
         """The generated DRS expression with possible tags to replace missing or invalid tokens"""
         self.message = f"'{self.computed_drs_expression}' has {self.nb_errors} error(s) and " + \
