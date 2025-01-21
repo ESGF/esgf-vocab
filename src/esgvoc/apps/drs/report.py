@@ -98,6 +98,7 @@ class FileNameExtensionIssue(ValidationIssue):
         return f"filename extension missing or not compliant with '{self.expected_extension}'"
     
 
+# TODO: to be renamed into TokenIssue.
 class Token(ValidationIssue):
     def __init__(self, token: str, token_position: int) -> None:
         super().__init__()
@@ -193,14 +194,29 @@ class AssignedWord(GeneratorIssue):
 
 
 class DrsReport:
+    """
+    Generic DRS application report class.
+    """
+
     def __init__(self,
+                 project_id: str,
+                 type: DrsType,
                  errors: list[DrsIssue],
                  warnings: list[DrsIssue]):
+        self.project_id: str = project_id
+        """The project id associated to the result of the DRS application"""
+        self.type: DrsType = type
+        """The type of the DRS"""
         self.errors: list[DrsIssue] = errors
+        """A list of DRS issues that are considered as errors."""
         self.warnings: list[DrsIssue] = warnings
+        """A list of DRS issues that are considered as warnings."""
         self.nb_errors = len(self.errors) if self.errors else 0
+        """The number of errors."""
         self.nb_warnings = len(self.warnings) if self.warnings else 0
+        """The number of warnings."""
         self.validated: bool = False if errors else True
+        """The correctness of the result of the DRS application."""
     def __len__(self) -> int:
         return self.nb_errors
     def __bool__(self) -> bool:
@@ -208,12 +224,13 @@ class DrsReport:
 
 
 class DrsValidationReport(DrsReport):
-    # TODO: sort errors and warnings.
     def __init__(self,
+                 project_id: str,
+                 type: DrsType,
                  given_expression: str,
                  errors: list[DrsIssue],
                  warnings: list[DrsIssue]):
-        super().__init__(errors, warnings)
+        super().__init__(project_id, type, errors, warnings)
         self.expression: str = given_expression
         self.message = f"'{self.expression}' has {self.nb_errors} error(s) and " + \
                        f"{self.nb_warnings} warning(s)"
@@ -226,13 +243,16 @@ class DrsGeneratorReport(DrsReport):
     INVALID_TAG: str = '[INVALID]'
     
     def __init__(self,
+                 project_id: str,
+                 type: DrsType,
                  given_mapping_or_bag_of_words: Mapping|Iterable,
                  mapping_used: Mapping,
                  computed_drs_expression: str,
                  errors: list[GeneratorIssue],
                  warnings: list[GeneratorIssue]):
         # Mypy can't figure out that GeneratorIssue is an DrsIssue...
-        super().__init__(cast(list[DrsIssue], errors), cast(list[DrsIssue], warnings))
+        super().__init__(project_id, type, cast(list[DrsIssue], errors),
+                         cast(list[DrsIssue], warnings))
         self.given_mapping_or_bag_of_words: Mapping|Iterable = given_mapping_or_bag_of_words
         self.mapping_used: Mapping = mapping_used
         self.computed_drs_expression = computed_drs_expression

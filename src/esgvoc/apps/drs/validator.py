@@ -24,6 +24,15 @@ from esgvoc.apps.drs.report import (DrsValidationReport,
 
 
 class DrsApplication:
+    """
+    Generic DRS application class.
+
+    :param project_id: A project id.
+    :type project_id: str
+    :param pedantic: Turn warnings into errors. Default False.
+    :type pedantic: bool
+    """
+
     def __init__(self, project_id: str, pedantic: bool = False) -> None:
         """
         Constructor method.
@@ -110,7 +119,8 @@ class DrsValidator(DrsApplication):
             result = self._validate(drs_expression, self.file_name_specs)
         else:
             issue = FileNameExtensionIssue(full_extension)
-            result = self._create_report(drs_expression, [issue], [])
+            result = self._create_report(self.file_name_specs.type, drs_expression,
+                                         [issue], [])
         return result
 
     def validate(self, drs_expression: str, type: DrsType|str) -> DrsValidationReport:
@@ -230,17 +240,19 @@ class DrsValidator(DrsApplication):
                 raise ValueError(f'unsupported DRS specs part type {part.kind}')
 
     def _create_report(self,
+                       type: DrsType,
                        drs_expression: str,
                        errors: list[DrsIssue],
                        warnings: list[DrsIssue]) -> DrsValidationReport:
-        return DrsValidationReport(drs_expression, errors, warnings)
+        return DrsValidationReport(self.project_id, type, drs_expression, errors,
+                                   warnings)
 
     def _validate(self,
                   drs_expression: str,
                   specs: DrsSpecification) -> DrsValidationReport:
         tokens, errors, warnings = self._parse(drs_expression, specs.separator, specs.type)
         if not tokens:
-            return self._create_report(drs_expression, errors, warnings) # Early exit.
+            return self._create_report(specs.type, drs_expression, errors, warnings) # Early exit.
         token_index = 0
         token_max_index = len(tokens)
         part_index = 0
@@ -294,7 +306,7 @@ class DrsValidator(DrsApplication):
                     issue = ExtraToken(token, index, None)
                 errors.append(issue)
                 part_index += 1
-        return self._create_report(drs_expression, errors, warnings)
+        return self._create_report(specs.type, drs_expression, errors, warnings)
 
 
 if __name__ == "__main__":

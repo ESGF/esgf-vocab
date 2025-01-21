@@ -135,7 +135,8 @@ class DrsGenerator(DrsApplication):
         if self.pedantic:
             errors.extend(warnings)
             warnings.clear()
-        return DrsGeneratorReport(mapping, mapping, drs_expression, errors, warnings)
+        return DrsGeneratorReport(self.project_id, specs.type, mapping, mapping,
+                                  drs_expression, errors, warnings)
     
     def generate_from_bag_of_words(self, tokens: Iterable[str], specs: DrsSpecification) \
                                                         -> DrsGeneratorReport:
@@ -164,7 +165,8 @@ class DrsGenerator(DrsApplication):
         if self.pedantic:
             errors.extend(warnings)
             warnings.clear()
-        return DrsGeneratorReport(mapping, mapping, drs_expression, errors, warnings)
+        return DrsGeneratorReport(self.project_id, specs.type, mapping, mapping,
+                                  drs_expression, errors, warnings)
 
     def _generate_from_mapping(self, mapping: Mapping[str, str],
                                specs: DrsSpecification,
