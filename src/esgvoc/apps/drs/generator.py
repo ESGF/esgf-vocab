@@ -28,17 +28,6 @@ class DrsGenerator(DrsApplication):
     """
     Generate a directory, dataset id and file name expression specified by the given project from
     a mapping of collection ids and tokens or an unordered bag of tokens.
-
-    :param project_id: The given project id
-    :type project_id: str
-    :param pedantic: Same as the option of GCC: transform warnings into errors.
-    :type pedantic: bool
-    :param directory_specs: The directory DRS specifications of the given project.
-    :type directory_specs: dict
-    :param file_name_specs: The file name DRS specifications of the given project.
-    :type file_name_specs: dict
-    :param dataset_id_specs: The dataset id DRS specifications of the given project.
-    :type dataset_id_specs: dict
     """
     
     def generate_directory_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:

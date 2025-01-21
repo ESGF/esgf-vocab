@@ -26,38 +26,36 @@ from esgvoc.apps.drs.report import (DrsValidationReport,
 class DrsApplication:
     """
     Generic DRS application class.
-
-    :param project_id: A project id.
-    :type project_id: str
-    :param pedantic: Turn warnings into errors. Default False.
-    :type pedantic: bool
     """
 
     def __init__(self, project_id: str, pedantic: bool = False) -> None:
-        """
-        Constructor method.
-        
-        :param project_id: A project id.
-        :type project_id: str
-        :param pedantic: Turn warnings into errors. Default False.
-        :type pedantic: bool
-        """
-        
-        self.project_id = project_id
-        self.pedantic = pedantic
+        self.project_id: str = project_id
+        """The project id."""
+        self.pedantic: bool = pedantic
+        """Same as the option of GCC: turn warnings into errors. Default False."""
         project_specs: ProjectSpecs = projects.get_project_specs(project_id)
         for specs in project_specs.drs_specs:
             match specs.type:
                 case DrsType.directory:
-                    self.directory_specs = specs
+                    self.directory_specs: dict = specs
+                    """The DRS directory specs of the project."""
                 case DrsType.file_name:
-                    self.file_name_specs = specs
+                    self.file_name_specs: dict = specs
+                    """The DRS file name specs of the project."""
                 case DrsType.dataset_id:
-                    self.dataset_id_specs = specs
+                    self.dataset_id_specs: dict = specs
+                    """The DRS dataset id specs of the project."""
                 case _:
                     raise ValueError(f'unsupported DRS specs type {specs.type}')
 
-    def get_full_file_name_extension(self):
+    def get_full_file_name_extension(self) -> str:
+        """
+        Returns the full file name extension (the separator plus the extension) of the DRS file
+        name specs of the project.
+
+        :returns: The full file name extension.
+        :rtype: str
+        """
         specs = self.file_name_specs
         full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
                          specs.properties[constants.FILE_NAME_EXTENSION_KEY]
@@ -66,18 +64,7 @@ class DrsApplication:
 
 class DrsValidator(DrsApplication):
     """
-    Valid a DRS directory, dataset id and file name expression against a given project.
-
-    :param project_id: The given project id
-    :type project_id: str
-    :param pedantic: Same as the option of GCC: transform warnings into errors.
-    :type pedantic: bool
-    :param directory_specs: The directory DRS specifications of the given project.
-    :type directory_specs: dict
-    :param file_name_specs: The file name DRS specifications of the given project.
-    :type file_name_specs: dict
-    :param dataset_id_specs: The dataset id DRS specifications of the given project.
-    :type dataset_id_specs: dict
+    Valid a DRS directory, dataset id and file name expression against a project.
     """
    
     def validate_directory(self, drs_expression: str) -> DrsValidationReport:

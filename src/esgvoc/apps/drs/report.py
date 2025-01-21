@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Mapping, Iterable, Protocol, cast
 from esgvoc.api.models import DrsType
 
+
 class ParserIssueVisitor(Protocol):
     def visit_space_issue(self, issue: "Space") -> Any: ...
     def visit_unparsable_issue(self, issue: "Unparsable") -> Any: ...
@@ -224,6 +225,10 @@ class DrsReport:
 
 
 class DrsValidationReport(DrsReport):
+    """
+    The DRS validation report class.
+    """
+    
     def __init__(self,
                  project_id: str,
                  type: DrsType,
@@ -232,6 +237,7 @@ class DrsValidationReport(DrsReport):
                  warnings: list[DrsIssue]):
         super().__init__(project_id, type, errors, warnings)
         self.expression: str = given_expression
+        """The DRS expression been checked"""
         self.message = f"'{self.expression}' has {self.nb_errors} error(s) and " + \
                        f"{self.nb_warnings} warning(s)"
     def __repr__(self) -> str:
@@ -239,8 +245,14 @@ class DrsValidationReport(DrsReport):
 
 
 class DrsGeneratorReport(DrsReport):
+    """
+    The DRS generator report.
+    """
+    
     MISSING_TAG: str = '[MISSING]'
+    """Tag used in the DRS generated expression to replace a missing term."""
     INVALID_TAG: str = '[INVALID]'
+    """Tag used in the DRS generated expression to replace a invalid term."""
     
     def __init__(self,
                  project_id: str,
@@ -254,8 +266,11 @@ class DrsGeneratorReport(DrsReport):
         super().__init__(project_id, type, cast(list[DrsIssue], errors),
                          cast(list[DrsIssue], warnings))
         self.given_mapping_or_bag_of_words: Mapping|Iterable = given_mapping_or_bag_of_words
+        """The mapping or the bag of tokens given."""
         self.mapping_used: Mapping = mapping_used
-        self.computed_drs_expression = computed_drs_expression
+        """The mapping infered from the given bag of tokens (same mapping otherwise)."""
+        self.computed_drs_expression = computed_drs_expression # TODO: to be renamed into generated_drs_expression.
+        """The generated DRS expression with possible tags to replace missing or invalid tokens"""
         self.message = f"'{self.computed_drs_expression}' has {self.nb_errors} error(s) and " + \
                        f"{self.nb_warnings} warning(s)"
     def __repr__(self) -> str:
