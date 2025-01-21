@@ -54,6 +54,14 @@ class DrsGenerator(DrsApplication):
         return self.generate_from_mapping(mapping, self.directory_specs)
     
     def generate_directory_from_bag_of_words(self, words: Iterable[str]) -> DrsGeneratorReport:
+        """
+        Generate a directory DRS expression from an unordered bag of terms.
+
+        :param terms: An unordered bag of terms.
+        :type terms: Iterable[str]
+        :returns: A generation report.
+        :rtype: DrsGeneratorReport
+        """
         return self.generate_from_bag_of_words(words, self.directory_specs)
 
     def generate_dataset_id_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
@@ -68,15 +76,18 @@ class DrsGenerator(DrsApplication):
         return self.generate_from_mapping(mapping, self.dataset_id_specs)
     
     def generate_dataset_id_from_bag_of_words(self, words: Iterable[str]) -> DrsGeneratorReport:
+        """
+        Generate a dataset id DRS expression from an unordered bag of terms.
+
+        :param terms: An unordered bag of terms.
+        :type terms: Iterable[str]
+        :returns: A generation report.
+        :rtype: DrsGeneratorReport
+        """
         return self.generate_from_bag_of_words(words, self.dataset_id_specs)
     
-    # Without file name extension.
+
     def generate_file_name_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
-        report = self.generate_from_mapping(mapping, self.file_name_specs)
-        report.computed_drs_expression = report.computed_drs_expression + self.get_full_file_name_extension()
-        return report 
-    
-    def generate_file_name_from_bag_of_words(self, words: Iterable[str]) -> DrsGeneratorReport:
         """
         Generate a file name DRS expression from a mapping of collection ids and terms.
         The file name extension is append automatically, according to the DRS specification,
@@ -87,7 +98,23 @@ class DrsGenerator(DrsApplication):
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
-        report = self.generate_from_bag_of_words(words, self.file_name_specs)
+        
+        report = self.generate_from_mapping(mapping, self.file_name_specs)
+        report.computed_drs_expression = report.computed_drs_expression + self.get_full_file_name_extension()
+        return report 
+    
+    def generate_file_name_from_bag_of_words(self, terms: Iterable[str]) -> DrsGeneratorReport:
+        """
+        Generate a file name DRS expression from an unordered bag of terms.
+        The file name extension is append automatically, according to the DRS specification,
+        so none of the terms given must include the extension.
+
+        :param terms: An unordered bag of terms.
+        :type terms: Iterable[str]
+        :returns: A generation report.
+        :rtype: DrsGeneratorReport
+        """
+        report = self.generate_from_bag_of_words(terms, self.file_name_specs)
         report.computed_drs_expression = report.computed_drs_expression + self.get_full_file_name_extension()
         return report 
 
@@ -110,20 +137,20 @@ class DrsGenerator(DrsApplication):
             warnings.clear()
         return DrsGeneratorReport(mapping, mapping, drs_expression, errors, warnings)
     
-    def generate_from_bag_of_words(self, words: Iterable[str], specs: DrsSpecification) \
+    def generate_from_bag_of_words(self, terms: Iterable[str], specs: DrsSpecification) \
                                                         -> DrsGeneratorReport:
         """
         Generate a DRS expression from an unordered bag of terms.
 
-        :param words: An unordered bag of terms.
-        :type mapping: Iterable[str]
+        :param terms: An unordered bag of terms.
+        :type terms: Iterable[str]
         :param specs: a DRS project specification (dataset id, file name or directory).
         :type specs: DrsSpecification
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
         collection_words_mapping: dict[str, set[str]] = dict()
-        for word in words:
+        for word in terms:
             matching_terms = projects.valid_term_in_project(word, self.project_id)
             for matching_term in matching_terms:
                 if matching_term.collection_id not in collection_words_mapping:
