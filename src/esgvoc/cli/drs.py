@@ -1,10 +1,7 @@
-from inspect import currentframe
-import itertools
 from esgvoc.apps.drs.generator import DrsGenerator
 from esgvoc.apps.drs.report import DrsValidationReport, DrsGeneratorReport
-
 from esgvoc.apps.drs.validator import DrsValidator
-from sqlalchemy.util import string_or_unprintable
+import sys
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -61,6 +58,11 @@ def drsvalid(
     reports = []
 
     entries = drs_entries or []
+
+    if not sys.stdin.isatty():  # Check if input is being piped via stdin
+        entries.extend(el for line in sys.stdin for el in shlex.split(line))
+
+
     if file:
         entries.extend(el for line in file for el in line.strip().split(" "))
 
@@ -158,6 +160,10 @@ def drsgen(
     generated_reports = []
 
     entries = drs_entries or []
+
+    if not sys.stdin.isatty():  # Check if input is being piped via stdin
+        entries.extend(el for line in sys.stdin for el in shlex.split(line))
+
     if file:
         entries.extend(el for line in file for el in shlex.split(line))
 
