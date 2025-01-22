@@ -27,6 +27,10 @@ class GeneratorIssueVisitor(Protocol):
 
 
 class DrsIssue(ABC):
+    """
+    Generic class for all the DRS issues.
+    """
+
     @abstractmethod
     def accept(self, visitor) -> Any: ...
 
