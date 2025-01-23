@@ -86,14 +86,22 @@ class ProjectTermError(ValidationError):
 
 
 class ValidationReport:
+    """
+    Term validation report.
+    """
     def __init__(self,
                  given_expression: str,
                  errors: list[ValidationError]):
         self.expression: str = given_expression
+        """The given expression."""
         self.errors: list[ValidationError] = errors
+        """The validation errors."""
         self.nb_errors = len(self.errors) if self.errors else 0
+        """The number of validation errors."""
         self.validated: bool = False if errors else True
+        """The expression is validated or not."""
         self.message = f"'{self.expression}' has {self.nb_errors} error(s)"
+        """Pretty print."""
    
     def __len__(self) -> int:
         return self.nb_errors

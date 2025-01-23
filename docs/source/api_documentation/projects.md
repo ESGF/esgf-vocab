@@ -35,3 +35,7 @@
 .. automodule:: esgvoc.api.search
    :members: 
 ```
+```{eval-rst}
+.. autoclass:: esgvoc.core.db.models.mixins.TermKind
+   :members: 
+```
