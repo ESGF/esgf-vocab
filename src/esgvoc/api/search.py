@@ -27,9 +27,9 @@ class SearchSettings(BaseModel):
     not_operator: bool = False
 
 
-def create_str_comparison_expression(field: str,
-                                     value: str,
-                                     settings: SearchSettings|None) -> ColumnElement:
+def _create_str_comparison_expression(field: str,
+                                      value: str,
+                                      settings: SearchSettings|None) -> ColumnElement:
     '''
     SQLite LIKE is case insensitive (and so STARTS/ENDS_WITH which are implemented with LIKE).
     So the case sensitive LIKE is implemented with REGEX.

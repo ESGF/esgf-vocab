@@ -8,7 +8,7 @@ from esgvoc.api._utils import (get_universe_session, instantiate_pydantic_term,
                                instantiate_pydantic_terms)
 from esgvoc.api.report import (ProjectTermError, UniverseTermError,
                                ValidationError, ValidationReport)
-from esgvoc.api.search import MatchingTerm, SearchSettings, create_str_comparison_expression
+from esgvoc.api.search import MatchingTerm, SearchSettings, _create_str_comparison_expression
 from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
@@ -462,9 +462,9 @@ def _find_terms_in_collection(collection_id: str,
                               session: Session,
                               settings: SearchSettings|None = None) -> Sequence[PTerm]:
     # Settings only apply on the term_id comparison.
-    where_expression = create_str_comparison_expression(field=PTerm.id,
-                                                        value=term_id,
-                                                        settings=settings)
+    where_expression = _create_str_comparison_expression(field=PTerm.id,
+                                                         value=term_id,
+                                                         settings=settings)
     statement = select(PTerm).join(Collection).where(Collection.id==collection_id,
                                                      where_expression)
     results = session.exec(statement)
@@ -517,9 +517,9 @@ def _find_terms_from_data_descriptor_in_project(data_descriptor_id: str,
                                                 settings: SearchSettings|None = None) \
                                                    -> Sequence[PTerm]:
     # Settings only apply on the term_id comparison.
-    where_expression = create_str_comparison_expression(field=PTerm.id,
-                                                        value=term_id,
-                                                        settings=settings)
+    where_expression = _create_str_comparison_expression(field=PTerm.id,
+                                                         value=term_id,
+                                                         settings=settings)
     statement = select(PTerm).join(Collection).where(Collection.data_descriptor_id==data_descriptor_id,
                                                      where_expression)
     results = session.exec(statement)
@@ -619,9 +619,9 @@ def find_terms_from_data_descriptor_in_all_projects(data_descriptor_id: str,
 def _find_terms_in_project(term_id: str,
                            session: Session,
                            settings: SearchSettings|None) -> Sequence[PTerm]:
-    where_expression = create_str_comparison_expression(field=PTerm.id,
-                                                        value=term_id,
-                                                        settings=settings)
+    where_expression = _create_str_comparison_expression(field=PTerm.id,
+                                                         value=term_id,
+                                                         settings=settings)
     statement = select(PTerm).where(where_expression)
     results = session.exec(statement).all()
     return results
@@ -717,9 +717,9 @@ def _find_collections_in_project(collection_id: str,
                                  session: Session,
                                  settings: SearchSettings|None) \
                                     -> Sequence[Collection]:
-    where_exp = create_str_comparison_expression(field=Collection.id,
-                                                 value=collection_id,
-                                                 settings=settings)
+    where_exp = _create_str_comparison_expression(field=Collection.id,
+                                                  value=collection_id,
+                                                  settings=settings)
     statement = select(Collection).where(where_exp)
     results = session.exec(statement)
     result = results.all()

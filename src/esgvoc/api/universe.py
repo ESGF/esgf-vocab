@@ -2,7 +2,7 @@ from typing import Sequence
 
 from esgvoc.api._utils import (get_universe_session,
                                instantiate_pydantic_terms)
-from esgvoc.api.search import SearchSettings, create_str_comparison_expression
+from esgvoc.api.search import SearchSettings, _create_str_comparison_expression
 from esgvoc.core.db.models.universe import DataDescriptor, UTerm
 from pydantic import BaseModel
 from sqlmodel import Session, select
@@ -13,9 +13,9 @@ def _find_terms_in_data_descriptor(data_descriptor_id: str,
                                    session: Session,
                                    settings: SearchSettings|None) -> Sequence[UTerm]:
     """Settings only apply on the term_id comparison."""
-    where_expression = create_str_comparison_expression(field=UTerm.id,
-                                                        value=term_id,
-                                                        settings=settings)
+    where_expression = _create_str_comparison_expression(field=UTerm.id,
+                                                         value=term_id,
+                                                         settings=settings)
     statement = select(UTerm).join(DataDescriptor).where(DataDescriptor.id==data_descriptor_id,
                                                          where_expression)
     results = session.exec(statement)
@@ -62,9 +62,9 @@ def find_terms_in_data_descriptor(data_descriptor_id: str,
 def _find_terms_in_universe(term_id: str,
                             session: Session,
                             settings: SearchSettings|None) -> Sequence[UTerm]:
-    where_expression = create_str_comparison_expression(field=UTerm.id,
-                                                        value=term_id,
-                                                        settings=settings)
+    where_expression = _create_str_comparison_expression(field=UTerm.id,
+                                                         value=term_id,
+                                                         settings=settings)
     statement = select(UTerm).where(where_expression)
     results = session.exec(statement).all()
     return results
@@ -105,9 +105,9 @@ def _get_all_terms_in_data_descriptor(data_descriptor: DataDescriptor) -> list[B
 def _find_data_descriptors_in_universe(data_descriptor_id: str,
                                        session: Session,
                                        settings: SearchSettings|None) -> Sequence[DataDescriptor]:
-    where_expression = create_str_comparison_expression(field=DataDescriptor.id,
-                                                        value=data_descriptor_id,
-                                                        settings=settings)
+    where_expression = _create_str_comparison_expression(field=DataDescriptor.id,
+                                                         value=data_descriptor_id,
+                                                         settings=settings)
     statement = select(DataDescriptor).where(where_expression)
     results = session.exec(statement)
     result = results.all()      
