@@ -39,9 +39,9 @@ def find_terms_in_data_descriptor(data_descriptor_id: str,
     returns an empty list.
 
     Behavior based on search type:
-    - `EXACT` and absence of `settings`: returns zero or one Pydantic term instance in the list.
-    - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more Pydantic term \
-      instances in the list.
+        - `EXACT` and absence of `settings`: returns zero or one Pydantic term instance in the list.
+        - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more Pydantic term \
+          instances in the list.
 
     :param data_descriptor_id: A data descriptor id
     :type data_descriptor_id: str
@@ -152,9 +152,9 @@ def find_data_descriptors_in_universe(data_descriptor_id: str,
     If the provided `data_descriptor_id` is not found, the function returns an empty list.
     
     Behavior based on search type:
-    - `EXACT` and absence of `settings`: returns zero or one data descriptor context in the list.
-    - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
-      data descriptor contexts in the list.
+        - `EXACT` and absence of `settings`: returns zero or one data descriptor context in the list.
+        - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
+          data descriptor contexts in the list.
 
     :param data_descriptor_id: A data descriptor id to be found
     :type data_descriptor_id: str
