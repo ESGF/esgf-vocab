@@ -5,6 +5,14 @@ branch = "uni_proj_ld"
 local_path = ".cache/repos/CMIP6Plus_CVs"
 db_path = ".cache/dbs/cmip6plus.sqlite"
 
+[[projects]]
+project_name = "cmip6"
+github_repo = "https://github.com/WCRP-CMIP/CMIP6_CVs"
+branch = "esgvoc"
+local_path = ".cache/repos/CMIP6_CVs"
+db_path = ".cache/dbs/cmip6.sqlite"
+
+
 [universe]
 github_repo = "https://github.com/ESPRI-Mod/mip-cmor-tables"
 branch = "uni_proj_ld"

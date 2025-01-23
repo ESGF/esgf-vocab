@@ -6,6 +6,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 from typing import List, Optional
+import esgvoc.api as ev
 import shlex
 
 app = typer.Typer()
@@ -14,11 +15,9 @@ console = Console()
 
 
 # Predefined list of projects and DRS types
-projects = ["cmip5", "cmip6","cmip6plus", "cmip7"]
+# projects = ["cmip5", "cmip6","cmip6plus", "cmip7"]
+projects = ev.get_all_projects()
 drs_types = ["filename", "directory", "dataset"]
-
-
-
 
 def display(table):
     """
