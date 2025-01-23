@@ -335,13 +335,17 @@ def _valid_term_in_collection(value: str,
                     term_id_found = _search_plain_term_and_valid_value(value, collection_id,
                                                                        project_session)
                     if term_id_found:
-                        result.append(MatchingTerm(project_id, collection_id, term_id_found))
+                        result.append(MatchingTerm(project_id=project_id,
+                                                   collection_id=collection_id,
+                                                   term_id=term_id_found))
                 case _:
                     term_ids_found = _valid_value_against_all_terms_of_collection(value, collection,
                                                                                   universe_session,
                                                                                   project_session)
                     for term_id_found in term_ids_found:
-                        result.append(MatchingTerm(project_id, collection_id, term_id_found))
+                        result.append(MatchingTerm(project_id=project_id,
+                                                   collection_id=collection_id,
+                                                   term_id=term_id_found))
         else:
             msg = f'unable to find collection {collection_id}'
             raise ValueError(msg)

@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from enum import Enum
 
 from pydantic import BaseModel
@@ -6,8 +5,7 @@ from sqlalchemy import ColumnElement, func
 from sqlmodel import col
 
 
-@dataclass
-class MatchingTerm:
+class MatchingTerm(BaseModel):
     project_id: str
     collection_id: str
     term_id: str
