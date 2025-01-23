@@ -4,6 +4,10 @@ from esgvoc.api.models import DrsType
 
 
 class ParserIssueVisitor(Protocol):
+    """
+    Specifications for a Parser issues visitor.
+    """
+    
     def visit_space_issue(self, issue: "Space") -> Any: ...
     def visit_unparsable_issue(self, issue: "Unparsable") -> Any: ...
     def visit_extra_separator_issue(self, issue: "ExtraSeparator") -> Any: ...

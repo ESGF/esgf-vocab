@@ -11,7 +11,7 @@ get_started/index.md
 
 ```{toctree}
 :maxdepth: 3
-:caption: References
-
-api_documentation/index.md
+:caption: API documentation
+api_documentation/projects.md
+api_documentation/drs.md
 ```
