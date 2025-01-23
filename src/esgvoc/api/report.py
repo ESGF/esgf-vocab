@@ -88,12 +88,12 @@ class ValidationReport(BaseModel):
     """The given expression."""
     errors: list[ValidationError]
     """The validation errors."""
-    @computed_field
+    @computed_field # type: ignore
     @property
     def nb_errors(self) -> int:
         """The number of validation errors."""
         return len(self.errors) if self.errors else 0
-    @computed_field
+    @computed_field # type: ignore
     @property
     def validated(self) -> bool:
         """The expression is validated or not."""

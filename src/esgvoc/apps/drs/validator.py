@@ -201,9 +201,11 @@ class DrsValidator(DrsApplication):
                 errors.append(issue)
                 del tokens[index]
             cursor_position -= len_token + 1
-        return tokens, \
-               DrsValidator._sort_parser_issues(errors), \
-               DrsValidator._sort_parser_issues(warnings)
+        
+        # Mypy doesn't understand that ParserIssues are DrsIssues...
+        sorted_errors = DrsValidator._sort_parser_issues(errors) # type: ignore
+        sorted_warnings = DrsValidator._sort_parser_issues(warnings) # type: ignore
+        return tokens, sorted_errors, sorted_warnings # type: ignore
     
     @staticmethod
     def _sort_parser_issues(issues: list[ParserIssue]) -> list[ParserIssue]:
