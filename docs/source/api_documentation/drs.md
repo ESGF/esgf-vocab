@@ -1,20 +1,20 @@
 # DRS applications
 
-## Validator
+## Validation
 
 ```{eval-rst}
 .. automodule:: esgvoc.apps.drs.validator
    :members:
 ```
 
-## Generator
+## Generation
 
 ```{eval-rst}
 .. automodule:: esgvoc.apps.drs.generator
    :members:
 ```
 
-## Reporting
+## Issue reporting
 
 ```{eval-rst}
 .. automodule:: esgvoc.apps.drs.report

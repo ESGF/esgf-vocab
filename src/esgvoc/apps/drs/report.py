@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Mapping, Iterable, Protocol, cast
-from esgvoc.api.models import DrsType
+from esgvoc.api.project_specs import DrsType
 
 
 class ParserIssueVisitor(Protocol):

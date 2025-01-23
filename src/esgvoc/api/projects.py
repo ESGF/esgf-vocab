@@ -9,7 +9,7 @@ from esgvoc.api._utils import (get_universe_session, instantiate_pydantic_term,
 from esgvoc.api.report import (ProjectTermError, UniverseTermError,
                                ValidationError, ValidationReport)
 from esgvoc.api.search import MatchingTerm, SearchSettings, create_str_comparison_expression
-from esgvoc.api.models import ProjectSpecs
+from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import Collection, Project, PTerm

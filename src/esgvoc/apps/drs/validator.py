@@ -1,9 +1,9 @@
 from typing import cast
-from esgvoc.api.models import (ProjectSpecs,
+from esgvoc.api.project_specs import (ProjectSpecs,
                                DrsType,
                                DrsPart,
                                DrsSpecification,
-                               DrsPartType,
+                               DrsPartKind,
                                DrsCollection,
                                DrsConstant)
 import esgvoc.api.projects as projects
@@ -207,7 +207,7 @@ class DrsValidator(DrsApplication):
 
     def _validate_token(self, token: str, part: DrsPart) -> bool:
         match part.kind:
-            case DrsPartType.collection:
+            case DrsPartKind.collection:
                 casted_part: DrsCollection = cast(DrsCollection, part)
                 try:
                     matching_terms = projects.valid_term_in_collection(token,
@@ -220,7 +220,7 @@ class DrsValidator(DrsApplication):
                     return True
                 else:
                     return False
-            case DrsPartType.constant:
+            case DrsPartKind.constant:
                 part_casted: DrsConstant = cast(DrsConstant, part)
                 return part_casted.value != token
             case _:
@@ -252,7 +252,7 @@ class DrsValidator(DrsApplication):
                 token_index += 1
                 part_index += 1
                 matching_code_mapping[part.__str__()] = 0
-            elif part.kind == DrsPartType.constant or \
+            elif part.kind == DrsPartKind.constant or \
                  cast(DrsCollection, part).is_required:
                 issue: ValidationIssue = InvalidToken(token, token_index+1, str(part))
                 errors.append(issue)
@@ -275,7 +275,7 @@ class DrsValidator(DrsApplication):
             for index in range(part_index, part_max_index):
                 part = specs.parts[index]
                 issue = MissingToken(str(part), index+1)
-                if part.kind == DrsPartType.constant or \
+                if part.kind == DrsPartKind.constant or \
                    cast(DrsCollection, part).is_required:
                     errors.append(issue)
                 else:
@@ -285,7 +285,7 @@ class DrsValidator(DrsApplication):
             for index in range(token_index, token_max_index):
                 token = tokens[index]
                 part = specs.parts[part_index]
-                if part.kind != DrsPartType.constant           and \
+                if part.kind != DrsPartKind.constant           and \
                    (not cast(DrsCollection, part).is_required) and \
                     matching_code_mapping[part.__str__()] < 0:
                     issue = ExtraToken(token, index, str(part))

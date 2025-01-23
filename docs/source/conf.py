@@ -14,13 +14,14 @@ project = 'ESGVOC'
 copyright = '2025, S. Gardoll, G. Levavasseur, L. Troussellier.'
 author = 'S. Gardoll, G. Levavasseur, L. Troussellier.'
 release = '0.2.0'
-BASE_URL = 'https://github.com/ESPRI-Mod/cmipld'
+BASE_URL = 'https://github.com/ESGF/esgf-vocab'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinxcontrib.autodoc_pydantic',
     'sphinx.ext.autosummary',
     'sphinx.ext.linkcode',
     'myst_parser'
@@ -33,7 +34,7 @@ def linkcode_resolve(domain, info):
     if not info["module"]:
         return None
     filename = info["module"].replace(".", "/")
-    return f"{BASE_URL}/tree/main/{filename}.py"
+    return f"{BASE_URL}/tree/main/src/{filename}.py"
 
 templates_path = ['_templates']
 exclude_patterns = []
@@ -50,11 +51,17 @@ autodoc_default_options = {
     "show-inheritance": True,
 }
 
+# Autodoc pydantic plugin configuration
+# https://autodoc-pydantic.readthedocs.io/en/stable/users/configuration.html
+autodoc_pydantic_model_show_config_summary = False
+autodoc_pydantic_model_show_field_summary = False
+autodoc_pydantic_model_hide_paramlist = True
+autodoc_pydantic_model_signature_prefix = 'Pydantic model'
+
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_book_theme'
-html_static_path = ['_static']
 
 
 html_theme_options = {

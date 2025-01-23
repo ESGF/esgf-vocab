@@ -14,5 +14,6 @@ get_started/index.md
 :caption: API documentation
 api_documentation/universe.md
 api_documentation/projects.md
+api_documentation/project_specs.md
 api_documentation/drs.md
 ```

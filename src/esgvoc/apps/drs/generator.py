@@ -2,8 +2,8 @@ from typing import cast, Iterable, Mapping, Any
 
 import esgvoc.api.projects as projects
 
-from esgvoc.api.models import (DrsSpecification,
-                               DrsPartType,
+from esgvoc.api.project_specs import (DrsSpecification,
+                               DrsPartKind,
                                DrsCollection,
                                DrsConstant)
 
@@ -167,7 +167,7 @@ class DrsGenerator(DrsApplication):
         part_position: int = 0
         for part in specs.parts:
             part_position += 1
-            if part.kind == DrsPartType.collection:
+            if part.kind == DrsPartKind.collection:
                 collection_part = cast(DrsCollection, part)
                 collection_id = collection_part.collection_id
                 if collection_id in mapping:
