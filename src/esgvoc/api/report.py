@@ -1,21 +1,19 @@
 from pydantic import BaseModel, computed_field
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Protocol
 
 import esgvoc.core.constants as api_settings
 from esgvoc.core.db.models.mixins import TermKind
 
 
-class ValidationErrorVisitor(ABC):
+class ValidationErrorVisitor(Protocol):
     """
     Specifications for a term validation error visitor.
     """
-    @abstractmethod
     def visit_universe_term_error(self, error: "UniverseTermError") -> Any:
         """Visit a universe term error."""
         pass
 
-    @abstractmethod
     def visit_project_term_error(self, error: "ProjectTermError") -> Any:
         """Visit a project term error."""
         pass
