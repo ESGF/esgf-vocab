@@ -14,11 +14,11 @@ class MatchingTerm:
 
 
 class SearchType(Enum):
-    EXACT = ("exact",)
-    LIKE = ("like",)  # can interpret %
-    STARTS_WITH = ("starts_with",)  # can interpret %
+    EXACT = "exact"
+    LIKE = "like"  # can interpret %
+    STARTS_WITH = "starts_with"  # can interpret %
     ENDS_WITH = "ends_with"  # can interpret %
-    REGEX = ("regex",)
+    REGEX = "regex"
 
 
 class SearchSettings(BaseModel):
