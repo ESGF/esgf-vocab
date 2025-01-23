@@ -1,4 +1,4 @@
-# DRS
+# DRS applications
 
 ## Validator
 
