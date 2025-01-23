@@ -8,32 +8,54 @@ from esgvoc.core.db.models.universe import UTerm
 
 
 class ValidationErrorVisitor(ABC):
+    """
+    Specifications for a term validation error visitor.
+    """
     @abstractmethod
     def visit_universe_term_error(self, error: "UniverseTermError") -> Any:
+        """Visit a universe term error."""
         pass
 
     @abstractmethod
     def visit_project_term_error(self, error: "ProjectTermError") -> Any:
+        """Visit a project term error."""
         pass
 
 
 class ValidationError(ABC):
+    """
+    Generic class for the term validation error.
+    """
     def __init__(self,
-                 value: str):
+                 value: str,
+                 term_specs: dict,
+                 term_kind: TermKind):
         self.value: str = value
+        """The given value that is invalid."""
+        self.term: dict = term_specs
+        """JSON specification of the term."""
+        self.term_kind: TermKind = term_kind
+        """The kind of term."""
     
     @abstractmethod
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
+        """
+        Accept a validation error visitor.
+
+        :param visitor: The validation error visitor.
+        :type visitor: ValidationErrorVisitor
+        :return: Depending on the visitor.
+        :rtype: Any
+        """
         pass
 
 class UniverseTermError(ValidationError):
     def __init__(self,
                  value: str,
                  term: UTerm):
-        super().__init__(value)
-        self.term: dict = term.specs
-        self.term_kind: TermKind = term.kind
+        super().__init__(value, term.specs, term.kind)
         self.data_descriptor_id: str = term.data_descriptor.id
+        """The data descriptor that the term belongs."""
 
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         return visitor.visit_universe_term_error(self)
@@ -49,10 +71,9 @@ class ProjectTermError(ValidationError):
     def __init__(self,
                  value: str,
                  term: PTerm):
-        super().__init__(value)
-        self.term: dict = term.specs
-        self.term_kind: TermKind = term.kind
+        super().__init__(value, term.specs, term.kind)
         self.collection_id: str = term.collection.id
+        """The collection id that the term belongs"""
 
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         return visitor.visit_project_term_error(self)
