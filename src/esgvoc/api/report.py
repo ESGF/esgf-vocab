@@ -1,10 +1,9 @@
+from pydantic import BaseModel, computed_field
 from abc import ABC, abstractmethod
 from typing import Any
 
 import esgvoc.core.constants as api_settings
 from esgvoc.core.db.models.mixins import TermKind
-from esgvoc.core.db.models.project import PTerm
-from esgvoc.core.db.models.universe import UTerm
 
 
 class ValidationErrorVisitor(ABC):
@@ -22,20 +21,16 @@ class ValidationErrorVisitor(ABC):
         pass
 
 
-class ValidationError(ABC):
+class ValidationError(BaseModel, ABC):
     """
     Generic class for the term validation error.
     """
-    def __init__(self,
-                 value: str,
-                 term_specs: dict,
-                 term_kind: TermKind):
-        self.value: str = value
-        """The given value that is invalid."""
-        self.term: dict = term_specs
-        """JSON specification of the term."""
-        self.term_kind: TermKind = term_kind
-        """The kind of term."""
+    value: str
+    """The given value that is invalid."""
+    term: dict
+    """JSON specification of the term."""
+    term_kind: TermKind
+    """The kind of term."""
     
     @abstractmethod
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
@@ -50,12 +45,12 @@ class ValidationError(ABC):
         pass
 
 class UniverseTermError(ValidationError):
-    def __init__(self,
-                 value: str,
-                 term: UTerm):
-        super().__init__(value, term.specs, term.kind)
-        self.data_descriptor_id: str = term.data_descriptor.id
-        """The data descriptor that the term belongs."""
+    """
+    A validation error on a term from the universe.
+    """
+    
+    data_descriptor_id: str
+    """The data descriptor that the term belongs."""
 
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         return visitor.visit_universe_term_error(self)
@@ -68,12 +63,12 @@ class UniverseTermError(ValidationError):
 
 
 class ProjectTermError(ValidationError):
-    def __init__(self,
-                 value: str,
-                 term: PTerm):
-        super().__init__(value, term.specs, term.kind)
-        self.collection_id: str = term.collection.id
-        """The collection id that the term belongs"""
+    """
+    A validation error on a term from a project.
+    """
+    
+    collection_id: str
+    """The collection id that the term belongs"""
 
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         return visitor.visit_project_term_error(self)
@@ -85,23 +80,25 @@ class ProjectTermError(ValidationError):
         return result
 
 
-class ValidationReport:
+class ValidationReport(BaseModel):
     """
     Term validation report.
     """
-    def __init__(self,
-                 given_expression: str,
-                 errors: list[ValidationError]):
-        self.expression: str = given_expression
-        """The given expression."""
-        self.errors: list[ValidationError] = errors
-        """The validation errors."""
-        self.nb_errors = len(self.errors) if self.errors else 0
+    expression: str
+    """The given expression."""
+    errors: list[ValidationError]
+    """The validation errors."""
+    @computed_field
+    @property
+    def nb_errors(self) -> int:
         """The number of validation errors."""
-        self.validated: bool = False if errors else True
+        return len(self.errors) if self.errors else 0
+    @computed_field
+    @property
+    def validated(self) -> bool:
         """The expression is validated or not."""
-        self.message = f"'{self.expression}' has {self.nb_errors} error(s)"
-        """Pretty print."""
+        return False if self.errors else True
+        
    
     def __len__(self) -> int:
         return self.nb_errors
@@ -110,4 +107,4 @@ class ValidationReport:
         return self.validated
     
     def __repr__(self) -> str:
-        return self.message
+        return f"'{self.expression}' has {self.nb_errors} error(s)"

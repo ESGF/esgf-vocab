@@ -175,9 +175,11 @@ def _valid_value_for_term_composite(value: str,
 
 def _create_term_error(value: str, term: UTerm|PTerm) -> ValidationError:
     if isinstance(term, UTerm):
-        return UniverseTermError(value, term)
+        return UniverseTermError(value=value, term=term.specs, term_kind=term.kind,
+                                 data_descriptor_id=term.data_descriptor.id)
     else:
-        return ProjectTermError(value, term)
+        return ProjectTermError(value=value, term=term.specs, term_kind=term.kind,
+                                collection_id=term.collection.id)
 
 
 def _valid_value(value: str,
@@ -309,7 +311,7 @@ def valid_term(value: str,
          _get_project_session_with_exception(project_id) as project_session:
         errors = _valid_value_against_given_term(value, project_id, collection_id, term_id,
                                                  universe_session, project_session)
-        return ValidationReport(value, errors)
+        return ValidationReport(expression=value, errors=errors)
 
 
 def _valid_term_in_collection(value: str,
