@@ -37,13 +37,13 @@ class DrsApplication:
         for specs in project_specs.drs_specs:
             match specs.type:
                 case DrsType.directory:
-                    self.directory_specs: dict = specs
+                    self.directory_specs: DrsSpecification = specs
                     """The DRS directory specs of the project."""
                 case DrsType.file_name:
-                    self.file_name_specs: dict = specs
+                    self.file_name_specs: DrsSpecification = specs
                     """The DRS file name specs of the project."""
                 case DrsType.dataset_id:
-                    self.dataset_id_specs: dict = specs
+                    self.dataset_id_specs: DrsSpecification = specs
                     """The DRS dataset id specs of the project."""
                 case _:
                     raise ValueError(f'unsupported DRS specs type {specs.type}')
@@ -56,9 +56,13 @@ class DrsApplication:
         :returns: The full file name extension.
         :rtype: str
         """
-        specs = self.file_name_specs
-        full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
-                         specs.properties[constants.FILE_NAME_EXTENSION_KEY]
+        specs: DrsSpecification = self.file_name_specs
+        if specs.properties:
+            full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
+                             specs.properties[constants.FILE_NAME_EXTENSION_KEY]
+        else:
+            raise ValueError('missing properties in the DRS file name specifications of the ' +
+                             f'project {self.project_id}')
         return full_extension
 
 
