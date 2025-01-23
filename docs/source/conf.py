@@ -24,6 +24,7 @@ extensions = [
     'sphinxcontrib.autodoc_pydantic',
     'sphinx.ext.autosummary',
     'sphinx.ext.linkcode',
+    'sphinx.ext.intersphinx',
     'myst_parser'
 ]
 
@@ -57,6 +58,13 @@ autodoc_pydantic_model_show_config_summary = False
 autodoc_pydantic_model_show_field_summary = False
 autodoc_pydantic_model_hide_paramlist = True
 autodoc_pydantic_model_signature_prefix = 'Pydantic model'
+
+# Intersphinx configuration
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'pydantic': ('https://docs.pydantic.dev/latest', None)
+}
+
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
