@@ -40,7 +40,7 @@ def find_terms_in_data_descriptor(data_descriptor_id: str,
 
     Behavior based on search type:
     - `EXACT` and absence of `settings`: returns zero or one Pydantic term instance in the list.
-    - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more Pydantic term
+    - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more Pydantic term \
       instances in the list.
 
     :param data_descriptor_id: A data descriptor id
@@ -49,8 +49,7 @@ def find_terms_in_data_descriptor(data_descriptor_id: str,
     :type term_id: str
     :param settings: The search settings
     :type settings: SearchSettings|None
-    :returns: A list of Pydantic model term instances.
-    Returns an empty list if no matches are found.
+    :returns: A list of Pydantic model term instances. Returns an empty list if no matches are found.
     :rtype: list[BaseModel]
     """
     result: list[BaseModel] = list()
@@ -154,7 +153,7 @@ def find_data_descriptors_in_universe(data_descriptor_id: str,
     
     Behavior based on search type:
     - `EXACT` and absence of `settings`: returns zero or one data descriptor context in the list.
-    - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more
+    - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
       data descriptor contexts in the list.
 
     :param data_descriptor_id: A data descriptor id to be found
