@@ -56,14 +56,14 @@ class GeneratorIssueVisitor(Protocol):
     def visit_missing_token_issue(self, issue: "MissingToken") -> Any:
         """Visit a missing token issue."""
         pass
-    def visit_too_many_words_collection_issue(self, issue: "TooManyWordsCollection") -> Any:
-        """Visit a too many words collection issue."""
+    def visit_too_many_tokens_collection_issue(self, issue: "TooManyTokensCollection") -> Any:
+        """Visit a too many tokens collection issue."""
         pass
     def visit_conflicting_collections_issue(self, issue: "ConflictingCollections") -> Any:
         """Visit a conflicting collections issue."""
         pass
-    def visit_assign_word_issue(self, issue: "AssignedWord") -> Any:
-        """Visit an assign word issue."""
+    def visit_assign_token_issue(self, issue: "AssignedToken") -> Any:
+        """Visit an assign token issue."""
         pass
 
 
@@ -257,7 +257,7 @@ class MissingToken(ValidationIssue, GeneratorIssue):
         return f'missing token for {self.collection_id} at position {self.collection_position}'
     
 
-class TooManyWordsCollection(GeneratorIssue):
+class TooManyTokensCollection(GeneratorIssue):
     """
     Represents a problem while inferring a mapping collection - token in the generation
     of a DRS expression based on a bag of tokens. The problem is that more than one token
@@ -265,13 +265,13 @@ class TooManyWordsCollection(GeneratorIssue):
     """
     collection_id: str
     """The collection id."""
-    words: list[str] # TODO rename into tokens.
+    tokens: list[str] # TODO rename into tokens.
     """The faulty tokens."""
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
-        return visitor.visit_too_many_words_collection_issue(self)
+        return visitor.visit_too_many_tokens_collection_issue(self)
 
     def __repr__(self):
-        tokens_str = ", ".join(token for token in self.words)
+        tokens_str = ", ".join(token for token in self.tokens)
         result = f'collection {self.collection_id} has more than one token ({tokens_str})'
         return result
 
@@ -284,24 +284,27 @@ class ConflictingCollections(GeneratorIssue):
     """
     collection_ids: list[str]
     """The ids of the collections."""
-    words: list[str] # TODO rename into tokens.
+    tokens: list[str] # TODO rename into tokens.
     """The shared tokens."""
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_conflicting_collections_issue(self)
     def __repr__(self):
         collection_ids_str = ", ".join(collection_id for collection_id in self.collection_ids)
-        tokens_str = ", ".join(token for token in self.words)
+        tokens_str = ", ".join(token for token in self.tokens)
         result = f"collections {collection_ids_str} are competing for the same token(s) {tokens_str}"
         return result
 
 
-class AssignedWord(GeneratorIssue):
+class AssignedToken(GeneratorIssue):
+    """
+    
+    """
     collection_id: str
-    word: str
+    token: str
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
-        return visitor.visit_assign_word_issue(self)
+        return visitor.visit_assign_token_issue(self)
     def __repr__(self):
-        result = f"assign token {self.word} for collection {self.collection_id}"
+        result = f"assign token {self.token} for collection {self.collection_id}"
         return result
 
 
@@ -357,7 +360,7 @@ class DrsGeneratorReport(DrsReport):
     """Tag used in the DRS generated expression to replace a missing term."""
     INVALID_TAG: ClassVar[str] = '[INVALID]'
     """Tag used in the DRS generated expression to replace a invalid term."""
-    given_mapping_or_bag_of_words: Mapping|Iterable
+    given_mapping_or_bag_of_tokens: Mapping|Iterable
     """The mapping or the bag of tokens given."""
     mapping_used: Mapping
     """The mapping inferred from the given bag of tokens (same mapping otherwise)."""

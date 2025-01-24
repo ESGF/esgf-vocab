@@ -10,11 +10,11 @@ from esgvoc.api.project_specs import (DrsSpecification,
 from esgvoc.apps.drs.validator import DrsApplication
 from esgvoc.apps.drs.report import (DrsGeneratorReport,
                                     GeneratorIssue,
-                                    TooManyWordsCollection,
+                                    TooManyTokensCollection,
                                     InvalidToken,
                                     MissingToken,
                                     ConflictingCollections,
-                                    AssignedWord)
+                                    AssignedToken)
 
 
 def _get_first_item(items: set[Any]) -> Any:
@@ -131,7 +131,7 @@ class DrsGenerator(DrsApplication):
             errors.extend(warnings)
             warnings.clear()
         return DrsGeneratorReport(project_id=self.project_id, type=specs.type,
-                                  given_mapping_or_bag_of_words=mapping,
+                                  given_mapping_or_bag_of_tokens=mapping,
                                   mapping_used=mapping,
                                   computed_drs_expression=drs_expression,
                                   errors=errors, warnings=warnings)
@@ -156,7 +156,7 @@ class DrsGenerator(DrsApplication):
                     collection_words_mapping[matching_term.collection_id] = set()
                 collection_words_mapping[matching_term.collection_id].add(word)
         collection_words_mapping, warnings = DrsGenerator._resolve_conflicts(collection_words_mapping)
-        mapping, errors = DrsGenerator._check_collection_words_mapping(collection_words_mapping)
+        mapping, errors = DrsGenerator._check_collection_tokens_mapping(collection_words_mapping)
         drs_expression, errs, warns = self._generate_from_mapping(mapping, specs, False)
         errors.extend(errs)
         warnings.extend(warns)
@@ -164,7 +164,7 @@ class DrsGenerator(DrsApplication):
             errors.extend(warnings)
             warnings.clear()
         return DrsGeneratorReport(project_id=self.project_id, type=specs.type,
-                                  given_mapping_or_bag_of_words=tokens,
+                                  given_mapping_or_bag_of_tokens=tokens,
                                   mapping_used=mapping,computed_drs_expression=drs_expression,
                                   errors=errors, warnings=warnings)
 
@@ -279,7 +279,7 @@ class DrsGenerator(DrsApplication):
                     if len(collection_words_mapping[collection_id]) == 1:
                         wining_collection_ids.append(collection_id)
                         word = _get_first_item(collection_words_mapping[collection_id])
-                        issue = AssignedWord(collection_id=collection_id, word=word)
+                        issue = AssignedToken(collection_id=collection_id, token=word)
                         warnings.append(issue)
             # 3.b Update conflicting collections.
             if wining_collection_ids:
@@ -313,7 +313,7 @@ class DrsGenerator(DrsApplication):
                     wining_collection_ids.append(collection_id)
                     collection_words_mapping[collection_id].clear()
                     collection_words_mapping[collection_id].add(word)
-                    issue = AssignedWord(collection_id=collection_id, word=word)
+                    issue = AssignedToken(collection_id=collection_id, token=word)
                     warnings.append(issue)
                 DrsGenerator._remove_ids_from_conflicts(conflicting_collection_ids_list,
                                                         wining_collection_ids)
@@ -325,7 +325,7 @@ class DrsGenerator(DrsApplication):
         return collection_words_mapping, warnings
 
     @staticmethod
-    def _check_collection_words_mapping(collection_words_mapping: dict[str, set[str]]) \
+    def _check_collection_tokens_mapping(collection_words_mapping: dict[str, set[str]]) \
                                                      -> tuple[dict[str, str], list[GeneratorIssue]]:
         errors: list[GeneratorIssue] = list()
         # 1. Looking for collections that share strictly the same word(s).
@@ -353,7 +353,7 @@ class DrsGenerator(DrsApplication):
         for faulty_collections in faulty_collections_list:
             words = collection_words_mapping[_get_first_item(faulty_collections)]
             issue = ConflictingCollections(collection_ids=_transform_set_and_sort(faulty_collections),
-                                           words=_transform_set_and_sort(words))
+                                           tokens=_transform_set_and_sort(words))
             errors.append(issue)
             for collection_id in faulty_collections:
                 del collection_words_mapping[collection_id]
@@ -365,8 +365,8 @@ class DrsGenerator(DrsApplication):
             if len_word_set == 1:
                 result[collection_id] = _get_first_item(word_set)
             elif len_word_set > 1:
-                other_issue = TooManyWordsCollection(collection_id=collection_id,
-                                                     words=_transform_set_and_sort(word_set))
+                other_issue = TooManyTokensCollection(collection_id=collection_id,
+                                                     tokens=_transform_set_and_sort(word_set))
                 errors.append(other_issue)
             #else: Don't add emptied collection to the result.
         return result, errors
