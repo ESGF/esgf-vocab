@@ -134,16 +134,16 @@ def drsvalid(
 
 @app.command()
 def drsgen(
-    drs_entries: Optional[List[str]] = typer.Argument(None, help="List of inputs to generate DRS in the form <project> <drstype> <bag_of_words>"),
-    file: Optional[typer.FileText] = typer.Option(None, "--file", "-f", help="File containing DRS generation inputs, one per line in the form <project> <drstype> <bag_of_words>"),
+    drs_entries: Optional[List[str]] = typer.Argument(None, help="List of inputs to generate DRS in the form <project> <drstype> <bag_of_tokens>"),
+    file: Optional[typer.FileText] = typer.Option(None, "--file", "-f", help="File containing DRS generation inputs, one per line in the form <project> <drstype> <bag_of_tokens>"),
     verbose: bool = typer.Option(False, "-v", "--verbose", help="Provide detailed generation results"),
     output: Optional[str] = typer.Option(None, "-o", "--output", help="File to save the generated DRS entries"),
 ) -> List[DrsGeneratorReport]:
     """
-    Generates DRS strings for a specific project and type based on input bag of words.
+    Generates DRS strings for a specific project and type based on input bag of tokens.
 
     Args:
-        drs_entries (Optional[List[str]]): A list of inputs in the form <project> <drstype> <bag_of_words>.
+        drs_entries (Optional[List[str]]): A list of inputs in the form <project> <drstype> <bag_of_tokens>.
         file (Optional[typer.FileText]): File containing DRS generation inputs, one per line.
         verbose (bool): If true, prints detailed generation results.
         output (Optional[str]): File path to save the generated DRS entries.
@@ -187,19 +187,19 @@ def drsgen(
         if current_drs_type is None:
             raise typer.BadParameter(f"Invalid drs_type: {entries[i]}")
 
-        bag_of_words = entries[i]
-        bag_of_words = set(entries[i].split(" "))
+        bag_of_tokens = entries[i]
+        bag_of_tokens = set(entries[i].split(" "))
         i += 1
 
         generator = DrsGenerator(current_project)
         report = None
         match current_drs_type:
             case "filename":
-                report = generator.generate_file_name_from_bag_of_tokens(bag_of_words)
+                report = generator.generate_file_name_from_bag_of_tokens(bag_of_tokens)
             case "directory":
-                report = generator.generate_directory_from_bag_of_tokens(bag_of_words)
+                report = generator.generate_directory_from_bag_of_tokens(bag_of_tokens)
             case "dataset":
-                report = generator.generate_dataset_id_from_bag_of_tokens(bag_of_words)
+                report = generator.generate_dataset_id_from_bag_of_tokens(bag_of_tokens)
             case _:
                 raise RuntimeError("drstype is not known")
         generated_reports.append(report)
@@ -211,7 +211,7 @@ def drsgen(
         table.add_column("errors", style="red")
         table.add_column("result", style="green", width=10)
         for report in generated_reports:
-            entry = str(report.given_mapping_or_bag_of_words)
+            entry = str(report.given_mapping_or_bag_of_tokens)
             warnings = "\n".join(["⚠️ " + str(warning) for warning in report.warnings])
             errors = "\n".join([f"🔍 {error}" for error in report.errors])
             result = report.computed_drs_expression
