@@ -19,4 +19,5 @@
 ```{eval-rst}
 .. automodule:: esgvoc.apps.drs.report
    :members:
+   :inherited-members: BaseModel
 ```

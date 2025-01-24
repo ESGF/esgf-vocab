@@ -13,7 +13,7 @@
 
 ```{eval-rst}
 .. automodule:: esgvoc.api.report
-   :members: 
+   :members:
 ```
 
 ## Get terms

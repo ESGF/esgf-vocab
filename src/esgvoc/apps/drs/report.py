@@ -6,29 +6,65 @@ from esgvoc.api.project_specs import DrsType
 
 class ParserIssueVisitor(Protocol):
     """
-    Specifications for a Parser issues visitor.
+    Specifications for a parser issues visitor.
     """
     
-    def visit_space_issue(self, issue: "Space") -> Any: ...
-    def visit_unparsable_issue(self, issue: "Unparsable") -> Any: ...
-    def visit_extra_separator_issue(self, issue: "ExtraSeparator") -> Any: ...
-    def visit_extra_char_issue(self, issue: "ExtraChar") -> Any: ...
-    def visit_blank_token_issue(self, issue: "BlankToken") -> Any: ...
+    def visit_space_issue(self, issue: "Space") -> Any:
+        """Visit a space issue."""
+        pass
+    def visit_unparsable_issue(self, issue: "Unparsable") -> Any:
+        """Visit a unparsable issue."""
+        pass
+    def visit_extra_separator_issue(self, issue: "ExtraSeparator") -> Any:
+        """Visit an extra separator issue."""
+        pass
+    def visit_extra_char_issue(self, issue: "ExtraChar") -> Any:
+        """Visit an extra char issue."""
+        pass
+    def visit_blank_token_issue(self, issue: "BlankToken") -> Any:
+        """Visit a blank token issue."""
+        pass
 
 
 class ValidationIssueVisitor(Protocol):
-    def visit_filename_extension_issue(self, issue: "FileNameExtensionIssue") -> Any: ...
-    def visit_invalid_token_issue(self, issue: "InvalidToken") -> Any: ...
-    def visit_extra_token_issue(self, issue: "ExtraToken") -> Any: ...
-    def visit_missing_token_issue(self, issue: "MissingToken") -> Any: ...
+    """
+    Specifications for a validation issues visitor.
+    """
+    
+    def visit_filename_extension_issue(self, issue: "FileNameExtensionIssue") -> Any:
+        """Visit a file name extension issue."""
+        pass
+    def visit_invalid_token_issue(self, issue: "InvalidToken") -> Any:
+        """Visit an invalid token issue."""
+        pass
+    def visit_extra_token_issue(self, issue: "ExtraToken") -> Any:
+        """Visit an extra token issue."""
+        pass
+    def visit_missing_token_issue(self, issue: "MissingToken") -> Any:
+        """Visit a missing token issue."""
+        pass
 
 
 class GeneratorIssueVisitor(Protocol):
-    def visit_invalid_token_issue(self, issue: "InvalidToken") -> Any: ...
-    def visit_missing_token_issue(self, issue: "MissingToken") -> Any: ...
-    def visit_too_many_words_collection_issue(self, issue: "TooManyWordsCollection") -> Any: ...
-    def visit_conflicting_collections_issue(self, issue: "ConflictingCollections") -> Any: ...
-    def visit_assign_word_issue(self, issue: "AssignedWord") -> Any: ...
+    """
+    Specifications for a generator issues visitor.
+    """
+
+    def visit_invalid_token_issue(self, issue: "InvalidToken") -> Any:
+        """Visit an invalid token issue."""
+        pass
+    def visit_missing_token_issue(self, issue: "MissingToken") -> Any:
+        """Visit a missing token issue."""
+        pass
+    def visit_too_many_words_collection_issue(self, issue: "TooManyWordsCollection") -> Any:
+        """Visit a too many words collection issue."""
+        pass
+    def visit_conflicting_collections_issue(self, issue: "ConflictingCollections") -> Any:
+        """Visit a conflicting collections issue."""
+        pass
+    def visit_assign_word_issue(self, issue: "AssignedWord") -> Any:
+        """Visit an assign word issue."""
+        pass
 
 
 class DrsIssue(BaseModel, ABC):
@@ -37,17 +73,41 @@ class DrsIssue(BaseModel, ABC):
     """
 
     @abstractmethod
-    def accept(self, visitor) -> Any: ...
+    def accept(self, visitor) -> Any:
+        """
+        Accept an DRS issue visitor.
+
+        :param visitor: The DRS issue visitor.
+        :return: Depending on the visitor.
+        :rtype: Any
+        """
+        pass
 
 
 class ParserIssue(DrsIssue):
+    """
+    Generic class for all the DRS parser issues.
+    """
     column: int|None = None
+    """the column of faulty characters"""
 
     @abstractmethod
-    def accept(self, visitor: ParserIssueVisitor) -> Any: ...
+    def accept(self, visitor: ParserIssueVisitor) -> Any:
+        """
+        Accept an DRS parser issue visitor.
+
+        :param visitor: The DRS parser issue visitor.
+        :type visitor: ParserIssueVisitor
+        :return: Depending on the visitor.
+        :rtype: Any
+        """
+        pass
 
 class Space(ParserIssue):
-    
+    """
+    Represents a problem of unnecessary space[s] at the beginning or end of the DRS expression.
+    Note: `column` is `None`.
+    """
     def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_space_issue(self)
     def __repr__(self):
@@ -55,7 +115,12 @@ class Space(ParserIssue):
 
 
 class Unparsable(ParserIssue):
+    """
+    Represents a problem of non-compliance of the DRS expression.
+    Note: `column` is `None`.
+    """
     expected_drs_type: DrsType
+    """The expected DRS type of the expression (directory, file name or dataset id)."""
     def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_unparsable_issue(self)
     def __repr__(self):
@@ -63,6 +128,9 @@ class Unparsable(ParserIssue):
 
 
 class ExtraSeparator(ParserIssue):
+    """
+    Represents a problem of multiple separator occurrences in the DRS expression.
+    """
     def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_extra_separator_issue(self)
     def __repr__(self):
@@ -70,6 +138,9 @@ class ExtraSeparator(ParserIssue):
 
 
 class ExtraChar(ParserIssue):
+    """
+    Represents a problem of extra characters at the end of the DRS expression.
+    """
     def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_extra_char_issue(self)
     def __repr__(self):
@@ -77,6 +148,9 @@ class ExtraChar(ParserIssue):
 
 
 class BlankToken(ParserIssue):
+    """
+    Represents a problem of blank token in the DRS expression (i.e., space[s] surrounded by separators).
+    """
     def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_blank_token_issue(self)
     def __repr__(self):
@@ -84,12 +158,28 @@ class BlankToken(ParserIssue):
 
 
 class ValidationIssue(DrsIssue):
+    """
+    Generic class for the validation issues.
+    """
     @abstractmethod
-    def accept(self, visitor: ValidationIssueVisitor) -> Any: ...
+    def accept(self, visitor: ValidationIssueVisitor) -> Any:
+        """
+        Accept an DRS validation issue visitor.
+
+        :param visitor: The DRS validation issue visitor.
+        :type visitor: ValidationIssueVisitor
+        :return: Depending on the visitor.
+        :rtype: Any
+        """
+        pass
 
 
 class FileNameExtensionIssue(ValidationIssue):
+    """
+    
+    """
     expected_extension: str
+    """The expected file name extension."""
     def accept(self, visitor: ValidationIssueVisitor) -> Any:
         return visitor.visit_filename_extension_issue(self)
     def __repr__(self):
@@ -103,7 +193,16 @@ class TokenIssue(ValidationIssue):
 
 class GeneratorIssue(DrsIssue):
     @abstractmethod
-    def accept(self, visitor: GeneratorIssueVisitor) -> Any: ...
+    def accept(self, visitor: GeneratorIssueVisitor) -> Any:
+        """
+        Accept an DRS generator issue visitor.
+
+        :param visitor: The DRS generator issue visitor.
+        :type visitor: GeneratorIssueVisitor
+        :return: Depending on the visitor.
+        :rtype: Any
+        """
+        pass
 
 
 class InvalidToken(TokenIssue, GeneratorIssue):
