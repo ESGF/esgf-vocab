@@ -86,7 +86,7 @@ class DrsIssue(BaseModel, ABC):
 
 class ParserIssue(DrsIssue):
     """
-    Generic class for all the DRS parser issues.
+    Generic class for the DRS parser issues.
     """
     column: int|None = None
     """the column of faulty characters"""
@@ -176,7 +176,7 @@ class ValidationIssue(DrsIssue):
 
 class FileNameExtensionIssue(ValidationIssue):
     """
-    
+    Represents a problem on the given file name extension (missing or not compliant).
     """
     expected_extension: str
     """The expected file name extension."""
@@ -187,11 +187,19 @@ class FileNameExtensionIssue(ValidationIssue):
     
 
 class TokenIssue(ValidationIssue):
+    """
+    Generic class for the DRS token issues.
+    """
     token: str
+    """The faulty token."""
     token_position: int
+    """The position of the faulty token (the part position, not the column of the characters."""
 
 
 class GeneratorIssue(DrsIssue):
+    """
+    Generic class for the DRS generator issues.
+    """
     @abstractmethod
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         """
@@ -206,7 +214,11 @@ class GeneratorIssue(DrsIssue):
 
 
 class InvalidToken(TokenIssue, GeneratorIssue):
+    """
+    Represents a problem of invalid token against a collection or a constant part of a DRS specification.
+    """
     collection_id_or_constant_value: str
+    """The collection id or the constant part of a DRS specification."""
     def accept(self, visitor: ValidationIssueVisitor|GeneratorIssueVisitor) -> Any:
         return visitor.visit_invalid_token_issue(self)
     def __repr__(self):
@@ -214,7 +226,14 @@ class InvalidToken(TokenIssue, GeneratorIssue):
 
 
 class ExtraToken(TokenIssue):
+    """
+    Represents a problem of extra token at the end of the given DRS expression.
+    All part of the DRS specification have been processed and this token is not necessary
+    (`collection_id` is `None`) or it has been invalidated by an optional collection part 
+    of the DRS specification (`collection_id` is set).
+    """
     collection_id: str|None
+    """The optional collection id or `None`"""
     def accept(self, visitor: ValidationIssueVisitor) -> Any:
         return visitor.visit_extra_token_issue(self)
     def __repr__(self):
@@ -225,8 +244,13 @@ class ExtraToken(TokenIssue):
 
 
 class MissingToken(ValidationIssue, GeneratorIssue):
+    """
+    Represents a problem of missing token for a collection part of the DRS specification.
+    """
     collection_id: str
+    """The collection id."""
     collection_position: int
+    """The collection part position (not the column of the characters)."""
     def accept(self, visitor: ValidationIssueVisitor|GeneratorIssueVisitor) -> Any:
         return visitor.visit_missing_token_issue(self)
     def __repr__(self):
