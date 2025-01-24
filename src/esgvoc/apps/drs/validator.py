@@ -1,9 +1,9 @@
-from typing import cast
-from esgvoc.api.models import (ProjectSpecs,
+from typing import cast, Any
+from esgvoc.api.project_specs import (ProjectSpecs,
                                DrsType,
                                DrsPart,
                                DrsSpecification,
-                               DrsPartType,
+                               DrsPartKind,
                                DrsCollection,
                                DrsConstant)
 import esgvoc.api.projects as projects
@@ -26,58 +26,49 @@ from esgvoc.apps.drs.report import (DrsValidationReport,
 class DrsApplication:
     """
     Generic DRS application class.
-
-    :param project_id: A project id.
-    :type project_id: str
-    :param pedantic: Turn warnings into errors. Default False.
-    :type pedantic: bool
     """
 
     def __init__(self, project_id: str, pedantic: bool = False) -> None:
-        """
-        Constructor method.
-        
-        :param project_id: A project id.
-        :type project_id: str
-        :param pedantic: Turn warnings into errors. Default False.
-        :type pedantic: bool
-        """
-        
-        self.project_id = project_id
-        self.pedantic = pedantic
+        self.project_id: str = project_id
+        """The project id."""
+        self.pedantic: bool = pedantic
+        """Same as the option of GCC: turn warnings into errors. Default False."""
         project_specs: ProjectSpecs = projects.get_project_specs(project_id)
         for specs in project_specs.drs_specs:
             match specs.type:
-                case DrsType.directory:
-                    self.directory_specs = specs
-                case DrsType.file_name:
-                    self.file_name_specs = specs
-                case DrsType.dataset_id:
-                    self.dataset_id_specs = specs
+                case DrsType.DIRECTORY:
+                    self.directory_specs: DrsSpecification = specs
+                    """The DRS directory specs of the project."""
+                case DrsType.FILE_NAME:
+                    self.file_name_specs: DrsSpecification = specs
+                    """The DRS file name specs of the project."""
+                case DrsType.DATASET_ID:
+                    self.dataset_id_specs: DrsSpecification = specs
+                    """The DRS dataset id specs of the project."""
                 case _:
                     raise ValueError(f'unsupported DRS specs type {specs.type}')
 
-    def get_full_file_name_extension(self):
-        specs = self.file_name_specs
-        full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
-                         specs.properties[constants.FILE_NAME_EXTENSION_KEY]
+    def get_full_file_name_extension(self) -> str:
+        """
+        Returns the full file name extension (the separator plus the extension) of the DRS file
+        name specs of the project.
+
+        :returns: The full file name extension.
+        :rtype: str
+        """
+        specs: DrsSpecification = self.file_name_specs
+        if specs.properties:
+            full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
+                             specs.properties[constants.FILE_NAME_EXTENSION_KEY]
+        else:
+            raise ValueError('missing properties in the DRS file name specifications of the ' +
+                             f'project {self.project_id}')
         return full_extension
 
 
 class DrsValidator(DrsApplication):
     """
-    Valid a DRS directory, dataset id and file name expression against a given project.
-
-    :param project_id: The given project id
-    :type project_id: str
-    :param pedantic: Same as the option of GCC: transform warnings into errors.
-    :type pedantic: bool
-    :param directory_specs: The directory DRS specifications of the given project.
-    :type directory_specs: dict
-    :param file_name_specs: The file name DRS specifications of the given project.
-    :type file_name_specs: dict
-    :param dataset_id_specs: The dataset id DRS specifications of the given project.
-    :type dataset_id_specs: dict
+    Valid a DRS directory, dataset id and file name expression against a project.
     """
    
     def validate_directory(self, drs_expression: str) -> DrsValidationReport:
@@ -118,7 +109,7 @@ class DrsValidator(DrsApplication):
             drs_expression = drs_expression.replace(full_extension, '')
             result = self._validate(drs_expression, self.file_name_specs)
         else:
-            issue = FileNameExtensionIssue(full_extension)
+            issue = FileNameExtensionIssue(expected_extension=full_extension)
             result = self._create_report(self.file_name_specs.type, drs_expression,
                                          [issue], [])
         return result
@@ -135,11 +126,11 @@ class DrsValidator(DrsApplication):
         :rtype: DrsValidationReport
         """
         match type:
-            case DrsType.directory:
+            case DrsType.DIRECTORY:
                 return self.validate_directory(drs_expression)
-            case DrsType.file_name:
+            case DrsType.FILE_NAME:
                 return self.validate_file_name(drs_expression)
-            case DrsType.dataset_id:
+            case DrsType.DATASET_ID:
                 return self.validate_dataset_id(drs_expression)
             case _:
                 raise ValueError(f'unsupported DRS type {type}')
@@ -170,7 +161,7 @@ class DrsValidator(DrsApplication):
                 drs_expression = drs_expression.rstrip()
         tokens = drs_expression.split(separator)
         if len(tokens) < 2:
-            errors.append(Unparsable(drs_type))
+            errors.append(Unparsable(expected_drs_type=drs_type))
             return None, errors, warnings # Early exit
         max_token_index = len(tokens)
         cursor_position = initial_cursor_position = len(drs_expression) + 1
@@ -187,32 +178,34 @@ class DrsValidator(DrsApplication):
         if cursor_position != initial_cursor_position:
             max_token_index = len(tokens)
             column = cursor_position+cursor_offset
-            if (drs_type == DrsType.directory) and (not has_white_token):
-                issue = ExtraSeparator(column)
+            if (drs_type == DrsType.DIRECTORY) and (not has_white_token):
+                issue = ExtraSeparator(column=column)
                 warnings.append(issue)
             else:
-                issue = ExtraChar(column)
+                issue = ExtraChar(column=column)
                 errors.append(issue)
         for index in range(max_token_index-1, -1, -1):
             token = tokens[index]
             len_token = len(token)
             if not token:
                 column = cursor_position + cursor_offset
-                issue = ExtraSeparator(column)
-                if (drs_type != DrsType.directory) or self.pedantic or (index == 0):
+                issue = ExtraSeparator(column=column)
+                if (drs_type != DrsType.DIRECTORY) or self.pedantic or (index == 0):
                     errors.append(issue)
                 else:
                     warnings.append(issue)
                 del tokens[index]
             if token.isspace():
                 column = cursor_position + cursor_offset - len_token
-                issue = BlankToken(column)
+                issue = BlankToken(column=column)
                 errors.append(issue)
                 del tokens[index]
             cursor_position -= len_token + 1
-        return tokens, \
-               DrsValidator._sort_parser_issues(errors), \
-               DrsValidator._sort_parser_issues(warnings)
+        
+        # Mypy doesn't understand that ParserIssues are DrsIssues...
+        sorted_errors = DrsValidator._sort_parser_issues(errors) # type: ignore
+        sorted_warnings = DrsValidator._sort_parser_issues(warnings) # type: ignore
+        return tokens, sorted_errors, sorted_warnings # type: ignore
     
     @staticmethod
     def _sort_parser_issues(issues: list[ParserIssue]) -> list[ParserIssue]:
@@ -220,7 +213,7 @@ class DrsValidator(DrsApplication):
 
     def _validate_token(self, token: str, part: DrsPart) -> bool:
         match part.kind:
-            case DrsPartType.collection:
+            case DrsPartKind.COLLECTION:
                 casted_part: DrsCollection = cast(DrsCollection, part)
                 try:
                     matching_terms = projects.valid_term_in_collection(token,
@@ -233,7 +226,7 @@ class DrsValidator(DrsApplication):
                     return True
                 else:
                     return False
-            case DrsPartType.constant:
+            case DrsPartKind.CONSTANT:
                 part_casted: DrsConstant = cast(DrsConstant, part)
                 return part_casted.value != token
             case _:
@@ -244,8 +237,8 @@ class DrsValidator(DrsApplication):
                        drs_expression: str,
                        errors: list[DrsIssue],
                        warnings: list[DrsIssue]) -> DrsValidationReport:
-        return DrsValidationReport(self.project_id, type, drs_expression, errors,
-                                   warnings)
+        return DrsValidationReport(project_id=self.project_id, type=type,
+                                   expression=drs_expression, errors=errors, warnings=warnings)
 
     def _validate(self,
                   drs_expression: str,
@@ -265,9 +258,11 @@ class DrsValidator(DrsApplication):
                 token_index += 1
                 part_index += 1
                 matching_code_mapping[part.__str__()] = 0
-            elif part.kind == DrsPartType.constant or \
+            elif part.kind == DrsPartKind.CONSTANT or \
                  cast(DrsCollection, part).is_required:
-                issue: ValidationIssue = InvalidToken(token, token_index+1, str(part))
+                issue: ValidationIssue = InvalidToken(token=token,
+                                                      token_position=token_index+1,
+                                                      collection_id_or_constant_value=str(part))
                 errors.append(issue)
                 matching_code_mapping[part.__str__()] = 1
                 token_index += 1
@@ -287,8 +282,8 @@ class DrsValidator(DrsApplication):
         if part_index < part_max_index: # Missing tokens.
             for index in range(part_index, part_max_index):
                 part = specs.parts[index]
-                issue = MissingToken(str(part), index+1)
-                if part.kind == DrsPartType.constant or \
+                issue = MissingToken(collection_id=str(part), collection_position=index+1)
+                if part.kind == DrsPartKind.CONSTANT or \
                    cast(DrsCollection, part).is_required:
                     errors.append(issue)
                 else:
@@ -298,12 +293,12 @@ class DrsValidator(DrsApplication):
             for index in range(token_index, token_max_index):
                 token = tokens[index]
                 part = specs.parts[part_index]
-                if part.kind != DrsPartType.constant           and \
+                if part.kind != DrsPartKind.CONSTANT           and \
                    (not cast(DrsCollection, part).is_required) and \
                     matching_code_mapping[part.__str__()] < 0:
-                    issue = ExtraToken(token, index, str(part))
+                    issue = ExtraToken(token=token, token_position=index, collection_id=str(part))
                 else:
-                    issue = ExtraToken(token, index, None)
+                    issue = ExtraToken(token=token, token_position=index, collection_id=None)
                 errors.append(issue)
                 part_index += 1
         return self._create_report(specs.type, drs_expression, errors, warnings)

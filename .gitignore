@@ -19,3 +19,5 @@ tmp*
 CHANGELOG.md
 .mise.toml
 .mise.toml
+*.bak
+docs/build

@@ -1,39 +1,54 @@
+from pydantic import BaseModel, computed_field
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Protocol
 
 import esgvoc.core.constants as api_settings
 from esgvoc.core.db.models.mixins import TermKind
-from esgvoc.core.db.models.project import PTerm
-from esgvoc.core.db.models.universe import UTerm
 
 
-class ValidationErrorVisitor(ABC):
-    @abstractmethod
+class ValidationErrorVisitor(Protocol):
+    """
+    Specifications for a term validation error visitor.
+    """
     def visit_universe_term_error(self, error: "UniverseTermError") -> Any:
+        """Visit a universe term error."""
         pass
 
-    @abstractmethod
     def visit_project_term_error(self, error: "ProjectTermError") -> Any:
+        """Visit a project term error."""
         pass
 
 
-class ValidationError(ABC):
-    def __init__(self,
-                 value: str):
-        self.value: str = value
+class ValidationError(BaseModel, ABC):
+    """
+    Generic class for the term validation error.
+    """
+    value: str
+    """The given value that is invalid."""
+    term: dict
+    """JSON specification of the term."""
+    term_kind: TermKind
+    """The kind of term."""
     
     @abstractmethod
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
+        """
+        Accept a validation error visitor.
+
+        :param visitor: The validation error visitor.
+        :type visitor: ValidationErrorVisitor
+        :return: Depending on the visitor.
+        :rtype: Any
+        """
         pass
 
 class UniverseTermError(ValidationError):
-    def __init__(self,
-                 value: str,
-                 term: UTerm):
-        super().__init__(value)
-        self.term: dict = term.specs
-        self.term_kind: TermKind = term.kind
-        self.data_descriptor_id: str = term.data_descriptor.id
+    """
+    A validation error on a term from the universe.
+    """
+    
+    data_descriptor_id: str
+    """The data descriptor that the term belongs."""
 
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         return visitor.visit_universe_term_error(self)
@@ -46,13 +61,12 @@ class UniverseTermError(ValidationError):
 
 
 class ProjectTermError(ValidationError):
-    def __init__(self,
-                 value: str,
-                 term: PTerm):
-        super().__init__(value)
-        self.term: dict = term.specs
-        self.term_kind: TermKind = term.kind
-        self.collection_id: str = term.collection.id
+    """
+    A validation error on a term from a project.
+    """
+    
+    collection_id: str
+    """The collection id that the term belongs"""
 
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         return visitor.visit_project_term_error(self)
@@ -64,15 +78,25 @@ class ProjectTermError(ValidationError):
         return result
 
 
-class ValidationReport:
-    def __init__(self,
-                 given_expression: str,
-                 errors: list[ValidationError]):
-        self.expression: str = given_expression
-        self.errors: list[ValidationError] = errors
-        self.nb_errors = len(self.errors) if self.errors else 0
-        self.validated: bool = False if errors else True
-        self.message = f"'{self.expression}' has {self.nb_errors} error(s)"
+class ValidationReport(BaseModel):
+    """
+    Term validation report.
+    """
+    expression: str
+    """The given expression."""
+    errors: list[ValidationError]
+    """The validation errors."""
+    @computed_field # type: ignore
+    @property
+    def nb_errors(self) -> int:
+        """The number of validation errors."""
+        return len(self.errors) if self.errors else 0
+    @computed_field # type: ignore
+    @property
+    def validated(self) -> bool:
+        """The expression is validated or not."""
+        return False if self.errors else True
+        
    
     def __len__(self) -> int:
         return self.nb_errors
@@ -81,4 +105,4 @@ class ValidationReport:
         return self.validated
     
     def __repr__(self) -> str:
-        return self.message
+        return f"'{self.expression}' has {self.nb_errors} error(s)"

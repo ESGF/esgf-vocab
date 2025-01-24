@@ -2,8 +2,8 @@ from typing import cast, Iterable, Mapping, Any
 
 import esgvoc.api.projects as projects
 
-from esgvoc.api.models import (DrsSpecification,
-                               DrsPartType,
+from esgvoc.api.project_specs import (DrsSpecification,
+                               DrsPartKind,
                                DrsCollection,
                                DrsConstant)
 
@@ -24,21 +24,16 @@ def _get_first_item(items: set[Any]) -> Any:
     return result
 
 
+def _transform_set_and_sort(_set: set[Any]) -> list[Any]:
+    result = list(_set)
+    result.sort()
+    return result
+
+
 class DrsGenerator(DrsApplication):
     """
     Generate a directory, dataset id and file name expression specified by the given project from
     a mapping of collection ids and tokens or an unordered bag of tokens.
-
-    :param project_id: The given project id
-    :type project_id: str
-    :param pedantic: Same as the option of GCC: transform warnings into errors.
-    :type pedantic: bool
-    :param directory_specs: The directory DRS specifications of the given project.
-    :type directory_specs: dict
-    :param file_name_specs: The file name DRS specifications of the given project.
-    :type file_name_specs: dict
-    :param dataset_id_specs: The dataset id DRS specifications of the given project.
-    :type dataset_id_specs: dict
     """
     
     def generate_directory_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
@@ -135,8 +130,11 @@ class DrsGenerator(DrsApplication):
         if self.pedantic:
             errors.extend(warnings)
             warnings.clear()
-        return DrsGeneratorReport(self.project_id, specs.type, mapping, mapping,
-                                  drs_expression, errors, warnings)
+        return DrsGeneratorReport(project_id=self.project_id, type=specs.type,
+                                  given_mapping_or_bag_of_words=mapping,
+                                  mapping_used=mapping,
+                                  computed_drs_expression=drs_expression,
+                                  errors=errors, warnings=warnings)
     
     def generate_from_bag_of_words(self, tokens: Iterable[str], specs: DrsSpecification) \
                                                         -> DrsGeneratorReport:
@@ -165,8 +163,10 @@ class DrsGenerator(DrsApplication):
         if self.pedantic:
             errors.extend(warnings)
             warnings.clear()
-        return DrsGeneratorReport(self.project_id, specs.type, mapping, mapping,
-                                  drs_expression, errors, warnings)
+        return DrsGeneratorReport(project_id=self.project_id, type=specs.type,
+                                  given_mapping_or_bag_of_words=tokens,
+                                  mapping_used=mapping,computed_drs_expression=drs_expression,
+                                  errors=errors, warnings=warnings)
 
     def _generate_from_mapping(self, mapping: Mapping[str, str],
                                specs: DrsSpecification,
@@ -178,7 +178,7 @@ class DrsGenerator(DrsApplication):
         part_position: int = 0
         for part in specs.parts:
             part_position += 1
-            if part.kind == DrsPartType.collection:
+            if part.kind == DrsPartKind.COLLECTION:
                 collection_part = cast(DrsCollection, part)
                 collection_id = collection_part.collection_id
                 if collection_id in mapping:
@@ -188,11 +188,14 @@ class DrsGenerator(DrsApplication):
                                                                            self.project_id,
                                                                            collection_id)
                         if not matching_terms:
-                            issue = InvalidToken(part_value, part_position, collection_id)
+                            issue = InvalidToken(token=part_value,
+                                                 token_position=part_position,
+                                                 collection_id_or_constant_value=collection_id)
                             errors.append(issue)
                             part_value = DrsGeneratorReport.INVALID_TAG
                 else:
-                    other_issue = MissingToken(collection_id, part_position)
+                    other_issue = MissingToken(collection_id=collection_id,
+                                               collection_position=part_position)
                     if collection_part.is_required:
                         errors.append(other_issue)
                         part_value = DrsGeneratorReport.MISSING_TAG
@@ -276,7 +279,7 @@ class DrsGenerator(DrsApplication):
                     if len(collection_words_mapping[collection_id]) == 1:
                         wining_collection_ids.append(collection_id)
                         word = _get_first_item(collection_words_mapping[collection_id])
-                        issue = AssignedWord(collection_id, word)
+                        issue = AssignedWord(collection_id=collection_id, word=word)
                         warnings.append(issue)
             # 3.b Update conflicting collections.
             if wining_collection_ids:
@@ -310,7 +313,7 @@ class DrsGenerator(DrsApplication):
                     wining_collection_ids.append(collection_id)
                     collection_words_mapping[collection_id].clear()
                     collection_words_mapping[collection_id].add(word)
-                    issue = AssignedWord(collection_id, word)
+                    issue = AssignedWord(collection_id=collection_id, word=word)
                     warnings.append(issue)
                 DrsGenerator._remove_ids_from_conflicts(conflicting_collection_ids_list,
                                                         wining_collection_ids)
@@ -349,7 +352,8 @@ class DrsGenerator(DrsApplication):
                         faulty_collections_list.append({l_collection_id, r_collection_id})
         for faulty_collections in faulty_collections_list:
             words = collection_words_mapping[_get_first_item(faulty_collections)]
-            issue = ConflictingCollections(faulty_collections, words)
+            issue = ConflictingCollections(collection_ids=_transform_set_and_sort(faulty_collections),
+                                           words=_transform_set_and_sort(words))
             errors.append(issue)
             for collection_id in faulty_collections:
                 del collection_words_mapping[collection_id]
@@ -361,7 +365,8 @@ class DrsGenerator(DrsApplication):
             if len_word_set == 1:
                 result[collection_id] = _get_first_item(word_set)
             elif len_word_set > 1:
-                other_issue = TooManyWordsCollection(collection_id, word_set)
+                other_issue = TooManyWordsCollection(collection_id=collection_id,
+                                                     words=_transform_set_and_sort(word_set))
                 errors.append(other_issue)
             #else: Don't add emptied collection to the result.
         return result, errors
