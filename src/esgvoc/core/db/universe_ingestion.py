@@ -11,6 +11,7 @@ from esgvoc.core.db.connection import read_json_file
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.universe import DataDescriptor, UTerm, Universe
 from esgvoc.core.db.models.universe import universe_create_db
+import esgvoc.core.service as service
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,7 +33,9 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
         raise IOError(msg) from e
 
     for data_descriptor_dir_path in universe_repo_dir_path.iterdir(): 
-        if data_descriptor_dir_path.is_dir() and (data_descriptor_dir_path / "000_context.jsonld").exists(): # TODO maybe put that in setting  
+        print(data_descriptor_dir_path)
+        if data_descriptor_dir_path.is_dir() and (data_descriptor_dir_path / "000_context.jsonld").exists(): # TODO maybe put that in setting
+            print(data_descriptor_dir_path)
             try:
                 ingest_data_descriptor(data_descriptor_dir_path, connection)
             except Exception as e:
@@ -61,7 +64,7 @@ def ingest_data_descriptor(data_descriptor_path: Path,
         _LOGGER.warning(msg)
         return        
 
-
+    print(context)
     with connection.create_session() as session:
         data_descriptor = DataDescriptor(id=data_descriptor_id,
                                          context=context,
@@ -74,7 +77,7 @@ def ingest_data_descriptor(data_descriptor_path: Path,
             if term_file_path.is_file() and term_file_path.suffix == ".json":
                 try:
                     json_specs=DataMerger(data=JsonLdResource(uri=str(term_file_path)),
-                                          locally_available={"https://espri-mod.github.io/mip-cmor-tables":".cache/repos/mip-cmor-tables"}).merge_linked_json()[-1]
+                                          locally_available={"https://espri-mod.github.io/mip-cmor-tables":service.service_settings.universe.local_path}).merge_linked_json()[-1]
                     term_kind = infer_term_kind(json_specs)
                     term_id = json_specs["id"]
 

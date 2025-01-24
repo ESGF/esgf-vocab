@@ -45,7 +45,7 @@ def create_drs_name_index():
 
 def project_create_db(db_file_path: Path):
     try:
-        connection = db.DBConnection(db_file_path,True)
+        connection = db.DBConnection(db_file_path)
     except Exception as e:
         msg = f'Unable to create SQlite file at {db_file_path}. Abort.'
         _LOGGER.fatal(msg)
