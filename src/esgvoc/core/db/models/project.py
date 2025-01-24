@@ -7,7 +7,6 @@ from sqlmodel import Column, Field, Relationship, SQLModel
 
 import esgvoc.core.db.connection as db
 from esgvoc.core.db.models.mixins import IdMixin, PkMixin, TermKind
-
 _LOGGER = logging.getLogger("project_db_creation")
 
 
@@ -34,14 +33,10 @@ class PTerm(SQLModel, PkMixin, IdMixin, table=True):
     kind: TermKind = Field(sa_column=Column(sa.Enum(TermKind)))
     collection_pk: int | None = Field(default=None, foreign_key="collections.pk")
     collection: Collection = Relationship(back_populates="terms")
+    __table_args__ = (sa.Index(
+             "drs_name_index", specs.sa_column["drs_name"]
 
-
-def create_drs_name_index():
-    if not hasattr(PTerm,"__table_args__"): 
-        PTerm.__table_args__ = sa.Index(
-            "drs_name_index", PTerm.__table__.c.specs["drs_name"]
-        )
-
+         ),)
 
 def project_create_db(db_file_path: Path):
     try:
@@ -54,7 +49,6 @@ def project_create_db(db_file_path: Path):
         tables_to_be_created = [SQLModel.metadata.tables['projects'],
                                 SQLModel.metadata.tables['collections'],
                                 SQLModel.metadata.tables['pterms']]
-        create_drs_name_index()
         SQLModel.metadata.create_all(connection.get_engine(), tables=tables_to_be_created)
     except Exception as e:
         msg = f'Unable to create tables in SQLite database at {db_file_path}. Abort.'
