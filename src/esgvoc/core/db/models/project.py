@@ -37,14 +37,15 @@ class PTerm(SQLModel, PkMixin, IdMixin, table=True):
 
 
 def create_drs_name_index():
-    PTerm.__table_args__ = sa.Index(
-        "drs_name_index", PTerm.__table__.c.specs["drs_name"]
-    )
+    if not hasattr(PTerm,"__table_args__"): 
+        PTerm.__table_args__ = sa.Index(
+            "drs_name_index", PTerm.__table__.c.specs["drs_name"]
+        )
 
 
 def project_create_db(db_file_path: Path):
     try:
-        connection = db.DBConnection(db_file_path)
+        connection = db.DBConnection(db_file_path,True)
     except Exception as e:
         msg = f'Unable to create SQlite file at {db_file_path}. Abort.'
         _LOGGER.fatal(msg)
