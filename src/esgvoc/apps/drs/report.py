@@ -258,26 +258,40 @@ class MissingToken(ValidationIssue, GeneratorIssue):
     
 
 class TooManyWordsCollection(GeneratorIssue):
+    """
+    Represents a problem while inferring a mapping collection - token in the generation
+    of a DRS expression based on a bag of tokens. The problem is that more than one token
+    is able to match this collection. The generator is unable to choose from these tokens 
+    """
     collection_id: str
-    words: list[str]
+    """The collection id."""
+    words: list[str] # TODO rename into tokens.
+    """The faulty tokens."""
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_too_many_words_collection_issue(self)
 
     def __repr__(self):
-        words_str = ", ".join(word for word in self.words)
-        result = f'collection {self.collection_id} has more than one word ({words_str})'
+        tokens_str = ", ".join(token for token in self.words)
+        result = f'collection {self.collection_id} has more than one token ({tokens_str})'
         return result
 
 
 class ConflictingCollections(GeneratorIssue):
+    """
+    Represents a problem while inferring a mapping collection - token in the generation
+    of a DRS expression based on a bag of tokens. The problem is that these collections shares the 
+    very same tokens. The generator is unable to choose which token for which collection.
+    """
     collection_ids: list[str]
-    words: list[str]
+    """The ids of the collections."""
+    words: list[str] # TODO rename into tokens.
+    """The shared tokens."""
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_conflicting_collections_issue(self)
     def __repr__(self):
         collection_ids_str = ", ".join(collection_id for collection_id in self.collection_ids)
-        words_str = ", ".join(word for word in self.words)
-        result = f"collections {collection_ids_str} are competing for the same word(s) {words_str}"
+        tokens_str = ", ".join(token for token in self.words)
+        result = f"collections {collection_ids_str} are competing for the same token(s) {tokens_str}"
         return result
 
 
@@ -287,7 +301,7 @@ class AssignedWord(GeneratorIssue):
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_assign_word_issue(self)
     def __repr__(self):
-        result = f"assign word {self.word} for collection {self.collection_id}"
+        result = f"assign token {self.word} for collection {self.collection_id}"
         return result
 
 
