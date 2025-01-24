@@ -1,0 +1,984 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index &#8212; ESGVOC 0.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=7f7c277e"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">ESGVOC 0.2.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="get_started/index.html">Get Started</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="api_documentation/universe.html">Universe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_documentation/projects.html">Projects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_documentation/project_specs.html">Project specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_documentation/drs.html">DRS applications</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/ESGF/esgf-vocab" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/ESGF/esgf-vocab/issues/new?title=Issue%20on%20page%20%2Fgenindex.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#A"><strong>A</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ 
+</div>
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/projects.html#esgvoc.api.report.ProjectTermError.accept">accept() (esgvoc.api.report.ProjectTermError method)</a>
+
+      <ul>
+        <li><a href="api_documentation/projects.html#esgvoc.api.report.UniverseTermError.accept">(esgvoc.api.report.UniverseTermError method)</a>
+</li>
+        <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationError.accept">(esgvoc.api.report.ValidationError method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.AssignedToken.accept">(esgvoc.apps.drs.report.AssignedToken method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.BlankToken.accept">(esgvoc.apps.drs.report.BlankToken method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ConflictingCollections.accept">(esgvoc.apps.drs.report.ConflictingCollections method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsIssue.accept">(esgvoc.apps.drs.report.DrsIssue method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ExtraChar.accept">(esgvoc.apps.drs.report.ExtraChar method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ExtraSeparator.accept">(esgvoc.apps.drs.report.ExtraSeparator method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ExtraToken.accept">(esgvoc.apps.drs.report.ExtraToken method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.FileNameExtensionIssue.accept">(esgvoc.apps.drs.report.FileNameExtensionIssue method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.GeneratorIssue.accept">(esgvoc.apps.drs.report.GeneratorIssue method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.InvalidToken.accept">(esgvoc.apps.drs.report.InvalidToken method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.MissingToken.accept">(esgvoc.apps.drs.report.MissingToken method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ParserIssue.accept">(esgvoc.apps.drs.report.ParserIssue method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.Space.accept">(esgvoc.apps.drs.report.Space method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.TokenIssue.accept">(esgvoc.apps.drs.report.TokenIssue method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.TooManyTokensCollection.accept">(esgvoc.apps.drs.report.TooManyTokensCollection method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.Unparsable.accept">(esgvoc.apps.drs.report.Unparsable method)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ValidationIssue.accept">(esgvoc.apps.drs.report.ValidationIssue method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchSettings.case_sensitive">case_sensitive (esgvoc.api.search.SearchSettings attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsPartKind.COLLECTION">COLLECTION (esgvoc.api.project_specs.DrsPartKind attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsCollection.collection_id">collection_id (esgvoc.api.project_specs.DrsCollection attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/projects.html#esgvoc.api.report.ProjectTermError.collection_id">(esgvoc.api.report.ProjectTermError attribute)</a>
+</li>
+        <li><a href="api_documentation/projects.html#esgvoc.api.search.MatchingTerm.collection_id">(esgvoc.api.search.MatchingTerm attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.AssignedToken.collection_id">(esgvoc.apps.drs.report.AssignedToken attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ExtraToken.collection_id">(esgvoc.apps.drs.report.ExtraToken attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.MissingToken.collection_id">(esgvoc.apps.drs.report.MissingToken attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.TooManyTokensCollection.collection_id">(esgvoc.apps.drs.report.TooManyTokensCollection attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.InvalidToken.collection_id_or_constant_value">collection_id_or_constant_value (esgvoc.apps.drs.report.InvalidToken attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ConflictingCollections.collection_ids">collection_ids (esgvoc.apps.drs.report.ConflictingCollections attribute)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.MissingToken.collection_position">collection_position (esgvoc.apps.drs.report.MissingToken attribute)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.BlankToken.column">column (esgvoc.apps.drs.report.BlankToken attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ExtraChar.column">(esgvoc.apps.drs.report.ExtraChar attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ExtraSeparator.column">(esgvoc.apps.drs.report.ExtraSeparator attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ParserIssue.column">(esgvoc.apps.drs.report.ParserIssue attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.Space.column">(esgvoc.apps.drs.report.Space attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.Unparsable.column">(esgvoc.apps.drs.report.Unparsable attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_documentation/projects.html#esgvoc.core.db.models.mixins.TermKind.COMPOSITE">COMPOSITE (esgvoc.core.db.models.mixins.TermKind attribute)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.computed_drs_expression">computed_drs_expression (esgvoc.apps.drs.report.DrsGeneratorReport attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsPartKind.CONSTANT">CONSTANT (esgvoc.api.project_specs.DrsPartKind attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/projects.html#esgvoc.api.report.UniverseTermError.data_descriptor_id">data_descriptor_id (esgvoc.api.report.UniverseTermError attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsType.DATASET_ID">DATASET_ID (esgvoc.api.project_specs.DrsType attribute)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.dataset_id_specs">dataset_id_specs (esgvoc.apps.drs.validator.DrsApplication attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.ProjectSpecs.description">description (esgvoc.api.project_specs.ProjectSpecs attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsType.DIRECTORY">DIRECTORY (esgvoc.api.project_specs.DrsType attribute)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.directory_specs">directory_specs (esgvoc.apps.drs.validator.DrsApplication attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.ProjectSpecs.drs_specs">drs_specs (esgvoc.api.project_specs.ProjectSpecs attribute)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication">DrsApplication (class in esgvoc.apps.drs.validator)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator">DrsGenerator (class in esgvoc.apps.drs.generator)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsPart">DrsPart (in module esgvoc.api.project_specs)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsPartKind">DrsPartKind (class in esgvoc.api.project_specs)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsType">DrsType (class in esgvoc.api.project_specs)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator">DrsValidator (class in esgvoc.apps.drs.validator)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchType.ENDS_WITH">ENDS_WITH (esgvoc.api.search.SearchType attribute)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationReport.errors">errors (esgvoc.api.report.ValidationReport attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.errors">(esgvoc.apps.drs.report.DrsGeneratorReport attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsReport.errors">(esgvoc.apps.drs.report.DrsReport attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport.errors">(esgvoc.apps.drs.report.DrsValidationReport attribute)</a>
+</li>
+      </ul></li>
+      <li>
+    esgvoc.api.project_specs
+
+      <ul>
+        <li><a href="api_documentation/project_specs.html#module-esgvoc.api.project_specs">module</a>
+</li>
+      </ul></li>
+      <li>
+    esgvoc.api.projects
+
+      <ul>
+        <li><a href="api_documentation/projects.html#module-esgvoc.api.projects">module</a>, <a href="api_documentation/projects.html#module-esgvoc.api.projects">[1]</a>, <a href="api_documentation/projects.html#module-esgvoc.api.projects">[2]</a>
+</li>
+      </ul></li>
+      <li>
+    esgvoc.api.report
+
+      <ul>
+        <li><a href="api_documentation/projects.html#module-esgvoc.api.report">module</a>
+</li>
+      </ul></li>
+      <li>
+    esgvoc.api.search
+
+      <ul>
+        <li><a href="api_documentation/projects.html#module-esgvoc.api.search">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    esgvoc.api.universe
+
+      <ul>
+        <li><a href="api_documentation/universe.html#module-esgvoc.api.universe">module</a>, <a href="api_documentation/universe.html#module-esgvoc.api.universe">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    esgvoc.apps.drs.generator
+
+      <ul>
+        <li><a href="api_documentation/drs.html#module-esgvoc.apps.drs.generator">module</a>
+</li>
+      </ul></li>
+      <li>
+    esgvoc.apps.drs.report
+
+      <ul>
+        <li><a href="api_documentation/drs.html#module-esgvoc.apps.drs.report">module</a>
+</li>
+      </ul></li>
+      <li>
+    esgvoc.apps.drs.validator
+
+      <ul>
+        <li><a href="api_documentation/drs.html#module-esgvoc.apps.drs.validator">module</a>
+</li>
+      </ul></li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchType.EXACT">EXACT (esgvoc.api.search.SearchType attribute)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.Unparsable.expected_drs_type">expected_drs_type (esgvoc.apps.drs.report.Unparsable attribute)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.FileNameExtensionIssue.expected_extension">expected_extension (esgvoc.apps.drs.report.FileNameExtensionIssue attribute)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationReport.expression">expression (esgvoc.api.report.ValidationReport attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport.expression">(esgvoc.apps.drs.report.DrsValidationReport attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsType.FILE_NAME">FILE_NAME (esgvoc.api.project_specs.DrsType attribute)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.file_name_specs">file_name_specs (esgvoc.apps.drs.validator.DrsApplication attribute)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_collections_in_project">find_collections_in_project() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/universe.html#esgvoc.api.universe.find_data_descriptors_in_universe">find_data_descriptors_in_universe() (in module esgvoc.api.universe)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_project">find_project() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_terms_from_data_descriptor_in_all_projects">find_terms_from_data_descriptor_in_all_projects() (in module esgvoc.api.projects)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_terms_from_data_descriptor_in_project">find_terms_from_data_descriptor_in_project() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_terms_in_all_projects">find_terms_in_all_projects() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_terms_in_collection">find_terms_in_collection() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/universe.html#esgvoc.api.universe.find_terms_in_data_descriptor">find_terms_in_data_descriptor() (in module esgvoc.api.universe)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_terms_in_project">find_terms_in_project() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/universe.html#esgvoc.api.universe.find_terms_in_universe">find_terms_in_universe() (in module esgvoc.api.universe)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_bag_of_tokens">generate_dataset_id_from_bag_of_tokens() (esgvoc.apps.drs.generator.DrsGenerator method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_mapping">generate_dataset_id_from_mapping() (esgvoc.apps.drs.generator.DrsGenerator method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.generate_directory_from_bag_of_tokens">generate_directory_from_bag_of_tokens() (esgvoc.apps.drs.generator.DrsGenerator method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.generate_directory_from_mapping">generate_directory_from_mapping() (esgvoc.apps.drs.generator.DrsGenerator method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.generate_file_name_from_bag_of_tokens">generate_file_name_from_bag_of_tokens() (esgvoc.apps.drs.generator.DrsGenerator method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.generate_file_name_from_mapping">generate_file_name_from_mapping() (esgvoc.apps.drs.generator.DrsGenerator method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.generate_from_bag_of_tokens">generate_from_bag_of_tokens() (esgvoc.apps.drs.generator.DrsGenerator method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.generate_from_mapping">generate_from_mapping() (esgvoc.apps.drs.generator.DrsGenerator method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.GeneratorIssueVisitor">GeneratorIssueVisitor (class in esgvoc.apps.drs.report)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_all_collections_in_project">get_all_collections_in_project() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/universe.html#esgvoc.api.universe.get_all_data_descriptors_in_universe">get_all_data_descriptors_in_universe() (in module esgvoc.api.universe)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_all_projects">get_all_projects() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_all_terms_in_all_projects">get_all_terms_in_all_projects() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_all_terms_in_collection">get_all_terms_in_collection() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/universe.html#esgvoc.api.universe.get_all_terms_in_data_descriptor">get_all_terms_in_data_descriptor() (in module esgvoc.api.universe)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_all_terms_in_project">get_all_terms_in_project() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/universe.html#esgvoc.api.universe.get_all_terms_in_universe">get_all_terms_in_universe() (in module esgvoc.api.universe)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.get_full_file_name_extension">get_full_file_name_extension() (esgvoc.apps.drs.validator.DrsApplication method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.given_mapping_or_bag_of_tokens">given_mapping_or_bag_of_tokens (esgvoc.apps.drs.report.DrsGeneratorReport attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.INVALID_TAG">INVALID_TAG (esgvoc.apps.drs.report.DrsGeneratorReport attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsCollection.is_required">is_required (esgvoc.api.project_specs.DrsCollection attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsCollection.kind">kind (esgvoc.api.project_specs.DrsCollection attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsConstant.kind">(esgvoc.api.project_specs.DrsConstant attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchType.LIKE">LIKE (esgvoc.api.search.SearchType attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.mapping_used">mapping_used (esgvoc.apps.drs.report.DrsGeneratorReport attribute)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.MISSING_TAG">MISSING_TAG (esgvoc.apps.drs.report.DrsGeneratorReport attribute)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.core.db.models.mixins.TermKind.MIXED">MIXED (esgvoc.core.db.models.mixins.TermKind attribute)</a>
+</li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="api_documentation/project_specs.html#module-esgvoc.api.project_specs">esgvoc.api.project_specs</a>
+</li>
+        <li><a href="api_documentation/projects.html#module-esgvoc.api.projects">esgvoc.api.projects</a>, <a href="api_documentation/projects.html#module-esgvoc.api.projects">[1]</a>, <a href="api_documentation/projects.html#module-esgvoc.api.projects">[2]</a>
+</li>
+        <li><a href="api_documentation/projects.html#module-esgvoc.api.report">esgvoc.api.report</a>
+</li>
+        <li><a href="api_documentation/projects.html#module-esgvoc.api.search">esgvoc.api.search</a>
+</li>
+        <li><a href="api_documentation/universe.html#module-esgvoc.api.universe">esgvoc.api.universe</a>, <a href="api_documentation/universe.html#module-esgvoc.api.universe">[1]</a>
+</li>
+        <li><a href="api_documentation/drs.html#module-esgvoc.apps.drs.generator">esgvoc.apps.drs.generator</a>
+</li>
+        <li><a href="api_documentation/drs.html#module-esgvoc.apps.drs.report">esgvoc.apps.drs.report</a>
+</li>
+        <li><a href="api_documentation/drs.html#module-esgvoc.apps.drs.validator">esgvoc.apps.drs.validator</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationReport.nb_errors">nb_errors (esgvoc.api.report.ValidationReport property)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.nb_errors">(esgvoc.apps.drs.report.DrsGeneratorReport property)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsReport.nb_errors">(esgvoc.apps.drs.report.DrsReport property)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport.nb_errors">(esgvoc.apps.drs.report.DrsValidationReport property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.nb_warnings">nb_warnings (esgvoc.apps.drs.report.DrsGeneratorReport property)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsReport.nb_warnings">(esgvoc.apps.drs.report.DrsReport property)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport.nb_warnings">(esgvoc.apps.drs.report.DrsValidationReport property)</a>
+</li>
+      </ul></li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchSettings.not_operator">not_operator (esgvoc.api.search.SearchSettings attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ParserIssueVisitor">ParserIssueVisitor (class in esgvoc.apps.drs.report)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsSpecification.parts">parts (esgvoc.api.project_specs.DrsSpecification attribute)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.core.db.models.mixins.TermKind.PATTERN">PATTERN (esgvoc.core.db.models.mixins.TermKind attribute)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.pedantic">pedantic (esgvoc.apps.drs.validator.DrsApplication attribute)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.core.db.models.mixins.TermKind.PLAIN">PLAIN (esgvoc.core.db.models.mixins.TermKind attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.ProjectSpecs.project_id">project_id (esgvoc.api.project_specs.ProjectSpecs attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/projects.html#esgvoc.api.search.MatchingTerm.project_id">(esgvoc.api.search.MatchingTerm attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.project_id">(esgvoc.apps.drs.report.DrsGeneratorReport attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsReport.project_id">(esgvoc.apps.drs.report.DrsReport attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport.project_id">(esgvoc.apps.drs.report.DrsValidationReport attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.project_id">(esgvoc.apps.drs.validator.DrsApplication attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsSpecification.properties">properties (esgvoc.api.project_specs.DrsSpecification attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchType.REGEX">REGEX (esgvoc.api.search.SearchType attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchType">SearchType (class in esgvoc.api.search)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsSpecification.separator">separator (esgvoc.api.project_specs.DrsSpecification attribute)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchType.STARTS_WITH">STARTS_WITH (esgvoc.api.search.SearchType attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationError.term">term (esgvoc.api.report.ValidationError attribute)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.search.MatchingTerm.term_id">term_id (esgvoc.api.search.MatchingTerm attribute)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationError.term_kind">term_kind (esgvoc.api.report.ValidationError attribute)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.core.db.models.mixins.TermKind">TermKind (class in esgvoc.core.db.models.mixins)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.AssignedToken.token">token (esgvoc.apps.drs.report.AssignedToken attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ExtraToken.token">(esgvoc.apps.drs.report.ExtraToken attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.InvalidToken.token">(esgvoc.apps.drs.report.InvalidToken attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.TokenIssue.token">(esgvoc.apps.drs.report.TokenIssue attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ExtraToken.token_position">token_position (esgvoc.apps.drs.report.ExtraToken attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.InvalidToken.token_position">(esgvoc.apps.drs.report.InvalidToken attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.TokenIssue.token_position">(esgvoc.apps.drs.report.TokenIssue attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ConflictingCollections.tokens">tokens (esgvoc.apps.drs.report.ConflictingCollections attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.TooManyTokensCollection.tokens">(esgvoc.apps.drs.report.TooManyTokensCollection attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsSpecification.type">type (esgvoc.api.project_specs.DrsSpecification attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchSettings.type">(esgvoc.api.search.SearchSettings attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.type">(esgvoc.apps.drs.report.DrsGeneratorReport attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsReport.type">(esgvoc.apps.drs.report.DrsReport attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport.type">(esgvoc.apps.drs.report.DrsValidationReport attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.valid_term">valid_term() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.valid_term_in_all_projects">valid_term_in_all_projects() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.valid_term_in_collection">valid_term_in_collection() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.valid_term_in_project">valid_term_in_project() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator.validate">validate() (esgvoc.apps.drs.validator.DrsValidator method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator.validate_dataset_id">validate_dataset_id() (esgvoc.apps.drs.validator.DrsValidator method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator.validate_directory">validate_directory() (esgvoc.apps.drs.validator.DrsValidator method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator.validate_file_name">validate_file_name() (esgvoc.apps.drs.validator.DrsValidator method)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationReport.validated">validated (esgvoc.api.report.ValidationReport property)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.validated">(esgvoc.apps.drs.report.DrsGeneratorReport property)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsReport.validated">(esgvoc.apps.drs.report.DrsReport property)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport.validated">(esgvoc.apps.drs.report.DrsValidationReport property)</a>
+</li>
+      </ul></li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationErrorVisitor">ValidationErrorVisitor (class in esgvoc.api.report)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ValidationIssueVisitor">ValidationIssueVisitor (class in esgvoc.apps.drs.report)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsConstant.value">value (esgvoc.api.project_specs.DrsConstant attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationError.value">(esgvoc.api.report.ValidationError attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.GeneratorIssueVisitor.visit_assign_token_issue">visit_assign_token_issue() (esgvoc.apps.drs.report.GeneratorIssueVisitor method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ParserIssueVisitor.visit_blank_token_issue">visit_blank_token_issue() (esgvoc.apps.drs.report.ParserIssueVisitor method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.GeneratorIssueVisitor.visit_conflicting_collections_issue">visit_conflicting_collections_issue() (esgvoc.apps.drs.report.GeneratorIssueVisitor method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ParserIssueVisitor.visit_extra_char_issue">visit_extra_char_issue() (esgvoc.apps.drs.report.ParserIssueVisitor method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ParserIssueVisitor.visit_extra_separator_issue">visit_extra_separator_issue() (esgvoc.apps.drs.report.ParserIssueVisitor method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ValidationIssueVisitor.visit_extra_token_issue">visit_extra_token_issue() (esgvoc.apps.drs.report.ValidationIssueVisitor method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ValidationIssueVisitor.visit_filename_extension_issue">visit_filename_extension_issue() (esgvoc.apps.drs.report.ValidationIssueVisitor method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.GeneratorIssueVisitor.visit_invalid_token_issue">visit_invalid_token_issue() (esgvoc.apps.drs.report.GeneratorIssueVisitor method)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ValidationIssueVisitor.visit_invalid_token_issue">(esgvoc.apps.drs.report.ValidationIssueVisitor method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.GeneratorIssueVisitor.visit_missing_token_issue">visit_missing_token_issue() (esgvoc.apps.drs.report.GeneratorIssueVisitor method)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ValidationIssueVisitor.visit_missing_token_issue">(esgvoc.apps.drs.report.ValidationIssueVisitor method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationErrorVisitor.visit_project_term_error">visit_project_term_error() (esgvoc.api.report.ValidationErrorVisitor method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ParserIssueVisitor.visit_space_issue">visit_space_issue() (esgvoc.apps.drs.report.ParserIssueVisitor method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.GeneratorIssueVisitor.visit_too_many_tokens_collection_issue">visit_too_many_tokens_collection_issue() (esgvoc.apps.drs.report.GeneratorIssueVisitor method)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationErrorVisitor.visit_universe_term_error">visit_universe_term_error() (esgvoc.api.report.ValidationErrorVisitor method)</a>
+</li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ParserIssueVisitor.visit_unparsable_issue">visit_unparsable_issue() (esgvoc.apps.drs.report.ParserIssueVisitor method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.warnings">warnings (esgvoc.apps.drs.report.DrsGeneratorReport attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsReport.warnings">(esgvoc.apps.drs.report.DrsReport attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport.warnings">(esgvoc.apps.drs.report.DrsValidationReport attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By S. Gardoll, G. Levavasseur, L. Troussellier.
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, S. Gardoll, G. Levavasseur, L. Troussellier.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
