@@ -194,11 +194,11 @@ def drsgen(
         report = None
         match current_drs_type:
             case "filename":
-                report = generator.generate_file_name_from_bag_of_words(bag_of_words)
+                report = generator.generate_file_name_from_bag_of_tokens(bag_of_words)
             case "directory":
-                report = generator.generate_directory_from_bag_of_words(bag_of_words)
+                report = generator.generate_directory_from_bag_of_tokens(bag_of_words)
             case "dataset":
-                report = generator.generate_dataset_id_from_bag_of_words(bag_of_words)
+                report = generator.generate_dataset_id_from_bag_of_tokens(bag_of_words)
             case _:
                 raise RuntimeError("drstype is not known")
         generated_reports.append(report)

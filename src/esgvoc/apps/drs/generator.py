@@ -48,7 +48,7 @@ class DrsGenerator(DrsApplication):
         
         return self.generate_from_mapping(mapping, self.directory_specs)
     
-    def generate_directory_from_bag_of_words(self, tokens: Iterable[str]) -> DrsGeneratorReport:
+    def generate_directory_from_bag_of_tokens(self, tokens: Iterable[str]) -> DrsGeneratorReport:
         """
         Generate a directory DRS expression from an unordered bag of tokens.
 
@@ -57,7 +57,7 @@ class DrsGenerator(DrsApplication):
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
-        return self.generate_from_bag_of_words(tokens, self.directory_specs)
+        return self.generate_from_bag_of_tokens(tokens, self.directory_specs)
 
     def generate_dataset_id_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
         """
@@ -70,7 +70,7 @@ class DrsGenerator(DrsApplication):
         """
         return self.generate_from_mapping(mapping, self.dataset_id_specs)
     
-    def generate_dataset_id_from_bag_of_words(self, tokens: Iterable[str]) -> DrsGeneratorReport:
+    def generate_dataset_id_from_bag_of_tokens(self, tokens: Iterable[str]) -> DrsGeneratorReport:
         """
         Generate a dataset id DRS expression from an unordered bag of tokens.
 
@@ -79,7 +79,7 @@ class DrsGenerator(DrsApplication):
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
-        return self.generate_from_bag_of_words(tokens, self.dataset_id_specs)
+        return self.generate_from_bag_of_tokens(tokens, self.dataset_id_specs)
     
 
     def generate_file_name_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
@@ -98,7 +98,7 @@ class DrsGenerator(DrsApplication):
         report.computed_drs_expression = report.computed_drs_expression + self.get_full_file_name_extension()
         return report 
     
-    def generate_file_name_from_bag_of_words(self, tokens: Iterable[str]) -> DrsGeneratorReport:
+    def generate_file_name_from_bag_of_tokens(self, tokens: Iterable[str]) -> DrsGeneratorReport:
         """
         Generate a file name DRS expression from an unordered bag of tokens.
         The file name extension is append automatically, according to the DRS specification,
@@ -109,7 +109,7 @@ class DrsGenerator(DrsApplication):
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
-        report = self.generate_from_bag_of_words(tokens, self.file_name_specs)
+        report = self.generate_from_bag_of_tokens(tokens, self.file_name_specs)
         report.computed_drs_expression = report.computed_drs_expression + self.get_full_file_name_extension()
         return report 
 
@@ -136,7 +136,7 @@ class DrsGenerator(DrsApplication):
                                   computed_drs_expression=drs_expression,
                                   errors=errors, warnings=warnings)
     
-    def generate_from_bag_of_words(self, tokens: Iterable[str], specs: DrsSpecification) \
+    def generate_from_bag_of_tokens(self, tokens: Iterable[str], specs: DrsSpecification) \
                                                         -> DrsGeneratorReport:
         """
         Generate a DRS expression from an unordered bag of tokens.
