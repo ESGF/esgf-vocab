@@ -297,10 +297,13 @@ class ConflictingCollections(GeneratorIssue):
 
 class AssignedToken(GeneratorIssue):
     """
-    
+    Represents a decision of the Generator to assign this token to the collection, that may not be.
+    relevant.
     """
     collection_id: str
+    """The collection id."""
     token: str
+    """The token."""
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_assign_token_issue(self)
     def __repr__(self):
