@@ -11,7 +11,7 @@ import sys
 sys.path.insert(0, os.path.abspath('../../src'))
 
 project = 'ESGVOC'
-copyright = '2025, S. Gardoll, G. Levavasseur, L. Troussellier'
+copyright = '2025, IPSL / ESPRI / CNRS'
 author = 'S. Gardoll, G. Levavasseur, L. Troussellier.'
 release = '0.2.0'
 BASE_URL = 'https://github.com/ESGF/esgf-vocab'
