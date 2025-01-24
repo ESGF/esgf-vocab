@@ -114,19 +114,20 @@ def drsvalid(
             errors = "\n".join(["⚠️ " + str(error) for error in report.errors])
             valid = "✅ Valid" if report else "❌ Invalid"
 
+            table.add_row("-"*4,"-"*4,"-"*4,"-"*4)
             table.add_row(entry, warnings, errors, valid)
 
         console.print(table)
     elif output:
         with open(output, "w") as f:
             for report in reports:
-                f.write(str(report.message) + "\n")
+                f.write(repr(report) + "\n")
         console.print(f"DRS validation entries saved to [green]{output}[/green]")
 
 
     else:
         for report in reports:
-            console.print(report.message)
+            console.print(repr(report))
 
     return reports
 
@@ -223,12 +224,12 @@ def drsgen(
     elif output:
         with open(output, "w") as f:
             for report in generated_reports:
-                f.write(str(report.message) + "\n")
+                f.write(repr(report) + "\n")
         console.print(f"Generated entries saved to [green]{output}[/green]")
 
     else:
         for report in generated_reports:
-            console.print(report.message)
+            console.print(repr(report))
 
     return generated_reports
 if __name__ == "__main__":
