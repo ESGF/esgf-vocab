@@ -38,6 +38,7 @@ dev-dependencies = [
     "myst-parser>=4.0.0",
     "sphinx-book-theme>=1.1.3",
     "autodoc-pydantic>=2.2.0",
+    "myst-nb>=1.1.2",
 ]
 [tool.rye.scripts]
 ev = { cmd = "python src/esgvoc/cli/main.py" }

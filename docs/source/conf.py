@@ -25,7 +25,8 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.linkcode',
     'sphinx.ext.intersphinx',
-    'myst_parser'
+    'myst_nb',
+#    'myst_parser'
 ]
 
 
@@ -40,11 +41,12 @@ def linkcode_resolve(domain, info):
 templates_path = ['_templates']
 exclude_patterns = []
 
-
+'''
 source_suffix = {
     ".rst": "restructuredtext",
     ".md": "markdown",
 }
+'''
 
 autosummary_generate = True
 
@@ -65,6 +67,8 @@ intersphinx_mapping = {
     'pydantic': ('https://docs.pydantic.dev/latest', None)
 }
 
+# MyST NB configuration.
+nb_execution_mode = 'off'
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

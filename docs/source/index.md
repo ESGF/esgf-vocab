@@ -6,7 +6,9 @@
 :maxdepth: 2
 :caption: Guides
 
-get_started/index.md
+guides/get_started.md
+guides/basic_cli.md
+guides/basics_esgvoc.ipynb
 ```
 
 ```{toctree}
