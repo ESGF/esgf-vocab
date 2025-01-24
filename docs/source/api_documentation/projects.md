@@ -14,6 +14,7 @@
 ```{eval-rst}
 .. automodule:: esgvoc.api.report
    :members:
+   :inherited-members: BaseModel
 ```
 
 ## Get terms

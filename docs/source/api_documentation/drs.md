@@ -5,6 +5,7 @@
 ```{eval-rst}
 .. automodule:: esgvoc.apps.drs.validator
    :members:
+   :inherited-members: BaseModel
 ```
 
 ## Generation
@@ -12,6 +13,7 @@
 ```{eval-rst}
 .. automodule:: esgvoc.apps.drs.generator
    :members:
+   :inherited-members: BaseModel
 ```
 
 ## Issue reporting

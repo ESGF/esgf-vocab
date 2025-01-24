@@ -95,7 +95,7 @@ class DrsGenerator(DrsApplication):
         """
         
         report = self.generate_from_mapping(mapping, self.file_name_specs)
-        report.computed_drs_expression = report.computed_drs_expression + self.get_full_file_name_extension()
+        report.computed_drs_expression = report.computed_drs_expression + self._get_full_file_name_extension()
         return report 
     
     def generate_file_name_from_bag_of_tokens(self, tokens: Iterable[str]) -> DrsGeneratorReport:
@@ -110,7 +110,7 @@ class DrsGenerator(DrsApplication):
         :rtype: DrsGeneratorReport
         """
         report = self.generate_from_bag_of_tokens(tokens, self.file_name_specs)
-        report.computed_drs_expression = report.computed_drs_expression + self.get_full_file_name_extension()
+        report.computed_drs_expression = report.computed_drs_expression + self._get_full_file_name_extension()
         return report 
 
     def generate_from_mapping(self, mapping: Mapping[str, str],

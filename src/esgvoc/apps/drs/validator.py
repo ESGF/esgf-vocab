@@ -48,7 +48,7 @@ class DrsApplication:
                 case _:
                     raise ValueError(f'unsupported DRS specs type {specs.type}')
 
-    def get_full_file_name_extension(self) -> str:
+    def _get_full_file_name_extension(self) -> str:
         """
         Returns the full file name extension (the separator plus the extension) of the DRS file
         name specs of the project.
@@ -104,7 +104,7 @@ class DrsValidator(DrsApplication):
         :returns: A validation report.
         :rtype: DrsValidationReport
         """
-        full_extension = self.get_full_file_name_extension()
+        full_extension = self._get_full_file_name_extension()
         if drs_expression.endswith(full_extension):
             drs_expression = drs_expression.replace(full_extension, '')
             result = self._validate(drs_expression, self.file_name_specs)
