@@ -33,9 +33,7 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
         raise IOError(msg) from e
 
     for data_descriptor_dir_path in universe_repo_dir_path.iterdir(): 
-        print(data_descriptor_dir_path)
         if data_descriptor_dir_path.is_dir() and (data_descriptor_dir_path / "000_context.jsonld").exists(): # TODO maybe put that in setting
-            print(data_descriptor_dir_path)
             try:
                 ingest_data_descriptor(data_descriptor_dir_path, connection)
             except Exception as e:
@@ -64,7 +62,6 @@ def ingest_data_descriptor(data_descriptor_path: Path,
         _LOGGER.warning(msg)
         return        
 
-    print(context)
     with connection.create_session() as session:
         data_descriptor = DataDescriptor(id=data_descriptor_id,
                                          context=context,
