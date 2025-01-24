@@ -19,7 +19,6 @@ ESGF-VOCAB is a Python library designed to simplify interaction with controlled 
   - Supports case-sensitive, wildcard, and approximate matching.
 
 ```{toctree}
-:maxdepth: 2
 :caption: Guides
 :hidden:
 
@@ -29,7 +28,6 @@ guides/basics_esgvoc.ipynb
 ```
 
 ```{toctree}
-:maxdepth: 3
 :caption: API documentation
 :hidden:
 
