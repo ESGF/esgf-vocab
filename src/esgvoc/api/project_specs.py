@@ -8,11 +8,11 @@ class DrsType(str, Enum):
     """
     The types of DRS specification (directory, file name and dataset id).
     """
-    directory = "directory"
+    DIRECTORY = "directory"
     """The DRS directory specification type."""
-    file_name = "file_name"
+    FILE_NAME = "file_name"
     """The DRS file name specification type."""
-    dataset_id = "dataset_id"
+    DATASET_ID = "dataset_id"
     """The DRS dataset id specification type."""
 
 
@@ -20,9 +20,9 @@ class DrsPartKind(str, Enum):
     """
     The kinds of DRS part (constant and collection).
     """
-    constant = "constant"
+    CONSTANT = "constant"
     """The constant part type."""
-    collection = "collection"
+    COLLECTION = "collection"
     """The collection part type."""
 
 
@@ -32,7 +32,7 @@ class DrsConstant(BaseModel):
     """
     value: str
     """The value of the a constant part."""
-    kind: Literal[DrsPartKind.constant] = DrsPartKind.constant
+    kind: Literal[DrsPartKind.CONSTANT] = DrsPartKind.CONSTANT
     """The DRS part kind."""
     def __str__(self) -> str:
         return self.value
@@ -46,7 +46,7 @@ class DrsCollection(BaseModel):
     """The collection id."""
     is_required: bool
     """Whether the collection is required for the DRS specification or not."""
-    kind: Literal[DrsPartKind.collection] = DrsPartKind.collection
+    kind: Literal[DrsPartKind.COLLECTION] = DrsPartKind.COLLECTION
     """The DRS part kind."""
     def __str__(self) -> str:
         return self.collection_id

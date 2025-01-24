@@ -5,7 +5,7 @@ from typing import Generator, Callable, cast, Any
 from esgvoc.apps.drs.validator import DrsValidator
 from esgvoc.apps.drs.report import (DrsIssue,
                                     ParserIssue,
-                                    Token,
+                                    TokenIssue,
                                     Space,
                                     Unparsable,
                                     ExtraSeparator,
@@ -21,8 +21,8 @@ def _check_issue(issue: DrsIssue, expected_result: tuple[type, Any]):
     assert isinstance(issue, expected_result[0])
     if issubclass(type(issue), ParserIssue):
         assert cast(ExtraSeparator, issue).column == expected_result[1]
-    elif issubclass(type(issue), Token):
-        issue = cast(Token, issue)
+    elif issubclass(type(issue), TokenIssue):
+        issue = cast(TokenIssue, issue)
         assert issue.token == expected_result[1]
         assert issue.token_position == expected_result[2]
         
