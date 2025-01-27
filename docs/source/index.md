@@ -1,6 +1,6 @@
 # ESGVOC Library
 
-ESGVOC is a Python library designed to simplify interaction with controlled vocabularies (CVs) used in climate data projects. It supports querying, caching, and validating terms across various CV repositories like the [Universe](https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc) and project-specific repositories (e.g., [CMIP6Plus](https://github.com/WCRP-CMIP/CMIP6Plus_CVs/tree/esgvoc), [CMIP6](https://github.com/WCRP-CMIP/CMIP6_CVs/tree/esgvoc), etc.).
+ESGVOC is a Python library designed to simplify interaction with controlled vocabularies (CVs) used in climate data projects. It supports querying, caching, and validating terms across various CV repositories like the [universe](https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc) and project-specific repositories (e.g., [CMIP6Plus](https://github.com/WCRP-CMIP/CMIP6Plus_CVs/tree/esgvoc), [CMIP6](https://github.com/WCRP-CMIP/CMIP6_CVs/tree/esgvoc), etc.).
 
 ---
 
@@ -24,34 +24,49 @@ ESGVOC is a Python library designed to simplify interaction with controlled voca
 
 The ESGVOC library supports a wide range of use cases, including:
 
-* Caching:
-    - Usage without internet access.
-    - Downloading CVs to a local archive or database.
-    - Updating the local cache.
-    - Performing consistency checks between the local cache and remote CV repositories.
+### Caching
 
-* Listing:
-    - All data descriptors from the Universe.  
-    - All terms of one data descriptor from the Universe.  
-    - All available projects.  
-    - All collections from a project.  
-    - All terms from a project.  
-    - All terms of a collection from a project.  
+- Usage without internet access.
+- Downloading CVs to a local archive or database.
+- Updating the local cache.
+- Performing consistency checks between the local cache and remote CV repositories.
 
-* Searching:
-    - Data descriptors in the Universe.
-    - Terms in the Universe or Data descriptors.
-    - Collections in projects.
-    - Terms in collections of projects.
+### Listing
 
-Searching is based on the term id and not its regex nor DRS name. It may be case-sensitive or not, supports wildcards (`%`) and regex.
+- All data descriptors from the universe.  
+- All terms of one data descriptor from the universe.  
+- All available projects.  
+- All collections from a project.  
+- All terms from a project.  
+- All terms of a collection from a project.  
 
-* DRS Validation:  
-    - Terms of a project.  
-    - Terms of a collection from a project.  
+### Searching
 
-The validation of a string value is against 
+- Data descriptors in the universe.
+- Terms in the universe or data descriptors.
+- Collections in projects.
+- Terms in collections of projects.
 
+```{eval-rst}
+.. note::
+  Searching is based on the term id and not its regex nor DRS name. It may be case-sensitive or not, supports wildcards (%) and regex.
+```
+
+### DRS Validation
+
+- Terms of a project.  
+- Terms of a collection from a project.  
+
+DRS validation is a feature that validates a character string against a vocabulary term. This feature is based on the DRS semantics of the terms, i.e. :
+- The drs_name field of a plain term
+- Or the regex field of a term pattern.
+
+For composite terms, each part of the term is validated one by one and falls under one or other of the validation conditions described above.
+
+```{eval-rst}
+.. note::
+  Don't confuse the term identifier (id) with its DRS semantics.
+```
 
 ```{toctree}
 :caption: Guides
