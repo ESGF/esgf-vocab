@@ -104,18 +104,20 @@ def drsvalid(
     if verbose:
         table = Table(title="Validation result")
         table.add_column("entry", style="cyan")
+        table.add_column("project & drs_type", style="cyan")
         table.add_column("warnings", style="magenta")
         table.add_column("errors", style="red")
         table.add_column("valid")
 
         for report in reports:
-            entry = str(report.project_id) + " " + report.type + " " + str(report.expression)
+            entry = str(report.expression)
+            proj_and_type = str(report.project_id) + " " + report.type + " "  
             warnings = "\n".join(["⚠️ " + str(warning) for warning in report.warnings])
             errors = "\n".join(["⚠️ " + str(error) for error in report.errors])
             valid = "✅ Valid" if report else "❌ Invalid"
 
-            table.add_row("-"*4,"-"*4,"-"*4,"-"*4)
-            table.add_row(entry, warnings, errors, valid)
+            table.add_row("-"*4,"-"*4,"-"*4,"-"*4,"-"*4)
+            table.add_row(entry,proj_and_type, warnings, errors, valid)
 
         console.print(table)
     elif output:
@@ -211,7 +213,7 @@ def drsgen(
         table.add_column("errors", style="red")
         table.add_column("result", style="green", width=10)
         for report in generated_reports:
-            entry = str(report.given_mapping_or_bag_of_tokens)
+            entry = str(report.mapping_used)
             warnings = "\n".join(["⚠️ " + str(warning) for warning in report.warnings])
             errors = "\n".join([f"🔍 {error}" for error in report.errors])
             result = report.computed_drs_expression
