@@ -47,11 +47,8 @@ The ESGVOC library supports a wide range of use cases, including:
 Searching is based on the term id and not its regex nor DRS name. It may be case-sensitive or not, supports wildcards (`%`) and regex.
 
 * DRS Validation:  
-    - All terms of the Universe.
-    - All terms of a data descriptor from the Universe.  
-    - All terms of a project.  
-    - All terms of a collection from a project.  
-    - All terms from all projects (cross-validation).  
+    - Terms of a project.  
+    - Terms of a collection from a project.  
 
 The validation of a string value is against 
 
