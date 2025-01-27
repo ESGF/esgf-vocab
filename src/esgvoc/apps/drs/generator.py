@@ -5,7 +5,8 @@ import esgvoc.api.projects as projects
 from esgvoc.api.project_specs import (DrsSpecification,
                                DrsPartKind,
                                DrsCollection,
-                               DrsConstant)
+                               DrsConstant,
+                               DrsType)
 
 from esgvoc.apps.drs.validator import DrsApplication
 from esgvoc.apps.drs.report import (DrsGeneratorReport,
@@ -45,8 +46,7 @@ class DrsGenerator(DrsApplication):
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
-        
-        return self.generate_from_mapping(mapping, self.directory_specs)
+        return self._generate_from_mapping(mapping, self.directory_specs)
     
     def generate_directory_from_bag_of_tokens(self, tokens: Iterable[str]) -> DrsGeneratorReport:
         """
@@ -57,7 +57,7 @@ class DrsGenerator(DrsApplication):
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
-        return self.generate_from_bag_of_tokens(tokens, self.directory_specs)
+        return self._generate_from_bag_of_tokens(tokens, self.directory_specs)
 
     def generate_dataset_id_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
         """
@@ -68,7 +68,7 @@ class DrsGenerator(DrsApplication):
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
-        return self.generate_from_mapping(mapping, self.dataset_id_specs)
+        return self._generate_from_mapping(mapping, self.dataset_id_specs)
     
     def generate_dataset_id_from_bag_of_tokens(self, tokens: Iterable[str]) -> DrsGeneratorReport:
         """
@@ -79,7 +79,7 @@ class DrsGenerator(DrsApplication):
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
-        return self.generate_from_bag_of_tokens(tokens, self.dataset_id_specs)
+        return self._generate_from_bag_of_tokens(tokens, self.dataset_id_specs)
     
 
     def generate_file_name_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
@@ -93,8 +93,7 @@ class DrsGenerator(DrsApplication):
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
-        
-        report = self.generate_from_mapping(mapping, self.file_name_specs)
+        report = self._generate_from_mapping(mapping, self.file_name_specs)
         report.computed_drs_expression = report.computed_drs_expression + self._get_full_file_name_extension()
         return report 
     
@@ -109,24 +108,44 @@ class DrsGenerator(DrsApplication):
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
-        report = self.generate_from_bag_of_tokens(tokens, self.file_name_specs)
+        report = self._generate_from_bag_of_tokens(tokens, self.file_name_specs)
         report.computed_drs_expression = report.computed_drs_expression + self._get_full_file_name_extension()
         return report 
 
     def generate_from_mapping(self, mapping: Mapping[str, str],
-                              specs: DrsSpecification) -> DrsGeneratorReport:
+                              drs_type: DrsType|str) -> DrsGeneratorReport:
         """
         Generate a DRS expression from a mapping of collection ids and tokens.
 
         :param mapping: A mapping of collection ids (keys) and tokens (values).
         :type mapping: Mapping[str, str]
-        :param specs: a DRS project specification (dataset id, file name or directory).
-        :type specs: DrsSpecification
+        :param drs_type: The type of the given DRS expression (directory, file_name or dataset_id)
+        :type drs_type: DrsType
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
-        
-        drs_expression, errors, warnings = self._generate_from_mapping(mapping, specs, True)
+        specs = self._get_specs(drs_type)
+        return self._generate_from_mapping(mapping, specs)
+
+    def generate_from_bag_of_tokens(self, tokens: Iterable[str], drs_type: DrsType) \
+                                                                              -> DrsGeneratorReport:
+        """
+        Generate a DRS expression from an unordered bag of tokens.
+
+        :param tokens: An unordered bag of tokens.
+        :type tokens: Iterable[str]
+        :param drs_type: The type of the given DRS expression (directory, file_name or dataset_id)
+        :type drs_type: DrsType
+        :returns: A generation report.
+        :rtype: DrsGeneratorReport
+        """
+        specs = self._get_specs(drs_type)
+        return self._generate_from_bag_of_tokens(tokens, specs)
+
+
+    def _generate_from_mapping(self, mapping: Mapping[str, str], specs: DrsSpecification) \
+                                                                              -> DrsGeneratorReport:
+        drs_expression, errors, warnings = self.__generate_from_mapping(mapping, specs, True)
         if self.pedantic:
             errors.extend(warnings)
             warnings.clear()
@@ -135,43 +154,11 @@ class DrsGenerator(DrsApplication):
                                   mapping_used=mapping,
                                   computed_drs_expression=drs_expression,
                                   errors=errors, warnings=warnings)
-    
-    def generate_from_bag_of_tokens(self, tokens: Iterable[str], specs: DrsSpecification) \
-                                                        -> DrsGeneratorReport:
-        """
-        Generate a DRS expression from an unordered bag of tokens.
 
-        :param tokens: An unordered bag of tokens.
-        :type tokens: Iterable[str]
-        :param specs: a DRS project specification (dataset id, file name or directory).
-        :type specs: DrsSpecification
-        :returns: A generation report.
-        :rtype: DrsGeneratorReport
-        """
-        collection_tokens_mapping: dict[str, set[str]] = dict()
-        for token in tokens:
-            matching_terms = projects.valid_term_in_project(token, self.project_id)
-            for matching_term in matching_terms:
-                if matching_term.collection_id not in collection_tokens_mapping:
-                    collection_tokens_mapping[matching_term.collection_id] = set()
-                collection_tokens_mapping[matching_term.collection_id].add(token)
-        collection_tokens_mapping, warnings = DrsGenerator._resolve_conflicts(collection_tokens_mapping)
-        mapping, errors = DrsGenerator._check_collection_tokens_mapping(collection_tokens_mapping)
-        drs_expression, errs, warns = self._generate_from_mapping(mapping, specs, False)
-        errors.extend(errs)
-        warnings.extend(warns)
-        if self.pedantic:
-            errors.extend(warnings)
-            warnings.clear()
-        return DrsGeneratorReport(project_id=self.project_id, type=specs.type,
-                                  given_mapping_or_bag_of_tokens=tokens,
-                                  mapping_used=mapping,computed_drs_expression=drs_expression,
-                                  errors=errors, warnings=warnings)
-
-    def _generate_from_mapping(self, mapping: Mapping[str, str],
-                               specs: DrsSpecification,
-                               has_to_valid_terms: bool)\
-                                   -> tuple[str, list[GeneratorIssue], list[GeneratorIssue]]:
+    def __generate_from_mapping(self, mapping: Mapping[str, str],
+                                specs: DrsSpecification,
+                                has_to_valid_terms: bool)\
+                                          -> tuple[str, list[GeneratorIssue], list[GeneratorIssue]]:
         errors: list[GeneratorIssue] = list()
         warnings: list[GeneratorIssue] = list()
         drs_expression = ""
@@ -210,6 +197,28 @@ class DrsGenerator(DrsApplication):
         
         drs_expression = drs_expression[0:len(drs_expression)-len(specs.separator)]
         return drs_expression, errors, warnings
+
+    def _generate_from_bag_of_tokens(self, tokens: Iterable[str], specs: DrsSpecification) \
+                                                                              -> DrsGeneratorReport:
+        collection_tokens_mapping: dict[str, set[str]] = dict()
+        for token in tokens:
+            matching_terms = projects.valid_term_in_project(token, self.project_id)
+            for matching_term in matching_terms:
+                if matching_term.collection_id not in collection_tokens_mapping:
+                    collection_tokens_mapping[matching_term.collection_id] = set()
+                collection_tokens_mapping[matching_term.collection_id].add(token)
+        collection_tokens_mapping, warnings = DrsGenerator._resolve_conflicts(collection_tokens_mapping)
+        mapping, errors = DrsGenerator._check_collection_tokens_mapping(collection_tokens_mapping)
+        drs_expression, errs, warns = self.__generate_from_mapping(mapping, specs, False)
+        errors.extend(errs)
+        warnings.extend(warns)
+        if self.pedantic:
+            errors.extend(warnings)
+            warnings.clear()
+        return DrsGeneratorReport(project_id=self.project_id, type=specs.type,
+                                  given_mapping_or_bag_of_tokens=tokens,
+                                  mapping_used=mapping,computed_drs_expression=drs_expression,
+                                  errors=errors, warnings=warnings)
     
     @staticmethod
     def _resolve_conflicts(collection_tokens_mapping: dict[str, set[str]]) \

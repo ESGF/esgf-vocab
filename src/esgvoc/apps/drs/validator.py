@@ -64,8 +64,19 @@ class DrsApplication:
             raise ValueError('missing properties in the DRS file name specifications of the ' +
                              f'project {self.project_id}')
         return full_extension
-
-
+    
+    def _get_specs(self, drs_type: DrsType) -> DrsSpecification:
+        match drs_type:
+            case DrsType.DIRECTORY:
+                specs = self.directory_specs
+            case DrsType.FILE_NAME:
+                specs = self.file_name_specs
+            case DrsType.DATASET_ID:
+                specs = self.dataset_id_specs
+            case _:
+                raise ValueError(f'unsupported DRS type {drs_type}')
+        return specs
+    
 class DrsValidator(DrsApplication):
     """
     Valid a DRS directory, dataset id and file name expression against a project.
@@ -80,7 +91,6 @@ class DrsValidator(DrsApplication):
         :returns: A validation report.
         :rtype: DrsValidationReport
         """
-        
         return self._validate(drs_expression, self.directory_specs)
     
     def validate_dataset_id(self, drs_expression: str) -> DrsValidationReport:
@@ -92,7 +102,6 @@ class DrsValidator(DrsApplication):
         :returns: A validation report.
         :rtype: DrsValidationReport
         """
-        
         return self._validate(drs_expression, self.dataset_id_specs)
 
     def validate_file_name(self, drs_expression: str) -> DrsValidationReport:
@@ -114,26 +123,19 @@ class DrsValidator(DrsApplication):
                                          [issue], [])
         return result
 
-    def validate(self, drs_expression: str, type: DrsType|str) -> DrsValidationReport:
+    def validate(self, drs_expression: str, drs_type: DrsType|str) -> DrsValidationReport:
         """
         Validate a DRS expression.
 
         :param drs_expression: A DRS expression.
         :type drs_expression: str
-        :param type: The type of the given DRS expression (directory, file_name or dataset_id)
-        :type type: DrsType
+        :param drs_type: The type of the given DRS expression (directory, file_name or dataset_id)
+        :type drs_type: DrsType
         :returns: A validation report.
         :rtype: DrsValidationReport
         """
-        match type:
-            case DrsType.DIRECTORY:
-                return self.validate_directory(drs_expression)
-            case DrsType.FILE_NAME:
-                return self.validate_file_name(drs_expression)
-            case DrsType.DATASET_ID:
-                return self.validate_dataset_id(drs_expression)
-            case _:
-                raise ValueError(f'unsupported DRS type {type}')
+        specs = self._get_specs(drs_type)
+        return self._validate(drs_expression, specs)
     
     def _parse(self,
                drs_expression: str,
