@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>esgvpoc use cases &#8212; ESGVOC 0.2.0 documentation</title>
+    <title>Get Started &#8212; ESGVOC  documentation</title>
   
   
   
@@ -33,6 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -40,13 +41,15 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=7f7c277e"></script>
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'get_started/basic_cli';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guides/get_started';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="About terms" href="terms.html" />
+    <link rel="prev" title="ESGVOC Library" href="../index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -98,8 +101,6 @@
       
       
       
-        
-      
       <dialog id="pst-primary-sidebar-modal"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
@@ -126,7 +127,7 @@
   
   
   
-    <p class="title logo__title">ESGVOC 0.2.0 documentation</p>
+    <p class="title logo__title">ESGVOC  documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -139,8 +140,11 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="index.html">Get Started</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Get Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terms.html">About terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_cli.html">CLI commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basics_esgvoc.html">ESGVOC library tutorial</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API documentation</span></p>
 <ul class="nav bd-sidenav">
@@ -224,7 +228,7 @@
       
       
       
-      <li><a href="https://github.com/ESGF/esgf-vocab/issues/new?title=Issue%20on%20page%20%2Fget_started/basic_cli.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/ESGF/esgf-vocab/issues/new?title=Issue%20on%20page%20%2Fguides/get_started.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -254,7 +258,7 @@
       
       
       
-      <li><a href="../_sources/get_started/basic_cli.md" target="_blank"
+      <li><a href="../_sources/guides/get_started.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -330,7 +334,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>esgvpoc use cases</h1>
+    <h1>Get Started</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -340,23 +344,9 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">esgvpoc use cases</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#instalation">instalation</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#in-venv">in venv</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#activate-venv">activate venv</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fetch-vocabularies">Fetch vocabularies</a></li>
 </ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#cli-commands">CLI commands</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-help">esgvoc –help</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-install">esgvoc install</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-status">esgvoc status</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-get">esgvoc get</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-valid">esgvoc valid</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#more-explanation-coming-soon">more explanation coming soon</a></li>
-</ul>
-</li>
-</ul>
-
             </nav>
         </div>
     </div>
@@ -367,102 +357,25 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="esgvpoc-use-cases">
-<h1>esgvpoc use cases<a class="headerlink" href="#esgvpoc-use-cases" title="Link to this heading">#</a></h1>
-<p>the esgvoc library supports a wide range of use cases, including:</p>
-<ul class="simple">
-<li><p>Caching:
-Usage without internet access.
-Downloading CVs to a local archive or database.
-Updating the local cache.
-Performing consistency checks between the local cache and remote CV repositories.</p></li>
-<li><p>Listing:
-All data descriptors from the Universe.<br />
-All terms of one data descriptor from the Universe.<br />
-All available projects.<br />
-All collections from a project.<br />
-All terms from a project.<br />
-All terms of a collection from a project.</p></li>
-<li><p>Validation:
-Validating an input string against:<br />
-All terms of the Universe.<br />
-All terms of a data descriptor from the Universe.<br />
-All terms of a project.<br />
-All terms of a collection from a project.<br />
-All terms from all projects (cross-validation).<br />
-Validation may be case-sensitive or case-insensitive.<br />
-Wildcards can be used in validation queries.<br />
-The system can return one or several valid terms, as well as similar terms if exact matches are not found.</p></li>
-</ul>
-</section>
-<section id="instalation">
-<h1>instalation<a class="headerlink" href="#instalation" title="Link to this heading">#</a></h1>
-<section id="in-venv">
-<h2>in venv<a class="headerlink" href="#in-venv" title="Link to this heading">#</a></h2>
+  <section id="get-started">
+<h1>Get Started<a class="headerlink" href="#get-started" title="Link to this heading">#</a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>esgvoc
 </pre></div>
 </div>
 </section>
-<section id="activate-venv">
-<h2>activate venv<a class="headerlink" href="#activate-venv" title="Link to this heading">#</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+<section id="fetch-vocabularies">
+<h2>Fetch vocabularies<a class="headerlink" href="#fetch-vocabularies" title="Link to this heading">#</a></h2>
+<p>Right after ESGVOC installation, the vocabularies can be installed following this command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>install
 </pre></div>
 </div>
-</section>
-</section>
-<section id="cli-commands">
-<h1>CLI commands<a class="headerlink" href="#cli-commands" title="Link to this heading">#</a></h1>
-<section id="esgvoc-help">
-<h2>esgvoc –help<a class="headerlink" href="#esgvoc-help" title="Link to this heading">#</a></h2>
-</section>
-<section id="esgvoc-install">
-<h2>esgvoc install<a class="headerlink" href="#esgvoc-install" title="Link to this heading">#</a></h2>
-<p>to get the latest CVs
-currently, only CMIP6Plus_CV is supported</p>
-</section>
-<section id="esgvoc-status">
-<h2>esgvoc status<a class="headerlink" href="#esgvoc-status" title="Link to this heading">#</a></h2>
-<p>to see the differents CVs version on github, on local, in cached db</p>
-<p><img alt="alt text" src="get_started/screen_shot/status_install.png" /></p>
-</section>
-<section id="esgvoc-get">
-<h2>esgvoc get<a class="headerlink" href="#esgvoc-get" title="Link to this heading">#</a></h2>
-<p>the idea is :</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>get<span class="w"> </span>&lt;What_CV&gt;:&lt;What_collection&gt;:&lt;What_term&gt;
-</pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not forget to fetch the vocabularies as ESGVOC will fail at anything!</p>
 </div>
-<p>with somes shortcuts<br />
-you can try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>get<span class="w"> </span>::
-esgvoc<span class="w"> </span>get<span class="w"> </span>universe::
-esgvoc<span class="w"> </span>get<span class="w"> </span>universe:institution:
-esgvoc<span class="w"> </span>get<span class="w"> </span>universe:institution:IPSL
-
-esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6plus::
-esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6plus:institution_id:
-esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6plus:institution_id:ipsl
-
-esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6plus:institution_id:ipsl<span class="w"> </span>cmip6plus:institution_id:llnl
-</pre></div>
-</div>
-</section>
-<section id="esgvoc-valid">
-<h2>esgvoc valid<a class="headerlink" href="#esgvoc-valid" title="Link to this heading">#</a></h2>
-<p>the idea is to validate the DRS_name against a collection or complete CV<br />
-you can try :</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>::
-esgvoc<span class="w"> </span>valid<span class="w"> </span>ipsl<span class="w"> </span>::
-
-
-esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>cmip6plus::
-esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>cmip6plus:institution_id:
-</pre></div>
-</div>
-</section>
-<section id="more-explanation-coming-soon">
-<h2>more explanation coming soon<a class="headerlink" href="#more-explanation-coming-soon" title="Link to this heading">#</a></h2>
-<p>take a look at the the notebook here :
-https://github.com/ESPRI-Mod/cmipld/blob/main/basicsEsgvoc.ipynb</p>
+<p>Let’s continue with the <a class="reference internal" href="basics_esgvoc.html"><span class="std std-doc">basic ESGVOC notebook</span></a>, the tutorial of the library and the <a class="reference internal" href="basic_cli.html"><span class="std std-doc">CLI commands</span></a> that describes the command line tool shipped with the library.</p>
 </section>
 </section>
 
@@ -477,6 +390,24 @@ https://github.com/ESPRI-Mod/cmipld/blob/main/basicsEsgvoc.ipynb</p>
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="../index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">ESGVOC Library</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="terms.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">About terms</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -494,23 +425,9 @@ https://github.com/ESPRI-Mod/cmipld/blob/main/basicsEsgvoc.ipynb</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">esgvpoc use cases</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#instalation">instalation</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#in-venv">in venv</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#activate-venv">activate venv</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fetch-vocabularies">Fetch vocabularies</a></li>
 </ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#cli-commands">CLI commands</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-help">esgvoc –help</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-install">esgvoc install</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-status">esgvoc status</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-get">esgvoc get</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-valid">esgvoc valid</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#more-explanation-coming-soon">more explanation coming soon</a></li>
-</ul>
-</li>
-</ul>
-
   </nav></div>
 
 </div></div>
@@ -534,7 +451,7 @@ By S. Gardoll, G. Levavasseur, L. Troussellier.
 
   <p class="copyright">
     
-      © Copyright 2025, S. Gardoll, G. Levavasseur, L. Troussellier.
+      © Copyright 2025, IPSL / ESPRI / CNRS.
       <br/>
     
   </p>

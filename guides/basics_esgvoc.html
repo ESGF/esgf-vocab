@@ -1,0 +1,819 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ESGVOC library tutorial &#8212; ESGVOC  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guides/basics_esgvoc';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Universe" href="../api_documentation/universe.html" />
+    <link rel="prev" title="CLI commands" href="basic_cli.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">ESGVOC  documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="get_started.html">Get Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terms.html">About terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_cli.html">CLI commands</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">ESGVOC library tutorial</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/universe.html">Universe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/projects.html">Projects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/project_specs.html">Project specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/drs.html">DRS applications</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/ESGF/esgf-vocab" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/ESGF/esgf-vocab/issues/new?title=Issue%20on%20page%20%2Fguides/basics_esgvoc.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/guides/basics_esgvoc.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>ESGVOC library tutorial</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universe-and-projects-organization">Universe and projects organization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-api-organization">ESGVOC API organization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universe">Universe</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listing">Listing</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#little-detour-pydantic-model-instance-return">Little detour: pydantic model instance return</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-example-cmip6plus">Project example: CMIP6plus</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-string-against-the-project-cv">Validating string against the project CV</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#queries-based-on-the-project-and-the-collection-ids">Queries based on the project and the collection ids</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#queries-based-only-on-the-project-id">Queries based only on the project id</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#across-all-projects">Across all projects</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>datetime.datetime(2024, 12, 20, 12, 12, 35, 631402)
+</pre></div>
+</div>
+</div>
+</div>
+<section id="esgvoc-library-tutorial">
+<h1>ESGVOC library tutorial<a class="headerlink" href="#esgvoc-library-tutorial" title="Link to this heading">#</a></h1>
+<p>prerequesite:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>esgvoc<span class="w">  </span>
+esgvoc<span class="w"> </span>install<span class="w"> </span><span class="c1"># in order to get the latest CVs</span>
+</pre></div>
+</div>
+<p>The esgvoc library supports a wide range of use cases, including:</p>
+<ul class="simple">
+<li><p>Listing:<br />
+All data descriptors from the universe.<br />
+All terms of one data descriptor from the universe.<br />
+All available projects.<br />
+All collections from a project.<br />
+All terms from a project.<br />
+All terms of a collection from a project.</p></li>
+<li><p>Validating an input string against:<br />
+All terms of a project.<br />
+All terms of a collection from a project.<br />
+All terms from all projects (cross-validation).</p></li>
+</ul>
+<section id="universe-and-projects-organization">
+<h2>Universe and projects organization<a class="headerlink" href="#universe-and-projects-organization" title="Link to this heading">#</a></h2>
+<p>The universe CV (Controlled Vocabularies) follows this organizational pattern:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&lt;universe&gt;&lt;DataDescriptor&gt;&lt;Term&gt;
+</pre></div>
+</div>
+<p>Similarly, all CVs are organized as:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&lt;project&gt;&lt;collection&gt;&lt;Term&gt;<span class="w">   </span>
+</pre></div>
+</div>
+</section>
+<section id="esgvoc-api-organization">
+<h2>ESGVOC API organization<a class="headerlink" href="#esgvoc-api-organization" title="Link to this heading">#</a></h2>
+<p>The API functions are sorted as follows:</p>
+<ul class="simple">
+<li><p><strong>get</strong> functions return a list of something (collections from a project, terms from a collection, etc.)</p></li>
+<li><p><strong>find</strong> functions try to find terms corresponding to an input string.</p></li>
+<li><p><strong>valid</strong> functions check the compliance of an input string to the DRS of terms.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="universe">
+<h2>Universe<a class="headerlink" href="#universe" title="Link to this heading">#</a></h2>
+<section id="listing">
+<h3>Listing<a class="headerlink" href="#listing" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_data_descriptors_in_universe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;activity&#39;,
+ &#39;consortium&#39;,
+ &#39;date&#39;,
+ &#39;experiment&#39;,
+ &#39;forcing_index&#39;,
+ &#39;frequency&#39;,
+ &#39;grid&#39;,
+ &#39;initialisation_index&#39;,
+ &#39;institution&#39;,
+ &#39;license&#39;,
+ &#39;mip_era&#39;,
+ &#39;model_component&#39;,
+ &#39;organisation&#39;,
+ &#39;physic_index&#39;,
+ &#39;product&#39;,
+ &#39;realisation_index&#39;,
+ &#39;realm&#39;,
+ &#39;resolution&#39;,
+ &#39;source&#39;,
+ &#39;source_type&#39;,
+ &#39;sub_experiment&#39;,
+ &#39;table&#39;,
+ &#39;time_range&#39;,
+ &#39;variable&#39;,
+ &#39;variant_label&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_terms_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span> 
+<span class="c1"># each datadescriptor from the above cell could be use as argument</span>
+<span class="c1"># [:3] just to limit the result with the 3 first one</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Activity(id=&#39;aerchemmip&#39;, validation_method=&#39;list&#39;, name=&#39;AerChemMIP&#39;, long_name=&#39;Aerosols and Chemistry Model Intercomparison Project&#39;, cmip_acronym=&#39;AerChemMIP&#39;, url=None, @context=&#39;000_context.jsonld&#39;, type=&#39;activity&#39;, drs_name=&#39;AerChemMIP&#39;),
+ Activity(id=&#39;c4mip&#39;, validation_method=&#39;list&#39;, name=&#39;C4MIP&#39;, long_name=&#39;Coupled Climate Carbon Cycle Model Intercomparison Project&#39;, cmip_acronym=&#39;C4MIP&#39;, url=None, @context=&#39;000_context.jsonld&#39;, type=&#39;activity&#39;, drs_name=&#39;C4MIP&#39;),
+ Activity(id=&#39;cdrmip&#39;, validation_method=&#39;list&#39;, name=&#39;CDRMIP&#39;, long_name=&#39;Carbon Dioxide Removal Model Intercomparison Project&#39;, cmip_acronym=&#39;CDRMIP&#39;, url=None, @context=&#39;000_context.jsonld&#39;, type=&#39;activity&#39;, drs_name=&#39;CDRMIP&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;aerchemmip&quot;</span><span class="p">)</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Activity(id=&#39;aerchemmip&#39;, validation_method=&#39;list&#39;, name=&#39;AerChemMIP&#39;, long_name=&#39;Aerosols and Chemistry Model Intercomparison Project&#39;, cmip_acronym=&#39;AerChemMIP&#39;, url=None, @context=&#39;000_context.jsonld&#39;, type=&#39;activity&#39;, drs_name=&#39;AerChemMIP&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+<section id="little-detour-pydantic-model-instance-return">
+<h4>Little detour: pydantic model instance return<a class="headerlink" href="#little-detour-pydantic-model-instance-return" title="Link to this heading">#</a></h4>
+<p>The result of the previous call is a list of instances of a pydantic model of the requested data descriptor. From the above example, the result is an <strong>Activity</strong> object that can be query directly in Python.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_activity</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;aerchemmip&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">my_activity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">my_activity</span><span class="o">.</span><span class="n">drs_name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">my_activity</span><span class="o">.</span><span class="n">long_name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">my_activity</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>aerchemmip
+AerChemMIP
+Aerosols and Chemistry Model Intercomparison Project
+id=&#39;aerchemmip&#39; validation_method=&#39;list&#39; name=&#39;AerChemMIP&#39; long_name=&#39;Aerosols and Chemistry Model Intercomparison Project&#39; cmip_acronym=&#39;AerChemMIP&#39; url=None @context=&#39;000_context.jsonld&#39; type=&#39;activity&#39; drs_name=&#39;AerChemMIP&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_universe</span><span class="p">(</span><span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;aerchemmip&quot;</span><span class="p">)</span> <span class="c1"># give the same result as above</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Activity(id=&#39;aerchemmip&#39;, validation_method=&#39;list&#39;, name=&#39;AerChemMIP&#39;, long_name=&#39;Aerosols and Chemistry Model Intercomparison Project&#39;, cmip_acronym=&#39;AerChemMIP&#39;, url=None, @context=&#39;000_context.jsonld&#39;, type=&#39;activity&#39;, drs_name=&#39;AerChemMIP&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="project-example-cmip6plus">
+<h2>Project example: CMIP6plus<a class="headerlink" href="#project-example-cmip6plus" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_projects</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;cmip6plus&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_collections_in_project</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;activity_id&#39;,
+ &#39;experiment_id&#39;,
+ &#39;grid_label&#39;,
+ &#39;institution_id&#39;,
+ &#39;member_id&#39;,
+ &#39;mip_era&#39;,
+ &#39;source_id&#39;,
+ &#39;table_id&#39;,
+ &#39;time_range&#39;,
+ &#39;variable_id&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_terms_in_collection</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;activity_id&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Activity(id=&#39;cmip&#39;, validation_method=&#39;list&#39;, name=&#39;CMIP&#39;, long_name=&#39;CMIP DECK: 1pctCO2, abrupt4xCO2, amip, esm-piControl, esm-historical, historical, and piControl experiments&#39;, cmip_acronym=&#39;CMIP&#39;, url=&#39;https://gmd.copernicus.org/articles/9/1937/2016/gmd-9-1937-2016.pdf&#39;, @context=&#39;000_context.jsonld&#39;, type=&#39;activity&#39;, drs_name=&#39;CMIP&#39;),
+ Activity(id=&#39;lesfmip&#39;, validation_method=&#39;list&#39;, name=&#39;LESFMIP&#39;, long_name=&#39;The Large Ensemble Single Forcing Model Intercomparison Project&#39;, cmip_acronym=&#39;LESFMIP&#39;, url=&#39;https://www.frontiersin.org/articles/10.3389/fclim.2022.955414/full&#39;, @context=&#39;000_context.jsonld&#39;, type=&#39;activity&#39;, drs_name=&#39;LESFMIP&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_collection</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;activity_id&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;cmip&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Activity(id=&#39;cmip&#39;, validation_method=&#39;list&#39;, name=&#39;CMIP&#39;, long_name=&#39;CMIP DECK: 1pctCO2, abrupt4xCO2, amip, esm-piControl, esm-historical, historical, and piControl experiments&#39;, cmip_acronym=&#39;CMIP&#39;, url=&#39;https://gmd.copernicus.org/articles/9/1937/2016/gmd-9-1937-2016.pdf&#39;, @context=&#39;000_context.jsonld&#39;, type=&#39;activity&#39;, drs_name=&#39;CMIP&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="validating-string-against-the-project-cv">
+<h2>Validating string against the project CV<a class="headerlink" href="#validating-string-against-the-project-cv" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">valid_string</span> <span class="o">=</span> <span class="s2">&quot;IPSL&quot;</span> <span class="c1"># the standard name of the institution : &quot;Institut Pierre Simon Laplace&quot;</span>
+<span class="n">unvalid_string</span> <span class="o">=</span> <span class="s2">&quot;ipsl&quot;</span> <span class="c1"># NOT the DRS name ! but in that case it is the &#39;id&#39; of the term </span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="queries-based-on-the-project-and-the-collection-ids">
+<h3>Queries based on the project and the collection ids<a class="headerlink" href="#queries-based-on-the-project-and-the-collection-ids" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_collection</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">valid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;institution_id&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[MatchingTerm(project_id=&#39;cmip6plus&#39;, collection_id=&#39;institution_id&#39;, term_id=&#39;ipsl&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_collection</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">unvalid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;institution_id&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_collection</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">valid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;institution_id&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Valid&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unvalid&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Valid
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_collection</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">unvalid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;institution_id&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Valid&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unvalid&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Unvalid
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="queries-based-only-on-the-project-id">
+<h3>Queries based only on the project id<a class="headerlink" href="#queries-based-only-on-the-project-id" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_project</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">valid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[MatchingTerm(project_id=&#39;cmip6plus&#39;, collection_id=&#39;institution_id&#39;, term_id=&#39;ipsl&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="across-all-projects">
+<h3>Across all projects<a class="headerlink" href="#across-all-projects" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_all_projects</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">valid_string</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_all_projects</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">unvalid_string</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[MatchingTerm(project_id=&#39;cmip6plus&#39;, collection_id=&#39;institution_id&#39;, term_id=&#39;ipsl&#39;)]
+[]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="basic_cli.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">CLI commands</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api_documentation/universe.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Universe</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universe-and-projects-organization">Universe and projects organization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-api-organization">ESGVOC API organization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universe">Universe</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listing">Listing</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#little-detour-pydantic-model-instance-return">Little detour: pydantic model instance return</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-example-cmip6plus">Project example: CMIP6plus</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-string-against-the-project-cv">Validating string against the project CV</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#queries-based-on-the-project-and-the-collection-ids">Queries based on the project and the collection ids</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#queries-based-only-on-the-project-id">Queries based only on the project id</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#across-all-projects">Across all projects</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By S. Gardoll, G. Levavasseur, L. Troussellier.
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, IPSL / ESPRI / CNRS.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

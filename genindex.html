@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; ESGVOC 0.2.0 documentation</title>
+    <title>Index &#8212; ESGVOC  documentation</title>
   
   
   
@@ -32,6 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- So that users can add custom icons -->
   <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -39,7 +40,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=7f7c277e"></script>
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -125,7 +126,7 @@
   
   
   
-    <p class="title logo__title">ESGVOC 0.2.0 documentation</p>
+    <p class="title logo__title">ESGVOC  documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -139,7 +140,10 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="get_started/index.html">Get Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/get_started.html">Get Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/terms.html">About terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/basic_cli.html">CLI commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/basics_esgvoc.html">ESGVOC library tutorial</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API documentation</span></p>
 <ul class="nav bd-sidenav">
@@ -425,14 +429,26 @@
 </li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsType.DATASET_ID">DATASET_ID (esgvoc.api.project_specs.DrsType attribute)</a>
 </li>
-      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.dataset_id_specs">dataset_id_specs (esgvoc.apps.drs.validator.DrsApplication attribute)</a>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.dataset_id_specs">dataset_id_specs (esgvoc.apps.drs.generator.DrsGenerator attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.dataset_id_specs">(esgvoc.apps.drs.validator.DrsApplication attribute)</a>
 </li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator.dataset_id_specs">(esgvoc.apps.drs.validator.DrsValidator attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.ProjectSpecs.description">description (esgvoc.api.project_specs.ProjectSpecs attribute)</a>
 </li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsType.DIRECTORY">DIRECTORY (esgvoc.api.project_specs.DrsType attribute)</a>
 </li>
-      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.directory_specs">directory_specs (esgvoc.apps.drs.validator.DrsApplication attribute)</a>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.directory_specs">directory_specs (esgvoc.apps.drs.generator.DrsGenerator attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.directory_specs">(esgvoc.apps.drs.validator.DrsApplication attribute)</a>
 </li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator.directory_specs">(esgvoc.apps.drs.validator.DrsValidator attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.ProjectSpecs.drs_specs">drs_specs (esgvoc.api.project_specs.ProjectSpecs attribute)</a>
@@ -545,18 +561,24 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsType.FILE_NAME">FILE_NAME (esgvoc.api.project_specs.DrsType attribute)</a>
 </li>
-      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.file_name_specs">file_name_specs (esgvoc.apps.drs.validator.DrsApplication attribute)</a>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.file_name_specs">file_name_specs (esgvoc.apps.drs.generator.DrsGenerator attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.file_name_specs">(esgvoc.apps.drs.validator.DrsApplication attribute)</a>
 </li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator.file_name_specs">(esgvoc.apps.drs.validator.DrsValidator attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_collections_in_project">find_collections_in_project() (in module esgvoc.api.projects)</a>
 </li>
       <li><a href="api_documentation/universe.html#esgvoc.api.universe.find_data_descriptors_in_universe">find_data_descriptors_in_universe() (in module esgvoc.api.universe)</a>
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_project">find_project() (in module esgvoc.api.projects)</a>
 </li>
-      <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_terms_from_data_descriptor_in_all_projects">find_terms_from_data_descriptor_in_all_projects() (in module esgvoc.api.projects)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_terms_from_data_descriptor_in_all_projects">find_terms_from_data_descriptor_in_all_projects() (in module esgvoc.api.projects)</a>
+</li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_terms_from_data_descriptor_in_project">find_terms_from_data_descriptor_in_project() (in module esgvoc.api.projects)</a>
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_terms_in_all_projects">find_terms_in_all_projects() (in module esgvoc.api.projects)</a>
@@ -610,8 +632,6 @@
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_all_terms_in_project">get_all_terms_in_project() (in module esgvoc.api.projects)</a>
 </li>
       <li><a href="api_documentation/universe.html#esgvoc.api.universe.get_all_terms_in_universe">get_all_terms_in_universe() (in module esgvoc.api.universe)</a>
-</li>
-      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.get_full_file_name_extension">get_full_file_name_extension() (esgvoc.apps.drs.validator.DrsApplication method)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.given_mapping_or_bag_of_tokens">given_mapping_or_bag_of_tokens (esgvoc.apps.drs.report.DrsGeneratorReport attribute)</a>
 </li>
@@ -720,14 +740,22 @@
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.core.db.models.mixins.TermKind.PATTERN">PATTERN (esgvoc.core.db.models.mixins.TermKind attribute)</a>
 </li>
-      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.pedantic">pedantic (esgvoc.apps.drs.validator.DrsApplication attribute)</a>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.pedantic">pedantic (esgvoc.apps.drs.generator.DrsGenerator attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.pedantic">(esgvoc.apps.drs.validator.DrsApplication attribute)</a>
 </li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator.pedantic">(esgvoc.apps.drs.validator.DrsValidator attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api_documentation/projects.html#esgvoc.core.db.models.mixins.TermKind.PLAIN">PLAIN (esgvoc.core.db.models.mixins.TermKind attribute)</a>
 </li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.ProjectSpecs.project_id">project_id (esgvoc.api.project_specs.ProjectSpecs attribute)</a>
 
       <ul>
         <li><a href="api_documentation/projects.html#esgvoc.api.search.MatchingTerm.project_id">(esgvoc.api.search.MatchingTerm attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.project_id">(esgvoc.apps.drs.generator.DrsGenerator attribute)</a>
 </li>
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport.project_id">(esgvoc.apps.drs.report.DrsGeneratorReport attribute)</a>
 </li>
@@ -736,6 +764,8 @@
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport.project_id">(esgvoc.apps.drs.report.DrsValidationReport attribute)</a>
 </li>
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsApplication.project_id">(esgvoc.apps.drs.validator.DrsApplication attribute)</a>
+</li>
+        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator.project_id">(esgvoc.apps.drs.validator.DrsValidator attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -770,12 +800,24 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationError.term">term (esgvoc.api.report.ValidationError attribute)</a>
+      <li><a href="api_documentation/projects.html#esgvoc.api.report.ProjectTermError.term">term (esgvoc.api.report.ProjectTermError attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/projects.html#esgvoc.api.report.UniverseTermError.term">(esgvoc.api.report.UniverseTermError attribute)</a>
 </li>
+        <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationError.term">(esgvoc.api.report.ValidationError attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api_documentation/projects.html#esgvoc.api.search.MatchingTerm.term_id">term_id (esgvoc.api.search.MatchingTerm attribute)</a>
 </li>
-      <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationError.term_kind">term_kind (esgvoc.api.report.ValidationError attribute)</a>
+      <li><a href="api_documentation/projects.html#esgvoc.api.report.ProjectTermError.term_kind">term_kind (esgvoc.api.report.ProjectTermError attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/projects.html#esgvoc.api.report.UniverseTermError.term_kind">(esgvoc.api.report.UniverseTermError attribute)</a>
 </li>
+        <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationError.term_kind">(esgvoc.api.report.ValidationError attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api_documentation/projects.html#esgvoc.core.db.models.mixins.TermKind">TermKind (class in esgvoc.core.db.models.mixins)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.AssignedToken.token">token (esgvoc.apps.drs.report.AssignedToken attribute)</a>
@@ -788,6 +830,8 @@
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.TokenIssue.token">(esgvoc.apps.drs.report.TokenIssue attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ExtraToken.token_position">token_position (esgvoc.apps.drs.report.ExtraToken attribute)</a>
 
       <ul>
@@ -796,8 +840,6 @@
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.TokenIssue.token_position">(esgvoc.apps.drs.report.TokenIssue attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ConflictingCollections.tokens">tokens (esgvoc.apps.drs.report.ConflictingCollections attribute)</a>
 
       <ul>
@@ -855,6 +897,10 @@
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsConstant.value">value (esgvoc.api.project_specs.DrsConstant attribute)</a>
 
       <ul>
+        <li><a href="api_documentation/projects.html#esgvoc.api.report.ProjectTermError.value">(esgvoc.api.report.ProjectTermError attribute)</a>
+</li>
+        <li><a href="api_documentation/projects.html#esgvoc.api.report.UniverseTermError.value">(esgvoc.api.report.UniverseTermError attribute)</a>
+</li>
         <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationError.value">(esgvoc.api.report.ValidationError attribute)</a>
 </li>
       </ul></li>
@@ -951,7 +997,7 @@ By S. Gardoll, G. Levavasseur, L. Troussellier.
 
   <p class="copyright">
     
-      © Copyright 2025, S. Gardoll, G. Levavasseur, L. Troussellier.
+      © Copyright 2025, IPSL / ESPRI / CNRS.
       <br/>
     
   </p>

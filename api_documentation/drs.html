@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>DRS applications &#8212; ESGVOC 0.2.0 documentation</title>
+    <title>DRS applications &#8212; ESGVOC  documentation</title>
   
   
   
@@ -33,6 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -40,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=7f7c277e"></script>
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -125,7 +126,7 @@
   
   
   
-    <p class="title logo__title">ESGVOC 0.2.0 documentation</p>
+    <p class="title logo__title">ESGVOC  documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -139,7 +140,10 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../get_started/index.html">Get Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/get_started.html">Get Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/terms.html">About terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/basic_cli.html">CLI commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/basics_esgvoc.html">ESGVOC library tutorial</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API documentation</span></p>
 <ul class="current nav bd-sidenav">
@@ -344,12 +348,16 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsApplication.dataset_id_specs"><code class="docutils literal notranslate"><span class="pre">DrsApplication.dataset_id_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsApplication.directory_specs"><code class="docutils literal notranslate"><span class="pre">DrsApplication.directory_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsApplication.file_name_specs"><code class="docutils literal notranslate"><span class="pre">DrsApplication.file_name_specs</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsApplication.get_full_file_name_extension"><code class="docutils literal notranslate"><span class="pre">DrsApplication.get_full_file_name_extension()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsApplication.pedantic"><code class="docutils literal notranslate"><span class="pre">DrsApplication.pedantic</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsApplication.project_id"><code class="docutils literal notranslate"><span class="pre">DrsApplication.project_id</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator"><code class="docutils literal notranslate"><span class="pre">DrsValidator</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.dataset_id_specs"><code class="docutils literal notranslate"><span class="pre">DrsValidator.dataset_id_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.directory_specs"><code class="docutils literal notranslate"><span class="pre">DrsValidator.directory_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.file_name_specs"><code class="docutils literal notranslate"><span class="pre">DrsValidator.file_name_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.pedantic"><code class="docutils literal notranslate"><span class="pre">DrsValidator.pedantic</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.project_id"><code class="docutils literal notranslate"><span class="pre">DrsValidator.project_id</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_dataset_id"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_dataset_id()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_directory"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_directory()</span></code></a></li>
@@ -360,6 +368,9 @@
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-esgvoc.apps.drs.generator">Generation</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator"><code class="docutils literal notranslate"><span class="pre">DrsGenerator</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.dataset_id_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.dataset_id_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.directory_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.directory_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.file_name_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.file_name_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_dataset_id_from_bag_of_tokens()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_mapping"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_dataset_id_from_mapping()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_directory_from_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_directory_from_bag_of_tokens()</span></code></a></li>
@@ -368,6 +379,8 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_file_name_from_mapping"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_file_name_from_mapping()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_from_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_from_bag_of_tokens()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_from_mapping"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_from_mapping()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.pedantic"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.pedantic</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.project_id"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.project_id</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -564,21 +577,6 @@
 <dd><p>The DRS file name specs of the project.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsApplication.get_full_file_name_extension">
-<span class="sig-name descname"><span class="pre">get_full_file_name_extension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsApplication.get_full_file_name_extension" title="Link to this definition">#</a></dt>
-<dd><p>Returns the full file name extension (the separator plus the extension) of the DRS file
-name specs of the project.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The full file name extension.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsApplication.pedantic">
 <span class="sig-name descname"><span class="pre">pedantic</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsApplication.pedantic" title="Link to this definition">#</a></dt>
@@ -598,6 +596,36 @@ name specs of the project.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.apps.drs.validator.</span></span><span class="sig-name descname"><span class="pre">DrsValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pedantic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#esgvoc.apps.drs.validator.DrsApplication" title="esgvoc.apps.drs.validator.DrsApplication"><code class="xref py py-class docutils literal notranslate"><span class="pre">DrsApplication</span></code></a></p>
 <p>Valid a DRS directory, dataset id and file name expression against a project.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.dataset_id_specs">
+<span class="sig-name descname"><span class="pre">dataset_id_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.dataset_id_specs" title="Link to this definition">#</a></dt>
+<dd><p>The DRS dataset id specs of the project.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.directory_specs">
+<span class="sig-name descname"><span class="pre">directory_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.directory_specs" title="Link to this definition">#</a></dt>
+<dd><p>The DRS directory specs of the project.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.file_name_specs">
+<span class="sig-name descname"><span class="pre">file_name_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.file_name_specs" title="Link to this definition">#</a></dt>
+<dd><p>The DRS file name specs of the project.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.pedantic">
+<span class="sig-name descname"><span class="pre">pedantic</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.pedantic" title="Link to this definition">#</a></dt>
+<dd><p>Same as the option of GCC: turn warnings into errors. Default False.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.project_id">
+<span class="sig-name descname"><span class="pre">project_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.project_id" title="Link to this definition">#</a></dt>
+<dd><p>The project id.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.validate">
 <span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drs_expression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsType" title="esgvoc.api.project_specs.DrsType"><span class="pre">DrsType</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#esgvoc.apps.drs.report.DrsValidationReport" title="esgvoc.apps.drs.report.DrsValidationReport"><span class="pre">DrsValidationReport</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.validate" title="Link to this definition">#</a></dt>
@@ -680,6 +708,24 @@ name specs of the project.</p>
 <dd><p>Bases: <a class="reference internal" href="#esgvoc.apps.drs.validator.DrsApplication" title="esgvoc.apps.drs.validator.DrsApplication"><code class="xref py py-class docutils literal notranslate"><span class="pre">DrsApplication</span></code></a></p>
 <p>Generate a directory, dataset id and file name expression specified by the given project from
 a mapping of collection ids and tokens or an unordered bag of tokens.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.dataset_id_specs">
+<span class="sig-name descname"><span class="pre">dataset_id_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.dataset_id_specs" title="Link to this definition">#</a></dt>
+<dd><p>The DRS dataset id specs of the project.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.directory_specs">
+<span class="sig-name descname"><span class="pre">directory_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.directory_specs" title="Link to this definition">#</a></dt>
+<dd><p>The DRS directory specs of the project.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.file_name_specs">
+<span class="sig-name descname"><span class="pre">file_name_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.file_name_specs" title="Link to this definition">#</a></dt>
+<dd><p>The DRS file name specs of the project.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_bag_of_tokens">
 <span class="sig-name descname"><span class="pre">generate_dataset_id_from_bag_of_tokens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#esgvoc.apps.drs.report.DrsGeneratorReport" title="esgvoc.apps.drs.report.DrsGeneratorReport"><span class="pre">DrsGeneratorReport</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_bag_of_tokens" title="Link to this definition">#</a></dt>
@@ -824,6 +870,18 @@ so none of the tokens given must include the extension.</p>
 <dd class="field-odd"><p><a class="reference internal" href="#esgvoc.apps.drs.report.DrsGeneratorReport" title="esgvoc.apps.drs.report.DrsGeneratorReport">DrsGeneratorReport</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.pedantic">
+<span class="sig-name descname"><span class="pre">pedantic</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.pedantic" title="Link to this definition">#</a></dt>
+<dd><p>Same as the option of GCC: turn warnings into errors. Default False.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.project_id">
+<span class="sig-name descname"><span class="pre">project_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.project_id" title="Link to this definition">#</a></dt>
+<dd><p>The project id.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2293,12 +2351,16 @@ Note: <cite>column</cite> is <cite>None</cite>.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsApplication.dataset_id_specs"><code class="docutils literal notranslate"><span class="pre">DrsApplication.dataset_id_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsApplication.directory_specs"><code class="docutils literal notranslate"><span class="pre">DrsApplication.directory_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsApplication.file_name_specs"><code class="docutils literal notranslate"><span class="pre">DrsApplication.file_name_specs</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsApplication.get_full_file_name_extension"><code class="docutils literal notranslate"><span class="pre">DrsApplication.get_full_file_name_extension()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsApplication.pedantic"><code class="docutils literal notranslate"><span class="pre">DrsApplication.pedantic</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsApplication.project_id"><code class="docutils literal notranslate"><span class="pre">DrsApplication.project_id</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator"><code class="docutils literal notranslate"><span class="pre">DrsValidator</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.dataset_id_specs"><code class="docutils literal notranslate"><span class="pre">DrsValidator.dataset_id_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.directory_specs"><code class="docutils literal notranslate"><span class="pre">DrsValidator.directory_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.file_name_specs"><code class="docutils literal notranslate"><span class="pre">DrsValidator.file_name_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.pedantic"><code class="docutils literal notranslate"><span class="pre">DrsValidator.pedantic</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.project_id"><code class="docutils literal notranslate"><span class="pre">DrsValidator.project_id</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_dataset_id"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_dataset_id()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_directory"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_directory()</span></code></a></li>
@@ -2309,6 +2371,9 @@ Note: <cite>column</cite> is <cite>None</cite>.</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-esgvoc.apps.drs.generator">Generation</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator"><code class="docutils literal notranslate"><span class="pre">DrsGenerator</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.dataset_id_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.dataset_id_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.directory_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.directory_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.file_name_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.file_name_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_dataset_id_from_bag_of_tokens()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_mapping"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_dataset_id_from_mapping()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_directory_from_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_directory_from_bag_of_tokens()</span></code></a></li>
@@ -2317,6 +2382,8 @@ Note: <cite>column</cite> is <cite>None</cite>.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_file_name_from_mapping"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_file_name_from_mapping()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_from_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_from_bag_of_tokens()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_from_mapping"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_from_mapping()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.pedantic"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.pedantic</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.project_id"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.project_id</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -2499,7 +2566,7 @@ By S. Gardoll, G. Levavasseur, L. Troussellier.
 
   <p class="copyright">
     
-      © Copyright 2025, S. Gardoll, G. Levavasseur, L. Troussellier.
+      © Copyright 2025, IPSL / ESPRI / CNRS.
       <br/>
     
   </p>
