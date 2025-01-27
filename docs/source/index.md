@@ -1,6 +1,6 @@
-# ESGF-VOCAB Library
+# ESGVOC Library
 
-ESGF-VOCAB is a Python library designed to simplify interaction with controlled vocabularies (CVs) used in climate data projects. It supports querying, caching, and validating terms across various CV repositories like the Universe and project-specific repositories (e.g., CMIP6Plus).
+ESGVOC is a Python library designed to simplify interaction with controlled vocabularies (CVs) used in climate data projects. It supports querying, caching, and validating terms across various CV repositories like the [Universe](https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc) and project-specific repositories (e.g., [CMIP6Plus](https://github.com/WCRP-CMIP/CMIP6Plus_CVs/tree/esgvoc), [CMIP6](https://github.com/WCRP-CMIP/CMIP6_CVs/tree/esgvoc), etc.).
 
 ---
 
@@ -9,14 +9,52 @@ ESGF-VOCAB is a Python library designed to simplify interaction with controlled 
 - **Query controlled vocabularies**:
   - Retrieve terms, collections, or descriptors.
   - Perform cross-validation and search operations.
+  - Supports case-sensitive, wildcard, and approximate matching.
 
 - **Caching**:
   - Download CVs to a local database for offline use.
   - Keep the local cache up-to-date.
 
 - **Validation**:
-  - Validate strings against CV terms and templates.
-  - Supports case-sensitive, wildcard, and approximate matching.
+  - Validate string values against CV terms (DRS).
+
+---
+
+## Use cases 
+
+The ESGVOC library supports a wide range of use cases, including:
+
+* Caching:
+    - Usage without internet access.
+    - Downloading CVs to a local archive or database.
+    - Updating the local cache.
+    - Performing consistency checks between the local cache and remote CV repositories.
+
+* Listing:
+    - All data descriptors from the Universe.  
+    - All terms of one data descriptor from the Universe.  
+    - All available projects.  
+    - All collections from a project.  
+    - All terms from a project.  
+    - All terms of a collection from a project.  
+
+* Searching:
+    - Data descriptors in the Universe.
+    - Terms in the Universe or Data descriptors.
+    - Collections in projects.
+    - Terms in collections of projects.
+
+Searching is based on the term id and not its regex nor DRS name. It may be case-sensitive or not, supports wildcards (`%`) and regex.
+
+* DRS Validation:  
+    - All terms of the Universe.
+    - All terms of a data descriptor from the Universe.  
+    - All terms of a project.  
+    - All terms of a collection from a project.  
+    - All terms from all projects (cross-validation).  
+
+The validation of a string value is against 
+
 
 ```{toctree}
 :caption: Guides

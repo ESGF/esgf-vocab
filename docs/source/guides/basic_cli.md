@@ -45,9 +45,3 @@ esgvoc valid IPSL cmip6plus::
 esgvoc valid IPSL cmip6plus:institution_id:
 
 ```
-
-## more explanation coming soon
-
-take a look at the the notebook here :
-https://github.com/ESPRI-Mod/cmipld/blob/main/basicsEsgvoc.ipynb
-
