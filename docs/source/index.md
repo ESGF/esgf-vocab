@@ -56,6 +56,7 @@ The ESGVOC library supports a wide range of use cases, including:
 
 - Terms of a project.  
 - Terms of a collection from a project.  
+- Terms from all projects (cross-validation).
 
 DRS validation is a feature that validates a character string against a vocabulary term. This feature is based on the DRS semantics of the terms, i.e. :
 - The drs_name field of a plain term
