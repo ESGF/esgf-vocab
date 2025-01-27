@@ -120,14 +120,14 @@ class DrsGenerator(DrsApplication):
         :param mapping: A mapping of collection ids (keys) and tokens (values).
         :type mapping: Mapping[str, str]
         :param drs_type: The type of the given DRS expression (directory, file_name or dataset_id)
-        :type drs_type: DrsType
+        :type drs_type: DrsType|str
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
         specs = self._get_specs(drs_type)
         return self._generate_from_mapping(mapping, specs)
 
-    def generate_from_bag_of_tokens(self, tokens: Iterable[str], drs_type: DrsType) \
+    def generate_from_bag_of_tokens(self, tokens: Iterable[str], drs_type: DrsType|str) \
                                                                               -> DrsGeneratorReport:
         """
         Generate a DRS expression from an unordered bag of tokens.
@@ -135,7 +135,7 @@ class DrsGenerator(DrsApplication):
         :param tokens: An unordered bag of tokens.
         :type tokens: Iterable[str]
         :param drs_type: The type of the given DRS expression (directory, file_name or dataset_id)
-        :type drs_type: DrsType
+        :type drs_type: DrsType|str
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """

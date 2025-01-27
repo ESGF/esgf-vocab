@@ -65,7 +65,7 @@ class DrsApplication:
                              f'project {self.project_id}')
         return full_extension
     
-    def _get_specs(self, drs_type: DrsType) -> DrsSpecification:
+    def _get_specs(self, drs_type: DrsType|str) -> DrsSpecification:
         match drs_type:
             case DrsType.DIRECTORY:
                 specs = self.directory_specs
@@ -130,7 +130,7 @@ class DrsValidator(DrsApplication):
         :param drs_expression: A DRS expression.
         :type drs_expression: str
         :param drs_type: The type of the given DRS expression (directory, file_name or dataset_id)
-        :type drs_type: DrsType
+        :type drs_type: DrsType|str
         :returns: A validation report.
         :rtype: DrsValidationReport
         """
