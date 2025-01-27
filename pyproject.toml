@@ -1,7 +1,7 @@
 [project]
-name = "esgvoc"
+name = "ESGVOC"
 version = "0.1.2"
-description = "python library and CLI to interact with WCRP CV"
+description = "python library and CLI to interact with WCRP CVs"
 authors = [
     {name = "TROUSSELLIER Laurent", email = "laurent.troussellier@ipsl.fr"},
     {name = "Gardoll Sébastien", email = "sebastien@gardoll.fr"}
