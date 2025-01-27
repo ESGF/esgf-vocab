@@ -6,6 +6,7 @@
 .. automodule:: esgvoc.apps.drs.validator
    :members:
    :inherited-members: BaseModel
+   :member-order: groupwise
 ```
 
 ## Generation
@@ -14,6 +15,7 @@
 .. automodule:: esgvoc.apps.drs.generator
    :members:
    :inherited-members: BaseModel
+   :member-order: groupwise
 ```
 
 ## Issue reporting
@@ -22,4 +24,5 @@
 .. automodule:: esgvoc.apps.drs.report
    :members:
    :inherited-members: BaseModel
+   :member-order: groupwise
 ```
