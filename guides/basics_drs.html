@@ -370,7 +370,7 @@
                   
   <section id="drs-applications-tutorial">
 <h1>DRS applications tutorial<a class="headerlink" href="#drs-applications-tutorial" title="Link to this heading">#</a></h1>
-<p>The following DRS applications are mainly based on the validation functions seen in the API tutorial.</p>
+<p>The following DRS applications are mainly based on the validation functions (seen in the API tutorial). They ease the verification of DRS expressions or their generation.</p>
 <section id="drs-validation">
 <h2>DRS validation<a class="headerlink" href="#drs-validation" title="Link to this heading">#</a></h2>
 <p>The DRS validation is the process to validate an character expression against a DRS specification of a project.</p>
@@ -384,7 +384,7 @@
 </div>
 </div>
 </div>
-<p>Instanciate a validator object, for example the CMIP6Plus CV (documentation of the class is <a class="reference external" href="https://esgf.github.io/esgf-vocab/api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator">here</a>):</p>
+<p>Instantiate a validator object (documentation of the class is <a class="reference external" href="https://esgf.github.io/esgf-vocab/api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator">here</a>), for the CMIP6Plus CV, for example:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">validator</span> <span class="o">=</span> <span class="n">DrsValidator</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">)</span>
@@ -398,7 +398,8 @@
 <p>Check the compliance of a DRS expression. For example a dataset id:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">validator</span><span class="o">.</span><span class="n">validate_dataset_id</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="s2">&quot;CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expr</span> <span class="o">=</span> <span class="s2">&quot;CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn&quot;</span>
+<span class="n">validator</span><span class="o">.</span><span class="n">validate_dataset_id</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="n">expr</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -411,7 +412,8 @@
 <p>You can also check directories and file names:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">validator</span><span class="o">.</span><span class="n">validate_directory</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="s2">&quot;CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expr</span> <span class="o">=</span> <span class="s2">&quot;CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923&quot;</span>
+<span class="n">validator</span><span class="o">.</span><span class="n">validate_directory</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="n">expr</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -423,7 +425,8 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">validator</span><span class="o">.</span><span class="n">validate_file_name</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="s2">&quot;od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212.nc&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expr</span> <span class="o">=</span> <span class="s2">&quot;od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212.nc&quot;</span>
+<span class="n">validator</span><span class="o">.</span><span class="n">validate_file_name</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="n">expr</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -433,10 +436,11 @@
 </div>
 </div>
 </div>
-<p>The last one depends of the DRS type:</p>
+<p>The last method depends of the DRS type:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">validator</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="s2">&quot;CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn&quot;</span><span class="p">,</span> <span class="n">drs_type</span><span class="o">=</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expr</span> <span class="o">=</span> <span class="s2">&quot;CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn&quot;</span>
+<span class="n">validator</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="n">expr</span><span class="p">,</span> <span class="n">drs_type</span><span class="o">=</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -449,10 +453,11 @@
 </section>
 <section id="reporting">
 <h3>Reporting<a class="headerlink" href="#reporting" title="Link to this heading">#</a></h3>
-<p>The validator returns value is not a string, but a full report:</p>
+<p>The validator returns value is not a string, but a report:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">report</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_file_name</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="s2">&quot;od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expr</span> <span class="o">=</span> <span class="s2">&quot;od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc&quot;</span>
+<span class="n">report</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_file_name</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="n">expr</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">report</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;valid&#39;</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
@@ -466,7 +471,7 @@
 </div>
 </div>
 </div>
-<p>And has any errors and warnings (missing period at the end of the file name). See the full API documentation <a class="reference external" href="https://esgf.github.io/esgf-vocab/api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport">here</a>.</p>
+<p>And has any errors and warnings (e.g., missing period at the end of the file name). See the full API documentation <a class="reference external" href="https://esgf.github.io/esgf-vocab/api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport">here</a>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">report</span><span class="o">.</span><span class="n">warnings</span>
@@ -482,7 +487,8 @@
 <p>The validator supports a wild range issues, such as blank token:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">report</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_directory</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="s2">&quot;CMIP6Plus/CMIP/ /NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expr</span> <span class="o">=</span> <span class="s2">&quot;CMIP6Plus/CMIP/ /NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923&quot;</span>
+<span class="n">report</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_directory</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="n">expr</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">errors</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
@@ -495,10 +501,28 @@ report.errors=[blank token at column 16]
 </div>
 </div>
 </div>
-<p>And of course an invalid term:</p>
-<div class="cell docutils container">
+<p>Extra tokens at the end of the expression or separator stuttering:</p>
+<div class="cell tag_full-width docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">report</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_directory</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="s2">&quot;CMIP6Plus/CMIP_ERROR_HERE/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expr</span> <span class="o">=</span> <span class="s2">&quot;CMIP6Plus.CMIP.IPSL.MIROC6.amip..r2i2p1f2.ACmon.od550aer.gn.some_thing&quot;</span>
+<span class="n">report</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_dataset_id</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="n">expr</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">errors</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;CMIP6Plus.CMIP.IPSL.MIROC6.amip..r2i2p1f2.ACmon.od550aer.gn.some_thing&#39; has 2 error(s) and 0 warning(s)
+report.errors=[extra separator(s) at column 33, extra token some_thing at position 9]
+</pre></div>
+</div>
+</div>
+</div>
+<p>And of course invalid terms:</p>
+<div class="cell tag_full-width docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expr</span> <span class="o">=</span> <span class="s2">&quot;CMIP6Plus/CMIP_ERROR_HERE/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923&quot;</span>
+<span class="n">report</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_directory</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="n">expr</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">errors</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
@@ -516,8 +540,10 @@ report.errors=[token &#39;CMIP_ERROR_HERE&#39; not compliant with activity_id at
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyValidationVisitor</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_invalid_token_issue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issue</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Doing something automatically with a invalid token issue, rather printing it&#39;</span><span class="p">)</span>
-    <span class="c1"># You should implement the other methods of ParserIssueVisitor and ValidatorIssueVisitor too!</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Doing something automatically with a invalid token issue, &#39;</span> <span class="o">+</span>
+              <span class="s1">&#39;rather then printing it&#39;</span><span class="p">)</span>
+    <span class="c1"># You should implement the other methods of ParserIssueVisitor and </span>
+    <span class="c1"># ValidatorIssueVisitor too!</span>
     <span class="c1"># Read https://esgf.github.io/esgf-vocab/api_documentation/drs.html#esgvoc.apps.drs.report.ValidationIssueVisitor</span>
 
 <span class="n">my_visitor</span> <span class="o">=</span> <span class="n">MyValidationVisitor</span><span class="p">()</span>
@@ -526,7 +552,7 @@ report.errors=[token &#39;CMIP_ERROR_HERE&#39; not compliant with activity_id at
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Doing something automatically with a invalid token issue, rather printing it
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Doing something automatically with a invalid token issue, rather then printing it
 </pre></div>
 </div>
 </div>
@@ -546,7 +572,7 @@ report.errors=[token &#39;CMIP_ERROR_HERE&#39; not compliant with activity_id at
 </div>
 </div>
 </div>
-<p>Instanciate a generator object, for example the CMIP6Plus CV (documentation of the class is <a class="reference external" href="https://esgf.github.io/esgf-vocab/api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator">here</a>):</p>
+<p>Instantiate a generator object (documentation of the class is <a class="reference external" href="https://esgf.github.io/esgf-vocab/api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator">here</a>), for the CMIP6Plus CV, for example:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">generator</span> <span class="o">=</span> <span class="n">DrsGenerator</span><span class="p">(</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">)</span>
@@ -590,7 +616,7 @@ report.errors=[token &#39;CMIP_ERROR_HERE&#39; not compliant with activity_id at
 </div>
 </div>
 </div>
-<p>It has successfully generate the directory expression, even if the mapping has some extra information (quite the opposite of the DRS validation). The same mapping can also generate the associated dataset id and file name expressions, <strong>provided it has all information needed!</strong> Note that the generator adds automatically the extension for the DRS file name generation.</p>
+<p>It has successfully generate the directory expression, even if the mapping has some extra information (quite the opposite of the DRS validation). The same mapping can also generate the associated dataset id and file name expressions, <strong>provided it has all information needed!</strong> Note that the generator adds automatically the extension for the generation of DRS file names.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">generator</span><span class="o">.</span><span class="n">generate_dataset_id_from_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span>
@@ -605,7 +631,8 @@ report.errors=[token &#39;CMIP_ERROR_HERE&#39; not compliant with activity_id at
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">generator</span><span class="o">.</span><span class="n">generate_file_name_from_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span> <span class="c1"># This one has a warning because the period is missing.</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This one has a warning because the period is missing.</span>
+<span class="n">generator</span><span class="o">.</span><span class="n">generate_file_name_from_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -615,7 +642,7 @@ report.errors=[token &#39;CMIP_ERROR_HERE&#39; not compliant with activity_id at
 </div>
 </div>
 </div>
-<p>As for the DRS validation, the generator returns a full report that you can display or visit (generator report <a class="reference external" href="https://esgf.github.io/esgf-vocab/api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport">class</a>, generator visitor <a class="reference external" href="https://esgf.github.io/esgf-vocab/api_documentation/drs.html#esgvoc.apps.drs.report.GeneratorIssueVisitor">specifications</a>):</p>
+<p>As for the DRS validation, the generator returns a report that you can display or visit (generator report <a class="reference external" href="https://esgf.github.io/esgf-vocab/api_documentation/drs.html#esgvoc.apps.drs.report.DrsGeneratorReport">class</a>, generator visitor <a class="reference external" href="https://esgf.github.io/esgf-vocab/api_documentation/drs.html#esgvoc.apps.drs.report.GeneratorIssueVisitor">specifications</a>):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">report</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">generate_file_name_from_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span>
@@ -633,7 +660,8 @@ report.errors=[token &#39;CMIP_ERROR_HERE&#39; not compliant with activity_id at
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyGeneratorVisitor</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_missing_token_issue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issue</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Doing something automatically with a missing token issue, rather printing it&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Doing something automatically with a missing token issue, &#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39;rather then printing it&#39;</span><span class="p">)</span>
     <span class="c1"># You should implement the other methods of GeneratorIssueVisitor too!</span>
     <span class="c1"># Read https://esgf.github.io/esgf-vocab/api_documentation/drs.html#esgvoc.apps.drs.report.GeneratorIssueVisitor</span>
 
@@ -643,12 +671,12 @@ report.errors=[token &#39;CMIP_ERROR_HERE&#39; not compliant with activity_id at
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Doing something automatically with a missing token issue, rather printing it
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Doing something automatically with a missing token issue, rather then printing it
 </pre></div>
 </div>
 </div>
 </div>
-<p>Like the validator, the generator provides a parametric method:</p>
+<p>Like the validator, the generator provides a parametric method based on the type of DRS:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">generator</span><span class="o">.</span><span class="n">generate_from_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">,</span> <span class="n">drs_type</span><span class="o">=</span><span class="s1">&#39;directory&#39;</span><span class="p">)</span>
@@ -661,13 +689,14 @@ report.errors=[token &#39;CMIP_ERROR_HERE&#39; not compliant with activity_id at
 </div>
 </div>
 </div>
-<p>The mapping methods of the generator class supports a wild range of issue, such as invalid and missing term. Despite of the errors and warnings, the generator returns a DRS expression with parsable tags in place of the invalid and missing terms.</p>
-<div class="cell docutils container">
+<p>The mapping methods of the generator class supports invalid and missing terms. Despite of the errors and warnings, the generator returns a DRS expression with parsable tags in place of the faulty terms.</p>
+<div class="cell tag_full-width docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">invalid_mapping</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="k">del</span> <span class="n">invalid_mapping</span><span class="p">[</span><span class="s1">&#39;member_id&#39;</span><span class="p">]</span>
 <span class="n">invalid_mapping</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;MiRoC6&#39;</span>
-<span class="n">report</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">generate_from_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="o">=</span><span class="n">invalid_mapping</span><span class="p">,</span> <span class="n">drs_type</span><span class="o">=</span><span class="s1">&#39;file_name&#39;</span><span class="p">)</span>
+<span class="n">report</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">generate_from_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="o">=</span><span class="n">invalid_mapping</span><span class="p">,</span>
+                                         <span class="n">drs_type</span><span class="o">=</span><span class="s1">&#39;file_name&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">errors</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">warnings</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -685,8 +714,8 @@ report.warnings=[missing token for time_range at position 7]
 </section>
 <section id="bag-of-tokens">
 <h3>Bag of tokens<a class="headerlink" href="#bag-of-tokens" title="Link to this heading">#</a></h3>
-<p>The bag of tokens methods consist of generating a DRS expression from a set of unordered tokens. The generator try to build a mapping between the collections of the DRS specification target and then generates an expression.</p>
-<div class="cell docutils container">
+<p>The bag of tokens methods consist of generating a DRS expression from a set of unordered tokens. The generator try to build a mapping between the collections of the DRS specification target and the given tokens, then it generates an expression.</p>
+<div class="cell tag_full-width docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bag_of_tokens</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bag_of_tokens</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -703,15 +732,17 @@ report.warnings=[missing token for time_range at position 7]
 </div>
 </div>
 </div>
-<p>Due to the lack of precision of the term patterns, some tokens can fit to more than one collection or fit the same collection. The generator supports these cases and try to untangle tokens and collections as it is possible to be. Warnings are raised if the generator makes unobvious assignments. But most of the time, the generator will raise errors. <strong>So the mapping methods should always be preferred</strong>.</p>
+<p>Due to the lack of precision of some term patterns, some tokens can fit to more than one collection or fit the same collection. The generator supports these cases and try to untangle tokens and collections as it is possible to be. Warnings are raised if the generator makes unobvious assignments. But most of the time, the generator will raise errors. <strong>So the mapping methods should always be preferred</strong>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># UA and IPSL can be assigned to the collection institution_id, both.</span>
 <span class="c1"># This leads to two kinds of error:</span>
 <span class="c1">#    - The collection institution_id has more than one choice.</span>
-<span class="c1">#    - As the generator cannot choose, UA and IPSL are withdrawn, hence the missing token error.</span>
+<span class="c1">#    - As the generator cannot choose, UA and IPSL are withdrawn,</span>
+<span class="c1">#      hence the missing token error.</span>
 <span class="n">bag_of_tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;UA&#39;</span><span class="p">)</span>
-<span class="n">report</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">generate_from_bag_of_tokens</span><span class="p">(</span><span class="n">tokens</span><span class="o">=</span><span class="n">bag_of_tokens</span><span class="p">,</span> <span class="n">drs_type</span><span class="o">=</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">)</span>
+<span class="n">report</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">generate_from_bag_of_tokens</span><span class="p">(</span><span class="n">tokens</span><span class="o">=</span><span class="n">bag_of_tokens</span><span class="p">,</span>
+                                               <span class="n">drs_type</span><span class="o">=</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">errors</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>

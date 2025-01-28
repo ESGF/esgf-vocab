@@ -345,13 +345,13 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-esgvoc.api.universe">Get functions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-functions">Get functions</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.universe.get_all_data_descriptors_in_universe"><code class="docutils literal notranslate"><span class="pre">get_all_data_descriptors_in_universe()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.universe.get_all_terms_in_data_descriptor"><code class="docutils literal notranslate"><span class="pre">get_all_terms_in_data_descriptor()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.universe.get_all_terms_in_universe"><code class="docutils literal notranslate"><span class="pre">get_all_terms_in_universe()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-esgvoc.api.universe">Find functions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-functions">Find functions</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.universe.find_data_descriptors_in_universe"><code class="docutils literal notranslate"><span class="pre">find_data_descriptors_in_universe()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.universe.find_terms_in_data_descriptor"><code class="docutils literal notranslate"><span class="pre">find_terms_in_data_descriptor()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.universe.find_terms_in_universe"><code class="docutils literal notranslate"><span class="pre">find_terms_in_universe()</span></code></a></li>
@@ -370,9 +370,13 @@
                   
   <section id="universe">
 <h1>Universe<a class="headerlink" href="#universe" title="Link to this heading">#</a></h1>
-<section id="module-esgvoc.api.universe">
-<span id="get-functions"></span><h2>Get functions<a class="headerlink" href="#module-esgvoc.api.universe" title="Link to this heading">#</a></h2>
-<dl class="py function">
+<section id="get-functions">
+<h2>Get functions<a class="headerlink" href="#get-functions" title="Link to this heading">#</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>List the terms, collections and projects.</p>
+</div>
+<dl class="py function" id="module-esgvoc.api.universe">
 <dt class="sig sig-object py" id="esgvoc.api.universe.get_all_data_descriptors_in_universe">
 <span class="sig-prename descclassname"><span class="pre">esgvoc.api.universe.</span></span><span class="sig-name descname"><span class="pre">get_all_data_descriptors_in_universe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/universe.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.universe.get_all_data_descriptors_in_universe" title="Link to this definition">#</a></dt>
 <dd><p>Gets all the data descriptors of the universe.</p>
@@ -422,9 +426,13 @@ Terms are unique within a data descriptor but may have some synonyms in the univ
 </dd></dl>
 
 </section>
-<section id="module-esgvoc.api.universe">
-<span id="find-functions"></span><h2>Find functions<a class="headerlink" href="#module-esgvoc.api.universe" title="Link to this heading">#</a></h2>
-<dl class="py function">
+<section id="find-functions">
+<h2>Find functions<a class="headerlink" href="#find-functions" title="Link to this heading">#</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Find functions are based on the id of the terms.</p>
+</div>
+<dl class="py function" id="module-esgvoc.api.universe">
 <dt class="sig sig-object py" id="esgvoc.api.universe.find_data_descriptors_in_universe">
 <span class="sig-prename descclassname"><span class="pre">esgvoc.api.universe.</span></span><span class="sig-name descname"><span class="pre">find_data_descriptors_in_universe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_descriptor_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="projects.html#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><span class="pre">SearchSettings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/universe.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.universe.find_data_descriptors_in_universe" title="Link to this definition">#</a></dt>
 <dd><p>Finds one or more data descriptor of the universe, based on the specified search settings.
@@ -568,13 +576,13 @@ If the provided <cite>term_id</cite> is not found, the function returns an empty
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-esgvoc.api.universe">Get functions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-functions">Get functions</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.universe.get_all_data_descriptors_in_universe"><code class="docutils literal notranslate"><span class="pre">get_all_data_descriptors_in_universe()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.universe.get_all_terms_in_data_descriptor"><code class="docutils literal notranslate"><span class="pre">get_all_terms_in_data_descriptor()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.universe.get_all_terms_in_universe"><code class="docutils literal notranslate"><span class="pre">get_all_terms_in_universe()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-esgvoc.api.universe">Find functions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-functions">Find functions</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.universe.find_data_descriptors_in_universe"><code class="docutils literal notranslate"><span class="pre">find_data_descriptors_in_universe()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.universe.find_terms_in_data_descriptor"><code class="docutils literal notranslate"><span class="pre">find_terms_in_data_descriptor()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.universe.find_terms_in_universe"><code class="docutils literal notranslate"><span class="pre">find_terms_in_universe()</span></code></a></li>
