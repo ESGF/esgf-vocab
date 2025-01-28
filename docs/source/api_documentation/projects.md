@@ -2,7 +2,10 @@
 
 ## Term validation
 
-**Values are validated against the DRS name of the terms of the projects.**
+```{eval-rst}
+.. note::
+  Values are validated against the DRS name of the terms of the projects (not their id, unlike of find functions).
+```
 
 ```{eval-rst}
 .. automodule:: esgvoc.api.projects
@@ -20,6 +23,12 @@
 ```
 
 ## Get terms
+
+```{eval-rst}
+.. note::
+  List the terms, collections and projects.
+```
+
 ```{eval-rst}
 .. automodule:: esgvoc.api.projects
    :members: get_all_collections_in_project, get_all_projects, get_all_terms_in_all_projects, get_all_terms_in_collection, get_all_terms_in_project
@@ -27,6 +36,11 @@
 ```
 
 ## Find terms
+
+```{eval-rst}
+.. note::
+  Find functions are based on the id of the terms (not their DRS name, unlike of validation functions).
+```
 
 ```{eval-rst}
 .. automodule:: esgvoc.api.projects
