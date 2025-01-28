@@ -39,13 +39,6 @@ def linkcode_resolve(domain, info):
 templates_path = ['_templates']
 exclude_patterns = []
 
-'''
-source_suffix = {
-    ".rst": "restructuredtext",
-    ".md": "markdown",
-}
-'''
-
 autosummary_generate = True
 
 autodoc_default_options = {
@@ -79,10 +72,6 @@ html_theme_options = {
     "use_repository_button": True,
     "use_issues_button": True,
     "use_download_button": True,
-    #"use_sidenotes": True,
-    #"logo_only": True,
     "home_page_in_toc": False,
     "show_toc_level": 2,
-    #"collapse_navbar": True,
-    #"show_navbar_depth": 3
 }
