@@ -125,7 +125,10 @@ class DrsGenerator(DrsApplication):
         :rtype: DrsGeneratorReport
         """
         specs = self._get_specs(drs_type)
-        return self._generate_from_mapping(mapping, specs)
+        report = self._generate_from_mapping(mapping, specs)
+        if DrsType.FILE_NAME == drs_type:
+            report.generated_drs_expression = report.generated_drs_expression + self._get_full_file_name_extension()
+        return report
 
     def generate_from_bag_of_tokens(self, tokens: Iterable[str], drs_type: DrsType|str) \
                                                                               -> DrsGeneratorReport:
