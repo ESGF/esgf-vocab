@@ -53,7 +53,7 @@ class UniverseTermError(ValidationError):
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         return visitor.visit_universe_term_error(self)
     
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         term_id = self.term[api_settings.TERM_ID_JSON_KEY]
         result = f"The term {term_id} from the data descriptor {self.data_descriptor_id} "+\
                  f"does not validate the given value '{self.value}'"
@@ -71,7 +71,7 @@ class ProjectTermError(ValidationError):
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         return visitor.visit_project_term_error(self)
     
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         term_id = self.term[api_settings.TERM_ID_JSON_KEY]
         result = f"The term {term_id} from the collection {self.collection_id} "+\
                  f"does not validate the given value '{self.value}'"
@@ -104,5 +104,5 @@ class ValidationReport(BaseModel):
     def __bool__(self) -> bool:
         return self.validated
     
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         return f"'{self.expression}' has {self.nb_errors} error(s)"

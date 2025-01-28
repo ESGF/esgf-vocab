@@ -45,7 +45,7 @@ def _generate_expression_and_check(test: tuple) -> None:
     generator = DrsGenerator(project_id)
     method = getattr(generator, method_name)
     report: DrsGeneratorReport = method(_in)
-    assert _out == report.computed_drs_expression
+    assert _out == report.generated_drs_expression
     assert len(expected_errors) == report.nb_errors
     assert len(expected_warnings) == report.nb_warnings
     for index in range(0, len(expected_errors)):

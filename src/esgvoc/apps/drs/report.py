@@ -110,7 +110,7 @@ class Space(ParserIssue):
     """
     def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_space_issue(self)
-    def __repr__(self):
+    def __str__(self):
         return "expression is surrounded by white space[s]"
 
 
@@ -123,7 +123,7 @@ class Unparsable(ParserIssue):
     """The expected DRS type of the expression (directory, file name or dataset id)."""
     def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_unparsable_issue(self)
-    def __repr__(self):
+    def __str__(self):
         return "unable to parse this expression"
 
 
@@ -133,7 +133,7 @@ class ExtraSeparator(ParserIssue):
     """
     def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_extra_separator_issue(self)
-    def __repr__(self):
+    def __str__(self):
         return f"extra separator(s) at column {self.column}"
 
 
@@ -143,7 +143,7 @@ class ExtraChar(ParserIssue):
     """
     def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_extra_char_issue(self)
-    def __repr__(self):
+    def __str__(self):
         return f"extra character(s) at column {self.column}"
 
 
@@ -153,7 +153,7 @@ class BlankToken(ParserIssue):
     """
     def accept(self, visitor: ParserIssueVisitor) -> Any:
         return visitor.visit_blank_token_issue(self)
-    def __repr__(self):
+    def __str__(self):
         return f"blank token at column {self.column}"
 
 
@@ -182,7 +182,7 @@ class FileNameExtensionIssue(ValidationIssue):
     """The expected file name extension."""
     def accept(self, visitor: ValidationIssueVisitor) -> Any:
         return visitor.visit_filename_extension_issue(self)
-    def __repr__(self):
+    def __str__(self):
         return f"filename extension missing or not compliant with '{self.expected_extension}'"
     
 
@@ -221,7 +221,7 @@ class InvalidToken(TokenIssue, GeneratorIssue):
     """The collection id or the constant part of a DRS specification."""
     def accept(self, visitor: ValidationIssueVisitor|GeneratorIssueVisitor) -> Any:
         return visitor.visit_invalid_token_issue(self)
-    def __repr__(self):
+    def __str__(self):
         return f"token '{self.token}' not compliant with {self.collection_id_or_constant_value} at position {self.token_position}"
 
 
@@ -236,7 +236,7 @@ class ExtraToken(TokenIssue):
     """The optional collection id or `None`"""
     def accept(self, visitor: ValidationIssueVisitor) -> Any:
         return visitor.visit_extra_token_issue(self)
-    def __repr__(self):
+    def __str__(self):
         repr = f"extra token {self.token}"
         if self.collection_id:
             repr += f" invalidated by the optional collection {self.collection_id}"
@@ -253,7 +253,7 @@ class MissingToken(ValidationIssue, GeneratorIssue):
     """The collection part position (not the column of the characters)."""
     def accept(self, visitor: ValidationIssueVisitor|GeneratorIssueVisitor) -> Any:
         return visitor.visit_missing_token_issue(self)
-    def __repr__(self):
+    def __str__(self):
         return f'missing token for {self.collection_id} at position {self.collection_position}'
     
 
@@ -265,12 +265,12 @@ class TooManyTokensCollection(GeneratorIssue):
     """
     collection_id: str
     """The collection id."""
-    tokens: list[str] # TODO rename into tokens.
+    tokens: list[str]
     """The faulty tokens."""
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_too_many_tokens_collection_issue(self)
 
-    def __repr__(self):
+    def __str__(self):
         tokens_str = ", ".join(token for token in self.tokens)
         result = f'collection {self.collection_id} has more than one token ({tokens_str})'
         return result
@@ -284,11 +284,11 @@ class ConflictingCollections(GeneratorIssue):
     """
     collection_ids: list[str]
     """The ids of the collections."""
-    tokens: list[str] # TODO rename into tokens.
+    tokens: list[str]
     """The shared tokens."""
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_conflicting_collections_issue(self)
-    def __repr__(self):
+    def __str__(self):
         collection_ids_str = ", ".join(collection_id for collection_id in self.collection_ids)
         tokens_str = ", ".join(token for token in self.tokens)
         result = f"collections {collection_ids_str} are competing for the same token(s) {tokens_str}"
@@ -306,7 +306,7 @@ class AssignedToken(GeneratorIssue):
     """The token."""
     def accept(self, visitor: GeneratorIssueVisitor) -> Any:
         return visitor.visit_assign_token_issue(self)
-    def __repr__(self):
+    def __str__(self):
         result = f"assign token {self.token} for collection {self.collection_id}"
         return result
 
@@ -350,7 +350,7 @@ class DrsValidationReport(DrsReport):
     """
     expression: str
     """The DRS expression been checked"""
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         return f"'{self.expression}' has {self.nb_errors} error(s) and " + \
                f"{self.nb_warnings} warning(s)"
 
@@ -367,8 +367,8 @@ class DrsGeneratorReport(DrsReport):
     """The mapping or the bag of tokens given."""
     mapping_used: Mapping
     """The mapping inferred from the given bag of tokens (same mapping otherwise)."""
-    computed_drs_expression: str # TODO: to be renamed into generated_drs_expression.
+    generated_drs_expression: str
     """The generated DRS expression with possible tags to replace missing or invalid tokens"""
-    def __repr__(self) -> str:
-        return f"'{self.computed_drs_expression}' has {self.nb_errors} error(s) and " + \
+    def __str__(self) -> str:
+        return f"'{self.generated_drs_expression}' has {self.nb_errors} error(s) and " + \
                f"{self.nb_warnings} warning(s)"

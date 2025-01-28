@@ -123,13 +123,13 @@ def drsvalid(
     elif output:
         with open(output, "w") as f:
             for report in reports:
-                f.write(repr(report) + "\n")
+                f.write(str(report) + "\n")
         console.print(f"DRS validation entries saved to [green]{output}[/green]")
 
 
     else:
         for report in reports:
-            console.print(repr(report))
+            console.print(str(report))
 
     return reports
 
@@ -226,12 +226,12 @@ def drsgen(
     elif output:
         with open(output, "w") as f:
             for report in generated_reports:
-                f.write(repr(report) + "\n")
+                f.write(str(report) + "\n")
         console.print(f"Generated entries saved to [green]{output}[/green]")
 
     else:
         for report in generated_reports:
-            console.print(repr(report))
+            console.print(str(report))
 
     return generated_reports
 if __name__ == "__main__":

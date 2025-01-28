@@ -94,7 +94,7 @@ class DrsGenerator(DrsApplication):
         :rtype: DrsGeneratorReport
         """
         report = self._generate_from_mapping(mapping, self.file_name_specs)
-        report.computed_drs_expression = report.computed_drs_expression + self._get_full_file_name_extension()
+        report.generated_drs_expression = report.generated_drs_expression + self._get_full_file_name_extension()
         return report 
     
     def generate_file_name_from_bag_of_tokens(self, tokens: Iterable[str]) -> DrsGeneratorReport:
@@ -109,7 +109,7 @@ class DrsGenerator(DrsApplication):
         :rtype: DrsGeneratorReport
         """
         report = self._generate_from_bag_of_tokens(tokens, self.file_name_specs)
-        report.computed_drs_expression = report.computed_drs_expression + self._get_full_file_name_extension()
+        report.generated_drs_expression = report.generated_drs_expression + self._get_full_file_name_extension()
         return report 
 
     def generate_from_mapping(self, mapping: Mapping[str, str],
@@ -152,7 +152,7 @@ class DrsGenerator(DrsApplication):
         return DrsGeneratorReport(project_id=self.project_id, type=specs.type,
                                   given_mapping_or_bag_of_tokens=mapping,
                                   mapping_used=mapping,
-                                  computed_drs_expression=drs_expression,
+                                  generated_drs_expression=drs_expression,
                                   errors=errors, warnings=warnings)
 
     def __generate_from_mapping(self, mapping: Mapping[str, str],
@@ -217,7 +217,7 @@ class DrsGenerator(DrsApplication):
             warnings.clear()
         return DrsGeneratorReport(project_id=self.project_id, type=specs.type,
                                   given_mapping_or_bag_of_tokens=tokens,
-                                  mapping_used=mapping,computed_drs_expression=drs_expression,
+                                  mapping_used=mapping,generated_drs_expression=drs_expression,
                                   errors=errors, warnings=warnings)
     
     @staticmethod
