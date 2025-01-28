@@ -145,6 +145,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../guides/terms.html">About terms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guides/basic_cli.html">CLI commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guides/basics_esgvoc.html">ESGVOC library tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/basics_drs.html">DRS applications tutorial</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API documentation</span></p>
 <ul class="current nav bd-sidenav">
@@ -355,7 +356,6 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.DrsConstant.value"><code class="docutils literal notranslate"><span class="pre">DrsConstant.value</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.DrsPart"><code class="docutils literal notranslate"><span class="pre">DrsPart</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.DrsPartKind"><code class="docutils literal notranslate"><span class="pre">DrsPartKind</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.DrsPartKind.COLLECTION"><code class="docutils literal notranslate"><span class="pre">DrsPartKind.COLLECTION</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.DrsPartKind.CONSTANT"><code class="docutils literal notranslate"><span class="pre">DrsPartKind.CONSTANT</span></code></a></li>
@@ -380,6 +380,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.ProjectSpecs.project_id"><code class="docutils literal notranslate"><span class="pre">ProjectSpecs.project_id</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.DrsPart"><code class="docutils literal notranslate"><span class="pre">DrsPart</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -486,13 +487,6 @@
 <dd><p>The value of the a constant part.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="esgvoc.api.project_specs.DrsPart">
-<span class="sig-prename descclassname"><span class="pre">esgvoc.api.project_specs.</span></span><span class="sig-name descname"><span class="pre">DrsPart</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/project_specs.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.project_specs.DrsPart" title="Link to this definition">#</a></dt>
-<dd><p>A fragment of a DRS specification</p>
-<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<a class="reference internal" href="#esgvoc.api.project_specs.DrsConstant" title="esgvoc.api.project_specs.DrsConstant"><code class="xref py py-class docutils literal notranslate"><span class="pre">DrsConstant</span></code></a> | <a class="reference internal" href="#esgvoc.api.project_specs.DrsCollection" title="esgvoc.api.project_specs.DrsCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">DrsCollection</span></code></a>, FieldInfo(annotation=NoneType, required=True, discriminator=’kind’)]</p>
 </dd></dl>
 
 <dl class="py class">
@@ -847,6 +841,13 @@
 
 </dd></dl>
 
+<dl class="py data">
+<dt class="sig sig-object py" id="esgvoc.api.project_specs.DrsPart">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.project_specs.</span></span><span class="sig-name descname"><span class="pre">DrsPart</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/project_specs.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.project_specs.DrsPart" title="Link to this definition">#</a></dt>
+<dd><p>A fragment of a DRS specification</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<a class="reference internal" href="#esgvoc.api.project_specs.DrsConstant" title="esgvoc.api.project_specs.DrsConstant"><code class="xref py py-class docutils literal notranslate"><span class="pre">DrsConstant</span></code></a> | <a class="reference internal" href="#esgvoc.api.project_specs.DrsCollection" title="esgvoc.api.project_specs.DrsCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">DrsCollection</span></code></a>, FieldInfo(annotation=NoneType, required=True, discriminator=’kind’)]</p>
+</dd></dl>
+
 </section>
 
 
@@ -906,7 +907,6 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.DrsConstant.value"><code class="docutils literal notranslate"><span class="pre">DrsConstant.value</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.DrsPart"><code class="docutils literal notranslate"><span class="pre">DrsPart</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.DrsPartKind"><code class="docutils literal notranslate"><span class="pre">DrsPartKind</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.DrsPartKind.COLLECTION"><code class="docutils literal notranslate"><span class="pre">DrsPartKind.COLLECTION</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.DrsPartKind.CONSTANT"><code class="docutils literal notranslate"><span class="pre">DrsPartKind.CONSTANT</span></code></a></li>
@@ -931,6 +931,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.ProjectSpecs.project_id"><code class="docutils literal notranslate"><span class="pre">ProjectSpecs.project_id</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.DrsPart"><code class="docutils literal notranslate"><span class="pre">DrsPart</span></code></a></li>
 </ul>
   </nav></div>
 
@@ -955,7 +956,7 @@ By S. Gardoll, G. Levavasseur, L. Troussellier.
 
   <p class="copyright">
     
-      © Copyright 2025, IPSL / ESPRI / CNRS.
+      © Copyright 2025, CNRS (IPSL/ESPRI).
       <br/>
     
   </p>

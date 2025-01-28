@@ -77,6 +77,7 @@ guides/get_started.md
 guides/terms.md
 guides/basic_cli.md
 guides/basics_esgvoc.ipynb
+guides/basics_drs.ipynb
 ```
 
 ```{toctree}

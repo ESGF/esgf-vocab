@@ -144,6 +144,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../guides/terms.html">About terms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guides/basic_cli.html">CLI commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guides/basics_esgvoc.html">ESGVOC library tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/basics_drs.html">DRS applications tutorial</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API documentation</span></p>
 <ul class="current nav bd-sidenav">
@@ -353,24 +354,21 @@
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator"><code class="docutils literal notranslate"><span class="pre">DrsValidator</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_dataset_id"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_dataset_id()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_directory"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_directory()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_file_name"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_file_name()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.dataset_id_specs"><code class="docutils literal notranslate"><span class="pre">DrsValidator.dataset_id_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.directory_specs"><code class="docutils literal notranslate"><span class="pre">DrsValidator.directory_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.file_name_specs"><code class="docutils literal notranslate"><span class="pre">DrsValidator.file_name_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.pedantic"><code class="docutils literal notranslate"><span class="pre">DrsValidator.pedantic</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.project_id"><code class="docutils literal notranslate"><span class="pre">DrsValidator.project_id</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_dataset_id"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_dataset_id()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_directory"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_directory()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_file_name"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_file_name()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-esgvoc.apps.drs.generator">Generation</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator"><code class="docutils literal notranslate"><span class="pre">DrsGenerator</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.dataset_id_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.dataset_id_specs</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.directory_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.directory_specs</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.file_name_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.file_name_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_dataset_id_from_bag_of_tokens()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_mapping"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_dataset_id_from_mapping()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_directory_from_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_directory_from_bag_of_tokens()</span></code></a></li>
@@ -379,6 +377,9 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_file_name_from_mapping"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_file_name_from_mapping()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_from_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_from_bag_of_tokens()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_from_mapping"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_from_mapping()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.dataset_id_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.dataset_id_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.directory_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.directory_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.file_name_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.file_name_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.pedantic"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.pedantic</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.project_id"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.project_id</span></code></a></li>
 </ul>
@@ -404,8 +405,8 @@
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport.computed_drs_expression"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport.computed_drs_expression</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport.errors"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport.errors</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport.generated_drs_expression"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport.generated_drs_expression</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport.given_mapping_or_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport.given_mapping_or_bag_of_tokens</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport.mapping_used"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport.mapping_used</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport.project_id"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport.project_id</span></code></a></li>
@@ -596,45 +597,15 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.apps.drs.validator.</span></span><span class="sig-name descname"><span class="pre">DrsValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pedantic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#esgvoc.apps.drs.validator.DrsApplication" title="esgvoc.apps.drs.validator.DrsApplication"><code class="xref py py-class docutils literal notranslate"><span class="pre">DrsApplication</span></code></a></p>
 <p>Valid a DRS directory, dataset id and file name expression against a project.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.dataset_id_specs">
-<span class="sig-name descname"><span class="pre">dataset_id_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.dataset_id_specs" title="Link to this definition">#</a></dt>
-<dd><p>The DRS dataset id specs of the project.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.directory_specs">
-<span class="sig-name descname"><span class="pre">directory_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.directory_specs" title="Link to this definition">#</a></dt>
-<dd><p>The DRS directory specs of the project.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.file_name_specs">
-<span class="sig-name descname"><span class="pre">file_name_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.file_name_specs" title="Link to this definition">#</a></dt>
-<dd><p>The DRS file name specs of the project.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.pedantic">
-<span class="sig-name descname"><span class="pre">pedantic</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.pedantic" title="Link to this definition">#</a></dt>
-<dd><p>Same as the option of GCC: turn warnings into errors. Default False.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.project_id">
-<span class="sig-name descname"><span class="pre">project_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.project_id" title="Link to this definition">#</a></dt>
-<dd><p>The project id.</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.validate">
-<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drs_expression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsType" title="esgvoc.api.project_specs.DrsType"><span class="pre">DrsType</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#esgvoc.apps.drs.report.DrsValidationReport" title="esgvoc.apps.drs.report.DrsValidationReport"><span class="pre">DrsValidationReport</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.validate" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drs_expression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">drs_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsType" title="esgvoc.api.project_specs.DrsType"><span class="pre">DrsType</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#esgvoc.apps.drs.report.DrsValidationReport" title="esgvoc.apps.drs.report.DrsValidationReport"><span class="pre">DrsValidationReport</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.validate" title="Link to this definition">#</a></dt>
 <dd><p>Validate a DRS expression.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>drs_expression</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A DRS expression.</p></li>
-<li><p><strong>type</strong> (<a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsType" title="esgvoc.api.project_specs.DrsType"><em>DrsType</em></a>) – The type of the given DRS expression (directory, file_name or dataset_id)</p></li>
+<li><p><strong>drs_type</strong> (<a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsType" title="esgvoc.api.project_specs.DrsType"><em>DrsType</em></a><em>|</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The type of the given DRS expression (directory, file_name or dataset_id)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -697,6 +668,36 @@
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.dataset_id_specs">
+<span class="sig-name descname"><span class="pre">dataset_id_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.dataset_id_specs" title="Link to this definition">#</a></dt>
+<dd><p>The DRS dataset id specs of the project.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.directory_specs">
+<span class="sig-name descname"><span class="pre">directory_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.directory_specs" title="Link to this definition">#</a></dt>
+<dd><p>The DRS directory specs of the project.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.file_name_specs">
+<span class="sig-name descname"><span class="pre">file_name_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.file_name_specs" title="Link to this definition">#</a></dt>
+<dd><p>The DRS file name specs of the project.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.pedantic">
+<span class="sig-name descname"><span class="pre">pedantic</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.pedantic" title="Link to this definition">#</a></dt>
+<dd><p>Same as the option of GCC: turn warnings into errors. Default False.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.validator.DrsValidator.project_id">
+<span class="sig-name descname"><span class="pre">project_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/validator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.validator.DrsValidator.project_id" title="Link to this definition">#</a></dt>
+<dd><p>The project id.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -708,24 +709,6 @@
 <dd><p>Bases: <a class="reference internal" href="#esgvoc.apps.drs.validator.DrsApplication" title="esgvoc.apps.drs.validator.DrsApplication"><code class="xref py py-class docutils literal notranslate"><span class="pre">DrsApplication</span></code></a></p>
 <p>Generate a directory, dataset id and file name expression specified by the given project from
 a mapping of collection ids and tokens or an unordered bag of tokens.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.dataset_id_specs">
-<span class="sig-name descname"><span class="pre">dataset_id_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.dataset_id_specs" title="Link to this definition">#</a></dt>
-<dd><p>The DRS dataset id specs of the project.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.directory_specs">
-<span class="sig-name descname"><span class="pre">directory_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.directory_specs" title="Link to this definition">#</a></dt>
-<dd><p>The DRS directory specs of the project.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.file_name_specs">
-<span class="sig-name descname"><span class="pre">file_name_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.file_name_specs" title="Link to this definition">#</a></dt>
-<dd><p>The DRS file name specs of the project.</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_bag_of_tokens">
 <span class="sig-name descname"><span class="pre">generate_dataset_id_from_bag_of_tokens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#esgvoc.apps.drs.report.DrsGeneratorReport" title="esgvoc.apps.drs.report.DrsGeneratorReport"><span class="pre">DrsGeneratorReport</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_bag_of_tokens" title="Link to this definition">#</a></dt>
@@ -834,13 +817,13 @@ so none of the tokens given must include the extension.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.generate_from_bag_of_tokens">
-<span class="sig-name descname"><span class="pre">generate_from_bag_of_tokens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#esgvoc.apps.drs.report.DrsGeneratorReport" title="esgvoc.apps.drs.report.DrsGeneratorReport"><span class="pre">DrsGeneratorReport</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_from_bag_of_tokens" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">generate_from_bag_of_tokens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drs_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsType" title="esgvoc.api.project_specs.DrsType"><span class="pre">DrsType</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#esgvoc.apps.drs.report.DrsGeneratorReport" title="esgvoc.apps.drs.report.DrsGeneratorReport"><span class="pre">DrsGeneratorReport</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_from_bag_of_tokens" title="Link to this definition">#</a></dt>
 <dd><p>Generate a DRS expression from an unordered bag of tokens.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tokens</strong> (<em>Iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em>) – An unordered bag of tokens.</p></li>
-<li><p><strong>specs</strong> (<a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><em>DrsSpecification</em></a>) – a DRS project specification (dataset id, file name or directory).</p></li>
+<li><p><strong>drs_type</strong> (<a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsType" title="esgvoc.api.project_specs.DrsType"><em>DrsType</em></a><em>|</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The type of the given DRS expression (directory, file_name or dataset_id)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -854,13 +837,13 @@ so none of the tokens given must include the extension.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.generate_from_mapping">
-<span class="sig-name descname"><span class="pre">generate_from_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.13)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#esgvoc.apps.drs.report.DrsGeneratorReport" title="esgvoc.apps.drs.report.DrsGeneratorReport"><span class="pre">DrsGeneratorReport</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_from_mapping" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">generate_from_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.13)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drs_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsType" title="esgvoc.api.project_specs.DrsType"><span class="pre">DrsType</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#esgvoc.apps.drs.report.DrsGeneratorReport" title="esgvoc.apps.drs.report.DrsGeneratorReport"><span class="pre">DrsGeneratorReport</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_from_mapping" title="Link to this definition">#</a></dt>
 <dd><p>Generate a DRS expression from a mapping of collection ids and tokens.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mapping</strong> (<em>Mapping</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em>) – A mapping of collection ids (keys) and tokens (values).</p></li>
-<li><p><strong>specs</strong> (<a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><em>DrsSpecification</em></a>) – a DRS project specification (dataset id, file name or directory).</p></li>
+<li><p><strong>drs_type</strong> (<a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsType" title="esgvoc.api.project_specs.DrsType"><em>DrsType</em></a><em>|</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The type of the given DRS expression (directory, file_name or dataset_id)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -870,6 +853,24 @@ so none of the tokens given must include the extension.</p>
 <dd class="field-odd"><p><a class="reference internal" href="#esgvoc.apps.drs.report.DrsGeneratorReport" title="esgvoc.apps.drs.report.DrsGeneratorReport">DrsGeneratorReport</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.dataset_id_specs">
+<span class="sig-name descname"><span class="pre">dataset_id_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.dataset_id_specs" title="Link to this definition">#</a></dt>
+<dd><p>The DRS dataset id specs of the project.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.directory_specs">
+<span class="sig-name descname"><span class="pre">directory_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.directory_specs" title="Link to this definition">#</a></dt>
+<dd><p>The DRS directory specs of the project.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.generator.DrsGenerator.file_name_specs">
+<span class="sig-name descname"><span class="pre">file_name_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="project_specs.html#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/generator.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.generator.DrsGenerator.file_name_specs" title="Link to this definition">#</a></dt>
+<dd><p>The DRS file name specs of the project.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1114,8 +1115,8 @@ very same tokens. The generator is unable to choose which token for which collec
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Mapping Used&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;computed_drs_expression&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Computed Drs Expression&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;generated_drs_expression&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Generated Drs Expression&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
@@ -1144,21 +1145,21 @@ very same tokens. The generator is unable to choose which token for which collec
 <span class="w">      </span><span class="s2">&quot;warnings&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="s2">&quot;given_mapping_or_bag_of_tokens&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="s2">&quot;mapping_used&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="s2">&quot;computed_drs_expression&quot;</span>
+<span class="w">      </span><span class="s2">&quot;generated_drs_expression&quot;</span>
 <span class="w">   </span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </details></p><dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="esgvoc.apps.drs.report.DrsGeneratorReport.computed_drs_expression">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">computed_drs_expression</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/report.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.report.DrsGeneratorReport.computed_drs_expression" title="Link to this definition">#</a></dt>
-<dd><p>The generated DRS expression with possible tags to replace missing or invalid tokens</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.apps.drs.report.DrsGeneratorReport.errors">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#esgvoc.apps.drs.report.DrsIssue" title="esgvoc.apps.drs.report.DrsIssue"><span class="pre">DrsIssue</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/report.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.report.DrsGeneratorReport.errors" title="Link to this definition">#</a></dt>
 <dd><p>A list of DRS issues that are considered as errors.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.apps.drs.report.DrsGeneratorReport.generated_drs_expression">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generated_drs_expression</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/apps/drs/report.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.apps.drs.report.DrsGeneratorReport.generated_drs_expression" title="Link to this definition">#</a></dt>
+<dd><p>The generated DRS expression with possible tags to replace missing or invalid tokens</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -2356,24 +2357,21 @@ Note: <cite>column</cite> is <cite>None</cite>.</p>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator"><code class="docutils literal notranslate"><span class="pre">DrsValidator</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_dataset_id"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_dataset_id()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_directory"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_directory()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_file_name"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_file_name()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.dataset_id_specs"><code class="docutils literal notranslate"><span class="pre">DrsValidator.dataset_id_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.directory_specs"><code class="docutils literal notranslate"><span class="pre">DrsValidator.directory_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.file_name_specs"><code class="docutils literal notranslate"><span class="pre">DrsValidator.file_name_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.pedantic"><code class="docutils literal notranslate"><span class="pre">DrsValidator.pedantic</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.project_id"><code class="docutils literal notranslate"><span class="pre">DrsValidator.project_id</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_dataset_id"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_dataset_id()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_directory"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_directory()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.validator.DrsValidator.validate_file_name"><code class="docutils literal notranslate"><span class="pre">DrsValidator.validate_file_name()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-esgvoc.apps.drs.generator">Generation</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator"><code class="docutils literal notranslate"><span class="pre">DrsGenerator</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.dataset_id_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.dataset_id_specs</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.directory_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.directory_specs</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.file_name_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.file_name_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_dataset_id_from_bag_of_tokens()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_dataset_id_from_mapping"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_dataset_id_from_mapping()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_directory_from_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_directory_from_bag_of_tokens()</span></code></a></li>
@@ -2382,6 +2380,9 @@ Note: <cite>column</cite> is <cite>None</cite>.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_file_name_from_mapping"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_file_name_from_mapping()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_from_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_from_bag_of_tokens()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.generate_from_mapping"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.generate_from_mapping()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.dataset_id_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.dataset_id_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.directory_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.directory_specs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.file_name_specs"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.file_name_specs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.pedantic"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.pedantic</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.generator.DrsGenerator.project_id"><code class="docutils literal notranslate"><span class="pre">DrsGenerator.project_id</span></code></a></li>
 </ul>
@@ -2407,8 +2408,8 @@ Note: <cite>column</cite> is <cite>None</cite>.</p>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport.computed_drs_expression"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport.computed_drs_expression</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport.errors"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport.errors</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport.generated_drs_expression"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport.generated_drs_expression</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport.given_mapping_or_bag_of_tokens"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport.given_mapping_or_bag_of_tokens</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport.mapping_used"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport.mapping_used</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.apps.drs.report.DrsGeneratorReport.project_id"><code class="docutils literal notranslate"><span class="pre">DrsGeneratorReport.project_id</span></code></a></li>
@@ -2566,7 +2567,7 @@ By S. Gardoll, G. Levavasseur, L. Troussellier.
 
   <p class="copyright">
     
-      © Copyright 2025, IPSL / ESPRI / CNRS.
+      © Copyright 2025, CNRS (IPSL/ESPRI).
       <br/>
     
   </p>
