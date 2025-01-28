@@ -58,6 +58,8 @@ class UniverseTermError(ValidationError):
         result = f"The term {term_id} from the data descriptor {self.data_descriptor_id} "+\
                  f"does not validate the given value '{self.value}'"
         return result
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class ProjectTermError(ValidationError):
@@ -76,6 +78,8 @@ class ProjectTermError(ValidationError):
         result = f"The term {term_id} from the collection {self.collection_id} "+\
                  f"does not validate the given value '{self.value}'"
         return result
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class ValidationReport(BaseModel):
@@ -106,3 +110,5 @@ class ValidationReport(BaseModel):
     
     def __str__(self) -> str:
         return f"'{self.expression}' has {self.nb_errors} error(s)"
+    def __repr__(self) -> str:
+        return self.__str__()

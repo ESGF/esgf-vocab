@@ -112,7 +112,9 @@ class Space(ParserIssue):
         return visitor.visit_space_issue(self)
     def __str__(self):
         return "expression is surrounded by white space[s]"
-
+    def __repr__(self) -> str:
+        return self.__str__()
+    
 
 class Unparsable(ParserIssue):
     """
@@ -125,7 +127,9 @@ class Unparsable(ParserIssue):
         return visitor.visit_unparsable_issue(self)
     def __str__(self):
         return "unable to parse this expression"
-
+    def __repr__(self) -> str:
+        return self.__str__()
+    
 
 class ExtraSeparator(ParserIssue):
     """
@@ -135,7 +139,9 @@ class ExtraSeparator(ParserIssue):
         return visitor.visit_extra_separator_issue(self)
     def __str__(self):
         return f"extra separator(s) at column {self.column}"
-
+    def __repr__(self) -> str:
+        return self.__str__()
+    
 
 class ExtraChar(ParserIssue):
     """
@@ -145,7 +151,9 @@ class ExtraChar(ParserIssue):
         return visitor.visit_extra_char_issue(self)
     def __str__(self):
         return f"extra character(s) at column {self.column}"
-
+    def __repr__(self) -> str:
+        return self.__str__()
+    
 
 class BlankToken(ParserIssue):
     """
@@ -155,6 +163,8 @@ class BlankToken(ParserIssue):
         return visitor.visit_blank_token_issue(self)
     def __str__(self):
         return f"blank token at column {self.column}"
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class ValidationIssue(DrsIssue):
@@ -223,7 +233,9 @@ class InvalidToken(TokenIssue, GeneratorIssue):
         return visitor.visit_invalid_token_issue(self)
     def __str__(self):
         return f"token '{self.token}' not compliant with {self.collection_id_or_constant_value} at position {self.token_position}"
-
+    def __repr__(self) -> str:
+        return self.__str__()
+    
 
 class ExtraToken(TokenIssue):
     """
@@ -241,7 +253,9 @@ class ExtraToken(TokenIssue):
         if self.collection_id:
             repr += f" invalidated by the optional collection {self.collection_id}"
         return repr + f" at position {self.token_position}"
-
+    def __repr__(self) -> str:
+        return self.__str__()
+    
 
 class MissingToken(ValidationIssue, GeneratorIssue):
     """
@@ -255,6 +269,8 @@ class MissingToken(ValidationIssue, GeneratorIssue):
         return visitor.visit_missing_token_issue(self)
     def __str__(self):
         return f'missing token for {self.collection_id} at position {self.collection_position}'
+    def __repr__(self) -> str:
+        return self.__str__()
     
 
 class TooManyTokensCollection(GeneratorIssue):
@@ -274,6 +290,8 @@ class TooManyTokensCollection(GeneratorIssue):
         tokens_str = ", ".join(token for token in self.tokens)
         result = f'collection {self.collection_id} has more than one token ({tokens_str})'
         return result
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class ConflictingCollections(GeneratorIssue):
@@ -293,6 +311,8 @@ class ConflictingCollections(GeneratorIssue):
         tokens_str = ", ".join(token for token in self.tokens)
         result = f"collections {collection_ids_str} are competing for the same token(s) {tokens_str}"
         return result
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class AssignedToken(GeneratorIssue):
@@ -309,6 +329,8 @@ class AssignedToken(GeneratorIssue):
     def __str__(self):
         result = f"assign token {self.token} for collection {self.collection_id}"
         return result
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class DrsReport(BaseModel):
@@ -353,6 +375,8 @@ class DrsValidationReport(DrsReport):
     def __str__(self) -> str:
         return f"'{self.expression}' has {self.nb_errors} error(s) and " + \
                f"{self.nb_warnings} warning(s)"
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class DrsGeneratorReport(DrsReport):
@@ -372,3 +396,6 @@ class DrsGeneratorReport(DrsReport):
     def __str__(self) -> str:
         return f"'{self.generated_drs_expression}' has {self.nb_errors} error(s) and " + \
                f"{self.nb_warnings} warning(s)"
+    def __repr__(self) -> str:
+        return self.__str__()
+        
