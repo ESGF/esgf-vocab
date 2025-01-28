@@ -69,6 +69,13 @@ For composite terms, each part of the term is validated one by one and falls und
   Don't confuse the term identifier (id) with its DRS semantics.
 ```
 
+### DRS applications
+
+The DRS applications are based on the functionalities described above. They provide convenient way to
+check DRS expressions of a project (directory, dataset id and file name) and also generate expressions
+from mappings of collections and terms or an unordered bag of terms.
+
+
 ```{toctree}
 :caption: Guides
 :hidden:
