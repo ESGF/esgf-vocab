@@ -69,12 +69,23 @@ For composite terms, each part of the term is validated one by one and falls und
   Don't confuse the term identifier (id) with its DRS semantics.
 ```
 
+
+```{toctree}
+:caption: welcome
+
+
+user/introduction.md
+user/terms.md
+user/cached_database.md
+user/api.md
+user/cli.md
+```
+
+
 ```{toctree}
 :caption: Guides
-:hidden:
 
-guides/get_started.md
-guides/terms.md
+
 guides/basic_cli.md
 guides/basics_esgvoc.ipynb
 ```

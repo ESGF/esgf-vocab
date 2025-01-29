@@ -16,6 +16,8 @@ dependencies = [
     "requests>=2.32.3",
     "toml>=0.10.2",
     "typer>=0.15.0",
+    "sphinx-tabs>=3.4.7",
+    "sphinx-copybutton>=0.5.2",
 ]
 readme = "README.md"
 requires-python = ">= 3.12, <3.13"
