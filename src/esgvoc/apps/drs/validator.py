@@ -1,4 +1,4 @@
-from typing import cast, Any
+from typing import cast
 from esgvoc.api.project_specs import (ProjectSpecs,
                                DrsType,
                                DrsPart,

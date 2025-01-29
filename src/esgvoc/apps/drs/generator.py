@@ -10,6 +10,7 @@ from esgvoc.api.project_specs import (DrsSpecification,
 
 from esgvoc.apps.drs.validator import DrsApplication
 from esgvoc.apps.drs.report import (DrsGeneratorReport,
+                                    DrsIssue,
                                     GeneratorIssue,
                                     TooManyTokensCollection,
                                     InvalidToken,
@@ -156,7 +157,8 @@ class DrsGenerator(DrsApplication):
                                   given_mapping_or_bag_of_tokens=mapping,
                                   mapping_used=mapping,
                                   generated_drs_expression=drs_expression,
-                                  errors=errors, warnings=warnings)
+                                  errors=cast(list[DrsIssue], errors),
+                                  warnings=cast(list[DrsIssue], warnings))
 
     def __generate_from_mapping(self, mapping: Mapping[str, str],
                                 specs: DrsSpecification,
@@ -221,7 +223,8 @@ class DrsGenerator(DrsApplication):
         return DrsGeneratorReport(project_id=self.project_id, type=specs.type,
                                   given_mapping_or_bag_of_tokens=tokens,
                                   mapping_used=mapping,generated_drs_expression=drs_expression,
-                                  errors=errors, warnings=warnings)
+                                  errors=cast(list[DrsIssue], errors),
+                                  warnings=cast(list[DrsIssue], warnings))
     
     @staticmethod
     def _resolve_conflicts(collection_tokens_mapping: dict[str, set[str]]) \
