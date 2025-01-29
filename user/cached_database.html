@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>About terms &#8212; ESGVOC  documentation</title>
+    <title>Database and Functionality &#8212; ESGVOC  documentation</title>
   
   
   
@@ -34,6 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -44,12 +45,14 @@
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'guides/terms';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user/cached_database';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CLI commands" href="basic_cli.html" />
-    <link rel="prev" title="Get Started" href="get_started.html" />
+    <link rel="next" title="Python API" href="api.html" />
+    <link rel="prev" title="About terms" href="terms.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -139,13 +142,19 @@
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">welcome</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="get_started.html">Get Started</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">About terms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="basic_cli.html">CLI commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="basics_esgvoc.html">ESGVOC library tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="basics_drs.html">DRS applications tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to ESGF-Vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terms.html">About terms</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Database and Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Typer CLI</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../guides/basic_cli.html">CLI commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/basics_esgvoc.html">ESGVOC library tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/basics_drs.html">DRS applications tutorial</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API documentation</span></p>
 <ul class="nav bd-sidenav">
@@ -229,7 +238,7 @@
       
       
       
-      <li><a href="https://github.com/ESGF/esgf-vocab/issues/new?title=Issue%20on%20page%20%2Fguides/terms.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/ESGF/esgf-vocab/issues/new?title=Issue%20on%20page%20%2Fuser/cached_database.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -259,7 +268,7 @@
       
       
       
-      <li><a href="../_sources/guides/terms.md" target="_blank"
+      <li><a href="../_sources/user/cached_database.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -335,7 +344,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>About terms</h1>
+    <h1>Database and Functionality</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -345,13 +354,11 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universe-and-cmip-projects">Universe and CMIP projects</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#organization">Organization</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#terms">Terms</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kind-of-terms">Kind of terms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-database-management">Overview of Database Management</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronization-workflow">Synchronization Workflow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-synchronization-status">Viewing Synchronization Status</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc">ESGVOC</a></li>
 </ul>
             </nav>
         </div>
@@ -363,38 +370,49 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="about-terms">
-<h1>About terms<a class="headerlink" href="#about-terms" title="Link to this heading">#</a></h1>
-<section id="universe-and-cmip-projects">
-<h2>Universe and CMIP projects<a class="headerlink" href="#universe-and-cmip-projects" title="Link to this heading">#</a></h2>
-<section id="organization">
-<h3>Organization<a class="headerlink" href="#organization" title="Link to this heading">#</a></h3>
-<p>The terms are organized on two levels: the ‘universe’ terms and the project terms (<a class="reference external" href="https://wcrp-cmip.org/">CMIP</a> exercises: intercomparison of climate simulations). The terms of the universe are in a way factorized for the projects (<a class="reference external" href="https://github.com/WCRP-CMIP/CMIP6_CVs/tree/esgvoc">CMIP6</a>, <a class="reference external" href="https://github.com/WCRP-CMIP/CMIP6Plus_CVs/tree/esgvoc">CMIP6Plus</a> and now CMIP7, which is just starting up), in order to avoid any divergence, hence the controlled nature of the vocabularies.</p>
-<p>Each project just pick terms from the universe to create an operational vocabulary (i.e. one that is actually used in climate data). They may modify some of them (addition of new json key/value pairs or changes to the json key value, only). As only a handful of experts can modify these terms, the vocabularies/projects remain under control.</p>
-</section>
-<section id="terms">
-<h3>Terms<a class="headerlink" href="#terms" title="Link to this heading">#</a></h3>
-<p>The terms of the universe are json files, grouped together in directories called data descriptors (DD), in a coherent manner. Examples of DDs: variables (physical), experiments (numerical simulation), etc. Each DD is accompanied by a Pydantic term model, to ensure compliance with a term schema. The models differ depending on the DD. The term ids are unique within the DDs, but not necessarily from one DD to another, and of course from a project to another.</p>
-<p>Project terms (CMIP6Plus and CMIP6, which is currently being developed) are grouped together in collections, which have the same semantics as the DDs, except that the names of the collections are generally not the same as those of the DDs, for historical reasons. Collections are also directories that contain terms in the form of json files. These contain just the information needed to reference a term in the universe and any modifications that we call overloading, like in the computer programming.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The terms of the universe and the projects are identical. Only any changes introduced by the projects may differentiate them.</p>
-</div>
-</section>
-<section id="kind-of-terms">
-<h3>Kind of terms<a class="headerlink" href="#kind-of-terms" title="Link to this heading">#</a></h3>
-<p>There are three kinds of terms in the universe and projects:</p>
+  <section id="database-and-functionality">
+<h1>Database and Functionality<a class="headerlink" href="#database-and-functionality" title="Link to this heading">#</a></h1>
+<section id="overview-of-database-management">
+<h2>Overview of Database Management<a class="headerlink" href="#overview-of-database-management" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code> command is responsible for managing the synchronization process between the controlled vocabulary repositories, the local file system, and the SQLite database. This ensures that the database always reflects the most up-to-date state of the repositories.</p>
+<section id="synchronization-workflow">
+<h3>Synchronization Workflow<a class="headerlink" href="#synchronization-workflow" title="Link to this heading">#</a></h3>
+<p>For each configured controlled vocabulary repository, the synchronization process involves the following steps:</p>
+<ol class="arabic simple">
+<li><p><strong>Version Check</strong></p>
 <ul class="simple">
-<li><p>The plain terms.</p></li>
-<li><p>The term patterns.</p></li>
-<li><p>The term composites.</p></li>
+<li><p>The software determines the current version of each controlled vocabulary by examining the latest commit in three locations:</p>
+<ul>
+<li><p>The remote GitHub repository.(if internet access)</p></li>
+<li><p>The locally cloned repository (if it exists).</p></li>
+<li><p>The cached SQLite database (if it exists)
+.</p></li>
 </ul>
-<p>Plain terms are terms whose syntax is hand written (e.g. institutions, physical variables, etc.). The set of plain terms is finite, as there are as many as the authors of the vocabularies have been able to describe. In contrast, term patterns are described by regular expressions which potentially describe non-finite sets (e.g. dates, periods, etc.). Finally, composite terms are terms constructed from other terms (including composite terms). These terms may or may not be decomposed by textual separators (e.g. a period is made up of two dates separated by a <code class="docutils literal notranslate"><span class="pre">-</span></code> symbol).</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Database Update Process</strong></p>
+<ul class="simple">
+<li><p>The goal of the synchronization process is to ensure the database reflects the most recent version of the controlled vocabulary.</p></li>
+<li><p>If the local repository does not exist or is outdated, the software clones or updates the repository from GitHub.</p></li>
+<li><p>The SQLite database is rebuilt or updated as necessary to match the most recent version of the controlled vocabulary.</p></li>
+</ul>
+</li>
+</ol>
+<p>By automating this process, <code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code> guarantees that users have access to the latest available controlled vocabularies without requiring manual intervention.</p>
 </section>
+<section id="viewing-synchronization-status">
+<h3>Viewing Synchronization Status<a class="headerlink" href="#viewing-synchronization-status" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">status</span></code> command provides a detailed summary of the current state of synchronization for each controlled vocabulary repository. Specifically, it shows:</p>
+<ul class="simple">
+<li><p>The latest commit version of the remote GitHub repository.</p></li>
+<li><p>The latest commit version of the local repository.</p></li>
+<li><p>The version of the cached SQLite database.</p></li>
+</ul>
+<p>This information helps users understand whether any part of the system is outdated and requires synchronization.</p>
+<hr class="docutils" />
+<p>The intended purpose of these databases is to provide an efficient and rapid query system, accessible exclusively through the API or the CLI.</p>
 </section>
-<section id="esgvoc">
-<h2>ESGVOC<a class="headerlink" href="#esgvoc" title="Link to this heading">#</a></h2>
-<p>The purpose of the ESGVOC library is to parse json files of terms from the universe and projects, and cache them (SQLite) in order to respond to listing, search and DRS validation queries.</p>
 </section>
 </section>
 
@@ -410,20 +428,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="get_started.html"
+       href="terms.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Get Started</p>
+        <p class="prev-next-title">About terms</p>
       </div>
     </a>
     <a class="right-next"
-       href="basic_cli.html"
+       href="api.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">CLI commands</p>
+        <p class="prev-next-title">Python API</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -444,13 +462,11 @@
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universe-and-cmip-projects">Universe and CMIP projects</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#organization">Organization</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#terms">Terms</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kind-of-terms">Kind of terms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-database-management">Overview of Database Management</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronization-workflow">Synchronization Workflow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-synchronization-status">Viewing Synchronization Status</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc">ESGVOC</a></li>
 </ul>
   </nav></div>
 

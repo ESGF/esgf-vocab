@@ -34,6 +34,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
   
   <!-- So that users can add custom icons -->
   <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -44,11 +45,13 @@
     <script src="_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Get Started" href="guides/get_started.html" />
+    <link rel="next" title="Introduction to ESGF-Vocab" href="user/introduction.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -140,10 +143,16 @@
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">welcome</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="guides/get_started.html">Get Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="guides/terms.html">About terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/introduction.html">Introduction to ESGF-Vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/terms.html">About terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/cached_database.html">Database and Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/cli.html">Typer CLI</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="guides/basic_cli.html">CLI commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guides/basics_esgvoc.html">ESGVOC library tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guides/basics_drs.html">DRS applications tutorial</a></li>
@@ -346,18 +355,26 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">ESGVOC Library</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-cases">Use cases</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#caching">Caching</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listing">Listing</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#searching">Searching</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#drs-validation">DRS Validation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#drs-applications">DRS applications</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#drs-applications">DRS applications</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#the-drs-applications-are-based-on-the-functionalities-described-above-they-provide-convenient-way-to-check-drs-expressions-of-a-project-directory-dataset-id-and-file-name-and-also-generate-expressions-from-mappings-of-collections-and-terms-or-an-unordered-bag-of-terms">The DRS applications are based on the functionalities described above. They provide
+convenient way to check DRS expressions of a project (directory, dataset id and file name)
+and also generate expressions from mappings of collections and terms or an
+unordered bag of terms.</a><ul class="visible nav section-nav flex-column">
 </ul>
+</li>
+</ul>
+
             </nav>
         </div>
     </div>
@@ -452,16 +469,143 @@
 </section>
 <section id="drs-applications">
 <h3>DRS applications<a class="headerlink" href="#drs-applications" title="Link to this heading">#</a></h3>
-<p>The DRS applications are based on the functionalities described above. They provide
+</section>
+</section>
+</section>
+<section id="the-drs-applications-are-based-on-the-functionalities-described-above-they-provide-convenient-way-to-check-drs-expressions-of-a-project-directory-dataset-id-and-file-name-and-also-generate-expressions-from-mappings-of-collections-and-terms-or-an-unordered-bag-of-terms">
+<h1>The DRS applications are based on the functionalities described above. They provide
 convenient way to check DRS expressions of a project (directory, dataset id and file name)
 and also generate expressions from mappings of collections and terms or an
-unordered bag of terms.</p>
+unordered bag of terms.<a class="headerlink" href="#the-drs-applications-are-based-on-the-functionalities-described-above-they-provide-convenient-way-to-check-drs-expressions-of-a-project-directory-dataset-id-and-file-name-and-also-generate-expressions-from-mappings-of-collections-and-terms-or-an-unordered-bag-of-terms" title="Link to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">welcome</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user/introduction.html">Introduction to ESGF-Vocab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user/introduction.html#why-esgf-vocab">Why ESGF-Vocab?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user/introduction.html#challenges-with-traditional-methods">Challenges with Traditional Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/introduction.html#the-esgf-vocab-solution">The ESGF-Vocab Solution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user/introduction.html#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user/introduction.html#using-rye-preferred">Using Rye (Preferred)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/introduction.html#using-pip-in-a-virtual-environment">Using pip in a Virtual Environment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user/introduction.html#fetching-vocabulary-data">Fetching Vocabulary Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user/introduction.html#offline-use">Offline Use</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user/introduction.html#official-controlled-vocabulary-repositories">Official Controlled Vocabulary Repositories</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user/introduction.html#flexibility-for-other-repositories">Flexibility for Other Repositories</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user/introduction.html#requirements">Requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user/terms.html">About terms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user/terms.html#universe-and-cmip-projects">Universe and CMIP projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user/terms.html#organization">Organization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/terms.html#terms">Terms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/terms.html#kind-of-terms">Kind of terms</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user/terms.html#esgvoc">ESGVOC</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user/cached_database.html">Database and Functionality</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user/cached_database.html#overview-of-database-management">Overview of Database Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user/cached_database.html#synchronization-workflow">Synchronization Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/cached_database.html#viewing-synchronization-status">Viewing Synchronization Status</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user/api.html">Python API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user/api.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/api.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/api.html#example-usage">Example Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/api.html#structured-data-with-pydantic-models">Structured Data with Pydantic Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user/api.html#structured-data">Structured Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/api.html#ease-of-integration">Ease of Integration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user/api.html#notes">Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user/cli.html">Typer CLI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user/cli.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/cli.html#installation-and-access">Installation and Access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/cli.html#command-syntax">Command Syntax</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user/cli.html#understanding">Understanding <code class="docutils literal notranslate"><span class="pre">::</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/cli.html#case-sensitivity">Case Sensitivity</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user/cli.html#basic-commands">Basic Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user/cli.html#querying-data">Querying Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/cli.html#validating-data">Validating Data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user/cli.html#features-and-limitations">Features and Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user/cli.html#filtering-and-querying">Filtering and Querying</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/cli.html#error-handling">Error Handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/cli.html#batch-operations">Batch Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user/cli.html#advanced-use-cases">Advanced Use Cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/cli.html#summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guides/basic_cli.html">CLI commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guides/basic_cli.html#esgvoc-help">esgvoc –help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/basic_cli.html#esgvoc-install">esgvoc install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/basic_cli.html#esgvoc-status">esgvoc status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/basic_cli.html#esgvoc-get">esgvoc get</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/basic_cli.html#esgvoc-valid">esgvoc valid</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guides/basics_esgvoc.html">ESGVOC library tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guides/basics_esgvoc.html#universe-and-projects-organization">Universe and projects organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/basics_esgvoc.html#esgvoc-api-organization">ESGVOC API organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/basics_esgvoc.html#universe">Universe</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guides/basics_esgvoc.html#listing">Listing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guides/basics_esgvoc.html#little-detour-pydantic-model-instance-return">Little detour: pydantic model instance return</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guides/basics_esgvoc.html#project-example-cmip6plus">Project example: CMIP6plus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/basics_esgvoc.html#validating-string-against-the-project-cv">Validating string against the project CV</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guides/basics_esgvoc.html#queries-based-on-the-project-and-the-collection-ids">Queries based on the project and the collection ids</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guides/basics_esgvoc.html#queries-based-only-on-the-project-id">Queries based only on the project id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guides/basics_esgvoc.html#across-all-projects">Across all projects</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guides/basics_drs.html">DRS applications tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guides/basics_drs.html#drs-validation">DRS validation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guides/basics_drs.html#instantiation">Instantiation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guides/basics_drs.html#validation-methods">Validation methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guides/basics_drs.html#reporting">Reporting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guides/basics_drs.html#drs-generation">DRS generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guides/basics_drs.html#id1">Instantiation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guides/basics_drs.html#mapping">Mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guides/basics_drs.html#bag-of-tokens">Bag of tokens</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 </div>
 <div class="toctree-wrapper compound">
 </div>
-</section>
-</section>
 </section>
 
 
@@ -476,11 +620,11 @@ unordered bag of terms.</p>
                   
 <div class="prev-next-area">
     <a class="right-next"
-       href="guides/get_started.html"
+       href="user/introduction.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Get Started</p>
+        <p class="prev-next-title">Introduction to ESGF-Vocab</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -501,18 +645,26 @@ unordered bag of terms.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">ESGVOC Library</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-cases">Use cases</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#caching">Caching</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listing">Listing</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#searching">Searching</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#drs-validation">DRS Validation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#drs-applications">DRS applications</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#drs-applications">DRS applications</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#the-drs-applications-are-based-on-the-functionalities-described-above-they-provide-convenient-way-to-check-drs-expressions-of-a-project-directory-dataset-id-and-file-name-and-also-generate-expressions-from-mappings-of-collections-and-terms-or-an-unordered-bag-of-terms">The DRS applications are based on the functionalities described above. They provide
+convenient way to check DRS expressions of a project (directory, dataset id and file name)
+and also generate expressions from mappings of collections and terms or an
+unordered bag of terms.</a><ul class="visible nav section-nav flex-column">
 </ul>
+</li>
+</ul>
+
   </nav></div>
 
 </div></div>
