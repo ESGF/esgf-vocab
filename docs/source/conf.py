@@ -24,9 +24,10 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.linkcode',
     'sphinx.ext.intersphinx',
-    'myst_nb'
+    'myst_nb',
+    'sphinx_tabs.tabs',
+    'sphinx_copybutton'
 ]
-
 
 def linkcode_resolve(domain, info):
     if domain != "py":

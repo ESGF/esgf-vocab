@@ -75,14 +75,23 @@ The DRS applications are based on the functionalities described above. They prov
 convenient way to check DRS expressions of a project (directory, dataset id and file name)
 and also generate expressions from mappings of collections and terms or an
 unordered bag of terms.
+=======
 
+```{toctree}
+:caption: welcome
+
+
+user/introduction.md
+user/terms.md
+user/cached_database.md
+user/api.md
+user/cli.md
+```
 
 ```{toctree}
 :caption: Guides
-:hidden:
 
-guides/get_started.md
-guides/terms.md
+
 guides/basic_cli.md
 guides/basics_esgvoc.ipynb
 guides/basics_drs.ipynb
