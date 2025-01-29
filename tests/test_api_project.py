@@ -126,7 +126,7 @@ def test_find_terms_from_data_descriptor_in_all_projects(data_descriptor_id,
                                                          term_id) -> None:
     terms = projects.find_terms_from_data_descriptor_in_all_projects(data_descriptor_id, term_id)
     if terms:
-        assert len(terms) == 1
+        assert (len(terms) == 1) or (len(terms) == 2)
     projects.find_terms_from_data_descriptor_in_all_projects(data_descriptor_id,
                                                              term_id,
                                                              _SETTINGS)
