@@ -584,7 +584,7 @@ def find_terms_from_data_descriptor_in_project(project_id: str,
 def find_terms_from_data_descriptor_in_all_projects(data_descriptor_id: str,
                                                     term_id: str,
                                                     settings: SearchSettings|None = None) \
-                                                       -> list[tuple[BaseModel, str]]:
+                                                    -> list[tuple[list[tuple[BaseModel, str]], str]]:
     """
     Finds one or more terms in all projects which are instances of the given data descriptor
     in the universe, based on the specified search settings, in the given collection of a project.
@@ -608,17 +608,18 @@ def find_terms_from_data_descriptor_in_all_projects(data_descriptor_id: str,
     :type term_id: str
     :param settings: The search settings
     :type settings: SearchSettings|None
-    :returns: A list of tuple of Pydantic term instances and related collection ids. \
+    :returns: A list of tuple of matching terms with their collection id, per project. \
     Returns an empty list if no matches are found.
-    :rtype: list[tuple[BaseModel, str]]
+    :rtype: list[tuple[list[tuple[BaseModel, str]], str]]
     """
     project_ids = get_all_projects()
-    result = list()
+    result: list[tuple[list[tuple[BaseModel, str]], str]] = list()
     for project_id in project_ids:
-        result.extend(find_terms_from_data_descriptor_in_project(project_id,
-                                                                 data_descriptor_id,
-                                                                 term_id,
-                                                                 settings))
+        matching_terms = find_terms_from_data_descriptor_in_project(project_id,
+                                                                    data_descriptor_id,
+                                                                    term_id,
+                                                                    settings)
+        result.append((matching_terms, project_id))
     return result
 
 
