@@ -26,7 +26,7 @@ There are three kinds of terms in the universe and projects:
 - The term patterns.
 - The term composites.
 
-Plain terms are terms whose syntax is hand written (e.g. institutions, physical variables, etc.). The set of plain terms is finite, as there are as many as the authors of the vocabularies have been able to describe. In contrast, term patterns are described by regular expressions which potentially describe non-finite sets (e.g. dates, periods, etc.). Finally, composite terms are terms constructed from other terms (including composite terms). These terms may or may not be decomposed by textual separators (e.g. a period is made up of two dates separated by a `-` symbol).
+Plain terms are terms whose syntax is hand written (e.g. institutions, physical variables, etc.) The set of plain terms is finite, as there are as many as the authors of the vocabularies have been able to describe. In contrast, term patterns are described by regular expressions which potentially describe non-finite sets (e.g. dates, periods, etc.). Finally, composite terms are terms constructed from other terms (including composite terms). These terms may or may not be decomposed by textual separators (e.g. a period is made up of two dates separated by a `-` symbol).
 
 ## ESGVOC
 

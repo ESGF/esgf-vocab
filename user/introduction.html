@@ -360,10 +360,10 @@
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fetching-vocabulary-data">Fetching vocabulary data</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-use">Offline Use</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-use">Offline use</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#official-controlled-vocabulary-repositories">Official Controlled Vocabulary repositories</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#official-controlled-vocabulary-repositories">Official controlled vocabulary repositories</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flexibility-for-other-repositories">Flexibility for other repositories</a></li>
 </ul>
 </li>
@@ -381,7 +381,7 @@
                   
   <section id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> is a Python library designed to streamline and improve the management of controlled vocabularies used by the Earth System Grid Federation (ESGF) and related projects. By harmonizing data sources and providing both a Python API and a CLI for easy access, <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> resolves common issues like inconsistencies, errors, and inefficiencies associated with managing controlled vocabularies.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> is a Python library designed to streamline and improve the management of controlled vocabularies (CV) used by the Earth System Grid Federation (ESGF) and related projects. By harmonizing data sources and providing both a Python API and a CLI for easy access, <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> resolves common issues like inconsistencies, errors, and inefficiencies associated with managing controlled vocabularies.</p>
 <section id="why-esgvoc">
 <h2>Why ESGVOC?<a class="headerlink" href="#why-esgvoc" title="Link to this heading">#</a></h2>
 <p>Previously, controlled vocabularies were stored in multiple locations and formats, requiring various software implementations to query and interpret data. This approach introduced challenges, including:</p>
@@ -392,9 +392,9 @@
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> improves controlled vocabulary management through two main ideas:</p>
 <ol class="arabic simple">
-<li><p><strong>Harmonization through a Unified Source</strong><br />
+<li><p><strong>Harmonization through a unified source</strong><br />
 A single, centralized repository — referred to as the “Universe CV” — hosts all controlled vocabularies. Specialized vocabularies for specific projects reference the Universe CV via streamlined lists of IDs. This ensures consistency and eliminates duplication.</p></li>
-<li><p><strong>A Controlled Vocabulary Library</strong><br />
+<li><p><strong>Controlled Vocabulary (CV) library</strong><br />
 <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> provides a dedicated service for interacting with controlled vocabularies. It enables developers, administrators, and software systems to access vocabularies seamlessly via:</p>
 <ul class="simple">
 <li><p>A Python API for programmatic interaction.</p></li>
@@ -405,7 +405,7 @@ A single, centralized repository — referred to as the “Universe CV” — ho
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>You can install <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> using modern Python packaging tools or in a virtual environment. Below are the recommended methods:</p>
+<p>You can install <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> using recent Python packaging tools. It is only available in pypi.org (not in anaconda.org). We recommend the following methods:</p>
 <section id="using-rye-preferred">
 <h3>Using Rye (preferred)<a class="headerlink" href="#using-rye-preferred" title="Link to this heading">#</a></h3>
 <p><a class="reference external" href="https://rye-up.com/">Rye</a> is recommended for managing dependencies and isolating the library:</p>
@@ -436,12 +436,12 @@ pip<span class="w"> </span>install<span class="w"> </span>esgvoc
 <li><p>Builds a cached SQLite database from the cloned data.</p></li>
 </ul>
 <section id="offline-use">
-<h3>Offline Use<a class="headerlink" href="#offline-use" title="Link to this heading">#</a></h3>
-<p>If there is no internet access, <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code> will check the <code class="docutils literal notranslate"><span class="pre">.cache</span></code> directory for existing repositories. You can manually copy the repositories into <code class="docutils literal notranslate"><span class="pre">.cache</span></code> to use the library offline.</p>
+<h3>Offline use<a class="headerlink" href="#offline-use" title="Link to this heading">#</a></h3>
+<p>If there is no internet access, it is still possible to use the library: copy the repositories into <code class="docutils literal notranslate"><span class="pre">.cache/repos</span></code> and then issue <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code>. The library will check the <code class="docutils literal notranslate"><span class="pre">.cache/repos</span></code> directory for existing repositories.</p>
 </section>
 </section>
 <section id="official-controlled-vocabulary-repositories">
-<h2>Official Controlled Vocabulary repositories<a class="headerlink" href="#official-controlled-vocabulary-repositories" title="Link to this heading">#</a></h2>
+<h2>Official controlled vocabulary repositories<a class="headerlink" href="#official-controlled-vocabulary-repositories" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> primarily uses the following repositories for controlled vocabulary data:</p>
 <ul class="simple">
 <li><p><strong>Universe CV</strong>: <a class="reference external" href="https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc">GitHub Repository</a></p></li>
@@ -450,7 +450,7 @@ pip<span class="w"> </span>install<span class="w"> </span>esgvoc
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>the exact data witch is read by ESGVOC is in a specific branch “esgvoc” in those repositories.</p>
+<p>To be accurate, ESGVOC uses the specific branch “esgvoc” in those repositories.</p>
 </div>
 <section id="flexibility-for-other-repositories">
 <h3>Flexibility for other repositories<a class="headerlink" href="#flexibility-for-other-repositories" title="Link to this heading">#</a></h3>
@@ -461,7 +461,7 @@ pip<span class="w"> </span>install<span class="w"> </span>esgvoc
 <h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><strong>Python Version</strong>: 3.12 or higher.</p></li>
-<li><p><strong>No Additional System Dependencies</strong>: Interaction with the library is entirely Python-based, with no external SQLite dependencies.</p></li>
+<li><p><strong>No additional system dependencies</strong>: interaction with the library is entirely Python-based, with no other external dependencies like SQLite.</p></li>
 </ul>
 <hr class="docutils" />
 <p>This introduction covers the general purpose and installation of <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code>. In the next sections, we will dive deeper into its functionality, including the Python API and CLI usage.</p>
@@ -521,10 +521,10 @@ pip<span class="w"> </span>install<span class="w"> </span>esgvoc
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fetching-vocabulary-data">Fetching vocabulary data</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-use">Offline Use</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-use">Offline use</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#official-controlled-vocabulary-repositories">Official Controlled Vocabulary repositories</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#official-controlled-vocabulary-repositories">Official controlled vocabulary repositories</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flexibility-for-other-repositories">Flexibility for other repositories</a></li>
 </ul>
 </li>

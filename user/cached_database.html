@@ -378,11 +378,11 @@
 <h3>Synchronization workflow<a class="headerlink" href="#synchronization-workflow" title="Link to this heading">#</a></h3>
 <p>For each configured controlled vocabulary repository, the synchronization process involves the following steps:</p>
 <ol class="arabic simple">
-<li><p><strong>Version Check</strong></p>
+<li><p><strong>Version check</strong></p>
 <ul class="simple">
 <li><p>The software determines the current version of each controlled vocabulary by examining the latest commit in three locations:</p>
 <ul>
-<li><p>The remote GitHub repository.(if internet access)</p></li>
+<li><p>The remote GitHub repository (if internet access).</p></li>
 <li><p>The locally cloned repository (if it exists).</p></li>
 <li><p>The cached SQLite database (if it exists)
 .</p></li>
@@ -390,7 +390,7 @@
 </li>
 </ul>
 </li>
-<li><p><strong>Database Update Process</strong></p>
+<li><p><strong>Database update process</strong></p>
 <ul class="simple">
 <li><p>The goal of the synchronization process is to ensure the database reflects the most recent version of the controlled vocabulary.</p></li>
 <li><p>If the local repository does not exist or is outdated, the software clones or updates the repository from GitHub.</p></li>

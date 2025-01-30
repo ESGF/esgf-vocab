@@ -354,14 +354,14 @@
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-and-access">Installation and Access</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#command-syntax">Command Syntax</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-and-access">Installation and access</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#command-syntax">Command syntax</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding">Understanding <code class="docutils literal notranslate"><span class="pre">::</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#case-sensitivity">Case Sensitivity</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-commands">Basic Commands</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-data">Querying Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-commands">Basic commands</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-data">Querying data</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-data">Validating data</a></li>
 </ul>
 </li>
@@ -391,7 +391,7 @@
 <p>The <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> CLI provides a command-line interface for querying and validating controlled vocabularies. It serves as an alternative to the Python API, offering a simple and readable way to access the library’s functionality directly from the terminal.</p>
 </section>
 <section id="installation-and-access">
-<h2>Installation and Access<a class="headerlink" href="#installation-and-access" title="Link to this heading">#</a></h2>
+<h2>Installation and access<a class="headerlink" href="#installation-and-access" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>The CLI is included as part of the <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> Python library. Once the library is installed, the CLI becomes available.</p></li>
 <li><p>To view available commands and usage information, use the help command:</p></li>
@@ -401,7 +401,7 @@
 </div>
 </section>
 <section id="command-syntax">
-<h2>Command Syntax<a class="headerlink" href="#command-syntax" title="Link to this heading">#</a></h2>
+<h2>Command syntax<a class="headerlink" href="#command-syntax" title="Link to this heading">#</a></h2>
 <p>The CLI uses a structured syntax based on a colon-separated format to define queries. For example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6plus:institution_id:ipsl
 </pre></div>
@@ -411,7 +411,7 @@
 <ul class="simple">
 <li><p>A double colon <code class="docutils literal notranslate"><span class="pre">::</span></code> represents “universe” as the first empty string (<code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>) and “all” for subsequent entries. For example:</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">get</span> <span class="pre">::</span></code> retrieves all data descriptors in the Universe CV.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">get</span> <span class="pre">::</span></code> retrieves all data descriptors in the universe CV.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">get</span> <span class="pre">cmip6plus::</span></code> retrieves all collections for the project <code class="docutils literal notranslate"><span class="pre">cmip6plus</span></code>.</p></li>
 </ul>
 </li>
@@ -436,11 +436,11 @@
 </section>
 </section>
 <section id="basic-commands">
-<h2>Basic Commands<a class="headerlink" href="#basic-commands" title="Link to this heading">#</a></h2>
+<h2>Basic commands<a class="headerlink" href="#basic-commands" title="Link to this heading">#</a></h2>
 <section id="querying-data">
-<h3>Querying Data<a class="headerlink" href="#querying-data" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">get</span></code> command retrieves data from the vocabulary database. Examples:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Retrieve all data descriptors in the Universe CV</span>
+<h3>Querying data<a class="headerlink" href="#querying-data" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">get</span></code> command retrieves data from the vocabulary database, examples:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Retrieve all data descriptors in the universe CV</span>
 esgvoc<span class="w"> </span>get<span class="w"> </span>::
 
 <span class="c1"># Retrieve all terms in the &quot;institution&quot; data descriptor</span>
@@ -462,8 +462,8 @@ esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6plus:institution_i
 </section>
 <section id="validating-data">
 <h3>Validating data<a class="headerlink" href="#validating-data" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">valid</span></code> command checks if a string comply with the <code class="docutils literal notranslate"><span class="pre">drs_name</span></code> of a term vocabulary rules. Examples:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Validate a term in the Universe CV</span>
+<p>The <code class="docutils literal notranslate"><span class="pre">valid</span></code> command checks if a string comply with the <code class="docutils literal notranslate"><span class="pre">drs_name</span></code> of a term vocabulary rules, examples:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Validate a term in the universe CV</span>
 esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>::
 
 <span class="c1"># Validate a term in a specific project</span>
@@ -483,8 +483,8 @@ esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> 
 <section id="filtering-and-querying">
 <h3>Filtering and querying<a class="headerlink" href="#filtering-and-querying" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><strong>Wildcard Patterns and Regular Expressions</strong>: Not currently supported in the CLI but available in the Python API.</p></li>
-<li><p><strong>Attribute-Based Filtering</strong>: Planned for future releases if required.</p></li>
+<li><p><strong>Wildcard patterns and regular expressions</strong>: not currently supported in the CLI but available in the Python API.</p></li>
+<li><p><strong>Attribute-based Filtering</strong>: planned for future releases if required.</p></li>
 </ul>
 </section>
 <section id="error-handling">
@@ -503,9 +503,9 @@ esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> 
 <section id="advanced-use-cases">
 <h2>Advanced use cases<a class="headerlink" href="#advanced-use-cases" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><strong>Scripting and Automation</strong>:</p>
+<li><p><strong>Scripting and automation</strong>:</p>
 <ul>
-<li><p>The CLI supports automation and can be integrated into shell scripts.</p></li>
+<li><p>The CLI supports automation and can be integrated into shell scripts (supports standard input).</p></li>
 <li><p>Results can be piped to other commands or saved to files for further processing.</p></li>
 </ul>
 </li>
@@ -574,14 +574,14 @@ esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> 
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-and-access">Installation and Access</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#command-syntax">Command Syntax</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-and-access">Installation and access</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#command-syntax">Command syntax</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding">Understanding <code class="docutils literal notranslate"><span class="pre">::</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#case-sensitivity">Case Sensitivity</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-commands">Basic Commands</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-data">Querying Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-commands">Basic commands</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-data">Querying data</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-data">Validating data</a></li>
 </ul>
 </li>

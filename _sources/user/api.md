@@ -2,26 +2,26 @@
 
 ## Overview
 
-The `esgf-vocab` Python API provides a powerful and read-only interface to query controlled vocabularies. Users can retrieve, search, and validate vocabulary terms programmatically using a clean and intuitive API.
+The ESGVOC Python API provides a powerful and read-only interface to query controlled vocabularies. Users can retrieve, search, and validate vocabulary terms programmatically using a clean and intuitive API.
 
 ## Key features
 
 The API offers three main types of functions:
 
-1. **Retrieve Functions (`get_*`)**
+1. **Retrieve functions (`get_*`)**
    - Fetch collections, terms, or data descriptors.
    - Examples:
-     - Retrieve all data descriptors in the Universe CV.
+     - Retrieve all data descriptors in the universe CV.
      - Retrieve all terms within a specific collection or project.
 
-2. **Search Functions (`find_*`)**
+2. **Search functions (`find_*`)**
    - Search for terms based on input strings.
    - Examples:
      - Search for a specific term in a data descriptor.
      - Search for terms within a project or collection.
 
-3. **Validation Functions (`valid_*`)**
-   - Validate the compliance of an input string with controlled vocabulary rules.
+3. **Validation functions (`valid_*`)**
+   - Validate the compliance of an input string with controlled vocabulary rules (i.e., DRS name).
    - Examples:
      - Check if a term is valid within a collection.
      - Check if a term is valid within a project.

@@ -1,7 +1,7 @@
 
 # Introduction 
 
-`ESGVOC` is a Python library designed to streamline and improve the management of controlled vocabularies used by the Earth System Grid Federation (ESGF) and related projects. By harmonizing data sources and providing both a Python API and a CLI for easy access, `ESGVOC` resolves common issues like inconsistencies, errors, and inefficiencies associated with managing controlled vocabularies.
+`ESGVOC` is a Python library designed to streamline and improve the management of controlled vocabularies (CV) used by the Earth System Grid Federation (ESGF) and related projects. By harmonizing data sources and providing both a Python API and a CLI for easy access, `ESGVOC` resolves common issues like inconsistencies, errors, and inefficiencies associated with managing controlled vocabularies.
 
 ## Why ESGVOC?
 
@@ -14,17 +14,17 @@ Previously, controlled vocabularies were stored in multiple locations and format
 
 `ESGVOC` improves controlled vocabulary management through two main ideas:
 
-1. **Harmonization through a Unified Source**  
+1. **Harmonization through a unified source**  
    A single, centralized repository — referred to as the "Universe CV" — hosts all controlled vocabularies. Specialized vocabularies for specific projects reference the Universe CV via streamlined lists of IDs. This ensures consistency and eliminates duplication.
 
-2. **A Controlled Vocabulary Library**  
+2. **Controlled Vocabulary (CV) library**  
    `ESGVOC` provides a dedicated service for interacting with controlled vocabularies. It enables developers, administrators, and software systems to access vocabularies seamlessly via:
    - A Python API for programmatic interaction.
    - A CLI powered by [Typer](https://typer.tiangolo.com/) for command-line use.
 
 ## Installation
 
-You can install `ESGVOC` using modern Python packaging tools or in a virtual environment. Below are the recommended methods:
+You can install `ESGVOC` using recent Python packaging tools. It is only available in pypi.org (not in anaconda.org). We recommend the following methods:
 
 ### Using Rye (preferred)
 
@@ -57,10 +57,10 @@ This command performs the following actions:
 - Clones the official repositories.
 - Builds a cached SQLite database from the cloned data.
 
-### Offline Use
-If there is no internet access, `esgvoc install` will check the `.cache` directory for existing repositories. You can manually copy the repositories into `.cache` to use the library offline.
+### Offline use
+If there is no internet access, it is still possible to use the library: copy the repositories into `.cache/repos` and then issue `esgvoc install`. The library will check the `.cache/repos` directory for existing repositories.
 
-## Official Controlled Vocabulary repositories
+## Official controlled vocabulary repositories
 
 `ESGVOC` primarily uses the following repositories for controlled vocabulary data:
 
@@ -71,7 +71,7 @@ If there is no internet access, `esgvoc install` will check the `.cache` directo
 
 ```{eval-rst}
 .. note::
-   the exact data witch is read by ESGVOC is in a specific branch "esgvoc" in those repositories.
+   To be accurate, ESGVOC uses the specific branch "esgvoc" in those repositories.
 ```
 
 ### Flexibility for other repositories
@@ -80,7 +80,7 @@ While designed for these repositories, `ESGVOC` can use other repositories if th
 ## Requirements
 
 - **Python Version**: 3.12 or higher.
-- **No Additional System Dependencies**: Interaction with the library is entirely Python-based, with no external SQLite dependencies.
+- **No additional system dependencies**: interaction with the library is entirely Python-based, with no other external dependencies like SQLite.
 
 ---
 
