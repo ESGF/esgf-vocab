@@ -1,21 +1,29 @@
-# python generated files
+# Generated files
 __pycache__/
-*.py[oc]
 build/
 dist/
 wheels/
 *.egg-info
-mip-cmor-tables/
-sb.py
-# venv
+docs/build
+
+# Venv
 .venv
 *.lock
-*.sqlite
 .pdm-python
-.DS_Store
+.mise.toml
+
+# IDE & OS
 .vscode
+.idea
+.DS_Store
+
+# Temporary files
 tmp*
+*.sqlite
 .cache
+*.bak
+
+# Others
+*.py[oc]
+sb.py
 CHANGELOG.md
-.mise.toml
-.mise.toml

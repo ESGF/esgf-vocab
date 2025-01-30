@@ -1,0 +1,3 @@
+cmip6plus filename 'od550aer ACmon amip r2i2p1f2 gnF'
+"silrfrac Amon mip gr"
+'od550aer MIROC6 gn ACmon amip r2i2p1f2 gn'

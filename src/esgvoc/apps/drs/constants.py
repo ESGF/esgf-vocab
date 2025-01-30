@@ -1,0 +1,2 @@
+FILE_NAME_EXTENSION_KEY = 'extension'
+FILE_NAME_EXTENSION_SEPARATOR_KEY = 'extension_separator'

@@ -89,6 +89,9 @@ class BaseState:
     def check_sync_status(self):
         self.fetch_versions()
         return {
+            "github" : self.github_version if self.github_version else None,
+            "local": self.local_version if self.local_version else None,
+            "db" : self.db_version if self.db_version else None,
             "github_local_sync": self.github_version == self.local_version if self.github_access and self.github_version and self.local_version else None,
             "local_db_sync": self.local_version == self.db_version if self.local_access and self.local_version and self.db_version else None,
 
@@ -108,7 +111,7 @@ class BaseState:
         from esgvoc.core.db.models.project import project_create_db
         from esgvoc.core.db.models.universe import universe_create_db 
         from esgvoc.core.db.universe_ingestion import ingest_universe
-
+        
         if self.db_path :
             if os.path.exists(self.db_path):
                 os.remove(self.db_path)
@@ -116,12 +119,16 @@ class BaseState:
                 os.makedirs(Path(self.db_path).parent,exist_ok=True)
 
             if self.db_sqlmodel == Universe: # Ugly 
+                print("Building Universe DB from ",self.local_path)
                 universe_create_db(Path(self.db_path))
                 ingest_metadata_universe(DBConnection(Path(self.db_path)),self.local_version)
+                print("Filling Universe DB")
                 ingest_universe(Path(self.local_path), Path(self.db_path))
 
             elif self.db_sqlmodel == Project:
+                print("Building Project DB from ", self.local_path)
                 project_create_db(Path(self.db_path))
+                print("Filling project DB")
                 ingest_project(Path(self.local_path),Path(self.db_path),self.local_version)
         self.fetch_version_db()
 
@@ -132,32 +139,32 @@ class BaseState:
 
     def sync(self):
         summary = self.check_sync_status()
+
         if self.github_access and summary["github_db_sync"] is None and summary["local_db_sync"]is None and summary["github_local_sync"] is None:
             self.clone_remote()
             self.build_db()
         elif self.github_access and not summary["github_db_sync"]:
+            
             if not summary["local_db_sync"] and summary["local_db_sync"] is not None:
+                self.clone_remote()
+                self.build_db()
+            elif not summary["github_local_sync"] and summary["github_local_sync"] is not None:
                 self.clone_remote()
                 self.build_db()
             else: # can be simply build in root and clone if neccessary
                 self.build_db()
         elif self.local_access:
-            if not summary["local_db_sync"] and summary is not None:
+            if not summary["local_db_sync"] and summary["local_db_sync"] is not None:
                 self.build_db()
+            else:
+                print("Cache db is uptodate from local repository")
         elif not self.db_access: # it can happen if the db is created but not filled
             self.build_db()
+        else:
+            print("Nothing to install, everything up to date")
+            print("Try 'esgvoc status' for more details")
         
 
-        """
-        if self.github_version and self.github_version != self.local_version:
-            owner, repo = self.github_repo.lstrip("https://github.com/").split("/")
-            self.rf.clone_repository(owner, repo, self.branch)
-            #self.fetch_versions()
-
-        if self.local_version != self.db_version:
-            # delete and redo the DB? 
-            pass
-        """
 class StateUniverse(BaseState):
     def __init__(self, settings: UniverseSettings):
         super().__init__(**settings.model_dump())

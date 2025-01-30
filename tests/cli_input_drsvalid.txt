@@ -1,0 +1,7 @@
+cmip6plus filename od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212.nc
+cmip6plus dataset CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn
+cmip6plus directory CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923
+CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923
+cmip6plus directory CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923
+filename od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212.nc
+filename od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc

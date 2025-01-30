@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from enum import Enum
 
 from pydantic import BaseModel
@@ -6,30 +5,49 @@ from sqlalchemy import ColumnElement, func
 from sqlmodel import col
 
 
-@dataclass
-class MatchingTerm:
+class MatchingTerm(BaseModel):
+    """
+    Place holder for a term that matches a value (term validation).
+    """
     project_id: str
+    """The project id to which the term belongs."""
     collection_id: str
+    """The collection id to which the term belongs."""
     term_id: str
+    """The term id."""
 
 
 class SearchType(Enum):
-    EXACT = ("exact",)
-    LIKE = ("like",)  # can interpret %
-    STARTS_WITH = ("starts_with",)  # can interpret %
+    """
+    The search types used for to find terms.
+    """
+    EXACT = "exact"
+    """Performs exact match."""
+    LIKE = "like"  # can interpret %
+    """As SQL operator, it can interpret % as a wildcard."""
+    STARTS_WITH = "starts_with"  # can interpret %
+    """Prefix based search."""
     ENDS_WITH = "ends_with"  # can interpret %
-    REGEX = ("regex",)
+    """Suffix based search."""
+    REGEX = "regex"
+    """Search based on regex."""
 
 
 class SearchSettings(BaseModel):
+    """
+    Search configuration.
+    """
     type: SearchType = SearchType.EXACT
+    """The type of search."""
     case_sensitive: bool = True
+    """Enable case sensitivity or not."""
     not_operator: bool = False
+    """Give the opposite result like the NOT SQL operator."""
 
 
-def create_str_comparison_expression(field: str,
-                                     value: str,
-                                     settings: SearchSettings|None) -> ColumnElement:
+def _create_str_comparison_expression(field: str,
+                                      value: str,
+                                      settings: SearchSettings|None) -> ColumnElement:
     '''
     SQLite LIKE is case insensitive (and so STARTS/ENDS_WITH which are implemented with LIKE).
     So the case sensitive LIKE is implemented with REGEX.

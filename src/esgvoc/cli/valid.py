@@ -6,10 +6,8 @@ from esgvoc.api.projects import (
     valid_term_in_project, 
     valid_term_in_all_projects
 )
-from esgvoc.api import BasicValidationErrorVisitor
 from requests import logging
 from rich.table import Table
-from sqlmodel import except_
 import typer
 import re
 from rich.console import Console
@@ -121,11 +119,9 @@ def valid(
             # Parse and collect errors for verbose mode
             if validation_result == []:
                 detailed_results.append({"validation":validation, "errors":["did not found matching term"]})
-
             results.append(False)
             if project and collection and term and exception_message is None:
-                visitor = BasicValidationErrorVisitor()
-                errors = [error.accept(visitor) for error in validation_result.errors]
+                errors = [str(error) for error in validation_result.errors]
                 detailed_results.append({"validation": validation, "errors": errors})
             if exception_message is not None:
                 detailed_results.append({"validation": validation, "errors": [exception_message]})

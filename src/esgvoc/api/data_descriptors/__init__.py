@@ -1,3 +1,4 @@
+from esgvoc.api.data_descriptors.directory_date import DirectoryDate
 from pydantic import BaseModel
 
 from esgvoc.api.data_descriptors.activity import Activity
@@ -25,12 +26,14 @@ from esgvoc.api.data_descriptors.table import Table
 from esgvoc.api.data_descriptors.time_range import TimeRange 
 from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
+from esgvoc.api.data_descriptors.directory_date import DirectoryDate
 
 
 DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[BaseModel]] = {
     "activity": Activity,
     "consortium": Consortium,
     "date": Date,
+    "directory_date": DirectoryDate,
     "experiment": Experiment, 
     "forcing_index": ForcingIndex,
     "frequency": Frequency,

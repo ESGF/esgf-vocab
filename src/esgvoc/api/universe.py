@@ -2,7 +2,7 @@ from typing import Sequence
 
 from esgvoc.api._utils import (get_universe_session,
                                instantiate_pydantic_terms)
-from esgvoc.api.search import SearchSettings, create_str_comparison_expression
+from esgvoc.api.search import SearchSettings, _create_str_comparison_expression
 from esgvoc.core.db.models.universe import DataDescriptor, UTerm
 from pydantic import BaseModel
 from sqlmodel import Session, select
@@ -13,9 +13,9 @@ def _find_terms_in_data_descriptor(data_descriptor_id: str,
                                    session: Session,
                                    settings: SearchSettings|None) -> Sequence[UTerm]:
     """Settings only apply on the term_id comparison."""
-    where_expression = create_str_comparison_expression(field=UTerm.id,
-                                                        value=term_id,
-                                                        settings=settings)
+    where_expression = _create_str_comparison_expression(field=UTerm.id,
+                                                         value=term_id,
+                                                         settings=settings)
     statement = select(UTerm).join(DataDescriptor).where(DataDescriptor.id==data_descriptor_id,
                                                          where_expression)
     results = session.exec(statement)
@@ -39,9 +39,9 @@ def find_terms_in_data_descriptor(data_descriptor_id: str,
     returns an empty list.
 
     Behavior based on search type:
-    - `EXACT` and absence of `settings`: returns zero or one Pydantic term instance in the list.
-    - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more Pydantic term
-      instances in the list.
+        - `EXACT` and absence of `settings`: returns zero or one Pydantic term instance in the list.
+        - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more Pydantic term \
+          instances in the list.
 
     :param data_descriptor_id: A data descriptor id
     :type data_descriptor_id: str
@@ -49,8 +49,7 @@ def find_terms_in_data_descriptor(data_descriptor_id: str,
     :type term_id: str
     :param settings: The search settings
     :type settings: SearchSettings|None
-    :returns: A list of Pydantic model term instances.
-    Returns an empty list if no matches are found.
+    :returns: A list of Pydantic model term instances. Returns an empty list if no matches are found.
     :rtype: list[BaseModel]
     """
     result: list[BaseModel] = list()
@@ -63,9 +62,9 @@ def find_terms_in_data_descriptor(data_descriptor_id: str,
 def _find_terms_in_universe(term_id: str,
                             session: Session,
                             settings: SearchSettings|None) -> Sequence[UTerm]:
-    where_expression = create_str_comparison_expression(field=UTerm.id,
-                                                        value=term_id,
-                                                        settings=settings)
+    where_expression = _create_str_comparison_expression(field=UTerm.id,
+                                                         value=term_id,
+                                                         settings=settings)
     statement = select(UTerm).where(where_expression)
     results = session.exec(statement).all()
     return results
@@ -106,9 +105,9 @@ def _get_all_terms_in_data_descriptor(data_descriptor: DataDescriptor) -> list[B
 def _find_data_descriptors_in_universe(data_descriptor_id: str,
                                        session: Session,
                                        settings: SearchSettings|None) -> Sequence[DataDescriptor]:
-    where_expression = create_str_comparison_expression(field=DataDescriptor.id,
-                                                        value=data_descriptor_id,
-                                                        settings=settings)
+    where_expression = _create_str_comparison_expression(field=DataDescriptor.id,
+                                                         value=data_descriptor_id,
+                                                         settings=settings)
     statement = select(DataDescriptor).where(where_expression)
     results = session.exec(statement)
     result = results.all()      
@@ -153,9 +152,9 @@ def find_data_descriptors_in_universe(data_descriptor_id: str,
     If the provided `data_descriptor_id` is not found, the function returns an empty list.
     
     Behavior based on search type:
-    - `EXACT` and absence of `settings`: returns zero or one data descriptor context in the list.
-    - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more
-      data descriptor contexts in the list.
+        - `EXACT` and absence of `settings`: returns zero or one data descriptor context in the list.
+        - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
+          data descriptor contexts in the list.
 
     :param data_descriptor_id: A data descriptor id to be found
     :type data_descriptor_id: str
