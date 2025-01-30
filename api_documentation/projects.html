@@ -353,7 +353,13 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#term-validation">Term validation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#term-validation">Term validation</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.valid_term"><code class="docutils literal notranslate"><span class="pre">valid_term()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.valid_term_in_all_projects"><code class="docutils literal notranslate"><span class="pre">valid_term_in_all_projects()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.valid_term_in_collection"><code class="docutils literal notranslate"><span class="pre">valid_term_in_collection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.valid_term_in_project"><code class="docutils literal notranslate"><span class="pre">valid_term_in_project()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-esgvoc.api.report">Validation reporting</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.report.ProjectTermError"><code class="docutils literal notranslate"><span class="pre">ProjectTermError</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.report.ProjectTermError.collection_id"><code class="docutils literal notranslate"><span class="pre">ProjectTermError.collection_id</span></code></a></li>
@@ -392,8 +398,24 @@
 </li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-terms">Get terms</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-terms">Find terms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-terms">Get terms</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_all_collections_in_project"><code class="docutils literal notranslate"><span class="pre">get_all_collections_in_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_all_projects"><code class="docutils literal notranslate"><span class="pre">get_all_projects()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_all_terms_in_all_projects"><code class="docutils literal notranslate"><span class="pre">get_all_terms_in_all_projects()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_all_terms_in_collection"><code class="docutils literal notranslate"><span class="pre">get_all_terms_in_collection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_all_terms_in_project"><code class="docutils literal notranslate"><span class="pre">get_all_terms_in_project()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-terms">Find terms</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_collections_in_project"><code class="docutils literal notranslate"><span class="pre">find_collections_in_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_project"><code class="docutils literal notranslate"><span class="pre">find_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_terms_from_data_descriptor_in_all_projects"><code class="docutils literal notranslate"><span class="pre">find_terms_from_data_descriptor_in_all_projects()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_terms_from_data_descriptor_in_project"><code class="docutils literal notranslate"><span class="pre">find_terms_from_data_descriptor_in_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_terms_in_all_projects"><code class="docutils literal notranslate"><span class="pre">find_terms_in_all_projects()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_terms_in_collection"><code class="docutils literal notranslate"><span class="pre">find_terms_in_collection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_terms_in_project"><code class="docutils literal notranslate"><span class="pre">find_terms_in_project()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-esgvoc.api.search">Search settings</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.search.MatchingTerm"><code class="docutils literal notranslate"><span class="pre">MatchingTerm</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.search.MatchingTerm.collection_id"><code class="docutils literal notranslate"><span class="pre">MatchingTerm.collection_id</span></code></a></li>
@@ -443,6 +465,164 @@
 <p class="admonition-title">Note</p>
 <p>Values are validated against the DRS name of the terms of the projects (not their id, unlike of find functions).</p>
 </div>
+<dl class="py function" id="module-esgvoc.api.projects">
+<dt class="sig sig-object py" id="esgvoc.api.projects.valid_term">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">valid_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#esgvoc.api.report.ValidationReport" title="esgvoc.api.report.ValidationReport"><span class="pre">ValidationReport</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.valid_term" title="Link to this definition">#</a></dt>
+<dd><p>Check if the given value may or may not represent the given term. The functions returns
+a report that contains the possible errors.</p>
+<dl class="simple">
+<dt>Behavior based on the nature of the term:</dt><dd><ul class="simple">
+<li><p>plain term: the function try to match the value on the drs_name field.</p></li>
+<li><p>term pattern: the function try to match the value on the pattern field (regex).</p></li>
+<li><dl class="simple">
+<dt>term composite: </dt><dd><ul>
+<li><p>if the composite has got a separator, the function splits the value according to the              separator of the term then it try to match every part of the composite              with every split of the value.</p></li>
+<li><p>if the composite hasn’t got a separator, the function aggregates the parts of the               composite so as to compare it as a regex to the value.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p>If any of the provided ids (<cite>project_id</cite>, <cite>collection_id</cite> or <cite>term_id</cite>) is not found,
+the function raises a ValueError.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A value to be validated</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A project id</p></li>
+<li><p><strong>collection_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A collection id</p></li>
+<li><p><strong>term_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A term id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A validation report that contains the possible errors</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esgvoc.api.report.ValidationReport" title="esgvoc.api.report.ValidationReport">ValidationReport</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If any of the provided ids is not found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.valid_term_in_all_projects">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">valid_term_in_all_projects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#esgvoc.api.search.MatchingTerm" title="esgvoc.api.search.MatchingTerm"><span class="pre">MatchingTerm</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.valid_term_in_all_projects" title="Link to this definition">#</a></dt>
+<dd><p>Check if the given value may or may not represent a term in all projects. The function
+returns the terms that the value matches.</p>
+<dl class="simple">
+<dt>Behavior based on the nature of the term:</dt><dd><ul class="simple">
+<li><p>plain term: the function try to match the value on the drs_name field.</p></li>
+<li><p>term pattern: the function try to match the value on the pattern field (regex).</p></li>
+<li><dl class="simple">
+<dt>term composite: </dt><dd><ul>
+<li><p>if the composite has got a separator, the function splits the value according to the               separator of the term then it try to match every part of the composite               with every split of the value.</p></li>
+<li><p>if the composite hasn’t got a separator, the function aggregates the parts of the               composite so as to compare it as a regex to the value.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A value to be validated</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of terms that the value matches.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference internal" href="#esgvoc.api.search.MatchingTerm" title="esgvoc.api.search.MatchingTerm">MatchingTerm</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.valid_term_in_collection">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">valid_term_in_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#esgvoc.api.search.MatchingTerm" title="esgvoc.api.search.MatchingTerm"><span class="pre">MatchingTerm</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.valid_term_in_collection" title="Link to this definition">#</a></dt>
+<dd><p>Check if the given value may or may not represent a term in the given collection. The function
+returns the terms that the value matches.</p>
+<dl class="simple">
+<dt>Behavior based on the nature of the term:</dt><dd><ul class="simple">
+<li><p>plain term: the function try to match the value on the drs_name field.</p></li>
+<li><p>term pattern: the function try to match the value on the pattern field (regex).</p></li>
+<li><dl class="simple">
+<dt>term composite: </dt><dd><ul>
+<li><p>if the composite has got a separator, the function splits the value according to the               separator of the term then it try to match every part of the composite               with every split of the value.</p></li>
+<li><p>if the composite hasn’t got a separator, the function aggregates the parts of the               composite so as to compare it as a regex to the value.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p>If any of the provided ids (<cite>project_id</cite> or <cite>collection_id</cite>) is not found,
+the function raises a ValueError.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A value to be validated</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A project id</p></li>
+<li><p><strong>collection_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A collection id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of terms that the value matches.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference internal" href="#esgvoc.api.search.MatchingTerm" title="esgvoc.api.search.MatchingTerm">MatchingTerm</a>]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If any of the provided ids is not found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.valid_term_in_project">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">valid_term_in_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#esgvoc.api.search.MatchingTerm" title="esgvoc.api.search.MatchingTerm"><span class="pre">MatchingTerm</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.valid_term_in_project" title="Link to this definition">#</a></dt>
+<dd><p>Check if the given value may or may not represent a term in the given project. The function
+returns the terms that the value matches.</p>
+<dl class="simple">
+<dt>Behavior based on the nature of the term:</dt><dd><ul class="simple">
+<li><p>plain term: the function try to match the value on the drs_name field.</p></li>
+<li><p>term pattern: the function try to match the value on the pattern field (regex).</p></li>
+<li><dl class="simple">
+<dt>term composite: </dt><dd><ul>
+<li><p>if the composite has got a separator, the function splits the value according to the               separator of the term then it try to match every part of the composite               with every split of the value.</p></li>
+<li><p>if the composite hasn’t got a separator, the function aggregates the parts of the               composite so as to compare it as a regex to the value.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p>If the <cite>project_id</cite> is not found, the function raises a ValueError.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A value to be validated</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A project id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of terms that the value matches.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference internal" href="#esgvoc.api.search.MatchingTerm" title="esgvoc.api.search.MatchingTerm">MatchingTerm</a>]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the <cite>project_id</cite> is not found</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-esgvoc.api.report">
 <span id="validation-reporting"></span><h2>Validation reporting<a class="headerlink" href="#module-esgvoc.api.report" title="Link to this heading">#</a></h2>
@@ -829,6 +1009,99 @@
 <p class="admonition-title">Note</p>
 <p>List the terms, collections and projects.</p>
 </div>
+<dl class="py function" id="module-esgvoc.api.projects">
+<dt class="sig sig-object py" id="esgvoc.api.projects.get_all_collections_in_project">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">get_all_collections_in_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.get_all_collections_in_project" title="Link to this definition">#</a></dt>
+<dd><p>Gets all collections of the given project.
+This function performs an exact match on the <cite>project_id</cite> and 
+does <strong>not</strong> search for similar or related projects.
+If the provided <cite>project_id</cite> is not found, the function returns an empty list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A project id</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of collection ids. Returns an empty list if no matches are found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.get_all_projects">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">get_all_projects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.get_all_projects" title="Link to this definition">#</a></dt>
+<dd><p>Gets all projects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of project ids.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.get_all_terms_in_all_projects">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">get_all_terms_in_all_projects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><span class="pre">BaseModel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.get_all_terms_in_all_projects" title="Link to this definition">#</a></dt>
+<dd><p>Gets all terms of all projects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of Pydantic term instances.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[BaseModel]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.get_all_terms_in_collection">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">get_all_terms_in_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><span class="pre">BaseModel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.get_all_terms_in_collection" title="Link to this definition">#</a></dt>
+<dd><p>Gets all terms of the given collection of a project.
+This function performs an exact match on the <cite>project_id</cite> and <cite>collection_id</cite>,
+and does <strong>not</strong> search for similar or related projects and collections.
+If any of the provided ids (<cite>project_id</cite> or <cite>collection_id</cite>) is not found, the function
+returns an empty list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A project id</p></li>
+<li><p><strong>collection_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A collection id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a list of Pydantic term instances. Returns an empty list if no matches are found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[BaseModel]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.get_all_terms_in_project">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">get_all_terms_in_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><span class="pre">BaseModel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.get_all_terms_in_project" title="Link to this definition">#</a></dt>
+<dd><p>Gets all terms of the given project.
+This function performs an exact match on the <cite>project_id</cite> and 
+does <strong>not</strong> search for similar or related projects.
+Terms are unique within a collection but may have some synonyms in a project.
+If the provided <cite>project_id</cite> is not found, the function returns an empty list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A project id</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of Pydantic term instances. Returns an empty list if no matches are found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[BaseModel]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="find-terms">
 <h2>Find terms<a class="headerlink" href="#find-terms" title="Link to this heading">#</a></h2>
@@ -836,6 +1109,225 @@
 <p class="admonition-title">Note</p>
 <p>Find functions are based on the id of the terms (not their DRS name, unlike of validation functions).</p>
 </div>
+<dl class="py function" id="module-esgvoc.api.projects">
+<dt class="sig sig-object py" id="esgvoc.api.projects.find_collections_in_project">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">find_collections_in_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><span class="pre">SearchSettings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.find_collections_in_project" title="Link to this definition">#</a></dt>
+<dd><p>Finds one or more collections of the given project.
+This function performs an exact match on the <cite>project_id</cite> and 
+does <strong>not</strong> search for similar or related projects.
+The given <cite>collection_id</cite> is searched according to the search type specified in 
+the parameter <cite>settings</cite>,
+which allows a flexible matching (e.g., <cite>LIKE</cite> may return multiple results).
+If the parameter <cite>settings</cite> is <cite>None</cite>, this function performs an exact match on the <cite>collection_id</cite>.
+If any of the provided ids (<cite>project_id</cite> or <cite>collection_id</cite>) is not found, the function returns
+an empty list.</p>
+<dl class="simple">
+<dt>Behavior based on search type:</dt><dd><ul class="simple">
+<li><p><cite>EXACT</cite> and absence of <cite>settings</cite>: returns zero or one collection context in the list.</p></li>
+<li><p><cite>REGEX</cite>, <cite>LIKE</cite>, <cite>STARTS_WITH</cite> and <cite>ENDS_WITH</cite>: returns zero, one or more           collection contexts in the list.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A project id</p></li>
+<li><p><strong>collection_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A collection id to be found</p></li>
+<li><p><strong>settings</strong> (<a class="reference internal" href="#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><em>SearchSettings</em></a><em>|</em><em>None</em>) – The search settings</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of collection contexts. Returns an empty list if no matches are found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.find_project">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">find_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.find_project" title="Link to this definition">#</a></dt>
+<dd><p>Finds a project.
+This function performs an exact match on the <cite>project_id</cite> and 
+does <strong>not</strong> search for similar or related projects.
+If the provided <cite>project_id</cite> is not found, the function returns <cite>None</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A project id to be found</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The specs of the project found. Returns <cite>None</cite> if no matches are found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a>|None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.find_terms_from_data_descriptor_in_all_projects">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">find_terms_from_data_descriptor_in_all_projects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_descriptor_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><span class="pre">SearchSettings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><span class="pre">BaseModel</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.find_terms_from_data_descriptor_in_all_projects" title="Link to this definition">#</a></dt>
+<dd><p>Finds one or more terms in all projects which are instances of the given data descriptor
+in the universe, based on the specified search settings, in the given collection of a project.
+This function performs an exact match on the <cite>data_descriptor_id</cite>, 
+and does <strong>not</strong> search for similar or related data descriptors.
+The given <cite>term_id</cite> is searched according to the search type specified in the parameter <cite>settings</cite>,
+which allows a flexible matching (e.g., <cite>LIKE</cite> may return multiple results).
+If the parameter <cite>settings</cite> is <cite>None</cite>, this function performs an exact match on the <cite>term_id</cite>.
+If any of the provided ids (<cite>data_descriptor_id</cite> or <cite>term_id</cite>) is not found,
+the function returns an empty list.</p>
+<dl class="simple">
+<dt>Behavior based on search type:</dt><dd><ul class="simple">
+<li><p><cite>EXACT</cite> and absence of <cite>settings</cite>: returns zero or one Pydantic term instance and           collection id in the list.</p></li>
+<li><p><cite>REGEX</cite>, <cite>LIKE</cite>, <cite>STARTS_WITH</cite> and <cite>ENDS_WITH</cite>: returns zero, one or more           Pydantic term instances and collection ids in the list.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_descriptor_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A data descriptor</p></li>
+<li><p><strong>term_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A term id to be found</p></li>
+<li><p><strong>settings</strong> (<a class="reference internal" href="#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><em>SearchSettings</em></a><em>|</em><em>None</em>) – The search settings</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of tuple of matching terms with their collection id, per project.     Returns an empty list if no matches are found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[BaseModel, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>]], <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.find_terms_from_data_descriptor_in_project">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">find_terms_from_data_descriptor_in_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_descriptor_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><span class="pre">SearchSettings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><span class="pre">BaseModel</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.find_terms_from_data_descriptor_in_project" title="Link to this definition">#</a></dt>
+<dd><p>Finds one or more terms in the given project which are instances of the given data descriptor
+in the universe, based on the specified search settings, in the given collection of a project.
+This function performs an exact match on the <cite>project_id</cite> and <cite>data_descriptor_id</cite>, 
+and does <strong>not</strong> search for similar or related projects and data descriptors.
+The given <cite>term_id</cite> is searched according to the search type specified in the parameter <cite>settings</cite>,
+which allows a flexible matching (e.g., <cite>LIKE</cite> may return multiple results).
+If the parameter <cite>settings</cite> is <cite>None</cite>, this function performs an exact match on the <cite>term_id</cite>.
+If any of the provided ids (<cite>project_id</cite>, <cite>data_descriptor_id</cite> or <cite>term_id</cite>) is not found,
+the function returns an empty list.</p>
+<dl class="simple">
+<dt>Behavior based on search type:</dt><dd><ul class="simple">
+<li><p><cite>EXACT</cite> and absence of <cite>settings</cite>: returns zero or one Pydantic term instance and           collection id in the list.</p></li>
+<li><p><cite>REGEX</cite>, <cite>LIKE</cite>, <cite>STARTS_WITH</cite> and <cite>ENDS_WITH</cite>: returns zero, one or more           Pydantic term instances and collection ids in the list.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A project id</p></li>
+<li><p><strong>data_descriptor_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A data descriptor</p></li>
+<li><p><strong>term_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A term id to be found</p></li>
+<li><p><strong>settings</strong> (<a class="reference internal" href="#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><em>SearchSettings</em></a><em>|</em><em>None</em>) – The search settings</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of tuple of Pydantic term instances and related collection ids.     Returns an empty list if no matches are found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[BaseModel, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.find_terms_in_all_projects">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">find_terms_in_all_projects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><span class="pre">SearchSettings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><span class="pre">BaseModel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.find_terms_in_all_projects" title="Link to this definition">#</a></dt>
+<dd><p>Finds one or more terms, based on the specified search settings, in all projects.
+The given <cite>term_id</cite> is searched according to the search type specified in the parameter <cite>settings</cite>,
+which allows a flexible matching (e.g., <cite>LIKE</cite> may return multiple results).
+If the parameter <cite>settings</cite> is <cite>None</cite>, this function performs an exact match on the <cite>term_id</cite>.
+Terms are unique within a collection but may have some synonyms within a project.
+If the provided <cite>term_id</cite> is not found, the function returns an empty list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>term_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A term id to be found</p></li>
+<li><p><strong>settings</strong> (<a class="reference internal" href="#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><em>SearchSettings</em></a><em>|</em><em>None</em>) – The search settings</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of Pydantic term instances. Returns an empty list if no matches are found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[BaseModel]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.find_terms_in_collection">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">find_terms_in_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><span class="pre">SearchSettings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><span class="pre">BaseModel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.find_terms_in_collection" title="Link to this definition">#</a></dt>
+<dd><p>Finds one or more terms, based on the specified search settings, in the given collection of a project.
+This function performs an exact match on the <cite>project_id</cite> and <cite>collection_id</cite>, 
+and does <strong>not</strong> search for similar or related projects and collections.
+The given <cite>term_id</cite> is searched according to the search type specified in the parameter <cite>settings</cite>,
+which allows a flexible matching (e.g., <cite>LIKE</cite> may return multiple results).
+If the parameter <cite>settings</cite> is <cite>None</cite>, this function performs an exact match on the <cite>term_id</cite>.
+If any of the provided ids (<cite>project_id</cite>, <cite>collection_id</cite> or <cite>term_id</cite>) is not found,
+the function returns an empty list.</p>
+<dl class="simple">
+<dt>Behavior based on search type:</dt><dd><ul class="simple">
+<li><p><cite>EXACT</cite> and absence of <cite>settings</cite>: returns zero or one Pydantic term instance in the list.</p></li>
+<li><p><cite>REGEX</cite>, <cite>LIKE</cite>, <cite>STARTS_WITH</cite> and <cite>ENDS_WITH</cite>: returns zero, one or more           Pydantic term instances in the list.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A project id</p></li>
+<li><p><strong>collection_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A collection</p></li>
+<li><p><strong>term_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A term id to be found</p></li>
+<li><p><strong>settings</strong> (<a class="reference internal" href="#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><em>SearchSettings</em></a><em>|</em><em>None</em>) – The search settings</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of Pydantic term instances. Returns an empty list if no matches are found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[BaseModel]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.find_terms_in_project">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">find_terms_in_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><span class="pre">SearchSettings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><span class="pre">BaseModel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.find_terms_in_project" title="Link to this definition">#</a></dt>
+<dd><p>Finds one or more terms, based on the specified search settings, in a project.
+This function performs an exact match on the <cite>project_id</cite> and 
+does <strong>not</strong> search for similar or related projects.
+The given <cite>term_id</cite> is searched according to the search type specified in the parameter <cite>settings</cite>,
+which allows a flexible matching (e.g., <cite>LIKE</cite> may return multiple results).
+If the parameter <cite>settings</cite> is <cite>None</cite>, this function performs an exact match on the <cite>term_id</cite>.
+Terms are unique within a collection but may have some synonyms within a project.
+If any of the provided ids (<cite>project_id</cite> or <cite>term_id</cite>) is not found, the function returns
+an empty list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A project id</p></li>
+<li><p><strong>term_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A term id to be found</p></li>
+<li><p><strong>settings</strong> (<a class="reference internal" href="#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><em>SearchSettings</em></a><em>|</em><em>None</em>) – The search settings</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of Pydantic term instances. Returns an empty list if no matches are found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[BaseModel]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-esgvoc.api.search">
 <span id="search-settings"></span><h2>Search settings<a class="headerlink" href="#module-esgvoc.api.search" title="Link to this heading">#</a></h2>
@@ -1071,7 +1563,13 @@
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#term-validation">Term validation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#term-validation">Term validation</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.valid_term"><code class="docutils literal notranslate"><span class="pre">valid_term()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.valid_term_in_all_projects"><code class="docutils literal notranslate"><span class="pre">valid_term_in_all_projects()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.valid_term_in_collection"><code class="docutils literal notranslate"><span class="pre">valid_term_in_collection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.valid_term_in_project"><code class="docutils literal notranslate"><span class="pre">valid_term_in_project()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-esgvoc.api.report">Validation reporting</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.report.ProjectTermError"><code class="docutils literal notranslate"><span class="pre">ProjectTermError</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.report.ProjectTermError.collection_id"><code class="docutils literal notranslate"><span class="pre">ProjectTermError.collection_id</span></code></a></li>
@@ -1110,8 +1608,24 @@
 </li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-terms">Get terms</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-terms">Find terms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-terms">Get terms</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_all_collections_in_project"><code class="docutils literal notranslate"><span class="pre">get_all_collections_in_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_all_projects"><code class="docutils literal notranslate"><span class="pre">get_all_projects()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_all_terms_in_all_projects"><code class="docutils literal notranslate"><span class="pre">get_all_terms_in_all_projects()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_all_terms_in_collection"><code class="docutils literal notranslate"><span class="pre">get_all_terms_in_collection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_all_terms_in_project"><code class="docutils literal notranslate"><span class="pre">get_all_terms_in_project()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-terms">Find terms</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_collections_in_project"><code class="docutils literal notranslate"><span class="pre">find_collections_in_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_project"><code class="docutils literal notranslate"><span class="pre">find_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_terms_from_data_descriptor_in_all_projects"><code class="docutils literal notranslate"><span class="pre">find_terms_from_data_descriptor_in_all_projects()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_terms_from_data_descriptor_in_project"><code class="docutils literal notranslate"><span class="pre">find_terms_from_data_descriptor_in_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_terms_in_all_projects"><code class="docutils literal notranslate"><span class="pre">find_terms_in_all_projects()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_terms_in_collection"><code class="docutils literal notranslate"><span class="pre">find_terms_in_collection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.find_terms_in_project"><code class="docutils literal notranslate"><span class="pre">find_terms_in_project()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-esgvoc.api.search">Search settings</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.search.MatchingTerm"><code class="docutils literal notranslate"><span class="pre">MatchingTerm</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.search.MatchingTerm.collection_id"><code class="docutils literal notranslate"><span class="pre">MatchingTerm.collection_id</span></code></a></li>
