@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Python API &#8212; ESGVOC  documentation</title>
+    <title>ESGVOC API &#8212; ESGVOC  documentation</title>
   
   
   
@@ -35,7 +35,6 @@
     <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -49,12 +48,11 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script src="../_static/tabs.js?v=3030b3cb"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'user/api';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Typer CLI" href="cli.html" />
-    <link rel="prev" title="Database and Functionality" href="cached_database.html" />
+    <link rel="next" title="Command Line Interface (CLI)" href="cli.html" />
+    <link rel="prev" title="Database and functionality" href="cached_database.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -144,17 +142,16 @@
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">welcome</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Welcome</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to ESGF-Vocab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="terms.html">About terms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cached_database.html">Database and Functionality</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli.html">Typer CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terms.html">Controlled vocabulary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cached_database.html">Database and functionality</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">ESGVOC API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../guides/basic_cli.html">CLI commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guides/basics_esgvoc.html">ESGVOC library tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guides/basics_drs.html">DRS applications tutorial</a></li>
 </ul>
@@ -346,7 +343,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Python API</h1>
+    <h1>ESGVOC API</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -357,14 +354,13 @@
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key Features</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-usage">Example Usage</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#structured-data-with-pydantic-models">Structured Data with Pydantic Models</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#structured-data">Structured Data</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ease-of-integration">Ease of Integration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-usage">Example usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#structured-data-with-pydantic-models">Structured data with Pydantic models</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#structured-data">Structured data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ease-of-integration">Ease of integration</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notes">Notes</a></li>
 </ul>
             </nav>
         </div>
@@ -376,14 +372,14 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="python-api">
-<h1>Python API<a class="headerlink" href="#python-api" title="Link to this heading">#</a></h1>
+  <section id="esgvoc-api">
+<h1>ESGVOC API<a class="headerlink" href="#esgvoc-api" title="Link to this heading">#</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code> Python API provides a powerful and read-only interface to query controlled vocabularies. Users can retrieve, search, and validate vocabulary terms programmatically using a clean and intuitive API.</p>
 </section>
 <section id="key-features">
-<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">#</a></h2>
+<h2>Key features<a class="headerlink" href="#key-features" title="Link to this heading">#</a></h2>
 <p>The API offers three main types of functions:</p>
 <ol class="arabic simple">
 <li><p><strong>Retrieve Functions (<code class="docutils literal notranslate"><span class="pre">get_*</span></code>)</strong></p>
@@ -422,7 +418,7 @@
 </ol>
 </section>
 <section id="example-usage">
-<h2>Example Usage<a class="headerlink" href="#example-usage" title="Link to this heading">#</a></h2>
+<h2>Example usage<a class="headerlink" href="#example-usage" title="Link to this heading">#</a></h2>
 <p>Below are some examples of how to use the API. For complete documentation, refer to the <a class="reference internal" href="#"><span class="xref myst">API Reference</span></a> or the <a class="reference external" href="https://esgf.github.io/esgf-vocab/guides/basics_esgvoc.html">Notebook Guide</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
 
@@ -446,14 +442,14 @@
 </div>
 </section>
 <section id="structured-data-with-pydantic-models">
-<h2>Structured Data with Pydantic Models<a class="headerlink" href="#structured-data-with-pydantic-models" title="Link to this heading">#</a></h2>
+<h2>Structured data with Pydantic models<a class="headerlink" href="#structured-data-with-pydantic-models" title="Link to this heading">#</a></h2>
 <p>One of the key benefits of using this library is that the returned terms are Pydantic objects representing the requested terms. This provides several advantages:</p>
 <section id="structured-data">
-<h3>Structured Data<a class="headerlink" href="#structured-data" title="Link to this heading">#</a></h3>
+<h3>Structured data<a class="headerlink" href="#structured-data" title="Link to this heading">#</a></h3>
 <p>Each term is encapsulated in a well-defined Pydantic model, ensuring that the data is structured and adheres to a defined schema.</p>
 </section>
 <section id="ease-of-integration">
-<h3>Ease of Integration<a class="headerlink" href="#ease-of-integration" title="Link to this heading">#</a></h3>
+<h3>Ease of integration<a class="headerlink" href="#ease-of-integration" title="Link to this heading">#</a></h3>
 <p>Since Pydantic objects are Python-native and compatible with many frameworks, the terms can be seamlessly integrated into third-party software, such as:</p>
 <ul class="simple">
 <li><p><strong>Web Frameworks</strong>: Using terms directly in APIs or web applications (e.g., FastAPI, Django).</p></li>
@@ -461,36 +457,6 @@
 <li><p><strong>Configuration Management</strong>: Mapping terms into application configurations or schemas.</p></li>
 </ul>
 </section>
-</section>
-<section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p><strong>Read-Only Access</strong>: The API does not allow modification of the controlled vocabularies. Changes must be made in the respective GitHub repositories.</p></li>
-<li><p><strong>Tabulated Examples</strong>: Below is a summary of API functionality with example commands:</p></li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"></div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>```{tab} Retrieve
-ev.get_all_data_descriptors_in_universe()
-ev.get_all_projects()
-```
-
-```{tab} Find
-ev.find_terms_in_universe(term_id=&quot;aerchemmip&quot;)
-ev.find_terms_in_collection(project_id=&quot;cmip6plus&quot;, collection_id=&quot;activity_id&quot;, term_id=&quot;cmip&quot;)
-```
-
-```{tab} Validate
-ev.valid_term_in_collection(value=&quot;ipsl&quot;, project_id=&quot;cmip6plus&quot;, collection_id=&quot;institution_id&quot;)
-```
-</pre></div>
-</div>
-</div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
 </section>
 </section>
 
@@ -511,7 +477,7 @@ ev.valid_term_in_collection(value=&quot;ipsl&quot;, project_id=&quot;cmip6plus&q
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Database and Functionality</p>
+        <p class="prev-next-title">Database and functionality</p>
       </div>
     </a>
     <a class="right-next"
@@ -519,7 +485,7 @@ ev.valid_term_in_collection(value=&quot;ipsl&quot;, project_id=&quot;cmip6plus&q
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Typer CLI</p>
+        <p class="prev-next-title">Command Line Interface (CLI)</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -541,14 +507,13 @@ ev.valid_term_in_collection(value=&quot;ipsl&quot;, project_id=&quot;cmip6plus&q
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key Features</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-usage">Example Usage</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#structured-data-with-pydantic-models">Structured Data with Pydantic Models</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#structured-data">Structured Data</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ease-of-integration">Ease of Integration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-usage">Example usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#structured-data-with-pydantic-models">Structured data with Pydantic models</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#structured-data">Structured data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ease-of-integration">Ease of integration</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notes">Notes</a></li>
 </ul>
   </nav></div>
 

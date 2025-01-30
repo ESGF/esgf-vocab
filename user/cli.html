@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Typer CLI &#8212; ESGVOC  documentation</title>
+    <title>Command Line Interface (CLI) &#8212; ESGVOC  documentation</title>
   
   
   
@@ -51,8 +51,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'user/cli';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CLI commands" href="../guides/basic_cli.html" />
-    <link rel="prev" title="Python API" href="api.html" />
+    <link rel="next" title="ESGVOC library tutorial" href="../guides/basics_esgvoc.html" />
+    <link rel="prev" title="ESGVOC API" href="api.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -142,17 +142,16 @@
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">welcome</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Welcome</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to ESGF-Vocab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="terms.html">About terms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cached_database.html">Database and Functionality</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Typer CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terms.html">Controlled vocabulary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cached_database.html">Database and functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">ESGVOC API</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Command Line Interface (CLI)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../guides/basic_cli.html">CLI commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guides/basics_esgvoc.html">ESGVOC library tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guides/basics_drs.html">DRS applications tutorial</a></li>
 </ul>
@@ -344,7 +343,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Typer CLI</h1>
+    <h1>Command Line Interface (CLI)</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -363,16 +362,16 @@
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-commands">Basic Commands</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-data">Querying Data</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-data">Validating Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-data">Validating data</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features-and-limitations">Features and Limitations</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-and-querying">Filtering and Querying</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error Handling</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batch-operations">Batch Operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features-and-limitations">Features and limitations</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-and-querying">Filtering and querying</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error handling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batch-operations">Batch operations</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-use-cases">Advanced Use Cases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-use-cases">Advanced use cases</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
 </ul>
             </nav>
@@ -385,16 +384,16 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="typer-cli">
-<h1>Typer CLI<a class="headerlink" href="#typer-cli" title="Link to this heading">#</a></h1>
+  <section id="command-line-interface-cli">
+<h1>Command Line Interface (CLI)<a class="headerlink" href="#command-line-interface-cli" title="Link to this heading">#</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code> CLI provides a command-line interface for querying and validating controlled vocabularies. It serves as an alternative to the Python API, offering a simple and readable way to access the library’s functionality directly from the terminal.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> CLI provides a command-line interface for querying and validating controlled vocabularies. It serves as an alternative to the Python API, offering a simple and readable way to access the library’s functionality directly from the terminal.</p>
 </section>
 <section id="installation-and-access">
 <h2>Installation and Access<a class="headerlink" href="#installation-and-access" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>The CLI is included as part of the <code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code> Python library. Once the library is installed, the CLI becomes available.</p></li>
+<li><p>The CLI is included as part of the <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> Python library. Once the library is installed, the CLI becomes available.</p></li>
 <li><p>To view available commands and usage information, use the help command:</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>--help
@@ -462,7 +461,7 @@ esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6plus:institution_i
 </div>
 </section>
 <section id="validating-data">
-<h3>Validating Data<a class="headerlink" href="#validating-data" title="Link to this heading">#</a></h3>
+<h3>Validating data<a class="headerlink" href="#validating-data" title="Link to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">valid</span></code> command checks if a string comply with the <code class="docutils literal notranslate"><span class="pre">drs_name</span></code> of a term vocabulary rules. Examples:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Validate a term in the Universe CV</span>
 esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>::
@@ -480,29 +479,29 @@ esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> 
 </section>
 </section>
 <section id="features-and-limitations">
-<h2>Features and Limitations<a class="headerlink" href="#features-and-limitations" title="Link to this heading">#</a></h2>
+<h2>Features and limitations<a class="headerlink" href="#features-and-limitations" title="Link to this heading">#</a></h2>
 <section id="filtering-and-querying">
-<h3>Filtering and Querying<a class="headerlink" href="#filtering-and-querying" title="Link to this heading">#</a></h3>
+<h3>Filtering and querying<a class="headerlink" href="#filtering-and-querying" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Wildcard Patterns and Regular Expressions</strong>: Not currently supported in the CLI but available in the Python API.</p></li>
 <li><p><strong>Attribute-Based Filtering</strong>: Planned for future releases if required.</p></li>
 </ul>
 </section>
 <section id="error-handling">
-<h3>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading">#</a></h3>
+<h3>Error handling<a class="headerlink" href="#error-handling" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>If a term does not exist or is invalid, the CLI provides a clear error or warning in the output table.</p></li>
 </ul>
 </section>
 <section id="batch-operations">
-<h3>Batch Operations<a class="headerlink" href="#batch-operations" title="Link to this heading">#</a></h3>
+<h3>Batch operations<a class="headerlink" href="#batch-operations" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>The CLI supports batch validation or querying by specifying multiple terms in a single command.</p></li>
 </ul>
 </section>
 </section>
 <section id="advanced-use-cases">
-<h2>Advanced Use Cases<a class="headerlink" href="#advanced-use-cases" title="Link to this heading">#</a></h2>
+<h2>Advanced use cases<a class="headerlink" href="#advanced-use-cases" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><strong>Scripting and Automation</strong>:</p>
 <ul>
@@ -519,7 +518,7 @@ esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> 
 </section>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code> CLI is a lightweight, flexible tool for interacting with controlled vocabularies. It complements the Python API by providing:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> CLI is a lightweight, flexible tool for interacting with controlled vocabularies. It complements the Python API by providing:</p>
 <ul class="simple">
 <li><p>A simple interface for quick queries and validations.</p></li>
 <li><p>Readable output for immediate consumption or integration.</p></li>
@@ -545,15 +544,15 @@ esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> 
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Python API</p>
+        <p class="prev-next-title">ESGVOC API</p>
       </div>
     </a>
     <a class="right-next"
-       href="../guides/basic_cli.html"
+       href="../guides/basics_esgvoc.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">CLI commands</p>
+        <p class="prev-next-title">ESGVOC library tutorial</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -583,16 +582,16 @@ esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> 
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-commands">Basic Commands</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-data">Querying Data</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-data">Validating Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-data">Validating data</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features-and-limitations">Features and Limitations</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-and-querying">Filtering and Querying</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error Handling</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batch-operations">Batch Operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features-and-limitations">Features and limitations</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-and-querying">Filtering and querying</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error handling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batch-operations">Batch operations</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-use-cases">Advanced Use Cases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-use-cases">Advanced use cases</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
 </ul>
   </nav></div>

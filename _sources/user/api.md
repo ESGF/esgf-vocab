@@ -1,10 +1,10 @@
-# Python API
+# ESGVOC API
 
 ## Overview
 
 The `esgf-vocab` Python API provides a powerful and read-only interface to query controlled vocabularies. Users can retrieve, search, and validate vocabulary terms programmatically using a clean and intuitive API.
 
-## Key Features
+## Key features
 
 The API offers three main types of functions:
 
@@ -26,7 +26,7 @@ The API offers three main types of functions:
      - Check if a term is valid within a collection.
      - Check if a term is valid within a project.
 
-## Example Usage
+## Example usage
 
 Below are some examples of how to use the API. For complete documentation, refer to the [API Reference](#) or the [Notebook Guide](https://esgf.github.io/esgf-vocab/guides/basics_esgvoc.html).
 
@@ -51,38 +51,16 @@ ev.valid_term_in_collection(value="ipsl", project_id="cmip6plus", collection_id=
 ev.valid_term_in_project(value="some_term", project_id="cmip6plus")
 ```
 
-## Structured Data with Pydantic Models
+## Structured data with Pydantic models
 
 One of the key benefits of using this library is that the returned terms are Pydantic objects representing the requested terms. This provides several advantages:
 
-### Structured Data
+### Structured data
 Each term is encapsulated in a well-defined Pydantic model, ensuring that the data is structured and adheres to a defined schema.
 
-### Ease of Integration
+### Ease of integration
 Since Pydantic objects are Python-native and compatible with many frameworks, the terms can be seamlessly integrated into third-party software, such as:
 - **Web Frameworks**: Using terms directly in APIs or web applications (e.g., FastAPI, Django).
 - **Data Pipelines**: Injecting validated terms into ETL workflows or analytics systems.
 - **Configuration Management**: Mapping terms into application configurations or schemas.
 
-## Notes
-
-- **Read-Only Access**: The API does not allow modification of the controlled vocabularies. Changes must be made in the respective GitHub repositories.
-- **Tabulated Examples**: Below is a summary of API functionality with example commands:
-
-```{note}
-```{tabs}
-    ```{tab} Retrieve
-    ev.get_all_data_descriptors_in_universe()
-    ev.get_all_projects()
-    ```
-
-    ```{tab} Find
-    ev.find_terms_in_universe(term_id="aerchemmip")
-    ev.find_terms_in_collection(project_id="cmip6plus", collection_id="activity_id", term_id="cmip")
-    ```
-
-    ```{tab} Validate
-    ev.valid_term_in_collection(value="ipsl", project_id="cmip6plus", collection_id="institution_id")
-    ```
-```
-```

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>CLI commands &#8212; ESGVOC  documentation</title>
+    <title>Get Feature &#8212; ESGVOC  documentation</title>
   
   
   
@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -48,7 +49,8 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'guides/basic_cli';</script>
+    <script src="../_static/tabs.js?v=3030b3cb"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how_to/get';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -152,8 +154,8 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="basics_esgvoc.html">ESGVOC library tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="basics_drs.html">DRS applications tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/basics_esgvoc.html">ESGVOC library tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/basics_drs.html">DRS applications tutorial</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API documentation</span></p>
 <ul class="nav bd-sidenav">
@@ -237,7 +239,7 @@
       
       
       
-      <li><a href="https://github.com/ESGF/esgf-vocab/issues/new?title=Issue%20on%20page%20%2Fguides/basic_cli.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/ESGF/esgf-vocab/issues/new?title=Issue%20on%20page%20%2Fhow_to/get.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -267,7 +269,7 @@
       
       
       
-      <li><a href="../_sources/guides/basic_cli.md" target="_blank"
+      <li><a href="../_sources/how_to/get.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -343,7 +345,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>CLI commands</h1>
+    <h1>Get Feature</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -353,11 +355,7 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-help">esgvoc –help</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-install">esgvoc install</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-status">esgvoc status</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-get">esgvoc get</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-valid">esgvoc valid</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-universe-datadescriptor">Get Universe DataDescriptor</a></li>
 </ul>
             </nav>
         </div>
@@ -369,54 +367,21 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="cli-commands">
-<h1>CLI commands<a class="headerlink" href="#cli-commands" title="Link to this heading">#</a></h1>
-<section id="esgvoc-help">
-<h2>esgvoc –help<a class="headerlink" href="#esgvoc-help" title="Link to this heading">#</a></h2>
-</section>
-<section id="esgvoc-install">
-<h2>esgvoc install<a class="headerlink" href="#esgvoc-install" title="Link to this heading">#</a></h2>
-<p>to get the latest CVs
-currently, only CMIP6Plus_CV is supported</p>
-</section>
-<section id="esgvoc-status">
-<h2>esgvoc status<a class="headerlink" href="#esgvoc-status" title="Link to this heading">#</a></h2>
-<p>to see the different CVs version on github, on local, in cached db</p>
-<p><img alt="alt text" src="../_images/status_install.png" /></p>
-</section>
-<section id="esgvoc-get">
-<h2>esgvoc get<a class="headerlink" href="#esgvoc-get" title="Link to this heading">#</a></h2>
-<p>the idea is :</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>get<span class="w"> </span>&lt;What_CV&gt;:&lt;What_collection&gt;:&lt;What_term&gt;
+  <section id="get-feature">
+<h1>Get Feature<a class="headerlink" href="#get-feature" title="Link to this heading">#</a></h1>
+<section id="get-universe-datadescriptor">
+<h2>Get Universe DataDescriptor<a class="headerlink" href="#get-universe-datadescriptor" title="Link to this heading">#</a></h2>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>get<span class="w"> </span>universe:institution:ipsl
 </pre></div>
 </div>
-<p>with some shortcuts<br />
-you can try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>get<span class="w"> </span>::
-esgvoc<span class="w"> </span>get<span class="w"> </span>universe::
-esgvoc<span class="w"> </span>get<span class="w"> </span>universe:institution:
-esgvoc<span class="w"> </span>get<span class="w"> </span>universe:institution:IPSL
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
 
-esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6plus::
-esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6plus:institution_id:
-esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6plus:institution_id:ipsl
-
-esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6plus:institution_id:ipsl<span class="w"> </span>cmip6plus:institution_id:llnl
+<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;institution&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_universe</span><span class="p">(</span><span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span> <span class="c1"># same result but slower (still fast)</span>
 </pre></div>
 </div>
-</section>
-<section id="esgvoc-valid">
-<h2>esgvoc valid<a class="headerlink" href="#esgvoc-valid" title="Link to this heading">#</a></h2>
-<p>the idea is to validate the DRS_name against a collection or complete CV<br />
-you can try :</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>::
-esgvoc<span class="w"> </span>valid<span class="w"> </span>ipsl<span class="w"> </span>::
-
-
-esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>cmip6plus::
-esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>cmip6plus:institution_id:
-</pre></div>
-</div>
+</div></div>
 </section>
 </section>
 
@@ -448,11 +413,7 @@ esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> 
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-help">esgvoc –help</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-install">esgvoc install</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-status">esgvoc status</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-get">esgvoc get</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc-valid">esgvoc valid</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-universe-datadescriptor">Get Universe DataDescriptor</a></li>
 </ul>
   </nav></div>
 

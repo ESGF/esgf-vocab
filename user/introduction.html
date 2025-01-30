@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Introduction to ESGF-Vocab &#8212; ESGVOC  documentation</title>
+    <title>Introduction &#8212; ESGVOC  documentation</title>
   
   
   
@@ -51,7 +51,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'user/introduction';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="About terms" href="terms.html" />
+    <link rel="next" title="Controlled vocabulary" href="terms.html" />
     <link rel="prev" title="ESGVOC Library" href="../index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -142,17 +142,16 @@
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">welcome</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Welcome</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction to ESGF-Vocab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="terms.html">About terms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cached_database.html">Database and Functionality</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli.html">Typer CLI</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terms.html">Controlled vocabulary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cached_database.html">Database and functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">ESGVOC API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../guides/basic_cli.html">CLI commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guides/basics_esgvoc.html">ESGVOC library tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guides/basics_drs.html">DRS applications tutorial</a></li>
 </ul>
@@ -344,7 +343,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Introduction to ESGF-Vocab</h1>
+    <h1>Introduction</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -354,22 +353,18 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-esgf-vocab">Why ESGF-Vocab?</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#challenges-with-traditional-methods">Challenges with Traditional Methods</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-esgf-vocab-solution">The ESGF-Vocab Solution</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-esgvoc">Why ESGVOC?</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-rye-preferred">Using Rye (Preferred)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pip-in-a-virtual-environment">Using pip in a Virtual Environment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-rye-preferred">Using Rye (preferred)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pip-in-a-virtual-environment">Using pip in a virtual environment</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fetching-vocabulary-data">Fetching Vocabulary Data</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fetching-vocabulary-data">Fetching vocabulary data</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-use">Offline Use</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#official-controlled-vocabulary-repositories">Official Controlled Vocabulary Repositories</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flexibility-for-other-repositories">Flexibility for Other Repositories</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#official-controlled-vocabulary-repositories">Official Controlled Vocabulary repositories</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flexibility-for-other-repositories">Flexibility for other repositories</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements">Requirements</a></li>
@@ -384,28 +379,23 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="introduction-to-esgf-vocab">
-<h1>Introduction to ESGF-Vocab<a class="headerlink" href="#introduction-to-esgf-vocab" title="Link to this heading">#</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code> is a Python library designed to streamline and improve the management of controlled vocabularies used by the Earth System Grid Federation (ESGF) and related projects. By harmonizing data sources and providing both a Python API and a CLI for easy access, <code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code> resolves common issues like inconsistencies, errors, and inefficiencies associated with managing controlled vocabularies.</p>
-<section id="why-esgf-vocab">
-<h2>Why ESGF-Vocab?<a class="headerlink" href="#why-esgf-vocab" title="Link to this heading">#</a></h2>
-<section id="challenges-with-traditional-methods">
-<h3>Challenges with Traditional Methods<a class="headerlink" href="#challenges-with-traditional-methods" title="Link to this heading">#</a></h3>
+  <section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> is a Python library designed to streamline and improve the management of controlled vocabularies used by the Earth System Grid Federation (ESGF) and related projects. By harmonizing data sources and providing both a Python API and a CLI for easy access, <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> resolves common issues like inconsistencies, errors, and inefficiencies associated with managing controlled vocabularies.</p>
+<section id="why-esgvoc">
+<h2>Why ESGVOC?<a class="headerlink" href="#why-esgvoc" title="Link to this heading">#</a></h2>
 <p>Previously, controlled vocabularies were stored in multiple locations and formats, requiring various software implementations to query and interpret data. This approach introduced challenges, including:</p>
 <ul class="simple">
 <li><p>Errors and inconsistencies across systems.</p></li>
 <li><p>Misuse of metadata and data.</p></li>
 <li><p>Difficulty in maintaining and updating vocabularies.</p></li>
 </ul>
-</section>
-<section id="the-esgf-vocab-solution">
-<h3>The ESGF-Vocab Solution<a class="headerlink" href="#the-esgf-vocab-solution" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code> improves controlled vocabulary management through two main ideas:</p>
+<p><code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> improves controlled vocabulary management through two main ideas:</p>
 <ol class="arabic simple">
 <li><p><strong>Harmonization through a Unified Source</strong><br />
 A single, centralized repository — referred to as the “Universe CV” — hosts all controlled vocabularies. Specialized vocabularies for specific projects reference the Universe CV via streamlined lists of IDs. This ensures consistency and eliminates duplication.</p></li>
 <li><p><strong>A Controlled Vocabulary Library</strong><br />
-<code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code> provides a dedicated service for interacting with controlled vocabularies. It enables developers, administrators, and software systems to access vocabularies seamlessly via:</p>
+<code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> provides a dedicated service for interacting with controlled vocabularies. It enables developers, administrators, and software systems to access vocabularies seamlessly via:</p>
 <ul class="simple">
 <li><p>A Python API for programmatic interaction.</p></li>
 <li><p>A CLI powered by <a class="reference external" href="https://typer.tiangolo.com/">Typer</a> for command-line use.</p></li>
@@ -413,12 +403,11 @@ A single, centralized repository — referred to as the “Universe CV” — ho
 </li>
 </ol>
 </section>
-</section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>You can install <code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code> using modern Python packaging tools or in a virtual environment. Below are the recommended methods:</p>
+<p>You can install <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> using modern Python packaging tools or in a virtual environment. Below are the recommended methods:</p>
 <section id="using-rye-preferred">
-<h3>Using Rye (Preferred)<a class="headerlink" href="#using-rye-preferred" title="Link to this heading">#</a></h3>
+<h3>Using Rye (preferred)<a class="headerlink" href="#using-rye-preferred" title="Link to this heading">#</a></h3>
 <p><a class="reference external" href="https://rye-up.com/">Rye</a> is recommended for managing dependencies and isolating the library:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rye<span class="w"> </span>add<span class="w"> </span>esgvoc
 </pre></div>
@@ -426,7 +415,7 @@ A single, centralized repository — referred to as the “Universe CV” — ho
 <p>This ensures all dependencies are installed, and cached repositories and databases will be stored in the <code class="docutils literal notranslate"><span class="pre">.cache</span></code> directory alongside the <code class="docutils literal notranslate"><span class="pre">.venv</span></code> folder. This approach simplifies updates and uninstallation.</p>
 </section>
 <section id="using-pip-in-a-virtual-environment">
-<h3>Using pip in a Virtual Environment<a class="headerlink" href="#using-pip-in-a-virtual-environment" title="Link to this heading">#</a></h3>
+<h3>Using pip in a virtual environment<a class="headerlink" href="#using-pip-in-a-virtual-environment" title="Link to this heading">#</a></h3>
 <p>Alternatively, you can use a virtual environment:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>myenv
 <span class="nb">source</span><span class="w"> </span>myenv/bin/activate
@@ -436,7 +425,7 @@ pip<span class="w"> </span>install<span class="w"> </span>esgvoc
 </section>
 </section>
 <section id="fetching-vocabulary-data">
-<h2>Fetching Vocabulary Data<a class="headerlink" href="#fetching-vocabulary-data" title="Link to this heading">#</a></h2>
+<h2>Fetching vocabulary data<a class="headerlink" href="#fetching-vocabulary-data" title="Link to this heading">#</a></h2>
 <p>Once installed, you can fetch controlled vocabulary data using the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>install
 </pre></div>
@@ -452,16 +441,20 @@ pip<span class="w"> </span>install<span class="w"> </span>esgvoc
 </section>
 </section>
 <section id="official-controlled-vocabulary-repositories">
-<h2>Official Controlled Vocabulary Repositories<a class="headerlink" href="#official-controlled-vocabulary-repositories" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code> primarily uses the following repositories for controlled vocabulary data:</p>
+<h2>Official Controlled Vocabulary repositories<a class="headerlink" href="#official-controlled-vocabulary-repositories" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> primarily uses the following repositories for controlled vocabulary data:</p>
 <ul class="simple">
 <li><p><strong>Universe CV</strong>: <a class="reference external" href="https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc">GitHub Repository</a></p></li>
 <li><p><strong>CMIP6 CVs</strong>: <a class="reference external" href="https://github.com/WCRP-CMIP/CMIP6_CVs/tree/esgvoc">GitHub Repository</a></p></li>
 <li><p><strong>CMIP6Plus CVs</strong>: <a class="reference external" href="https://github.com/WCRP-CMIP/CMIP6Plus_CVs/tree/esgvoc">GitHub Repository</a></p></li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the exact data witch is read by ESGVOC is in a specific branch “esgvoc” in those repositories.</p>
+</div>
 <section id="flexibility-for-other-repositories">
-<h3>Flexibility for Other Repositories<a class="headerlink" href="#flexibility-for-other-repositories" title="Link to this heading">#</a></h3>
-<p>While designed for these official repositories, <code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code> can use other repositories if they are structured correctly.</p>
+<h3>Flexibility for other repositories<a class="headerlink" href="#flexibility-for-other-repositories" title="Link to this heading">#</a></h3>
+<p>While designed for these repositories, <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> can use other repositories if they are structured correctly.</p>
 </section>
 </section>
 <section id="requirements">
@@ -471,7 +464,7 @@ pip<span class="w"> </span>install<span class="w"> </span>esgvoc
 <li><p><strong>No Additional System Dependencies</strong>: Interaction with the library is entirely Python-based, with no external SQLite dependencies.</p></li>
 </ul>
 <hr class="docutils" />
-<p>This introduction covers the general purpose and installation of <code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code>. In the next sections, we will dive deeper into its functionality, including the Python API and CLI usage.</p>
+<p>This introduction covers the general purpose and installation of <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code>. In the next sections, we will dive deeper into its functionality, including the Python API and CLI usage.</p>
 </section>
 </section>
 
@@ -500,7 +493,7 @@ pip<span class="w"> </span>install<span class="w"> </span>esgvoc
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">About terms</p>
+        <p class="prev-next-title">Controlled vocabulary</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -521,22 +514,18 @@ pip<span class="w"> </span>install<span class="w"> </span>esgvoc
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-esgf-vocab">Why ESGF-Vocab?</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#challenges-with-traditional-methods">Challenges with Traditional Methods</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-esgf-vocab-solution">The ESGF-Vocab Solution</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-esgvoc">Why ESGVOC?</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-rye-preferred">Using Rye (Preferred)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pip-in-a-virtual-environment">Using pip in a Virtual Environment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-rye-preferred">Using Rye (preferred)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pip-in-a-virtual-environment">Using pip in a virtual environment</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fetching-vocabulary-data">Fetching Vocabulary Data</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fetching-vocabulary-data">Fetching vocabulary data</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-use">Offline Use</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#official-controlled-vocabulary-repositories">Official Controlled Vocabulary Repositories</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flexibility-for-other-repositories">Flexibility for Other Repositories</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#official-controlled-vocabulary-repositories">Official Controlled Vocabulary repositories</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flexibility-for-other-repositories">Flexibility for other repositories</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements">Requirements</a></li>

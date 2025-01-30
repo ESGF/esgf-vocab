@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Database and Functionality &#8212; ESGVOC  documentation</title>
+    <title>Database and functionality &#8212; ESGVOC  documentation</title>
   
   
   
@@ -51,8 +51,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'user/cached_database';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Python API" href="api.html" />
-    <link rel="prev" title="About terms" href="terms.html" />
+    <link rel="next" title="ESGVOC API" href="api.html" />
+    <link rel="prev" title="Controlled vocabulary" href="terms.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -142,17 +142,16 @@
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">welcome</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Welcome</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to ESGF-Vocab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="terms.html">About terms</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Database and Functionality</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli.html">Typer CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terms.html">Controlled vocabulary</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Database and functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">ESGVOC API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../guides/basic_cli.html">CLI commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guides/basics_esgvoc.html">ESGVOC library tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guides/basics_drs.html">DRS applications tutorial</a></li>
 </ul>
@@ -344,7 +343,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Database and Functionality</h1>
+    <h1>Database and functionality</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -354,9 +353,9 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-database-management">Overview of Database Management</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronization-workflow">Synchronization Workflow</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-synchronization-status">Viewing Synchronization Status</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-database-management">Overview of database management</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronization-workflow">Synchronization workflow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-synchronization-status">Viewing synchronization status</a></li>
 </ul>
 </li>
 </ul>
@@ -371,12 +370,12 @@
                 <article class="bd-article">
                   
   <section id="database-and-functionality">
-<h1>Database and Functionality<a class="headerlink" href="#database-and-functionality" title="Link to this heading">#</a></h1>
+<h1>Database and functionality<a class="headerlink" href="#database-and-functionality" title="Link to this heading">#</a></h1>
 <section id="overview-of-database-management">
-<h2>Overview of Database Management<a class="headerlink" href="#overview-of-database-management" title="Link to this heading">#</a></h2>
+<h2>Overview of database management<a class="headerlink" href="#overview-of-database-management" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code> command is responsible for managing the synchronization process between the controlled vocabulary repositories, the local file system, and the SQLite database. This ensures that the database always reflects the most up-to-date state of the repositories.</p>
 <section id="synchronization-workflow">
-<h3>Synchronization Workflow<a class="headerlink" href="#synchronization-workflow" title="Link to this heading">#</a></h3>
+<h3>Synchronization workflow<a class="headerlink" href="#synchronization-workflow" title="Link to this heading">#</a></h3>
 <p>For each configured controlled vocabulary repository, the synchronization process involves the following steps:</p>
 <ol class="arabic simple">
 <li><p><strong>Version Check</strong></p>
@@ -399,10 +398,10 @@
 </ul>
 </li>
 </ol>
-<p>By automating this process, <code class="docutils literal notranslate"><span class="pre">esgf-vocab</span></code> guarantees that users have access to the latest available controlled vocabularies without requiring manual intervention.</p>
+<p>By automating this process, <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> guarantees that users have access to the latest available controlled vocabularies without requiring manual intervention.</p>
 </section>
 <section id="viewing-synchronization-status">
-<h3>Viewing Synchronization Status<a class="headerlink" href="#viewing-synchronization-status" title="Link to this heading">#</a></h3>
+<h3>Viewing synchronization status<a class="headerlink" href="#viewing-synchronization-status" title="Link to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">status</span></code> command provides a detailed summary of the current state of synchronization for each controlled vocabulary repository. Specifically, it shows:</p>
 <ul class="simple">
 <li><p>The latest commit version of the remote GitHub repository.</p></li>
@@ -433,7 +432,7 @@
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">About terms</p>
+        <p class="prev-next-title">Controlled vocabulary</p>
       </div>
     </a>
     <a class="right-next"
@@ -441,7 +440,7 @@
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Python API</p>
+        <p class="prev-next-title">ESGVOC API</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -462,9 +461,9 @@
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-database-management">Overview of Database Management</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronization-workflow">Synchronization Workflow</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-synchronization-status">Viewing Synchronization Status</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-database-management">Overview of database management</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronization-workflow">Synchronization workflow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-synchronization-status">Viewing synchronization status</a></li>
 </ul>
 </li>
 </ul>
