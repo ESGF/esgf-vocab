@@ -1,4 +1,4 @@
-# About terms
+# Controlled vocabulary
 
 ## Universe and CMIP projects
 

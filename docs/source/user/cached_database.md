@@ -1,11 +1,11 @@
 
-# Database and Functionality
+# Database and functionality
 
-## Overview of Database Management
+## Overview of database management
 
-The `esgvoc install` command is responsible for managing the synchronization process between the controlled vocabulary repositories, the local file system, and the SQLite database. This ensures that the database always reflects the most up-to-date state of the repositories.
+The `esgvoc install` command is responsible for managing the synchronization process between the controlled vocabulary repositories, the local file system, and the SQLite database. This ensures that the database always reflects the most up-to-date state of the repositories. 
 
-### Synchronization Workflow
+### Synchronization workflow
 For each configured controlled vocabulary repository, the synchronization process involves the following steps:
 
 1. **Version Check**
@@ -20,9 +20,9 @@ For each configured controlled vocabulary repository, the synchronization proces
    - If the local repository does not exist or is outdated, the software clones or updates the repository from GitHub.
    - The SQLite database is rebuilt or updated as necessary to match the most recent version of the controlled vocabulary.
 
-By automating this process, `esgf-vocab` guarantees that users have access to the latest available controlled vocabularies without requiring manual intervention.
+By automating this process, `ESGVOC` guarantees that users have access to the latest available controlled vocabularies without requiring manual intervention.
 
-### Viewing Synchronization Status
+### Viewing synchronization status
 The `esgvoc status` command provides a detailed summary of the current state of synchronization for each controlled vocabulary repository. Specifically, it shows:
 - The latest commit version of the remote GitHub repository.
 - The latest commit version of the local repository.

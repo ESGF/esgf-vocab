@@ -1,13 +1,13 @@
 
-# Typer CLI
+# Command Line Interface (CLI)
 
 ## Overview
 
-The `esgf-vocab` CLI provides a command-line interface for querying and validating controlled vocabularies. It serves as an alternative to the Python API, offering a simple and readable way to access the library's functionality directly from the terminal.
+The `ESGVOC` CLI provides a command-line interface for querying and validating controlled vocabularies. It serves as an alternative to the Python API, offering a simple and readable way to access the library's functionality directly from the terminal.
 
 ## Installation and Access
 
-- The CLI is included as part of the `esgf-vocab` Python library. Once the library is installed, the CLI becomes available.
+- The CLI is included as part of the `ESGVOC` Python library. Once the library is installed, the CLI becomes available.
 - To view available commands and usage information, use the help command:
 
 ```bash
@@ -63,7 +63,7 @@ esgvoc get cmip6plus:institution_id:ipsl
 esgvoc get cmip6plus:institution_id:ipsl cmip6plus:institution_id:llnl
 ```
 
-### Validating Data
+### Validating data
 
 The `valid` command checks if a string comply with the `drs_name` of a term vocabulary rules. Examples:
 
@@ -81,19 +81,19 @@ esgvoc valid IPSL cmip6plus:institution_id:
 esgvoc valid IPSL cmip6plus:institution_id:ipsl
 ```
 
-## Features and Limitations
+## Features and limitations
 
-### Filtering and Querying
+### Filtering and querying
 - **Wildcard Patterns and Regular Expressions**: Not currently supported in the CLI but available in the Python API.
 - **Attribute-Based Filtering**: Planned for future releases if required.
 
-### Error Handling
+### Error handling
 - If a term does not exist or is invalid, the CLI provides a clear error or warning in the output table.
 
-### Batch Operations
+### Batch operations
 - The CLI supports batch validation or querying by specifying multiple terms in a single command.
 
-## Advanced Use Cases
+## Advanced use cases
 
 - **Scripting and Automation**:
   - The CLI supports automation and can be integrated into shell scripts.
@@ -104,7 +104,7 @@ esgvoc valid IPSL cmip6plus:institution_id:ipsl
 
 ## Summary
 
-The `esgf-vocab` CLI is a lightweight, flexible tool for interacting with controlled vocabularies. It complements the Python API by providing:
+The `esgvoc` CLI is a lightweight, flexible tool for interacting with controlled vocabularies. It complements the Python API by providing:
 - A simple interface for quick queries and validations.
 - Readable output for immediate consumption or integration.
 
