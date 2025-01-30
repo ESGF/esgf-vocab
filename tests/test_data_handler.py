@@ -39,7 +39,7 @@ def test_local_project_all_term():
 
  
 def test_local_universe_all_term():
-    repos_dir = Path(".cache/repos/mip-cmor-tables") 
+    repos_dir = Path(".cache/repos/WCRP-universe") 
     for dir in repos_dir.iterdir():
         
         if dir.is_dir() and dir /"000_context.jsonld" in list(dir.iterdir()):
