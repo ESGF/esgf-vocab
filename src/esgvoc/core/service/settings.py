@@ -44,19 +44,28 @@ def load_settings() -> ServiceSettings:
     else:
         default_settings = ServiceSettings(
         universe=UniverseSettings(
-            github_repo="https://github.com/ESPRI-Mod/mip-cmor-tables",
-            branch="uni_proj_ld",
-            local_path=".cache/repos/mip-cmor-tables",
+            github_repo="https://github.com/WCRP-CMIP/WCRP-universe",
+            branch="esgvoc",
+            local_path=".cache/repos/WCRP-universe",
             db_path=".cache/dbs/universe.sqlite"
         ),
         projects={"cmip6plus":ProjectSettings(
                 project_name="CMIP6Plus_CVs",
-                github_repo="https://github.com/ESPRI-Mod/CMIP6Plus_CVs",
-                branch="uni_proj_ld",
+                github_repo="https://github.com/WCRP-CMIP/CMIP6Plus_CVs",
+                branch="esgvoc",
                 local_path=".cache/repos/CMIP6Plus_CVs",
                 db_path=".cache/dbs/cmip6plus.sqlite"
                 )
+            },
+        projects={"cmip6":ProjectSettings(
+                project_name="CMIP6_CVs",
+                github_repo="https://github.com/WCRP-CMIP/CMIP6_CVs",
+                branch="esgvoc",
+                local_path=".cache/repos/CMIP6_CVs",
+                db_path=".cache/dbs/cmip6.sqlite"
+                )
             }
+
         
     )
 
