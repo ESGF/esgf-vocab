@@ -1,4 +1,3 @@
-from esgvoc.api.data_descriptors.directory_date import DirectoryDate
 from pydantic import BaseModel
 
 from esgvoc.api.data_descriptors.activity import Activity
