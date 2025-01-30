@@ -55,9 +55,9 @@ def load_settings() -> ServiceSettings:
                 branch="esgvoc",
                 local_path=".cache/repos/CMIP6Plus_CVs",
                 db_path=".cache/dbs/cmip6plus.sqlite"
-                )
-            },
-        projects={"cmip6":ProjectSettings(
+                ),
+            
+            "cmip6":ProjectSettings(
                 project_name="CMIP6_CVs",
                 github_repo="https://github.com/WCRP-CMIP/CMIP6_CVs",
                 branch="esgvoc",
@@ -66,8 +66,8 @@ def load_settings() -> ServiceSettings:
                 )
             }
 
-        
-    )
+        )
+    
 
         default_settings.save_to_file(str(SETTINGS_FILE))
         return default_settings
