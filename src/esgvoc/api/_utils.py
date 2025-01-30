@@ -1,6 +1,6 @@
-from typing import Sequence
+from typing import Iterable
 
-
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 import esgvoc.core.constants as api_settings
 from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
 from esgvoc.core.db.models.project import PTerm
@@ -27,13 +27,22 @@ def get_universe_session() -> Session:
         raise RuntimeError('universe connection is not initialized')
 
 
-def instantiate_pydantic_term(term: UTerm|PTerm) -> BaseModel:
-    term_class = get_pydantic_class(term.specs[api_settings.TERM_TYPE_JSON_KEY])
-    return term_class(**term.specs)
+def instantiate_pydantic_term(term: UTerm|PTerm,
+                              selected_fields: Iterable[str]|None = None) -> BaseModel:
+    type = term.specs[api_settings.TERM_TYPE_JSON_KEY]
+    if selected_fields:
+        result = DataDescriptor(id=term.id, type=type)
+        for selected_field in selected_fields:
+            setattr(object=result, name=selected_field, value=term.specs.get(selected_field, None))
+    else:
+        term_class = get_pydantic_class(type)
+        result = term_class(**term.specs)
+    return result
 
 
-def instantiate_pydantic_terms(db_terms: Sequence[UTerm|PTerm],
-                               list_to_populate: list[BaseModel]) -> None:
+def instantiate_pydantic_terms(db_terms: Iterable[UTerm|PTerm],
+                               list_to_populate: list[BaseModel],
+                               selected_fields: Iterable[str]|None = None) -> None:
     for db_term in db_terms:
-        term = instantiate_pydantic_term(db_term)
+        term = instantiate_pydantic_term(db_term, selected_fields)
         list_to_populate.append(term)
