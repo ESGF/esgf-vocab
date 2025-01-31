@@ -1,4 +1,4 @@
-from typing import Protocol, Any
+from typing import Protocol, Any, ClassVar
 from abc import ABC, abstractmethod
 from pydantic import BaseModel, ConfigDict
 
@@ -18,6 +18,9 @@ class DataDescriptorVisitor(Protocol):
     """
     The specifications for a term visitor.
     """
+    def visit_sub_set_term(self, term: "DataDescriptorSubSet") -> Any:
+        """Visit a sub set of the information of a term."""
+        pass
     def visit_plain_term(self, term: "PlainTermDataDescriptor") -> Any:
         """Visit a plain term."""
         pass
@@ -53,6 +56,16 @@ class DataDescriptor(ConfiguredBaseModel, ABC):
         pass
 
 
+class DataDescriptorSubSet(DataDescriptor):
+    """
+    A sub set of the information contains in a term.
+    """
+    MANDATORY_TERM_FIELDS: ClassVar[list[str]] = ['id', 'type']
+    """The set of mandatory term fields."""
+    def accept(self, visitor: DataDescriptorVisitor) -> Any:
+        return visitor.visit_sub_set_term(self)
+
+
 class PlainTermDataDescriptor(DataDescriptor):
     """
     A data descriptor that describes hand written terms.
@@ -85,7 +98,6 @@ class TermCompositePart(ConfiguredBaseModel):
     """
     A reference to a term, part of a term composite.
     """
-    
     id: str
     """The id of the referenced term."""
     type: str

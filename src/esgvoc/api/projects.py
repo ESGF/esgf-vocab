@@ -1,5 +1,5 @@
 import re
-from typing import Sequence
+from typing import Sequence, Iterable
 
 import esgvoc.api.universe as universe
 import esgvoc.core.constants as constants
@@ -10,11 +10,11 @@ from esgvoc.api.report import (ProjectTermError, UniverseTermError,
                                ValidationError, ValidationReport)
 from esgvoc.api.search import MatchingTerm, SearchSettings, _create_str_comparison_expression
 from esgvoc.api.project_specs import ProjectSpecs
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import Collection, Project, PTerm
 from esgvoc.core.db.models.universe import UTerm
-from pydantic import BaseModel
 from sqlmodel import Session, and_, select
 
 
@@ -493,7 +493,7 @@ def find_terms_in_collection(project_id:str,
                              collection_id: str,
                              term_id: str,
                              settings: SearchSettings|None = None) \
-                                -> list[BaseModel]:
+                                -> list[DataDescriptor]:
     """
     Finds one or more terms, based on the specified search settings, in the given collection of a project.
     This function performs an exact match on the `project_id` and `collection_id`, 
@@ -505,9 +505,9 @@ def find_terms_in_collection(project_id:str,
     the function returns an empty list.
     
     Behavior based on search type:
-        - `EXACT` and absence of `settings`: returns zero or one Pydantic term instance in the list.
+        - `EXACT` and absence of `settings`: returns zero or one term instance in the list.
         - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
-          Pydantic term instances in the list.
+          term instances in the list.
 
     :param project_id: A project id
     :type project_id: str
@@ -517,10 +517,10 @@ def find_terms_in_collection(project_id:str,
     :type term_id: str
     :param settings: The search settings
     :type settings: SearchSettings|None
-    :returns: A list of Pydantic term instances. Returns an empty list if no matches are found.
-    :rtype: list[BaseModel]
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
     """
-    result: list[BaseModel] = list()
+    result: list[DataDescriptor] = list()
     if connection:=_get_project_connection(project_id):
         with connection.create_session() as session:
             terms = _find_terms_in_collection(collection_id, term_id, session, settings)
@@ -548,7 +548,7 @@ def find_terms_from_data_descriptor_in_project(project_id: str,
                                                data_descriptor_id: str,
                                                term_id: str,
                                                settings: SearchSettings|None = None) \
-                                                  -> list[tuple[BaseModel, str]]:
+                                                  -> list[tuple[DataDescriptor, str]]:
     """
     Finds one or more terms in the given project which are instances of the given data descriptor
     in the universe, based on the specified search settings, in the given collection of a project.
@@ -561,10 +561,10 @@ def find_terms_from_data_descriptor_in_project(project_id: str,
     the function returns an empty list.
     
     Behavior based on search type:
-        - `EXACT` and absence of `settings`: returns zero or one Pydantic term instance and \
+        - `EXACT` and absence of `settings`: returns zero or one term instance and \
           collection id in the list.
         - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
-          Pydantic term instances and collection ids in the list.
+          term instances and collection ids in the list.
 
     :param project_id: A project id
     :type project_id: str
@@ -574,9 +574,9 @@ def find_terms_from_data_descriptor_in_project(project_id: str,
     :type term_id: str
     :param settings: The search settings
     :type settings: SearchSettings|None
-    :returns: A list of tuple of Pydantic term instances and related collection ids. \
+    :returns: A list of tuple of term instances and related collection ids. \
     Returns an empty list if no matches are found.
-    :rtype: list[tuple[BaseModel, str]]
+    :rtype: list[tuple[DataDescriptor, str]]
     """
     result = list()
     if connection:=_get_project_connection(project_id):
@@ -595,7 +595,7 @@ def find_terms_from_data_descriptor_in_project(project_id: str,
 def find_terms_from_data_descriptor_in_all_projects(data_descriptor_id: str,
                                                     term_id: str,
                                                     settings: SearchSettings|None = None) \
-                                                    -> list[tuple[list[tuple[BaseModel, str]], str]]:
+                                                    -> list[tuple[list[tuple[DataDescriptor, str]], str]]:
     """
     Finds one or more terms in all projects which are instances of the given data descriptor
     in the universe, based on the specified search settings, in the given collection of a project.
@@ -608,10 +608,10 @@ def find_terms_from_data_descriptor_in_all_projects(data_descriptor_id: str,
     the function returns an empty list.
     
     Behavior based on search type:
-        - `EXACT` and absence of `settings`: returns zero or one Pydantic term instance and \
+        - `EXACT` and absence of `settings`: returns zero or one term instance and \
           collection id in the list.
         - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
-          Pydantic term instances and collection ids in the list.
+          term instances and collection ids in the list.
 
     :param data_descriptor_id: A data descriptor
     :type data_descriptor_id: str
@@ -621,10 +621,10 @@ def find_terms_from_data_descriptor_in_all_projects(data_descriptor_id: str,
     :type settings: SearchSettings|None
     :returns: A list of tuple of matching terms with their collection id, per project. \
     Returns an empty list if no matches are found.
-    :rtype: list[tuple[list[tuple[BaseModel, str]], str]]
+    :rtype: list[tuple[list[tuple[DataDescriptor, str]], str]]
     """
     project_ids = get_all_projects()
-    result: list[tuple[list[tuple[BaseModel, str]], str]] = list()
+    result: list[tuple[list[tuple[DataDescriptor, str]], str]] = list()
     for project_id in project_ids:
         matching_terms = find_terms_from_data_descriptor_in_project(project_id,
                                                                     data_descriptor_id,
@@ -647,7 +647,7 @@ def _find_terms_in_project(term_id: str,
 
 def find_terms_in_all_projects(term_id: str,
                                settings: SearchSettings|None = None) \
-                                  -> list[BaseModel]:
+                                  -> list[DataDescriptor]:
     """
     Finds one or more terms, based on the specified search settings, in all projects.
     The given `term_id` is searched according to the search type specified in the parameter `settings`,
@@ -660,8 +660,8 @@ def find_terms_in_all_projects(term_id: str,
     :type term_id: str
     :param settings: The search settings
     :type settings: SearchSettings|None
-    :returns: A list of Pydantic term instances. Returns an empty list if no matches are found.
-    :rtype: list[BaseModel]
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
     """
     project_ids = get_all_projects()
     result = list()
@@ -673,7 +673,7 @@ def find_terms_in_all_projects(term_id: str,
 def find_terms_in_project(project_id: str,
                           term_id: str,
                           settings: SearchSettings|None = None) \
-                            -> list[BaseModel]:
+                            -> list[DataDescriptor]:
     """
     Finds one or more terms, based on the specified search settings, in a project.
     This function performs an exact match on the `project_id` and 
@@ -691,10 +691,10 @@ def find_terms_in_project(project_id: str,
     :type term_id: str
     :param settings: The search settings
     :type settings: SearchSettings|None
-    :returns: A list of Pydantic term instances. Returns an empty list if no matches are found.
-    :rtype: list[BaseModel]
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
     """
-    result: list[BaseModel] = list()
+    result: list[DataDescriptor] = list()
     if connection:=_get_project_connection(project_id):
         with connection.create_session() as session:
             terms = _find_terms_in_project(term_id, session, settings)
@@ -704,7 +704,7 @@ def find_terms_in_project(project_id: str,
 
 def get_all_terms_in_collection(project_id: str,
                                 collection_id: str)\
-                                   -> list[BaseModel]:
+                                   -> list[DataDescriptor]:
     """
     Gets all terms of the given collection of a project.
     This function performs an exact match on the `project_id` and `collection_id`,
@@ -716,8 +716,8 @@ def get_all_terms_in_collection(project_id: str,
     :type project_id: str
     :param collection_id: A collection id
     :type collection_id: str
-    :returns: a list of Pydantic term instances. Returns an empty list if no matches are found.
-    :rtype: list[BaseModel]
+    :returns: a list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
     """
     result = list()
     if connection:=_get_project_connection(project_id):
@@ -811,13 +811,13 @@ def get_all_collections_in_project(project_id: str) -> list[str]:
     return result
 
 
-def _get_all_terms_in_collection(collection: Collection) -> list[BaseModel]:
-    result: list[BaseModel] = list()
+def _get_all_terms_in_collection(collection: Collection) -> list[DataDescriptor]:
+    result: list[DataDescriptor] = list()
     instantiate_pydantic_terms(collection.terms, result)
     return result
 
 
-def get_all_terms_in_project(project_id: str) -> list[BaseModel]:
+def get_all_terms_in_project(project_id: str) -> list[DataDescriptor]:
     """
     Gets all terms of the given project.
     This function performs an exact match on the `project_id` and 
@@ -827,8 +827,8 @@ def get_all_terms_in_project(project_id: str) -> list[BaseModel]:
 
     :param project_id: A project id
     :type project_id: str
-    :returns: A list of Pydantic term instances. Returns an empty list if no matches are found.
-    :rtype: list[BaseModel]
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
     """
     result = list()
     if connection:=_get_project_connection(project_id):
@@ -840,12 +840,12 @@ def get_all_terms_in_project(project_id: str) -> list[BaseModel]:
     return result
 
 
-def get_all_terms_in_all_projects() -> list[BaseModel]:
+def get_all_terms_in_all_projects() -> list[DataDescriptor]:
     """
     Gets all terms of all projects.
 
-    :returns: A list of Pydantic term instances.
-    :rtype: list[BaseModel]
+    :returns: A list of term instances.
+    :rtype: list[DataDescriptor]
     """
     project_ids = get_all_projects()
     result = list()
@@ -886,10 +886,7 @@ def get_all_projects() -> list[str]:
 
 
 if __name__ == "__main__":
-    vr = valid_term('r1i1p1f111', 'cmip6plus', 'member_id', 'ripf')
-    if vr:
-        print('OK')
-    else:
-        print(vr)
-        for error in vr.errors:
-            print(error)
+    settings = SearchSettings()
+    #settings.selected_term_fields = ['id', 'ror']
+    matching_terms = find_terms_in_collection('cmip6', 'institution_id', 'ipsl', settings)
+    print(matching_terms)

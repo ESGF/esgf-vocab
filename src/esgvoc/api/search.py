@@ -43,6 +43,7 @@ class SearchSettings(BaseModel):
     """Enable case sensitivity or not."""
     not_operator: bool = False
     """Give the opposite result like the NOT SQL operator."""
+    selected_term_fields: list[str]|None = None
 
 
 def _create_str_comparison_expression(field: str,
