@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from esgvoc.api.data_descriptors.activity import Activity
 from esgvoc.api.data_descriptors.consortium import Consortium
 from esgvoc.api.data_descriptors.date import Date
+from esgvoc.api.data_descriptors.directory_date import DirectoryDate
 from esgvoc.api.data_descriptors.experiment import Experiment 
 from esgvoc.api.data_descriptors.forcing_index import ForcingIndex
 from esgvoc.api.data_descriptors.frequency import Frequency
@@ -25,7 +26,6 @@ from esgvoc.api.data_descriptors.table import Table
 from esgvoc.api.data_descriptors.time_range import TimeRange 
 from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
-from esgvoc.api.data_descriptors.directory_date import DirectoryDate
 
 
 DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[BaseModel]] = {
@@ -41,12 +41,14 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[BaseModel]] = {
     "grid_label": GridLabel, # DEBUG: the value of the key type for the terms of the DD grid is not consistent.
     "initialisation_index": InitialisationIndex, 
     "institution": Institution,
+    "integer": Variable, # DEBUG: key type should be the pydantic class for the terms of DD variable!
     "license": License,
     "mip_era": MipEra,
     "model_component": ModelComponent,
     "organisation": Organisation, 
     "physic_index": PhysicIndex,
     "product": Product,
+    "real": Variable, # DEBUG: key type should be the pydantic class for the terms of DD variable!
     "realisation_index": RealisationIndex ,
     "realm": Realm,
     "resolution": Resolution,
@@ -56,7 +58,5 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[BaseModel]] = {
     "table" : Table,
     "time_range": TimeRange,
     "variable": Variable,
-    "real": Variable, # DEBUG: key type should be the pydantic class for the terms of DD variable!
-    "integer": Variable, # DEBUG: key type should be the pydantic class for the terms of DD variable!
     "variant_label": VariantLabel
 }
