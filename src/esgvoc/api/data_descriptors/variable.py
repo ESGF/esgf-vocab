@@ -13,7 +13,6 @@ class Variable(DrsPlainTermDataDescriptor):
     the surface) pr: Precipitation psl: Sea level pressure zg: Geopotential height rlut: \
     Top-of-atmosphere longwave radiation siconc: Sea ice concentration co2: Atmospheric CO2 concentration
     """
-    cmip_acronym: str 
     validation_method: str = Field(default = "list")
     long_name: str 
     standard_name: str|None
