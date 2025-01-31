@@ -17,7 +17,7 @@ class Experiment(DrsPlainTermDataDescriptor):
     sub_experiment_id: list[str]|None
     experiment: str
     required_model_components: list[str]|None
-    additional_allowed_model_components: list[str]|None = Field(default_factory=list) 
+    additional_allowed_model_components: list[str] = Field(default_factory=list) 
     start_year: int|None
     end_year: int|None
     min_number_yrs_per_sim: int|None

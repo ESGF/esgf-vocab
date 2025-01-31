@@ -6,10 +6,10 @@ class Institution(DrsPlainTermDataDescriptor):
     An registered institution for WCRP modelisation MIP.
     """
     acronyms: list[str] = Field(default_factory=list)
-    aliases: list[str]|None = Field(default_factory=list)
+    aliases: list[str] = Field(default_factory=list)
     established: int|None
-    labels: list[str]|None = Field(default_factory=list)
-    location: dict|None = Field(default_factory=dict)  
+    labels: list[str] = Field(default_factory=list)
+    location: dict = Field(default_factory=dict)  
     name: str 
     ror: str|None
-    url: list[str]|None = Field(default_factory=list)
+    url: list[str] = Field(default_factory=list)

@@ -17,6 +17,6 @@ class Source(DrsPlainTermDataDescriptor):
     organisation_id: list[str] = Field(default_factory=list)
     label: str
     label_extended: str|None
-    license: dict|None = Field(default_factory=dict) 
+    license: dict = Field(default_factory=dict) 
     model_component: dict|None
     release_year: int|None
