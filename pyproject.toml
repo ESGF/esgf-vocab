@@ -1,11 +1,13 @@
 [project]
-name = "ESGVOC"
-version = "0.1.2"
+name = "esgvoc"
+version = "0.2.1"
 description = "python library and CLI to interact with WCRP CVs"
 authors = [
-    {name = "TROUSSELLIER Laurent", email = "laurent.troussellier@ipsl.fr"},
-    {name = "Gardoll Sébastien", email = "sebastien@gardoll.fr"}
+    {name = "Sébastien Gardoll", email = "sebastien@gardoll.fr"},
+    {name = "Guillaume Levavasseur", email = "guillaume.levavasseur@ipsl.fr"},
+    {name = "Laurent Troussellier", email = "laurent.troussellier@ipsl.fr"},
 ]
+homepage = "https://esgf.github.io/esgf-vocab/"
 license = "CECILL-2.1"
 dependencies = [
     "idna>=3.10",
@@ -16,8 +18,6 @@ dependencies = [
     "requests>=2.32.3",
     "toml>=0.10.2",
     "typer>=0.15.0",
-    "sphinx-tabs>=3.4.7",
-    "sphinx-copybutton>=0.5.2",
 ]
 readme = "README.md"
 requires-python = ">= 3.12, <3.13"
@@ -27,7 +27,7 @@ requires = ["hatchling==1.26.3"]
 build-backend = "hatchling.build"
 
 [project.urls]
-Repository = "https://github.com/ESPRI-Mod/cmipld"
+Repository = "https://github.com/ESGF/esgf-vocab"
 
 [tool.rye]
 managed = true
@@ -41,6 +41,8 @@ dev-dependencies = [
     "sphinx-book-theme>=1.1.3",
     "autodoc-pydantic>=2.2.0",
     "myst-nb>=1.1.2",
+    "sphinx-tabs>=3.4.7",
+    "sphinx-copybutton>=0.5.2",
 ]
 [tool.rye.scripts]
 ev = { cmd = "python src/esgvoc/cli/main.py" }

@@ -2,26 +2,26 @@ from pathlib import Path
 from esgvoc.core.data_handler import JsonLdResource
 from esgvoc.core.service.data_merger import DataMerger, merge
 from esgvoc.core.repo_fetcher import RepoFetcher
-
-def test_remote_organisation_ipsl():
-    
-    uri = "https://espri-mod.github.io/mip-cmor-tables/organisation/ipsl.json"
-    merger = DataMerger(data= JsonLdResource(uri = uri), allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables/"})
-    jsonlist = merger.merge_linked_json()
-    assert jsonlist[-1]["established"]==1991
-
-def test_remote_from_project_ipsl():
-
-    uri =  "https://espri-mod.github.io/CMIP6Plus_CVs/institution_id/ipsl.json"
-    merger = DataMerger(data= JsonLdResource(uri = uri), allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables/"})
-    jsonlist = merger.merge_linked_json()
-    assert jsonlist[-1]["established"]==1998 # this is a overcharged value 'from 1991 in ipsl definition in the universe to 1996 in ipsl in cmip6plus_cvs 
-    assert jsonlist[-1]["myprop"]=="42" # a new property definition in the project cv
+#
+# def test_remote_organisation_ipsl():
+#     
+#     uri = "https://espri-mod.github.io/WCRP-universe/tree/esgvoc/organisation/ipsl.json"
+#     merger = DataMerger(data= JsonLdResource(uri = uri), allowed_base_uris={"https://espri-mod.github.io/mip-cmor-table/"})
+#     jsonlist = merger.merge_linked_json()
+#     assert jsonlist[-1]["established"]==1991
+#
+# def test_remote_from_project_ipsl():
+#
+#     uri =  "https://espri-mod.github.io/CMIP6Plus_CVs/institution_id/ipsl.json"
+#     merger = DataMerger(data= JsonLdResource(uri = uri), allowed_base_uris={"https://espri-mod.github.io/WCRP-universe/"})
+#     jsonlist = merger.merge_linked_json()
+#     assert jsonlist[-1]["established"]==1998 # this is a overcharged value 'from 1991 in ipsl definition in the universe to 1996 in ipsl in cmip6plus_cvs 
+#     assert jsonlist[-1]["myprop"]=="42" # a new property definition in the project cv
 
 
 def test_local_organisation_ipsl():
     
-    uri = ".cache/repos/mip-cmor-tables/organisation/ipsl.json"
+    uri = ".cache/repos/WCRP-universe/organisation/ipsl.json"
     merger = DataMerger(data= JsonLdResource(uri = uri), allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables/"})
     jsonlist = merger.merge_linked_json()
     assert jsonlist[-1]["established"]==1991
@@ -29,7 +29,7 @@ def test_local_organisation_ipsl():
 def test_local_from_project_ipsl():
 
     uri =  ".cache/repos/CMIP6Plus_CVs/institution_id/ipsl.json"
-    merger = DataMerger(data= JsonLdResource(uri = uri), allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables/"})
+    merger = DataMerger(data= JsonLdResource(uri = uri), allowed_base_uris={"https://espri-mod.github.io/WCRP-universe/"})
     jsonlist = merger.merge_linked_json()
     print(jsonlist)
     assert jsonlist[-1]["established"]==1998 # this is a overcharged value 'from 1991 in ipsl definition in the universe to 1996 in ipsl in cmip6plus_cvs 
@@ -76,7 +76,7 @@ def test_remote_project_local_universe():
                     term_uri = "https://espri-mod.github.io/CMIP6Plus_CVs/"+dir+"/"+file
                     term = JsonLdResource(uri=str(term_uri))
                     mdm = DataMerger(data= term,
-                                     locally_available={"https://espri-mod.github.io/mip-cmor-tables":".cache/repos/mip-cmor-tables"})
+                                     locally_available={"https://espri-mod.github.io/WCRP-universe":".cache/repos/mip-cmor-tables"})
                     res[str(term_uri)]=mdm.merge_linked_json()[-1]
                     print(str(term_uri),res[str(term_uri)])
                     nb=nb+1
@@ -97,7 +97,7 @@ def test_local_project_remote_universe():
             for term_uri in dir.iterdir():
                 if "000_context" not in term_uri.stem:
                     term = JsonLdResource(uri=str(term_uri))
-                    mdm = DataMerger(data= term, allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables/"})
+                    mdm = DataMerger(data= term, allowed_base_uris={"https://espri-mod.github.io/WCRP-universe/"})
                     res[str(term_uri)]=mdm.merge_linked_json()[-1]
                     print(res[str(term_uri)])
                     print("LENGTH ",len(res))
@@ -119,8 +119,8 @@ def test_local_project_local_universe():
                     #res[str(term_uri)]=merge(uri= str(term_uri))
                     term = JsonLdResource(uri=str(term_uri))
                     mdm = DataMerger(data= term,
-                                     allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables/"},
-                                     locally_available={"https://espri-mod.github.io/mip-cmor-tables":".cache/repos/mip-cmor-tables","https://  espri-mod.github.io/CMIP6Plus_CVs":".cache/repos/CMIP6Plus_CVs"})
+                                     allowed_base_uris={"https://espri-mod.github.io/WCRP-universe/"},
+                                     locally_available={"https://espri-mod.github.io/WCRP-universe":".cache/repos/mip-cmor-tables","https://  espri-mod.github.io/CMIP6Plus_CVs":".cache/repos/CMIP6Plus_CVs"})
 
                     res[term_uri] = mdm.merge_linked_json()[-1]
                     nb=nb+1

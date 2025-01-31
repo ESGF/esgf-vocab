@@ -8,14 +8,14 @@ The `esgvoc install` command is responsible for managing the synchronization pro
 ### Synchronization workflow
 For each configured controlled vocabulary repository, the synchronization process involves the following steps:
 
-1. **Version Check**
+1. **Version check**
    - The software determines the current version of each controlled vocabulary by examining the latest commit in three locations:
-     - The remote GitHub repository.(if internet access)
+     - The remote GitHub repository (if internet access).
      - The locally cloned repository (if it exists).
      - The cached SQLite database (if it exists)
 .
 
-2. **Database Update Process**
+2. **Database update process**
    - The goal of the synchronization process is to ensure the database reflects the most recent version of the controlled vocabulary.
    - If the local repository does not exist or is outdated, the software clones or updates the repository from GitHub.
    - The SQLite database is rebuilt or updated as necessary to match the most recent version of the controlled vocabulary.
