@@ -23,6 +23,9 @@ _VALID_TERM_IN_COLLECTION_CACHE: dict[str, list[MatchingTerm]] = dict()
 _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE: dict[str, list[ValidationError]] = dict()
 
 
+class DrsValidationException(Exception): ...
+
+
 def get_project_specs(project_id: str) -> ProjectSpecs:
     project_specs = find_project(project_id)
     if not project_specs:
@@ -111,7 +114,11 @@ def _transform_to_pattern(term: UTerm|PTerm,
                           project_session: Session) -> str:
     match term.kind:
         case TermKind.PLAIN:
-            result = term.specs[constants.DRS_SPECS_JSON_KEY]
+            if constants.DRS_SPECS_JSON_KEY in term.specs:
+                result = term.specs[constants.DRS_SPECS_JSON_KEY]
+            else:
+                raise DrsValidationException(f"the term {term.id} doesn't have drs name. " + 
+                                             "Can't validate it.")
         case TermKind.PATTERN:
             result = term.specs[constants.PATTERN_JSON_KEY]
         case TermKind.COMPOSITE:
@@ -189,8 +196,12 @@ def _valid_value(value: str,
     result = list()
     match term.kind:
         case TermKind.PLAIN:
-            if term.specs[constants.DRS_SPECS_JSON_KEY] != value:
-                result.append(_create_term_error(value, term))
+            if constants.DRS_SPECS_JSON_KEY in term.specs:
+                if term.specs[constants.DRS_SPECS_JSON_KEY] != value:
+                    result.append(_create_term_error(value, term))
+            else:
+                raise DrsValidationException(f"the term {term.id} doesn't have drs name. " + 
+                                             "Can't validate it.")
         case TermKind.PATTERN:
             # OPTIM: Pattern can be compiled and stored for further matching.
             pattern_match = re.match(term.specs[constants.PATTERN_JSON_KEY], value)
