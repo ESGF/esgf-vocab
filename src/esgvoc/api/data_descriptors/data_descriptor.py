@@ -18,16 +18,16 @@ class DataDescriptorVisitor(Protocol):
     """
     The specifications for a term visitor.
     """
-    def visit_plain_term(term: "PlainTermDataDescriptor") -> Any:
+    def visit_plain_term(self, term: "PlainTermDataDescriptor") -> Any:
         """Visit a plain term."""
         pass
-    def visit_drs_plain_term(term: "DrsPlainTermDataDescriptor") -> Any:
+    def visit_drs_plain_term(self, term: "DrsPlainTermDataDescriptor") -> Any:
         """Visit a DRS plain term."""
         pass
-    def visit_term_pattern(term: "TermPatternDataDescriptor") -> Any:
+    def visit_term_pattern(self, term: "TermPatternDataDescriptor") -> Any:
         """Visit a term pattern."""
         pass
-    def visit_term_composite(term: "TermCompositeDataDescriptor") -> Any:
+    def visit_term_composite(self, term: "TermCompositeDataDescriptor") -> Any:
         """Visit a term composite."""
 
 
@@ -41,7 +41,7 @@ class DataDescriptor(ConfiguredBaseModel, ABC):
     """The data descriptor to which the term belongs."""
 
     @abstractmethod
-    def accept(visitor: DataDescriptorVisitor) -> any:
+    def accept(self, visitor: DataDescriptorVisitor) -> Any:
         """
         Accept an term visitor.
 
@@ -57,7 +57,7 @@ class PlainTermDataDescriptor(DataDescriptor):
     """
     A data descriptor that describes hand written terms.
     """
-    def accept(self, visitor: DataDescriptorVisitor) -> any:
+    def accept(self, visitor: DataDescriptorVisitor) -> Any:
         return visitor.visit_plain_term(self)
 
 
@@ -67,7 +67,7 @@ class DrsPlainTermDataDescriptor(PlainTermDataDescriptor):
     """
     drs_name: str
     """The DRS name."""
-    def accept(self, visitor: DataDescriptorVisitor) -> any:
+    def accept(self, visitor: DataDescriptorVisitor) -> Any:
         return visitor.visit_drs_plain_term(self)
 
 
@@ -77,7 +77,7 @@ class TermPatternDataDescriptor(DataDescriptor):
     """
     regex: str
     """The regular expression."""
-    def accept(self, visitor: DataDescriptorVisitor) -> any:
+    def accept(self, visitor: DataDescriptorVisitor) -> Any:
         return visitor.visit_term_pattern(self)
 
 
@@ -102,5 +102,5 @@ class TermCompositeDataDescriptor(DataDescriptor):
     """The term separator character."""
     parts: list[TermCompositePart]
     """The composites."""
-    def accept(self, visitor: DataDescriptorVisitor) -> any:
+    def accept(self, visitor: DataDescriptorVisitor) -> Any:
         return visitor.visit_term_composite(self)
