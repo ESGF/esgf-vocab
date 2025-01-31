@@ -3,7 +3,7 @@ from typing import Sequence
 from esgvoc.api._utils import (get_universe_session,
                                instantiate_pydantic_terms)
 from esgvoc.api.search import SearchSettings, _create_str_comparison_expression
-from esgvoc.core.db.models.universe import DataDescriptor, UTerm
+from esgvoc.core.db.models.universe import UDataDescriptor, UTerm
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
@@ -16,7 +16,7 @@ def _find_terms_in_data_descriptor(data_descriptor_id: str,
     where_expression = _create_str_comparison_expression(field=UTerm.id,
                                                          value=term_id,
                                                          settings=settings)
-    statement = select(UTerm).join(DataDescriptor).where(DataDescriptor.id==data_descriptor_id,
+    statement = select(UTerm).join(UDataDescriptor).where(UDataDescriptor.id==data_descriptor_id,
                                                          where_expression)
     results = session.exec(statement)
     result = results.all()
@@ -96,7 +96,7 @@ def find_terms_in_universe(term_id: str,
     return result
 
 
-def _get_all_terms_in_data_descriptor(data_descriptor: DataDescriptor) -> list[BaseModel]:
+def _get_all_terms_in_data_descriptor(data_descriptor: UDataDescriptor) -> list[BaseModel]:
     result: list[BaseModel] = list()
     instantiate_pydantic_terms(data_descriptor.terms, result)
     return result
@@ -104,11 +104,11 @@ def _get_all_terms_in_data_descriptor(data_descriptor: DataDescriptor) -> list[B
 
 def _find_data_descriptors_in_universe(data_descriptor_id: str,
                                        session: Session,
-                                       settings: SearchSettings|None) -> Sequence[DataDescriptor]:
-    where_expression = _create_str_comparison_expression(field=DataDescriptor.id,
+                                       settings: SearchSettings|None) -> Sequence[UDataDescriptor]:
+    where_expression = _create_str_comparison_expression(field=UDataDescriptor.id,
                                                          value=data_descriptor_id,
                                                          settings=settings)
-    statement = select(DataDescriptor).where(where_expression)
+    statement = select(UDataDescriptor).where(where_expression)
     results = session.exec(statement)
     result = results.all()      
     return result
@@ -173,8 +173,8 @@ def find_data_descriptors_in_universe(data_descriptor_id: str,
     return result
 
 
-def _get_all_data_descriptors_in_universe(session: Session) -> Sequence[DataDescriptor]:
-    statement = select(DataDescriptor)
+def _get_all_data_descriptors_in_universe(session: Session) -> Sequence[UDataDescriptor]:
+    statement = select(UDataDescriptor)
     data_descriptors = session.exec(statement)
     result = data_descriptors.all()
     return result
