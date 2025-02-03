@@ -1,5 +1,5 @@
-from esgvoc.api.data_descriptors.data_descriptor import TermPatternDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import PatternTermDataDescriptor
 
 
-class Date(TermPatternDataDescriptor):
+class Date(PatternTermDataDescriptor):
     pass

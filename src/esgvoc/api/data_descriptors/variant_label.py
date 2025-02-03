@@ -1,5 +1,5 @@
-from esgvoc.api.data_descriptors.data_descriptor import TermCompositeDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import CompositeTermDataDescriptor
 
 
-class VariantLabel(TermCompositeDataDescriptor):
+class VariantLabel(CompositeTermDataDescriptor):
     description: str
