@@ -145,7 +145,7 @@ def _valid_value_composite_term_separator_less(value: str,
     try:
         pattern = _transform_to_pattern(term, universe_session, project_session)
         try:
-            # Term patterns are meant to be validated individually.
+            # Patterns terms are meant to be validated individually.
             # So their regex are defined as a whole (begins by a ^, ends by a $).
             # As the pattern is a concatenation of plain or regex, multiple ^ and $ can exist.
             # The later, must be removed.
