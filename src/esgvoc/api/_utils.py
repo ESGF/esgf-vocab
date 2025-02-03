@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, MutableSequence
 
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
 import esgvoc.core.constants as api_settings
@@ -27,12 +27,14 @@ def get_universe_session() -> Session:
 
 
 def instantiate_pydantic_term(term: UTerm|PTerm,
-                              selected_term_fields: list[str]|None = None) -> DataDescriptor:
+                              selected_term_fields: Iterable[str]|None = None) -> DataDescriptor:
     type = term.specs[api_settings.TERM_TYPE_JSON_KEY]
     if selected_term_fields:
         subset = DataDescriptorSubSet(id=term.id, type=type)
-        for selected_field in selected_term_fields + DataDescriptorSubSet.MANDATORY_TERM_FIELDS:
-            setattr(subset, selected_field, term.specs.get(selected_field, None))
+        for field in selected_term_fields:
+            setattr(subset, field, term.specs.get(field, None))
+        for field in DataDescriptorSubSet.MANDATORY_TERM_FIELDS:
+            setattr(subset, field, term.specs.get(field, None))
         return subset
     else:
         term_class = get_pydantic_class(type)
@@ -40,8 +42,8 @@ def instantiate_pydantic_term(term: UTerm|PTerm,
 
 
 def instantiate_pydantic_terms(db_terms: Iterable[UTerm|PTerm],
-                               list_to_populate: list[DataDescriptor],
-                               selected_term_fields: list[str]|None = None) -> None:
+                               list_to_populate: MutableSequence[DataDescriptor],
+                               selected_term_fields: Iterable[str]|None = None) -> None:
     for db_term in db_terms:
         term = instantiate_pydantic_term(db_term, selected_term_fields)
         list_to_populate.append(term)

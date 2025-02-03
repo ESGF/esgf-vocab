@@ -60,7 +60,7 @@ class DataDescriptorSubSet(DataDescriptor):
     """
     A sub set of the information contains in a term.
     """
-    MANDATORY_TERM_FIELDS: ClassVar[list[str]] = ['id', 'type']
+    MANDATORY_TERM_FIELDS: ClassVar[tuple[str, str]] = ('id', 'type')
     """The set of mandatory term fields."""
     def accept(self, visitor: DataDescriptorVisitor) -> Any:
         return visitor.visit_sub_set_term(self)
