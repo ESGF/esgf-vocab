@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Iterable
 
 from esgvoc.api._utils import (get_universe_session,
                                instantiate_pydantic_terms)
@@ -55,7 +55,7 @@ def find_terms_in_data_descriptor(data_descriptor_id: str,
     result: list[DataDescriptor] = list()
     with get_universe_session() as session:
         terms = _find_terms_in_data_descriptor(data_descriptor_id, term_id, session, settings)
-        instantiate_pydantic_terms(terms, result)
+        instantiate_pydantic_terms(terms, result, settings.selected_term_fields if settings else None)
     return result
 
 
@@ -92,13 +92,14 @@ def find_terms_in_universe(term_id: str,
     result: list[DataDescriptor] = list()
     with get_universe_session() as session:
         terms = _find_terms_in_universe(term_id, session, settings)
-        instantiate_pydantic_terms(terms, result)
+        instantiate_pydantic_terms(terms, result, settings.selected_term_fields if settings else None)
     return result
 
 
-def _get_all_terms_in_data_descriptor(data_descriptor: UDataDescriptor) -> list[DataDescriptor]:
+def _get_all_terms_in_data_descriptor(data_descriptor: UDataDescriptor,
+                                      selected_term_fields: Iterable[str]|None) -> list[DataDescriptor]:
     result: list[DataDescriptor] = list()
-    instantiate_pydantic_terms(data_descriptor.terms, result)
+    instantiate_pydantic_terms(data_descriptor.terms, result, selected_term_fields)
     return result
 
 
@@ -114,8 +115,9 @@ def _find_data_descriptors_in_universe(data_descriptor_id: str,
     return result
 
 
-def get_all_terms_in_data_descriptor(data_descriptor_id: str) \
-                                        -> list[DataDescriptor]:
+def get_all_terms_in_data_descriptor(data_descriptor_id: str,
+                                     selected_term_fields: Iterable[str]|None = None) \
+                                                                            -> list[DataDescriptor]:
     """
     Gets all the terms of the given data descriptor.
     This function performs an exact match on the `data_descriptor_id` and does **not** search 
@@ -124,6 +126,9 @@ def get_all_terms_in_data_descriptor(data_descriptor_id: str) \
 
     :param data_descriptor_id: A data descriptor id
     :type data_descriptor_id: str
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned.
+    :type selected_term_fields: Iterable[str]|None
     :returns: a list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
     """
@@ -133,7 +138,7 @@ def get_all_terms_in_data_descriptor(data_descriptor_id: str) \
                                                               None)
         if data_descriptors:
             data_descriptor = data_descriptors[0]
-            result = _get_all_terms_in_data_descriptor(data_descriptor)
+            result = _get_all_terms_in_data_descriptor(data_descriptor, selected_term_fields)
         else:
             result = list()
     return result
@@ -195,11 +200,14 @@ def get_all_data_descriptors_in_universe() -> list[str]:
     return result
 
 
-def get_all_terms_in_universe() -> list[DataDescriptor]:
+def get_all_terms_in_universe(selected_term_fields: Iterable[str]|None = None) -> list[DataDescriptor]:
     """
     Gets all the terms of the universe.
     Terms are unique within a data descriptor but may have some synonyms in the universe.
 
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned.
+    :type selected_term_fields: Iterable[str]|None
     :returns: A list of term instances.
     :rtype: list[DataDescriptor]
     """
@@ -208,10 +216,12 @@ def get_all_terms_in_universe() -> list[DataDescriptor]:
         data_descriptors = _get_all_data_descriptors_in_universe(session)
         for data_descriptor in data_descriptors:
             # Term may have some synonyms within the whole universe.
-            terms = _get_all_terms_in_data_descriptor(data_descriptor)
+            terms = _get_all_terms_in_data_descriptor(data_descriptor, selected_term_fields)
             result.extend(terms)
     return result
 
 
 if __name__ == "__main__":
-    print(find_terms_in_data_descriptor('institution', 'ipsl'))
+    settings = SearchSettings()
+    settings.selected_term_fields = ('id',)
+    print(find_terms_in_data_descriptor('institution', 'ipsl', settings))

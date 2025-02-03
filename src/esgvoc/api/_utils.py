@@ -27,7 +27,7 @@ def get_universe_session() -> Session:
 
 
 def instantiate_pydantic_term(term: UTerm|PTerm,
-                              selected_term_fields: Iterable[str]|None = None) -> DataDescriptor:
+                              selected_term_fields: Iterable[str]|None) -> DataDescriptor:
     type = term.specs[api_settings.TERM_TYPE_JSON_KEY]
     if selected_term_fields:
         subset = DataDescriptorSubSet(id=term.id, type=type)
@@ -43,7 +43,7 @@ def instantiate_pydantic_term(term: UTerm|PTerm,
 
 def instantiate_pydantic_terms(db_terms: Iterable[UTerm|PTerm],
                                list_to_populate: MutableSequence[DataDescriptor],
-                               selected_term_fields: Iterable[str]|None = None) -> None:
+                               selected_term_fields: Iterable[str]|None) -> None:
     for db_term in db_terms:
         term = instantiate_pydantic_term(db_term, selected_term_fields)
         list_to_populate.append(term)

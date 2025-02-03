@@ -524,7 +524,8 @@ def find_terms_in_collection(project_id:str,
     if connection:=_get_project_connection(project_id):
         with connection.create_session() as session:
             terms = _find_terms_in_collection(collection_id, term_id, session, settings)
-            instantiate_pydantic_terms(terms, result)
+            instantiate_pydantic_terms(terms, result,
+                                       settings.selected_term_fields if settings else None)
     return result
 
 
@@ -587,7 +588,8 @@ def find_terms_from_data_descriptor_in_project(project_id: str,
                                                                 settings)
             for pterm in terms:
                 collection_id = pterm.collection.id
-                term = instantiate_pydantic_term(pterm)
+                term = instantiate_pydantic_term(pterm,
+                                                 settings.selected_term_fields if settings else None)
                 result.append((term, collection_id))
     return result
 
@@ -698,12 +700,14 @@ def find_terms_in_project(project_id: str,
     if connection:=_get_project_connection(project_id):
         with connection.create_session() as session:
             terms = _find_terms_in_project(term_id, session, settings)
-            instantiate_pydantic_terms(terms, result)
+            instantiate_pydantic_terms(terms, result,
+                                       settings.selected_term_fields if settings else None)
     return result
 
 
 def get_all_terms_in_collection(project_id: str,
-                                collection_id: str)\
+                                collection_id: str,
+                                selected_term_fields: Iterable[str]|None = None)\
                                    -> list[DataDescriptor]:
     """
     Gets all terms of the given collection of a project.
@@ -716,6 +720,9 @@ def get_all_terms_in_collection(project_id: str,
     :type project_id: str
     :param collection_id: A collection id
     :type collection_id: str
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned.
+    :type selected_term_fields: Iterable[str]|None
     :returns: a list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
     """
@@ -727,7 +734,7 @@ def get_all_terms_in_collection(project_id: str,
                                                        None)
             if collections:
                 collection = collections[0]
-                result = _get_all_terms_in_collection(collection)
+                result = _get_all_terms_in_collection(collection, selected_term_fields)
     return result
 
 
@@ -811,13 +818,15 @@ def get_all_collections_in_project(project_id: str) -> list[str]:
     return result
 
 
-def _get_all_terms_in_collection(collection: Collection) -> list[DataDescriptor]:
+def _get_all_terms_in_collection(collection: Collection,
+                                 selected_term_fields: Iterable[str]|None) -> list[DataDescriptor]:
     result: list[DataDescriptor] = list()
-    instantiate_pydantic_terms(collection.terms, result)
+    instantiate_pydantic_terms(collection.terms, result, selected_term_fields)
     return result
 
 
-def get_all_terms_in_project(project_id: str) -> list[DataDescriptor]:
+def get_all_terms_in_project(project_id: str,
+                             selected_term_fields: Iterable[str]|None = None) -> list[DataDescriptor]:
     """
     Gets all terms of the given project.
     This function performs an exact match on the `project_id` and 
@@ -827,6 +836,9 @@ def get_all_terms_in_project(project_id: str) -> list[DataDescriptor]:
 
     :param project_id: A project id
     :type project_id: str
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned.
+    :type selected_term_fields: Iterable[str]|None
     :returns: A list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
     """
@@ -836,21 +848,25 @@ def get_all_terms_in_project(project_id: str) -> list[DataDescriptor]:
             collections = _get_all_collections_in_project(session)
             for collection in collections:
                 # Term may have some synonyms in a project.
-                result.extend(_get_all_terms_in_collection(collection))
+                result.extend(_get_all_terms_in_collection(collection, selected_term_fields))
     return result
 
 
-def get_all_terms_in_all_projects() -> list[DataDescriptor]:
+def get_all_terms_in_all_projects(selected_term_fields: Iterable[str]|None = None) \
+                                                                            -> list[DataDescriptor]:
     """
     Gets all terms of all projects.
 
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned.
+    :type selected_term_fields: Iterable[str]|None
     :returns: A list of term instances.
     :rtype: list[DataDescriptor]
     """
     project_ids = get_all_projects()
     result = list()
     for project_id in project_ids:
-        result.extend(get_all_terms_in_project(project_id))
+        result.extend(get_all_terms_in_project(project_id, selected_term_fields))
     return result
 
 
@@ -887,6 +903,6 @@ def get_all_projects() -> list[str]:
 
 if __name__ == "__main__":
     settings = SearchSettings()
-    #settings.selected_term_fields = ['id', 'ror']
+    settings.selected_term_fields = ('id', 'ror')
     matching_terms = find_terms_in_collection('cmip6', 'institution_id', 'ipsl', settings)
     print(matching_terms)
