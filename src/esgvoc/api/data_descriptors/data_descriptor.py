@@ -27,11 +27,11 @@ class DataDescriptorVisitor(Protocol):
     def visit_drs_plain_term(self, term: "DrsPlainTermDataDescriptor") -> Any:
         """Visit a DRS plain term."""
         pass
-    def visit_term_pattern(self, term: "PatternTermDataDescriptor") -> Any:
-        """Visit a term pattern."""
+    def visit_pattern_term(self, term: "PatternTermDataDescriptor") -> Any:
+        """Visit a pattern term."""
         pass
-    def visit_term_composite(self, term: "CompositeTermDataDescriptor") -> Any:
-        """Visit a term composite."""
+    def visit_composite_term(self, term: "CompositeTermDataDescriptor") -> Any:
+        """Visit a composite term."""
 
 
 class DataDescriptor(ConfiguredBaseModel, ABC):
@@ -91,19 +91,19 @@ class PatternTermDataDescriptor(DataDescriptor):
     regex: str
     """The regular expression."""
     def accept(self, visitor: DataDescriptorVisitor) -> Any:
-        return visitor.visit_term_pattern(self)
+        return visitor.visit_pattern_term(self)
 
 
 class CompositeTermPart(ConfiguredBaseModel):
     """
-    A reference to a term, part of a term composite.
+    A reference to a term, part of a composite term.
     """
     id: str
     """The id of the referenced term."""
     type: str
     """The type of the referenced term."""
     is_required : bool
-    """Denote if the term is optional as part of a term composite"""
+    """Denote if the term is optional as part of a composite term."""
 
 
 class CompositeTermDataDescriptor(DataDescriptor):
@@ -111,8 +111,8 @@ class CompositeTermDataDescriptor(DataDescriptor):
     A data descriptor that describes terms composed of other terms.
     """
     separator: str
-    """The term separator character."""
+    """The components separator character."""
     parts: list[CompositeTermPart]
-    """The composites."""
+    """The components."""
     def accept(self, visitor: DataDescriptorVisitor) -> Any:
-        return visitor.visit_term_composite(self)
+        return visitor.visit_composite_term(self)
