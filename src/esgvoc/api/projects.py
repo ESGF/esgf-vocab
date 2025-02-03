@@ -50,12 +50,12 @@ def _get_project_session_with_exception(project_id: str) -> Session:
         raise ValueError(f'unable to find project {project_id}')
     
 
-def _resolve_term(term_composite_part: dict,
+def _resolve_term(composite_term_part: dict,
                   universe_session: Session,
                   project_session: Session) -> UTerm|PTerm:
     # First find the term in the universe than in the current project
-    term_id = term_composite_part[constants.TERM_ID_JSON_KEY]
-    term_type = term_composite_part[constants.TERM_TYPE_JSON_KEY]
+    term_id = composite_term_part[constants.TERM_ID_JSON_KEY]
+    term_type = composite_term_part[constants.TERM_TYPE_JSON_KEY]
     uterms = universe._find_terms_in_data_descriptor(data_descriptor_id=term_type,
                                                      term_id=term_id,
                                                      session=universe_session,
@@ -74,7 +74,7 @@ def _resolve_term(term_composite_part: dict,
         raise RuntimeError(msg)           
 
 
-def _get_term_composite_separator_parts(term: UTerm|PTerm) -> tuple[str, list]:
+def _get_composite_term_separator_parts(term: UTerm|PTerm) -> tuple[str, list]:
     separator = term.specs[constants.COMPOSITE_SEPARATOR_JSON_KEY]
     parts = term.specs[constants.COMPOSITE_PARTS_JSON_KEY]
     return separator, parts
@@ -82,13 +82,13 @@ def _get_term_composite_separator_parts(term: UTerm|PTerm) -> tuple[str, list]:
 
 # TODO: support optionality of parts of composite.
 # It is backtrack possible for more than one missing parts.
-def _valid_value_term_composite_with_separator(value: str,
+def _valid_value_composite_term_with_separator(value: str,
                                                term: UTerm|PTerm,
                                                universe_session: Session,
                                                project_session: Session)\
                                                    -> list[ValidationError]:
     result = list()
-    separator, parts = _get_term_composite_separator_parts(term)
+    separator, parts = _get_composite_term_separator_parts(term)
     if separator in value:
         splits = value.split(separator)
         if len(splits) == len(parts):
@@ -122,7 +122,7 @@ def _transform_to_pattern(term: UTerm|PTerm,
         case TermKind.PATTERN:
             result = term.specs[constants.PATTERN_JSON_KEY]
         case TermKind.COMPOSITE:
-            separator, parts =  _get_term_composite_separator_parts(term)
+            separator, parts =  _get_composite_term_separator_parts(term)
             result = ""
             for part in parts:
                 resolved_term = _resolve_term(part, universe_session, project_session)
@@ -136,7 +136,7 @@ def _transform_to_pattern(term: UTerm|PTerm,
 
 # TODO: support optionality of parts of composite.
 # It is backtrack possible for more than one missing parts.
-def _valid_value_term_composite_separator_less(value: str,
+def _valid_value_composite_term_separator_less(value: str,
                                                term: UTerm|PTerm,
                                                universe_session: Session,
                                                project_session: Session)\
@@ -164,18 +164,18 @@ def _valid_value_term_composite_separator_less(value: str,
         raise RuntimeError(msg) from e
 
 
-def _valid_value_for_term_composite(value: str,
+def _valid_value_for_composite_term(value: str,
                                     term: UTerm|PTerm,
                                     universe_session: Session,
                                     project_session: Session)\
                                         -> list[ValidationError]:
     result = list()
-    separator, _ = _get_term_composite_separator_parts(term)
+    separator, _ = _get_composite_term_separator_parts(term)
     if separator:
-        result = _valid_value_term_composite_with_separator(value, term, universe_session,
+        result = _valid_value_composite_term_with_separator(value, term, universe_session,
                                                             project_session)
     else:
-        result = _valid_value_term_composite_separator_less(value, term, universe_session,
+        result = _valid_value_composite_term_separator_less(value, term, universe_session,
                                                             project_session)
     return result
 
@@ -208,7 +208,7 @@ def _valid_value(value: str,
             if pattern_match is None:
                 result.append(_create_term_error(value, term))
         case TermKind.COMPOSITE:
-            result.extend(_valid_value_for_term_composite(value, term,
+            result.extend(_valid_value_for_composite_term(value, term,
                                                           universe_session,
                                                           project_session))
         case _:
@@ -294,8 +294,8 @@ def valid_term(value: str,
     
     Behavior based on the nature of the term:
         - plain term: the function try to match the value on the drs_name field.
-        - term pattern: the function try to match the value on the pattern field (regex).
-        - term composite: 
+        - pattern term: the function try to match the value on the pattern field (regex).
+        - composite term:
             - if the composite has got a separator, the function splits the value according to the\
               separator of the term then it try to match every part of the composite\
               with every split of the value.
@@ -376,8 +376,8 @@ def valid_term_in_collection(value: str,
     
     Behavior based on the nature of the term:
         - plain term: the function try to match the value on the drs_name field.
-        - term pattern: the function try to match the value on the pattern field (regex).
-        - term composite: 
+        - pattern term: the function try to match the value on the pattern field (regex).
+        - composite term: 
             - if the composite has got a separator, the function splits the value according to the \
               separator of the term then it try to match every part of the composite \
               with every split of the value.
@@ -422,8 +422,8 @@ def valid_term_in_project(value: str, project_id: str) -> list[MatchingTerm]:
     
     Behavior based on the nature of the term:
         - plain term: the function try to match the value on the drs_name field.
-        - term pattern: the function try to match the value on the pattern field (regex).
-        - term composite: 
+        - pattern term: the function try to match the value on the pattern field (regex).
+        - composite term: 
             - if the composite has got a separator, the function splits the value according to the \
               separator of the term then it try to match every part of the composite \
               with every split of the value.
@@ -452,8 +452,8 @@ def valid_term_in_all_projects(value: str) -> list[MatchingTerm]:
     
     Behavior based on the nature of the term:
         - plain term: the function try to match the value on the drs_name field.
-        - term pattern: the function try to match the value on the pattern field (regex).
-        - term composite: 
+        - pattern term: the function try to match the value on the pattern field (regex).
+        - composite term: 
             - if the composite has got a separator, the function splits the value according to the \
               separator of the term then it try to match every part of the composite \
               with every split of the value.
