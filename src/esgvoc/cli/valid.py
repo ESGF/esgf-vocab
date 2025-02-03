@@ -38,52 +38,52 @@ def valid(
     verbose: bool = typer.Option(False, "-v", "--verbose", help="Provide detailed validation results")
 ):
     """
-    Validates one or more strings against specified Project:Collection:Term configurations.
-
-    Depending on the provided key structure, the function performs different validation operations:
-    - If all are None (e.g., "::"), validates the term across all projects (`valid_term_in_all_projects`).
-    - If Term is None (e.g., "Project:Collection:"), validates the term in the specified collection (`valid_term_in_collection`).
-    - If Term and Collection are None (e.g., "Project::"), validates the term in the specified project (`valid_term_in_project`).
-    - If all are specified (e.g., "Project:Collection:Term"), validates the term exactly (`valid_term`).
-
-    Parameters:
-        strings_targets (List[str]): A list of validation pairs, where each pair consists of:
-            - A string to validate.
-            - A key in the form '<Project:Collection:Term>'.
-    Usage :
-        Valid one: 
-        esgvocab valid IPSL cmip6plus:institution_id:ipsl
-        esgvocab valid IPSL cmip6plus:institution_id:
-        esgvocab valid IPSL cmip6plus::
-        esgvocab valid IPSL ::
-        
-        Unvalid one:
-        esgvocab valid IPSL_invalid cmip6plus:institution_id:ipsl
-        esgvocab valid IPSL cmip6plus:institution_id:isl <= term cant be found
-        esgvocab valid IPSL cmip6plus:institutin_id:ispl <= collection cant be found
-        esgvocab valid IPSL cmip6pls:institution_id:ispl <= project cant be found
-
-        Multiple validation for all known projects: 
-        esgvocab valid IPSL :: IPS :: 
-            result will be [True, False]
-        
-        esgvocab valid --verbose IPS :: IPSL :: 
-            result will be 
-            ┏━━━━━━━━┳━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-            ┃ String ┃ Key ┃ Result     ┃ Errors                      ┃
-            ┡━━━━━━━━╇━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-            │ IPS    │ ::  │ ❌ Invalid │ did not found matching term │
-            │ IPSL   │ ::  │ ✅ Valid   │ None                        │
-            └────────┴─────┴────────────┴─────────────────────────────┘
-    Returns:
-        List[bool]: Validation results for each pair in the input.
+    Validates one or more strings against specified Project:Collection:Term configurations.\n
+     \n
+    Depending on the provided key structure, the function performs different validation operations:\n
+    - If all are None (e.g., "::"), validates the term across all projects (`valid_term_in_all_projects`).\n
+    - If Term is None (e.g., "Project:Collection:"), validates the term in the specified collection (`valid_term_in_collection`).\n
+    - If Term and Collection are None (e.g., "Project::"), validates the term in the specified project (`valid_term_in_project`).\n
+    - If all are specified (e.g., "Project:Collection:Term"), validates the term exactly (`valid_term`).\n
+\n
+    Parameters:\n
+        \tstrings_targets (List[str]): A list of validation pairs, where each pair consists of:\n
+            \t\t- A string to validate.\n
+            \t\t- A key in the form '<Project:Collection:Term>'.\n
+    Usage :\n
+        \tValid one:\n 
+        \tesgvocab valid IPSL cmip6plus:institution_id:ipsl\n
+        \tesgvocab valid IPSL cmip6plus:institution_id:\n
+        \tesgvocab valid IPSL cmip6plus::\n
+        \tesgvocab valid IPSL ::\n
+        \n
+        \tUnvalid one:\n
+        \tesgvocab valid IPSL_invalid cmip6plus:institution_id:ipsl\n
+        \tesgvocab valid IPSL cmip6plus:institution_id:isl <= term cant be found\n
+        \tesgvocab valid IPSL cmip6plus:institutin_id:ispl <= collection cant be found\n
+        \tesgvocab valid IPSL cmip6pls:institution_id:ispl <= project cant be found\n
+        \n
+        \tMultiple validation for all known projects: \n
+        \tesgvocab valid IPSL :: IPS :: \n
+        \t\tresult will be [True, False]\n
+        \n
+        \tesgvocab valid --verbose IPS :: IPSL ::\n 
+        \tresult will be \n
+        \t\t┏━━━━━━━━┳━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n
+        \t\t┃ String ┃ Key ┃ Result     ┃ Errors                      ┃\n
+        \t\t┡━━━━━━━━╇━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n
+        \t\t│ IPS    │ ::  │ ❌ Invalid │ did not found matching term │\n
+        \t\t│ IPSL   │ ::  │ ✅ Valid   │ None                        │\n
+        \t\t└────────┴─────┴────────────┴─────────────────────────────┘\n
+    Returns:\n
+        \tList[bool]: Validation results for each pair in the input.\n
     """
     results = []
     detailed_results = []
 
     # Combine string and target into pairs
     pairs = [strings_targets[i] + " " + strings_targets[i + 1] for i in range(0, len(strings_targets), 2)]
-
+    
     # Validate each string against each target
     for validation in pairs:
         match = re.match(r"(.+)\s+([^:]*):([^:]*):([^:]*)", validation)
