@@ -134,7 +134,7 @@ def get(keys: list[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZ
         if where == "" or where=="universe": 
             res = handle_universe(what,who)
         elif where in known_projects:
-            res = handle_project(where,what,who,{})
+            res = handle_project(where,what,who,None)
         else:
             res = handle_unknown(where,what,who)
         
