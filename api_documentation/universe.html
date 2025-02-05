@@ -150,6 +150,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../user/api.html">ESGVOC API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user/cli.html">Command Line Interface (CLI)</a></li>
 </ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">How to</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../how_to/get.html">Get Feature</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to/valid.html">Valid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to/validate_drs.html">Validate drs entry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to/generate_drs.html">Generate DRS</a></li>
+</ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../guides/basics_esgvoc.html">ESGVOC library tutorial</a></li>
@@ -400,35 +407,41 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="esgvoc.api.universe.get_all_terms_in_data_descriptor">
-<span class="sig-prename descclassname"><span class="pre">esgvoc.api.universe.</span></span><span class="sig-name descname"><span class="pre">get_all_terms_in_data_descriptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_descriptor_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><span class="pre">BaseModel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/universe.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.universe.get_all_terms_in_data_descriptor" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.universe.</span></span><span class="sig-name descname"><span class="pre">get_all_terms_in_data_descriptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_descriptor_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_term_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DataDescriptor</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/universe.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.universe.get_all_terms_in_data_descriptor" title="Link to this definition">#</a></dt>
 <dd><p>Gets all the terms of the given data descriptor.
 This function performs an exact match on the <cite>data_descriptor_id</cite> and does <strong>not</strong> search 
 for similar or related descriptors.
 If the provided <cite>data_descriptor_id</cite> is not found, the function returns an empty list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data_descriptor_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A data descriptor id</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_descriptor_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A data descriptor id</p></li>
+<li><p><strong>selected_term_fields</strong> (<em>Iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em><em>|</em><em>None</em>) – A list of term fields to select or <cite>None</cite>. If <cite>None</cite>, all the     fields of the terms are returned.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a list of Pydantic term instances. Returns an empty list if no matches are found.</p>
+<dd class="field-even"><p>a list of term instances. Returns an empty list if no matches are found.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[BaseModel]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[DataDescriptor]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="esgvoc.api.universe.get_all_terms_in_universe">
-<span class="sig-prename descclassname"><span class="pre">esgvoc.api.universe.</span></span><span class="sig-name descname"><span class="pre">get_all_terms_in_universe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><span class="pre">BaseModel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/universe.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.universe.get_all_terms_in_universe" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.universe.</span></span><span class="sig-name descname"><span class="pre">get_all_terms_in_universe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_term_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DataDescriptor</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/universe.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.universe.get_all_terms_in_universe" title="Link to this definition">#</a></dt>
 <dd><p>Gets all the terms of the universe.
 Terms are unique within a data descriptor but may have some synonyms in the universe.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of Pydantic term instances.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>selected_term_fields</strong> (<em>Iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em><em>|</em><em>None</em>) – A list of term fields to select or <cite>None</cite>. If <cite>None</cite>, all the     fields of the terms are returned.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[BaseModel]</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of term instances.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[DataDescriptor]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -475,7 +488,7 @@ If the provided <cite>data_descriptor_id</cite> is not found, the function retur
 
 <dl class="py function">
 <dt class="sig sig-object py" id="esgvoc.api.universe.find_terms_in_data_descriptor">
-<span class="sig-prename descclassname"><span class="pre">esgvoc.api.universe.</span></span><span class="sig-name descname"><span class="pre">find_terms_in_data_descriptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_descriptor_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="projects.html#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><span class="pre">SearchSettings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><span class="pre">BaseModel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/universe.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.universe.find_terms_in_data_descriptor" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.universe.</span></span><span class="sig-name descname"><span class="pre">find_terms_in_data_descriptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_descriptor_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="projects.html#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><span class="pre">SearchSettings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DataDescriptor</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/universe.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.universe.find_terms_in_data_descriptor" title="Link to this definition">#</a></dt>
 <dd><p>Finds one or more terms in the given data descriptor based on the specified search settings.
 This function performs an exact match on the <cite>data_descriptor_id</cite> and 
 does <strong>not</strong> search for similar or related descriptors.
@@ -487,8 +500,8 @@ If any of the provided ids (<cite>data_descriptor_id</cite> or <cite>term_id</ci
 returns an empty list.</p>
 <dl class="simple">
 <dt>Behavior based on search type:</dt><dd><ul class="simple">
-<li><p><cite>EXACT</cite> and absence of <cite>settings</cite>: returns zero or one Pydantic term instance in the list.</p></li>
-<li><p><cite>REGEX</cite>, <cite>LIKE</cite>, <cite>STARTS_WITH</cite> and <cite>ENDS_WITH</cite>: returns zero, one or more Pydantic term           instances in the list.</p></li>
+<li><p><cite>EXACT</cite> and absence of <cite>settings</cite>: returns zero or one term instance in the list.</p></li>
+<li><p><cite>REGEX</cite>, <cite>LIKE</cite>, <cite>STARTS_WITH</cite> and <cite>ENDS_WITH</cite>: returns zero, one or more term           instances in the list.</p></li>
 </ul>
 </dd>
 </dl>
@@ -501,17 +514,17 @@ returns an empty list.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of Pydantic model term instances. Returns an empty list if no matches are found.</p>
+<dd class="field-even"><p>A list of term instances. Returns an empty list if no matches are found.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[BaseModel]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[DataDescriptor]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="esgvoc.api.universe.find_terms_in_universe">
-<span class="sig-prename descclassname"><span class="pre">esgvoc.api.universe.</span></span><span class="sig-name descname"><span class="pre">find_terms_in_universe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="projects.html#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><span class="pre">SearchSettings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><span class="pre">BaseModel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/universe.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.universe.find_terms_in_universe" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.universe.</span></span><span class="sig-name descname"><span class="pre">find_terms_in_universe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="projects.html#esgvoc.api.search.SearchSettings" title="esgvoc.api.search.SearchSettings"><span class="pre">SearchSettings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DataDescriptor</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/universe.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.universe.find_terms_in_universe" title="Link to this definition">#</a></dt>
 <dd><p>Finds one or more terms of the universe.
 The given <cite>term_id</cite> is searched according to the search type specified in 
 the parameter <cite>settings</cite>,
@@ -527,10 +540,10 @@ If the provided <cite>term_id</cite> is not found, the function returns an empty
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of Pydantic term instances. Returns an empty list if no matches are found.</p>
+<dd class="field-even"><p>A list of term instances. Returns an empty list if no matches are found.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[BaseModel]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[DataDescriptor]</p>
 </dd>
 </dl>
 </dd></dl>

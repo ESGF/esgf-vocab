@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Get Feature &#8212; ESGVOC  documentation</title>
+    <title>Valid &#8212; ESGVOC  documentation</title>
   
   
   
@@ -50,11 +50,11 @@
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="../_static/tabs.js?v=3030b3cb"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'how_to/get';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how_to/valid';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Valid" href="valid.html" />
-    <link rel="prev" title="Command Line Interface (CLI)" href="../user/cli.html" />
+    <link rel="next" title="Validate drs entry" href="validate_drs.html" />
+    <link rel="prev" title="Get Feature" href="get.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -154,8 +154,8 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">How to</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Get Feature</a></li>
-<li class="toctree-l1"><a class="reference internal" href="valid.html">Valid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get.html">Get Feature</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Valid</a></li>
 <li class="toctree-l1"><a class="reference internal" href="validate_drs.html">Validate drs entry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generate_drs.html">Generate DRS</a></li>
 </ul>
@@ -246,7 +246,7 @@
       
       
       
-      <li><a href="https://github.com/ESGF/esgf-vocab/issues/new?title=Issue%20on%20page%20%2Fhow_to/get.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/ESGF/esgf-vocab/issues/new?title=Issue%20on%20page%20%2Fhow_to/valid.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -276,7 +276,7 @@
       
       
       
-      <li><a href="../_sources/how_to/get.md" target="_blank"
+      <li><a href="../_sources/how_to/valid.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -286,7 +286,7 @@
 <span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="btn__text-container">.md</span>
+<span class="btn__text-container">.rst</span>
 </a>
 </li>
       
@@ -352,7 +352,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Get Feature</h1>
+    <h1>Valid</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -362,7 +362,10 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-universe-datadescriptor">Get Universe DataDescriptor</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-term-id">Knowing the term id :</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-only-the-collection-id">Knowing the only the collection id :</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-only-the-project-id">Knowing the only the project id :</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-it-in-all-known-projects">Find it in all Known Projects</a></li>
 </ul>
             </nav>
         </div>
@@ -374,19 +377,98 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="get-feature">
-<h1>Get Feature<a class="headerlink" href="#get-feature" title="Link to this heading">#</a></h1>
-<section id="get-universe-datadescriptor">
-<h2>Get Universe DataDescriptor<a class="headerlink" href="#get-universe-datadescriptor" title="Link to this heading">#</a></h2>
+  <section id="valid">
+<h1>Valid<a class="headerlink" href="#valid" title="Link to this heading">#</a></h1>
+<p>the command valid check if a string input correspond to a term drs_name attribute or not. This feature can be use in CLI and API.</p>
+<section id="knowing-the-term-id">
+<h2>Knowing the term id :<a class="headerlink" href="#knowing-the-term-id" title="Link to this heading">#</a></h2>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>get<span class="w"> </span>universe:institution:ipsl
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-0-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-0-QVBJIGFzIHB5dGhvbiBsaWI=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-0-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" class="sphinx-tabs-panel group-tab" id="panel-0-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>cmip6:institution_id:ipsl
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
+<img alt="../_images/CLI_Valid_term.png" src="../_images/CLI_Valid_term.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>IPSL</cite> is the drs_name of the term with id <cite>ipsl</cite> therefore the valid command return “True”.</p>
+</div>
+</div><div aria-labelledby="tab-0-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
 
-<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;institution&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
-<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_universe</span><span class="p">(</span><span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span> <span class="c1"># same result but slower (still fast)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">valid_term</span><span class="p">(</span><span class="s2">&quot;IPSL&quot;</span><span class="p">,</span><span class="s2">&quot;cmip6&quot;</span><span class="p">,</span><span class="s2">&quot;institution_id&quot;</span><span class="p">,</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
 </pre></div>
+</div>
+<img alt="../_images/API_Valid_Term.png" src="../_images/API_Valid_Term.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the API return a ValidationReport Object. The __str__ dunder function reports errors if any. The __bool__ dunder funciton permits to use result in if statement.</p>
+</div>
+</div></div>
+</section>
+<section id="knowing-the-only-the-collection-id">
+<h2>Knowing the only the collection id :<a class="headerlink" href="#knowing-the-only-the-collection-id" title="Link to this heading">#</a></h2>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-1-QVBJIGFzIHB5dGhvbiBsaWI=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-1-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" class="sphinx-tabs-panel group-tab" id="panel-1-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>cmip6:institution_id:
+</pre></div>
+</div>
+<img alt="../_images/CLI_Valid_collection.png" src="../_images/CLI_Valid_collection.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>this command look for the drs_name in every term in the specified collection.</p>
+</div>
+</div><div aria-labelledby="tab-1-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
+
+<span class="n">ev</span><span class="o">.</span><span class="n">valid_term_collection</span><span class="p">(</span><span class="s2">&quot;IPSL&quot;</span><span class="p">,</span><span class="s2">&quot;cmip6&quot;</span><span class="p">,</span><span class="s2">&quot;institution_id&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/API_Valid_collection.png" src="../_images/API_Valid_collection.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the function <cite>ev.valid_term_collection</cite> return a list of MatchingTerm.</p>
+</div>
+</div></div>
+</section>
+<section id="knowing-the-only-the-project-id">
+<h2>Knowing the only the project id :<a class="headerlink" href="#knowing-the-only-the-project-id" title="Link to this heading">#</a></h2>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-2-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-2-QVBJIGFzIHB5dGhvbiBsaWI=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-2-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-2-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" class="sphinx-tabs-panel group-tab" id="panel-2-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>cmip6::
+</pre></div>
+</div>
+<img alt="../_images/CLI_Valid_project.png" src="../_images/CLI_Valid_project.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>this command look for the drs_name in every term in the specified project. therefore, it could be pretty long compared to the above functions.</p>
+</div>
+</div><div aria-labelledby="tab-2-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-2-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
+
+<span class="n">ev</span><span class="o">.</span><span class="n">valid_term_project</span><span class="p">(</span><span class="s2">&quot;IPSL&quot;</span><span class="p">,</span><span class="s2">&quot;cmip6&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/API_Valid_project.png" src="../_images/API_Valid_project.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the function <cite>ev.valid_term_project</cite> return a list of MatchingTerm.</p>
+</div>
+</div></div>
+</section>
+<section id="find-it-in-all-known-projects">
+<h2>Find it in all Known Projects<a class="headerlink" href="#find-it-in-all-known-projects" title="Link to this heading">#</a></h2>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-3-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-3-QVBJIGFzIHB5dGhvbiBsaWI=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-3-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-3-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" class="sphinx-tabs-panel group-tab" id="panel-3-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>::
+</pre></div>
+</div>
+<img alt="../_images/CLI_Valid_all_project.png" src="../_images/CLI_Valid_all_project.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>this command look for the drs_name in every project. therefore, it could be pretty long compared to the above functions.</p>
+</div>
+</div><div aria-labelledby="tab-3-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-3-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
+
+<span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_all_projects</span><span class="p">(</span><span class="s2">&quot;IPSL&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/API_Valid_all_project.png" src="../_images/API_Valid_all_project.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the function <cite>ev.valid_term_in_all_projects</cite> return a list of MatchingTerm.</p>
 </div>
 </div></div>
 </section>
@@ -404,20 +486,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../user/cli.html"
+       href="get.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Command Line Interface (CLI)</p>
+        <p class="prev-next-title">Get Feature</p>
       </div>
     </a>
     <a class="right-next"
-       href="valid.html"
+       href="validate_drs.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Valid</p>
+        <p class="prev-next-title">Validate drs entry</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -438,7 +520,10 @@
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-universe-datadescriptor">Get Universe DataDescriptor</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-term-id">Knowing the term id :</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-only-the-collection-id">Knowing the only the collection id :</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-only-the-project-id">Knowing the only the project id :</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-it-in-all-known-projects">Find it in all Known Projects</a></li>
 </ul>
   </nav></div>
 
