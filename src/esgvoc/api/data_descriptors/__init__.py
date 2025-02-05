@@ -1,7 +1,6 @@
-from pydantic import BaseModel
-
 from esgvoc.api.data_descriptors.activity import Activity
 from esgvoc.api.data_descriptors.consortium import Consortium
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.data_descriptors.date import Date
 from esgvoc.api.data_descriptors.directory_date import DirectoryDate
 from esgvoc.api.data_descriptors.experiment import Experiment 
@@ -28,7 +27,7 @@ from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
 
 
-DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[BaseModel]] = {
+DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "activity": Activity,
     "consortium": Consortium,
     "date": Date,

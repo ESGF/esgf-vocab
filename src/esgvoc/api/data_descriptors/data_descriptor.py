@@ -1,4 +1,4 @@
-from typing import Protocol, Any
+from typing import Protocol, Any, ClassVar
 from abc import ABC, abstractmethod
 from pydantic import BaseModel, ConfigDict
 
@@ -18,17 +18,20 @@ class DataDescriptorVisitor(Protocol):
     """
     The specifications for a term visitor.
     """
+    def visit_sub_set_term(self, term: "DataDescriptorSubSet") -> Any:
+        """Visit a sub set of the information of a term."""
+        pass
     def visit_plain_term(self, term: "PlainTermDataDescriptor") -> Any:
         """Visit a plain term."""
         pass
     def visit_drs_plain_term(self, term: "DrsPlainTermDataDescriptor") -> Any:
         """Visit a DRS plain term."""
         pass
-    def visit_term_pattern(self, term: "TermPatternDataDescriptor") -> Any:
-        """Visit a term pattern."""
+    def visit_pattern_term(self, term: "PatternTermDataDescriptor") -> Any:
+        """Visit a pattern term."""
         pass
-    def visit_term_composite(self, term: "TermCompositeDataDescriptor") -> Any:
-        """Visit a term composite."""
+    def visit_composite_term(self, term: "CompositeTermDataDescriptor") -> Any:
+        """Visit a composite term."""
 
 
 class DataDescriptor(ConfiguredBaseModel, ABC):
@@ -53,6 +56,16 @@ class DataDescriptor(ConfiguredBaseModel, ABC):
         pass
 
 
+class DataDescriptorSubSet(DataDescriptor):
+    """
+    A sub set of the information contains in a term.
+    """
+    MANDATORY_TERM_FIELDS: ClassVar[tuple[str, str]] = ('id', 'type')
+    """The set of mandatory term fields."""
+    def accept(self, visitor: DataDescriptorVisitor) -> Any:
+        return visitor.visit_sub_set_term(self)
+
+
 class PlainTermDataDescriptor(DataDescriptor):
     """
     A data descriptor that describes hand written terms.
@@ -71,36 +84,35 @@ class DrsPlainTermDataDescriptor(PlainTermDataDescriptor):
         return visitor.visit_drs_plain_term(self)
 
 
-class TermPatternDataDescriptor(DataDescriptor):
+class PatternTermDataDescriptor(DataDescriptor):
     """
     A data descriptor that describes terms defined by a regular expression.
     """
     regex: str
     """The regular expression."""
     def accept(self, visitor: DataDescriptorVisitor) -> Any:
-        return visitor.visit_term_pattern(self)
+        return visitor.visit_pattern_term(self)
 
 
-class TermCompositePart(ConfiguredBaseModel):
+class CompositeTermPart(ConfiguredBaseModel):
     """
-    A reference to a term, part of a term composite.
+    A reference to a term, part of a composite term.
     """
-    
     id: str
     """The id of the referenced term."""
     type: str
     """The type of the referenced term."""
     is_required : bool
-    """Denote if the term is optional as part of a term composite"""
+    """Denote if the term is optional as part of a composite term."""
 
 
-class TermCompositeDataDescriptor(DataDescriptor):
+class CompositeTermDataDescriptor(DataDescriptor):
     """
     A data descriptor that describes terms composed of other terms.
     """
     separator: str
-    """The term separator character."""
-    parts: list[TermCompositePart]
-    """The composites."""
+    """The components separator character."""
+    parts: list[CompositeTermPart]
+    """The components."""
     def accept(self, visitor: DataDescriptorVisitor) -> Any:
-        return visitor.visit_term_composite(self)
+        return visitor.visit_composite_term(self)

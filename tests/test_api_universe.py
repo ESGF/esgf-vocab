@@ -7,7 +7,7 @@ from esgvoc.api import SearchSettings, SearchType
 
 _SOME_DATA_DESCRIPTOR_IDS = ['institution', 'product', 'variable']
 _SOME_TERM_IDS = ['ipsl', 'observations', 'airmass']
-_SETTINGS = SearchSettings(type=SearchType.LIKE)
+_SETTINGS = SearchSettings(type=SearchType.LIKE, selected_term_fields=('id', 'type', 'name'))
 
 
 def _provide_data_descriptor_ids() -> Generator:

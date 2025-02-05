@@ -9,7 +9,7 @@ from sqlmodel import Session, select
 import esgvoc.core.db.connection as db
 from esgvoc.core.db.connection import read_json_file
 from esgvoc.core.db.models.mixins import TermKind
-from esgvoc.core.db.models.universe import DataDescriptor, UTerm, Universe
+from esgvoc.core.db.models.universe import UDataDescriptor, UTerm, Universe
 from esgvoc.core.db.models.universe import universe_create_db
 import esgvoc.core.service as service
 
@@ -63,7 +63,7 @@ def ingest_data_descriptor(data_descriptor_path: Path,
         return        
 
     with connection.create_session() as session:
-        data_descriptor = DataDescriptor(id=data_descriptor_id,
+        data_descriptor = UDataDescriptor(id=data_descriptor_id,
                                          context=context,
                                          term_kind="") # we ll know it only when we ll add a term (hypothesis all term have the same kind in a data_descriptor)
         term_kind_dd = None
@@ -103,8 +103,8 @@ def get_universe_term(data_descriptor_id: str,
                      universe_db_session: Session) -> tuple[TermKind, dict]:
     statement = (
         select(UTerm)
-        .join(DataDescriptor)
-        .where(DataDescriptor.id == data_descriptor_id, UTerm.id == term_id)
+        .join(UDataDescriptor)
+        .where(UDataDescriptor.id == data_descriptor_id, UTerm.id == term_id)
     )
     results = universe_db_session.exec(statement)
     term = results.one()

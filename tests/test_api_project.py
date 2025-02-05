@@ -9,7 +9,7 @@ _SOME_PROJECT_IDS = ['cmip6plus']
 _SOME_COLLECTION_IDS = ['institution_id', 'time_range', 'source_id']
 _SOME_DATA_DESCRIPTOR_IDS = ['organisation', 'time_range', 'source']
 _SOME_TERM_IDS = ['ipsl', 'daily', 'miroc6']
-_SETTINGS = SearchSettings(type=SearchType.LIKE)
+_SETTINGS = SearchSettings(type=SearchType.LIKE, selected_term_fields=('id', 'type', 'name'))
 
 
 def _provide_project_ids() -> Generator:

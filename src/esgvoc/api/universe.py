@@ -1,10 +1,10 @@
-from typing import Sequence
+from typing import Sequence, Iterable
 
 from esgvoc.api._utils import (get_universe_session,
                                instantiate_pydantic_terms)
 from esgvoc.api.search import SearchSettings, _create_str_comparison_expression
-from esgvoc.core.db.models.universe import DataDescriptor, UTerm
-from pydantic import BaseModel
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+from esgvoc.core.db.models.universe import UDataDescriptor, UTerm
 from sqlmodel import Session, select
 
 
@@ -16,7 +16,7 @@ def _find_terms_in_data_descriptor(data_descriptor_id: str,
     where_expression = _create_str_comparison_expression(field=UTerm.id,
                                                          value=term_id,
                                                          settings=settings)
-    statement = select(UTerm).join(DataDescriptor).where(DataDescriptor.id==data_descriptor_id,
+    statement = select(UTerm).join(UDataDescriptor).where(UDataDescriptor.id==data_descriptor_id,
                                                          where_expression)
     results = session.exec(statement)
     result = results.all()
@@ -26,7 +26,7 @@ def _find_terms_in_data_descriptor(data_descriptor_id: str,
 def find_terms_in_data_descriptor(data_descriptor_id: str,
                                   term_id: str,
                                   settings: SearchSettings|None = None) \
-                                     -> list[BaseModel]:
+                                     -> list[DataDescriptor]:
     """
     Finds one or more terms in the given data descriptor based on the specified search settings.
     This function performs an exact match on the `data_descriptor_id` and 
@@ -39,8 +39,8 @@ def find_terms_in_data_descriptor(data_descriptor_id: str,
     returns an empty list.
 
     Behavior based on search type:
-        - `EXACT` and absence of `settings`: returns zero or one Pydantic term instance in the list.
-        - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more Pydantic term \
+        - `EXACT` and absence of `settings`: returns zero or one term instance in the list.
+        - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more term \
           instances in the list.
 
     :param data_descriptor_id: A data descriptor id
@@ -49,13 +49,13 @@ def find_terms_in_data_descriptor(data_descriptor_id: str,
     :type term_id: str
     :param settings: The search settings
     :type settings: SearchSettings|None
-    :returns: A list of Pydantic model term instances. Returns an empty list if no matches are found.
-    :rtype: list[BaseModel]
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
     """
-    result: list[BaseModel] = list()
+    result: list[DataDescriptor] = list()
     with get_universe_session() as session:
         terms = _find_terms_in_data_descriptor(data_descriptor_id, term_id, session, settings)
-        instantiate_pydantic_terms(terms, result)
+        instantiate_pydantic_terms(terms, result, settings.selected_term_fields if settings else None)
     return result
 
 
@@ -72,7 +72,7 @@ def _find_terms_in_universe(term_id: str,
 
 def find_terms_in_universe(term_id: str,
                            settings: SearchSettings|None = None) \
-                              -> list[BaseModel]:
+                              -> list[DataDescriptor]:
     """
     Finds one or more terms of the universe.
     The given `term_id` is searched according to the search type specified in 
@@ -86,36 +86,38 @@ def find_terms_in_universe(term_id: str,
     :type term_id: str
     :param settings: The search settings
     :type settings: SearchSettings|None
-    :returns: A list of Pydantic term instances. Returns an empty list if no matches are found.
-    :rtype: list[BaseModel]
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
     """
-    result: list[BaseModel] = list()
+    result: list[DataDescriptor] = list()
     with get_universe_session() as session:
         terms = _find_terms_in_universe(term_id, session, settings)
-        instantiate_pydantic_terms(terms, result)
+        instantiate_pydantic_terms(terms, result, settings.selected_term_fields if settings else None)
     return result
 
 
-def _get_all_terms_in_data_descriptor(data_descriptor: DataDescriptor) -> list[BaseModel]:
-    result: list[BaseModel] = list()
-    instantiate_pydantic_terms(data_descriptor.terms, result)
+def _get_all_terms_in_data_descriptor(data_descriptor: UDataDescriptor,
+                                      selected_term_fields: Iterable[str]|None) -> list[DataDescriptor]:
+    result: list[DataDescriptor] = list()
+    instantiate_pydantic_terms(data_descriptor.terms, result, selected_term_fields)
     return result
 
 
 def _find_data_descriptors_in_universe(data_descriptor_id: str,
                                        session: Session,
-                                       settings: SearchSettings|None) -> Sequence[DataDescriptor]:
-    where_expression = _create_str_comparison_expression(field=DataDescriptor.id,
+                                       settings: SearchSettings|None) -> Sequence[UDataDescriptor]:
+    where_expression = _create_str_comparison_expression(field=UDataDescriptor.id,
                                                          value=data_descriptor_id,
                                                          settings=settings)
-    statement = select(DataDescriptor).where(where_expression)
+    statement = select(UDataDescriptor).where(where_expression)
     results = session.exec(statement)
     result = results.all()      
     return result
 
 
-def get_all_terms_in_data_descriptor(data_descriptor_id: str) \
-                                        -> list[BaseModel]:
+def get_all_terms_in_data_descriptor(data_descriptor_id: str,
+                                     selected_term_fields: Iterable[str]|None = None) \
+                                                                            -> list[DataDescriptor]:
     """
     Gets all the terms of the given data descriptor.
     This function performs an exact match on the `data_descriptor_id` and does **not** search 
@@ -124,8 +126,11 @@ def get_all_terms_in_data_descriptor(data_descriptor_id: str) \
 
     :param data_descriptor_id: A data descriptor id
     :type data_descriptor_id: str
-    :returns: a list of Pydantic term instances. Returns an empty list if no matches are found.
-    :rtype: list[BaseModel]
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned.
+    :type selected_term_fields: Iterable[str]|None
+    :returns: a list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
     """
     with get_universe_session() as session:
         data_descriptors = _find_data_descriptors_in_universe(data_descriptor_id,
@@ -133,7 +138,7 @@ def get_all_terms_in_data_descriptor(data_descriptor_id: str) \
                                                               None)
         if data_descriptors:
             data_descriptor = data_descriptors[0]
-            result = _get_all_terms_in_data_descriptor(data_descriptor)
+            result = _get_all_terms_in_data_descriptor(data_descriptor, selected_term_fields)
         else:
             result = list()
     return result
@@ -173,8 +178,8 @@ def find_data_descriptors_in_universe(data_descriptor_id: str,
     return result
 
 
-def _get_all_data_descriptors_in_universe(session: Session) -> Sequence[DataDescriptor]:
-    statement = select(DataDescriptor)
+def _get_all_data_descriptors_in_universe(session: Session) -> Sequence[UDataDescriptor]:
+    statement = select(UDataDescriptor)
     data_descriptors = session.exec(statement)
     result = data_descriptors.all()
     return result
@@ -195,23 +200,28 @@ def get_all_data_descriptors_in_universe() -> list[str]:
     return result
 
 
-def get_all_terms_in_universe() -> list[BaseModel]:
+def get_all_terms_in_universe(selected_term_fields: Iterable[str]|None = None) -> list[DataDescriptor]:
     """
     Gets all the terms of the universe.
     Terms are unique within a data descriptor but may have some synonyms in the universe.
 
-    :returns: A list of Pydantic term instances.
-    :rtype: list[BaseModel]
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned.
+    :type selected_term_fields: Iterable[str]|None
+    :returns: A list of term instances.
+    :rtype: list[DataDescriptor]
     """
     result = list()
     with get_universe_session() as session:
         data_descriptors = _get_all_data_descriptors_in_universe(session)
         for data_descriptor in data_descriptors:
             # Term may have some synonyms within the whole universe.
-            terms = _get_all_terms_in_data_descriptor(data_descriptor)
+            terms = _get_all_terms_in_data_descriptor(data_descriptor, selected_term_fields)
             result.extend(terms)
     return result
 
 
 if __name__ == "__main__":
-    print(find_terms_in_data_descriptor('institution', 'ipsl'))
+    settings = SearchSettings()
+    settings.selected_term_fields = ('id',)
+    print(find_terms_in_data_descriptor('institution', 'ipsl', settings))

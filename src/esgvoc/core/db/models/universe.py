@@ -14,10 +14,10 @@ _LOGGER = logging.getLogger("universe_db_creation")
 class Universe(SQLModel, PkMixin, table=True):
     __tablename__ = "universes"
     git_hash: str
-    data_descriptors: list["DataDescriptor"] = Relationship(back_populates="universe")
+    data_descriptors: list["UDataDescriptor"] = Relationship(back_populates="universe")
 
 
-class DataDescriptor(SQLModel, PkMixin, IdMixin, table=True):
+class UDataDescriptor(SQLModel, PkMixin, IdMixin, table=True):
     __tablename__ = "data_descriptors"
     context: dict = Field(sa_column=sa.Column(JSON))
     universe_pk: int | None = Field(default=None, foreign_key="universes.pk")
@@ -33,7 +33,7 @@ class UTerm(SQLModel, PkMixin, IdMixin, table=True):
     data_descriptor_pk: int | None = Field(
         default=None, foreign_key="data_descriptors.pk"
     )
-    data_descriptor: DataDescriptor = Relationship(back_populates="terms")
+    data_descriptor: UDataDescriptor = Relationship(back_populates="terms")
 
 
 def universe_create_db(db_file_path: Path) -> None:

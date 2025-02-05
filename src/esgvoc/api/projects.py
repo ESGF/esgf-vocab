@@ -1,8 +1,8 @@
 import re
-from typing import Sequence
+from typing import Sequence, Iterable
 
 import esgvoc.api.universe as universe
-import esgvoc.core.constants
+import esgvoc.core.constants as constants
 import esgvoc.core.service as service
 from esgvoc.api._utils import (get_universe_session, instantiate_pydantic_term,
                                instantiate_pydantic_terms)
@@ -10,17 +10,20 @@ from esgvoc.api.report import (ProjectTermError, UniverseTermError,
                                ValidationError, ValidationReport)
 from esgvoc.api.search import MatchingTerm, SearchSettings, _create_str_comparison_expression
 from esgvoc.api.project_specs import ProjectSpecs
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import Collection, Project, PTerm
 from esgvoc.core.db.models.universe import UTerm
-from pydantic import BaseModel
 from sqlmodel import Session, and_, select
 
 
 # [OPTIMIZATION]
 _VALID_TERM_IN_COLLECTION_CACHE: dict[str, list[MatchingTerm]] = dict()
 _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE: dict[str, list[ValidationError]] = dict()
+
+
+class DrsValidationException(Exception): ...
 
 
 def get_project_specs(project_id: str) -> ProjectSpecs:
@@ -47,12 +50,12 @@ def _get_project_session_with_exception(project_id: str) -> Session:
         raise ValueError(f'unable to find project {project_id}')
     
 
-def _resolve_term(term_composite_part: dict,
+def _resolve_term(composite_term_part: dict,
                   universe_session: Session,
                   project_session: Session) -> UTerm|PTerm:
     # First find the term in the universe than in the current project
-    term_id = term_composite_part[esgvoc.core.constants.TERM_ID_JSON_KEY]
-    term_type = term_composite_part[esgvoc.core.constants.TERM_TYPE_JSON_KEY]
+    term_id = composite_term_part[constants.TERM_ID_JSON_KEY]
+    term_type = composite_term_part[constants.TERM_TYPE_JSON_KEY]
     uterms = universe._find_terms_in_data_descriptor(data_descriptor_id=term_type,
                                                      term_id=term_id,
                                                      session=universe_session,
@@ -71,21 +74,21 @@ def _resolve_term(term_composite_part: dict,
         raise RuntimeError(msg)           
 
 
-def _get_term_composite_separator_parts(term: UTerm|PTerm) -> tuple[str, list]:
-    separator = term.specs[esgvoc.core.constants.COMPOSITE_SEPARATOR_JSON_KEY]
-    parts = term.specs[esgvoc.core.constants.COMPOSITE_PARTS_JSON_KEY]
+def _get_composite_term_separator_parts(term: UTerm|PTerm) -> tuple[str, list]:
+    separator = term.specs[constants.COMPOSITE_SEPARATOR_JSON_KEY]
+    parts = term.specs[constants.COMPOSITE_PARTS_JSON_KEY]
     return separator, parts
 
 
 # TODO: support optionality of parts of composite.
 # It is backtrack possible for more than one missing parts.
-def _valid_value_term_composite_with_separator(value: str,
+def _valid_value_composite_term_with_separator(value: str,
                                                term: UTerm|PTerm,
                                                universe_session: Session,
                                                project_session: Session)\
                                                    -> list[ValidationError]:
     result = list()
-    separator, parts = _get_term_composite_separator_parts(term)
+    separator, parts = _get_composite_term_separator_parts(term)
     if separator in value:
         splits = value.split(separator)
         if len(splits) == len(parts):
@@ -111,11 +114,15 @@ def _transform_to_pattern(term: UTerm|PTerm,
                           project_session: Session) -> str:
     match term.kind:
         case TermKind.PLAIN:
-            result = term.specs[esgvoc.core.constants.DRS_SPECS_JSON_KEY]
+            if constants.DRS_SPECS_JSON_KEY in term.specs:
+                result = term.specs[constants.DRS_SPECS_JSON_KEY]
+            else:
+                raise DrsValidationException(f"the term {term.id} doesn't have drs name. " + 
+                                             "Can't validate it.")
         case TermKind.PATTERN:
-            result = term.specs[esgvoc.core.constants.PATTERN_JSON_KEY]
+            result = term.specs[constants.PATTERN_JSON_KEY]
         case TermKind.COMPOSITE:
-            separator, parts =  _get_term_composite_separator_parts(term)
+            separator, parts =  _get_composite_term_separator_parts(term)
             result = ""
             for part in parts:
                 resolved_term = _resolve_term(part, universe_session, project_session)
@@ -129,7 +136,7 @@ def _transform_to_pattern(term: UTerm|PTerm,
 
 # TODO: support optionality of parts of composite.
 # It is backtrack possible for more than one missing parts.
-def _valid_value_term_composite_separator_less(value: str,
+def _valid_value_composite_term_separator_less(value: str,
                                                term: UTerm|PTerm,
                                                universe_session: Session,
                                                project_session: Session)\
@@ -138,7 +145,7 @@ def _valid_value_term_composite_separator_less(value: str,
     try:
         pattern = _transform_to_pattern(term, universe_session, project_session)
         try:
-            # Term patterns are meant to be validated individually.
+            # Patterns terms are meant to be validated individually.
             # So their regex are defined as a whole (begins by a ^, ends by a $).
             # As the pattern is a concatenation of plain or regex, multiple ^ and $ can exist.
             # The later, must be removed.
@@ -157,18 +164,18 @@ def _valid_value_term_composite_separator_less(value: str,
         raise RuntimeError(msg) from e
 
 
-def _valid_value_for_term_composite(value: str,
+def _valid_value_for_composite_term(value: str,
                                     term: UTerm|PTerm,
                                     universe_session: Session,
                                     project_session: Session)\
                                         -> list[ValidationError]:
     result = list()
-    separator, _ = _get_term_composite_separator_parts(term)
+    separator, _ = _get_composite_term_separator_parts(term)
     if separator:
-        result = _valid_value_term_composite_with_separator(value, term, universe_session,
+        result = _valid_value_composite_term_with_separator(value, term, universe_session,
                                                             project_session)
     else:
-        result = _valid_value_term_composite_separator_less(value, term, universe_session,
+        result = _valid_value_composite_term_separator_less(value, term, universe_session,
                                                             project_session)
     return result
 
@@ -189,15 +196,19 @@ def _valid_value(value: str,
     result = list()
     match term.kind:
         case TermKind.PLAIN:
-            if term.specs[esgvoc.core.constants.DRS_SPECS_JSON_KEY] != value:
-                result.append(_create_term_error(value, term))
+            if constants.DRS_SPECS_JSON_KEY in term.specs:
+                if term.specs[constants.DRS_SPECS_JSON_KEY] != value:
+                    result.append(_create_term_error(value, term))
+            else:
+                raise DrsValidationException(f"the term {term.id} doesn't have drs name. " + 
+                                             "Can't validate it.")
         case TermKind.PATTERN:
             # OPTIM: Pattern can be compiled and stored for further matching.
-            pattern_match = re.match(term.specs[esgvoc.core.constants.PATTERN_JSON_KEY], value)
+            pattern_match = re.match(term.specs[constants.PATTERN_JSON_KEY], value)
             if pattern_match is None:
                 result.append(_create_term_error(value, term))
         case TermKind.COMPOSITE:
-            result.extend(_valid_value_for_term_composite(value, term,
+            result.extend(_valid_value_for_composite_term(value, term,
                                                           universe_session,
                                                           project_session))
         case _:
@@ -217,7 +228,7 @@ def _search_plain_term_and_valid_value(value: str,
                                        project_session: Session) \
                                         -> str|None:
     where_expression = and_(Collection.id == collection_id,
-                            PTerm.specs[esgvoc.core.constants.DRS_SPECS_JSON_KEY] == f'"{value}"')
+                            PTerm.specs[constants.DRS_SPECS_JSON_KEY] == f'"{value}"')
     statement = select(PTerm).join(Collection).where(where_expression)
     term = project_session.exec(statement).one_or_none()
     return term.id if term else None
@@ -283,8 +294,8 @@ def valid_term(value: str,
     
     Behavior based on the nature of the term:
         - plain term: the function try to match the value on the drs_name field.
-        - term pattern: the function try to match the value on the pattern field (regex).
-        - term composite: 
+        - pattern term: the function try to match the value on the pattern field (regex).
+        - composite term:
             - if the composite has got a separator, the function splits the value according to the\
               separator of the term then it try to match every part of the composite\
               with every split of the value.
@@ -365,8 +376,8 @@ def valid_term_in_collection(value: str,
     
     Behavior based on the nature of the term:
         - plain term: the function try to match the value on the drs_name field.
-        - term pattern: the function try to match the value on the pattern field (regex).
-        - term composite: 
+        - pattern term: the function try to match the value on the pattern field (regex).
+        - composite term: 
             - if the composite has got a separator, the function splits the value according to the \
               separator of the term then it try to match every part of the composite \
               with every split of the value.
@@ -411,8 +422,8 @@ def valid_term_in_project(value: str, project_id: str) -> list[MatchingTerm]:
     
     Behavior based on the nature of the term:
         - plain term: the function try to match the value on the drs_name field.
-        - term pattern: the function try to match the value on the pattern field (regex).
-        - term composite: 
+        - pattern term: the function try to match the value on the pattern field (regex).
+        - composite term: 
             - if the composite has got a separator, the function splits the value according to the \
               separator of the term then it try to match every part of the composite \
               with every split of the value.
@@ -441,8 +452,8 @@ def valid_term_in_all_projects(value: str) -> list[MatchingTerm]:
     
     Behavior based on the nature of the term:
         - plain term: the function try to match the value on the drs_name field.
-        - term pattern: the function try to match the value on the pattern field (regex).
-        - term composite: 
+        - pattern term: the function try to match the value on the pattern field (regex).
+        - composite term: 
             - if the composite has got a separator, the function splits the value according to the \
               separator of the term then it try to match every part of the composite \
               with every split of the value.
@@ -482,7 +493,7 @@ def find_terms_in_collection(project_id:str,
                              collection_id: str,
                              term_id: str,
                              settings: SearchSettings|None = None) \
-                                -> list[BaseModel]:
+                                -> list[DataDescriptor]:
     """
     Finds one or more terms, based on the specified search settings, in the given collection of a project.
     This function performs an exact match on the `project_id` and `collection_id`, 
@@ -494,9 +505,9 @@ def find_terms_in_collection(project_id:str,
     the function returns an empty list.
     
     Behavior based on search type:
-        - `EXACT` and absence of `settings`: returns zero or one Pydantic term instance in the list.
+        - `EXACT` and absence of `settings`: returns zero or one term instance in the list.
         - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
-          Pydantic term instances in the list.
+          term instances in the list.
 
     :param project_id: A project id
     :type project_id: str
@@ -506,14 +517,15 @@ def find_terms_in_collection(project_id:str,
     :type term_id: str
     :param settings: The search settings
     :type settings: SearchSettings|None
-    :returns: A list of Pydantic term instances. Returns an empty list if no matches are found.
-    :rtype: list[BaseModel]
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
     """
-    result: list[BaseModel] = list()
+    result: list[DataDescriptor] = list()
     if connection:=_get_project_connection(project_id):
         with connection.create_session() as session:
             terms = _find_terms_in_collection(collection_id, term_id, session, settings)
-            instantiate_pydantic_terms(terms, result)
+            instantiate_pydantic_terms(terms, result,
+                                       settings.selected_term_fields if settings else None)
     return result
 
 
@@ -537,7 +549,7 @@ def find_terms_from_data_descriptor_in_project(project_id: str,
                                                data_descriptor_id: str,
                                                term_id: str,
                                                settings: SearchSettings|None = None) \
-                                                  -> list[tuple[BaseModel, str]]:
+                                                  -> list[tuple[DataDescriptor, str]]:
     """
     Finds one or more terms in the given project which are instances of the given data descriptor
     in the universe, based on the specified search settings, in the given collection of a project.
@@ -550,10 +562,10 @@ def find_terms_from_data_descriptor_in_project(project_id: str,
     the function returns an empty list.
     
     Behavior based on search type:
-        - `EXACT` and absence of `settings`: returns zero or one Pydantic term instance and \
+        - `EXACT` and absence of `settings`: returns zero or one term instance and \
           collection id in the list.
         - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
-          Pydantic term instances and collection ids in the list.
+          term instances and collection ids in the list.
 
     :param project_id: A project id
     :type project_id: str
@@ -563,9 +575,9 @@ def find_terms_from_data_descriptor_in_project(project_id: str,
     :type term_id: str
     :param settings: The search settings
     :type settings: SearchSettings|None
-    :returns: A list of tuple of Pydantic term instances and related collection ids. \
+    :returns: A list of tuple of term instances and related collection ids. \
     Returns an empty list if no matches are found.
-    :rtype: list[tuple[BaseModel, str]]
+    :rtype: list[tuple[DataDescriptor, str]]
     """
     result = list()
     if connection:=_get_project_connection(project_id):
@@ -576,7 +588,8 @@ def find_terms_from_data_descriptor_in_project(project_id: str,
                                                                 settings)
             for pterm in terms:
                 collection_id = pterm.collection.id
-                term = instantiate_pydantic_term(pterm)
+                term = instantiate_pydantic_term(pterm,
+                                                 settings.selected_term_fields if settings else None)
                 result.append((term, collection_id))
     return result
 
@@ -584,7 +597,7 @@ def find_terms_from_data_descriptor_in_project(project_id: str,
 def find_terms_from_data_descriptor_in_all_projects(data_descriptor_id: str,
                                                     term_id: str,
                                                     settings: SearchSettings|None = None) \
-                                                    -> list[tuple[list[tuple[BaseModel, str]], str]]:
+                                                    -> list[tuple[list[tuple[DataDescriptor, str]], str]]:
     """
     Finds one or more terms in all projects which are instances of the given data descriptor
     in the universe, based on the specified search settings, in the given collection of a project.
@@ -597,10 +610,10 @@ def find_terms_from_data_descriptor_in_all_projects(data_descriptor_id: str,
     the function returns an empty list.
     
     Behavior based on search type:
-        - `EXACT` and absence of `settings`: returns zero or one Pydantic term instance and \
+        - `EXACT` and absence of `settings`: returns zero or one term instance and \
           collection id in the list.
         - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
-          Pydantic term instances and collection ids in the list.
+          term instances and collection ids in the list.
 
     :param data_descriptor_id: A data descriptor
     :type data_descriptor_id: str
@@ -610,10 +623,10 @@ def find_terms_from_data_descriptor_in_all_projects(data_descriptor_id: str,
     :type settings: SearchSettings|None
     :returns: A list of tuple of matching terms with their collection id, per project. \
     Returns an empty list if no matches are found.
-    :rtype: list[tuple[list[tuple[BaseModel, str]], str]]
+    :rtype: list[tuple[list[tuple[DataDescriptor, str]], str]]
     """
     project_ids = get_all_projects()
-    result: list[tuple[list[tuple[BaseModel, str]], str]] = list()
+    result: list[tuple[list[tuple[DataDescriptor, str]], str]] = list()
     for project_id in project_ids:
         matching_terms = find_terms_from_data_descriptor_in_project(project_id,
                                                                     data_descriptor_id,
@@ -636,7 +649,7 @@ def _find_terms_in_project(term_id: str,
 
 def find_terms_in_all_projects(term_id: str,
                                settings: SearchSettings|None = None) \
-                                  -> list[BaseModel]:
+                                  -> list[DataDescriptor]:
     """
     Finds one or more terms, based on the specified search settings, in all projects.
     The given `term_id` is searched according to the search type specified in the parameter `settings`,
@@ -649,8 +662,8 @@ def find_terms_in_all_projects(term_id: str,
     :type term_id: str
     :param settings: The search settings
     :type settings: SearchSettings|None
-    :returns: A list of Pydantic term instances. Returns an empty list if no matches are found.
-    :rtype: list[BaseModel]
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
     """
     project_ids = get_all_projects()
     result = list()
@@ -662,7 +675,7 @@ def find_terms_in_all_projects(term_id: str,
 def find_terms_in_project(project_id: str,
                           term_id: str,
                           settings: SearchSettings|None = None) \
-                            -> list[BaseModel]:
+                            -> list[DataDescriptor]:
     """
     Finds one or more terms, based on the specified search settings, in a project.
     This function performs an exact match on the `project_id` and 
@@ -680,20 +693,22 @@ def find_terms_in_project(project_id: str,
     :type term_id: str
     :param settings: The search settings
     :type settings: SearchSettings|None
-    :returns: A list of Pydantic term instances. Returns an empty list if no matches are found.
-    :rtype: list[BaseModel]
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
     """
-    result: list[BaseModel] = list()
+    result: list[DataDescriptor] = list()
     if connection:=_get_project_connection(project_id):
         with connection.create_session() as session:
             terms = _find_terms_in_project(term_id, session, settings)
-            instantiate_pydantic_terms(terms, result)
+            instantiate_pydantic_terms(terms, result,
+                                       settings.selected_term_fields if settings else None)
     return result
 
 
 def get_all_terms_in_collection(project_id: str,
-                                collection_id: str)\
-                                   -> list[BaseModel]:
+                                collection_id: str,
+                                selected_term_fields: Iterable[str]|None = None)\
+                                   -> list[DataDescriptor]:
     """
     Gets all terms of the given collection of a project.
     This function performs an exact match on the `project_id` and `collection_id`,
@@ -705,8 +720,11 @@ def get_all_terms_in_collection(project_id: str,
     :type project_id: str
     :param collection_id: A collection id
     :type collection_id: str
-    :returns: a list of Pydantic term instances. Returns an empty list if no matches are found.
-    :rtype: list[BaseModel]
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned.
+    :type selected_term_fields: Iterable[str]|None
+    :returns: a list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
     """
     result = list()
     if connection:=_get_project_connection(project_id):
@@ -716,7 +734,7 @@ def get_all_terms_in_collection(project_id: str,
                                                        None)
             if collections:
                 collection = collections[0]
-                result = _get_all_terms_in_collection(collection)
+                result = _get_all_terms_in_collection(collection, selected_term_fields)
     return result
 
 
@@ -774,7 +792,7 @@ def find_collections_in_project(project_id: str,
 
 
 def _get_all_collections_in_project(session: Session) -> list[Collection]:
-    project = session.get(Project, esgvoc.core.constants.SQLITE_FIRST_PK)
+    project = session.get(Project, constants.SQLITE_FIRST_PK)
     # Project can't be missing if session exists.
     return project.collections # type: ignore
 
@@ -800,13 +818,15 @@ def get_all_collections_in_project(project_id: str) -> list[str]:
     return result
 
 
-def _get_all_terms_in_collection(collection: Collection) -> list[BaseModel]:
-    result: list[BaseModel] = list()
-    instantiate_pydantic_terms(collection.terms, result)
+def _get_all_terms_in_collection(collection: Collection,
+                                 selected_term_fields: Iterable[str]|None) -> list[DataDescriptor]:
+    result: list[DataDescriptor] = list()
+    instantiate_pydantic_terms(collection.terms, result, selected_term_fields)
     return result
 
 
-def get_all_terms_in_project(project_id: str) -> list[BaseModel]:
+def get_all_terms_in_project(project_id: str,
+                             selected_term_fields: Iterable[str]|None = None) -> list[DataDescriptor]:
     """
     Gets all terms of the given project.
     This function performs an exact match on the `project_id` and 
@@ -816,8 +836,11 @@ def get_all_terms_in_project(project_id: str) -> list[BaseModel]:
 
     :param project_id: A project id
     :type project_id: str
-    :returns: A list of Pydantic term instances. Returns an empty list if no matches are found.
-    :rtype: list[BaseModel]
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned.
+    :type selected_term_fields: Iterable[str]|None
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
     """
     result = list()
     if connection:=_get_project_connection(project_id):
@@ -825,21 +848,25 @@ def get_all_terms_in_project(project_id: str) -> list[BaseModel]:
             collections = _get_all_collections_in_project(session)
             for collection in collections:
                 # Term may have some synonyms in a project.
-                result.extend(_get_all_terms_in_collection(collection))
+                result.extend(_get_all_terms_in_collection(collection, selected_term_fields))
     return result
 
 
-def get_all_terms_in_all_projects() -> list[BaseModel]:
+def get_all_terms_in_all_projects(selected_term_fields: Iterable[str]|None = None) \
+                                                                            -> list[DataDescriptor]:
     """
     Gets all terms of all projects.
 
-    :returns: A list of Pydantic term instances.
-    :rtype: list[BaseModel]
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned.
+    :type selected_term_fields: Iterable[str]|None
+    :returns: A list of term instances.
+    :rtype: list[DataDescriptor]
     """
     project_ids = get_all_projects()
     result = list()
     for project_id in project_ids:
-        result.extend(get_all_terms_in_project(project_id))
+        result.extend(get_all_terms_in_project(project_id, selected_term_fields))
     return result
 
 
@@ -858,7 +885,7 @@ def find_project(project_id: str) -> dict|None:
     result = None
     if connection:=_get_project_connection(project_id):
         with connection.create_session() as session:
-            project = session.get(Project, esgvoc.core.constants.SQLITE_FIRST_PK)
+            project = session.get(Project, constants.SQLITE_FIRST_PK)
             # Project can't be missing if session exists.
             result = project.specs # type: ignore
     return result
@@ -875,10 +902,7 @@ def get_all_projects() -> list[str]:
 
 
 if __name__ == "__main__":
-    vr = valid_term('r1i1p1f111', 'cmip6plus', 'member_id', 'ripf')
-    if vr:
-        print('OK')
-    else:
-        print(vr)
-        for error in vr.errors:
-            print(error)
+    settings = SearchSettings()
+    settings.selected_term_fields = ('id', 'ror')
+    matching_terms = find_terms_in_collection('cmip6', 'institution_id', 'ipsl', settings)
+    print(matching_terms)

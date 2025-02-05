@@ -60,7 +60,7 @@ The ESGVOC library supports a wide range of use cases, including:
 
 DRS validation is a feature that validates a character string against a vocabulary term. This feature is based on the DRS semantics of the terms, i.e. :
 - The drs_name field of a plain term
-- Or the regex field of a term pattern.
+- Or the regex field of a pattern term.
 
 For composite terms, each part of the term is validated one by one and falls under one or other of the validation conditions described above.
 
@@ -88,12 +88,14 @@ user/cached_database.md
 user/api.md
 user/cli.md
 ```
-<!-- ```{toctree} -->
-<!-- :caption: How to  -->
-<!---->
-<!-- how_to/get.md -->
-<!-- how_to/validate_drs.md -->
-<!-- ``` -->
+```{toctree}
+:caption: How to 
+
+how_to/get.rst
+how_to/valid.rst
+how_to/validate_drs.rst
+how_to/generate_drs.rst
+```
 
 ```{toctree}
 :caption: Guides

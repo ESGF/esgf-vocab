@@ -1,5 +1,5 @@
+from typing import Iterable
 from enum import Enum
-
 from pydantic import BaseModel
 from sqlalchemy import ColumnElement, func
 from sqlmodel import col
@@ -43,6 +43,8 @@ class SearchSettings(BaseModel):
     """Enable case sensitivity or not."""
     not_operator: bool = False
     """Give the opposite result like the NOT SQL operator."""
+    selected_term_fields: Iterable[str]|None = None
+    """Term fields to select"""
 
 
 def _create_str_comparison_expression(field: str,
