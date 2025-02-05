@@ -17,7 +17,7 @@ One term
       
       .. note::
         it is possible to ask multiple term with the same command : 
-        `esgvoc get universe:institution:llnl`
+        `esgvoc get universe:institution:ipsl universe:institution:llnl`
         
 
    .. group-tab:: API as python lib
@@ -107,7 +107,5 @@ A term from a CV
                 the term `ipsl` is the same in cmip6 (institution_id) and in universe (institution) since the cmip6 one is a link to the universe one: 
 
                 try the one from cmip6plus : `esgvoc get cmip6plus::ipsl. To showcase the possibility to add information in project CV term. We added a 'myprop' attribute in this term in cmip6plus CV.
-
-
 
 

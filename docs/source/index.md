@@ -88,12 +88,14 @@ user/cached_database.md
 user/api.md
 user/cli.md
 ```
-<!-- ```{toctree} -->
-<!-- :caption: How to  -->
-<!---->
-<!-- how_to/get.md -->
-<!-- how_to/validate_drs.md -->
-<!-- ``` -->
+```{toctree}
+:caption: How to 
+
+how_to/get.rst
+how_to/valid.rst
+how_to/validate_drs.rst
+how_to/generate_drs.rst
+```
 
 ```{toctree}
 :caption: Guides
