@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Get Feature &#8212; ESGVOC  documentation</title>
+    <title>Get &#8212; ESGVOC  documentation</title>
   
   
   
@@ -154,9 +154,9 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">How to</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Get Feature</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Get</a></li>
 <li class="toctree-l1"><a class="reference internal" href="valid.html">Valid</a></li>
-<li class="toctree-l1"><a class="reference internal" href="validate_drs.html">Validate drs entry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validate_drs.html">Valid DRS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generate_drs.html">Generate DRS</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
@@ -276,7 +276,7 @@
       
       
       
-      <li><a href="../_sources/how_to/get.md" target="_blank"
+      <li><a href="../_sources/how_to/get.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -286,7 +286,7 @@
 <span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="btn__text-container">.md</span>
+<span class="btn__text-container">.rst</span>
 </a>
 </li>
       
@@ -352,7 +352,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Get Feature</h1>
+    <h1>Get</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -362,7 +362,9 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-universe-datadescriptor">Get Universe DataDescriptor</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#one-term">One term</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#all-terms-from-one-datadescriptor-collection">All terms from one datadescriptor/collection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-term-from-a-cv">A term from a CV</a></li>
 </ul>
             </nav>
         </div>
@@ -374,19 +376,81 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="get-feature">
-<h1>Get Feature<a class="headerlink" href="#get-feature" title="Link to this heading">#</a></h1>
-<section id="get-universe-datadescriptor">
-<h2>Get Universe DataDescriptor<a class="headerlink" href="#get-universe-datadescriptor" title="Link to this heading">#</a></h2>
+  <section id="get">
+<h1>Get<a class="headerlink" href="#get" title="Link to this heading">#</a></h1>
+<section id="one-term">
+<h2>One term<a class="headerlink" href="#one-term" title="Link to this heading">#</a></h2>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>get<span class="w"> </span>universe:institution:ipsl
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-0-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-0-QVBJIGFzIHB5dGhvbiBsaWI=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-0-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" class="sphinx-tabs-panel group-tab" id="panel-0-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>get<span class="w"> </span>universe:institution:ipsl
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
+<img alt="../_images/one_term.png" src="../_images/one_term.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>it is possible to ask multiple term with the same command :
+<cite>esgvoc get universe:institution:ipsl universe:institution:llnl</cite></p>
+</div>
+</div><div aria-labelledby="tab-0-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
 
 <span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;institution&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
 <span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_universe</span><span class="p">(</span><span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span> <span class="c1"># same result but slower (still fast)</span>
 </pre></div>
+</div>
+<img alt="../_images/Jup_one_term.png" src="../_images/Jup_one_term.png" />
+</div></div>
+</section>
+<section id="all-terms-from-one-datadescriptor-collection">
+<h2>All terms from one datadescriptor/collection<a class="headerlink" href="#all-terms-from-one-datadescriptor-collection" title="Link to this heading">#</a></h2>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-1-QVBJIGFzIHB5dGhvbiBsaWI=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-1-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" class="sphinx-tabs-panel group-tab" id="panel-1-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>get<span class="w"> </span>universe:institution:
+</pre></div>
+</div>
+<img alt="../_images/all_term_from_one_collection.png" src="../_images/all_term_from_one_collection.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>it is possible to ask multiple term with the same command :</p>
+<p><cite>esgvoc get universe:institution: cmip6:institution_id: cmip6:grid_label</cite></p>
+</div>
+</div><div aria-labelledby="tab-1-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
+
+<span class="n">ev</span><span class="o">.</span><span class="n">get_all_terms_in_data_descriptor</span><span class="p">(</span><span class="s2">&quot;institution&quot;</span><span class="p">)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">get_all_terms_in_collection</span><span class="p">(</span><span class="s2">&quot;cmip6&quot;</span><span class="p">,</span><span class="s2">&quot;institution_id&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/Jup_terms_from_one_dd.png" src="../_images/Jup_terms_from_one_dd.png" />
+<img alt="../_images/Jup_terms_from_one_collection.png" src="../_images/Jup_terms_from_one_collection.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>a <cite>datadescriptor</cite> is the equivalent collection for the universe.</p>
+<p>the final informations are contained in datadescriptors, collection terms are link to their datadescriptors with optional additionnal information.</p>
+</div>
+</div></div>
+</section>
+<section id="a-term-from-a-cv">
+<h2>A term from a CV<a class="headerlink" href="#a-term-from-a-cv" title="Link to this heading">#</a></h2>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-2-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-2-QVBJIGFzIHB5dGhvbiBsaWI=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-2-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-2-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" class="sphinx-tabs-panel group-tab" id="panel-2-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>get<span class="w"> </span>universe::ipsl
+esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6::ipsl
+</pre></div>
+</div>
+<img alt="../_images/one_term_from_one_cv.png" src="../_images/one_term_from_one_cv.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the term <cite>ipsl</cite> is the same in cmip6 (institution_id) and in universe (institution) since the cmip6 one is a link to the universe one:</p>
+<p>try the one from cmip6plus : <a href="#id1"><span class="problematic" id="id2">`</span></a>esgvoc get cmip6plus::ipsl. To showcase the possibility to add information in project CV term. We added a ‘myprop’ attribute in this term in cmip6plus CV.</p>
+</div>
+</div><div aria-labelledby="tab-2-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-2-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
+
+<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_universe</span><span class="p">(</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_project</span><span class="p">(</span><span class="s2">&quot;cmip6&quot;</span><span class="p">,</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_project</span><span class="p">(</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/Jup_one_term_from_one_CV.png" src="../_images/Jup_one_term_from_one_CV.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the term <cite>ipsl</cite> is the same in cmip6 (institution_id) and in universe (institution) since the cmip6 one is a link to the universe one:</p>
+<p>try the one from cmip6plus : <a href="#id3"><span class="problematic" id="id4">`</span></a>esgvoc get cmip6plus::ipsl. To showcase the possibility to add information in project CV term. We added a ‘myprop’ attribute in this term in cmip6plus CV.</p>
 </div>
 </div></div>
 </section>
@@ -438,7 +502,9 @@
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-universe-datadescriptor">Get Universe DataDescriptor</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#one-term">One term</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#all-terms-from-one-datadescriptor-collection">All terms from one datadescriptor/collection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-term-from-a-cv">A term from a CV</a></li>
 </ul>
   </nav></div>
 
