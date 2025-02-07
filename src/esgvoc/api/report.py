@@ -1,6 +1,7 @@
-from pydantic import BaseModel, computed_field
 from abc import ABC, abstractmethod
 from typing import Any, Protocol
+
+from pydantic import BaseModel, SerializeAsAny, computed_field
 
 import esgvoc.core.constants as api_settings
 from esgvoc.core.db.models.mixins import TermKind
@@ -29,7 +30,11 @@ class ValidationError(BaseModel, ABC):
     """JSON specification of the term."""
     term_kind: TermKind
     """The kind of term."""
-    
+    @computed_field # type: ignore
+    @property
+    def class_name(self) -> str:
+       """The class name of the issue for JSON serialization."""
+       return self.__class__.__name__
     @abstractmethod
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         """
@@ -46,13 +51,13 @@ class UniverseTermError(ValidationError):
     """
     A validation error on a term from the universe.
     """
-    
+
     data_descriptor_id: str
     """The data descriptor that the term belongs."""
 
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         return visitor.visit_universe_term_error(self)
-    
+
     def __str__(self) -> str:
         term_id = self.term[api_settings.TERM_ID_JSON_KEY]
         result = f"The term {term_id} from the data descriptor {self.data_descriptor_id} "+\
@@ -66,13 +71,13 @@ class ProjectTermError(ValidationError):
     """
     A validation error on a term from a project.
     """
-    
+
     collection_id: str
     """The collection id that the term belongs"""
 
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         return visitor.visit_project_term_error(self)
-    
+
     def __str__(self) -> str:
         term_id = self.term[api_settings.TERM_ID_JSON_KEY]
         result = f"The term {term_id} from the collection {self.collection_id} "+\
@@ -88,7 +93,7 @@ class ValidationReport(BaseModel):
     """
     expression: str
     """The given expression."""
-    errors: list[ValidationError]
+    errors: list[SerializeAsAny[ValidationError]]
     """The validation errors."""
     @computed_field # type: ignore
     @property
@@ -100,14 +105,14 @@ class ValidationReport(BaseModel):
     def validated(self) -> bool:
         """The expression is validated or not."""
         return False if self.errors else True
-        
-   
+
+
     def __len__(self) -> int:
         return self.nb_errors
-    
+
     def __bool__(self) -> bool:
         return self.validated
-    
+
     def __str__(self) -> str:
         return f"'{self.expression}' has {self.nb_errors} error(s)"
     def __repr__(self) -> str:
