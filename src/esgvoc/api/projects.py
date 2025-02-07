@@ -1,22 +1,23 @@
 import re
-from typing import Sequence, Iterable
+from collections.abc import Iterable, Sequence
+
+from sqlmodel import Session, and_, select
 
 import esgvoc.api.universe as universe
 import esgvoc.core.constants as constants
 import esgvoc.core.service as service
 from esgvoc.api._utils import (get_universe_session, instantiate_pydantic_term,
                                instantiate_pydantic_terms)
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.api.report import (ProjectTermError, UniverseTermError,
                                ValidationError, ValidationReport)
-from esgvoc.api.search import MatchingTerm, SearchSettings, _create_str_comparison_expression
-from esgvoc.api.project_specs import ProjectSpecs
-from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+from esgvoc.api.search import (MatchingTerm, SearchSettings,
+                               _create_str_comparison_expression)
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import Collection, Project, PTerm
 from esgvoc.core.db.models.universe import UTerm
-from sqlmodel import Session, and_, select
-
 
 # [OPTIMIZATION]
 _VALID_TERM_IN_COLLECTION_CACHE: dict[str, list[MatchingTerm]] = dict()
@@ -48,7 +49,7 @@ def _get_project_session_with_exception(project_id: str) -> Session:
         return project_session
     else:
         raise ValueError(f'unable to find project {project_id}')
-    
+
 
 def _resolve_term(composite_term_part: dict,
                   universe_session: Session,
@@ -71,7 +72,7 @@ def _resolve_term(composite_term_part: dict,
         return pterms[0]
     else:
         msg = f'unable to find the term {term_id} in {term_type}'
-        raise RuntimeError(msg)           
+        raise RuntimeError(msg)
 
 
 def _get_composite_term_separator_parts(term: UTerm|PTerm) -> tuple[str, list]:
@@ -117,7 +118,7 @@ def _transform_to_pattern(term: UTerm|PTerm,
             if constants.DRS_SPECS_JSON_KEY in term.specs:
                 result = term.specs[constants.DRS_SPECS_JSON_KEY]
             else:
-                raise DrsValidationException(f"the term {term.id} doesn't have drs name. " + 
+                raise DrsValidationException(f"the term {term.id} doesn't have drs name. " +
                                              "Can't validate it.")
         case TermKind.PATTERN:
             result = term.specs[constants.PATTERN_JSON_KEY]
@@ -154,13 +155,13 @@ def _valid_value_composite_term_separator_less(value: str,
             regex = re.compile(pattern)
         except Exception as e:
             msg = f'regex compilation error:\n{e}'
-            raise ValueError(msg) from e    
+            raise ValueError(msg) from e
         match = regex.match(value)
         if match is None:
             result.append(_create_term_error(value, term))
         return result
     except Exception as e:
-        msg = f'cannot validate separator less composite term {term.id}:\n{e}'        
+        msg = f'cannot validate separator less composite term {term.id}:\n{e}'
         raise RuntimeError(msg) from e
 
 
@@ -200,7 +201,7 @@ def _valid_value(value: str,
                 if term.specs[constants.DRS_SPECS_JSON_KEY] != value:
                     result.append(_create_term_error(value, term))
             else:
-                raise DrsValidationException(f"the term {term.id} doesn't have drs name. " + 
+                raise DrsValidationException(f"the term {term.id} doesn't have drs name. " +
                                              "Can't validate it.")
         case TermKind.PATTERN:
             # OPTIM: Pattern can be compiled and stored for further matching.
@@ -291,7 +292,7 @@ def valid_term(value: str,
     """
     Check if the given value may or may not represent the given term. The functions returns
     a report that contains the possible errors.
-    
+
     Behavior based on the nature of the term:
         - plain term: the function try to match the value on the drs_name field.
         - pattern term: the function try to match the value on the pattern field (regex).
@@ -373,11 +374,11 @@ def valid_term_in_collection(value: str,
     """
     Check if the given value may or may not represent a term in the given collection. The function
     returns the terms that the value matches.
-    
+
     Behavior based on the nature of the term:
         - plain term: the function try to match the value on the drs_name field.
         - pattern term: the function try to match the value on the pattern field (regex).
-        - composite term: 
+        - composite term:
             - if the composite has got a separator, the function splits the value according to the \
               separator of the term then it try to match every part of the composite \
               with every split of the value.
@@ -419,11 +420,11 @@ def valid_term_in_project(value: str, project_id: str) -> list[MatchingTerm]:
     """
     Check if the given value may or may not represent a term in the given project. The function
     returns the terms that the value matches.
-    
+
     Behavior based on the nature of the term:
         - plain term: the function try to match the value on the drs_name field.
         - pattern term: the function try to match the value on the pattern field (regex).
-        - composite term: 
+        - composite term:
             - if the composite has got a separator, the function splits the value according to the \
               separator of the term then it try to match every part of the composite \
               with every split of the value.
@@ -449,11 +450,11 @@ def valid_term_in_all_projects(value: str) -> list[MatchingTerm]:
     """
     Check if the given value may or may not represent a term in all projects. The function
     returns the terms that the value matches.
-    
+
     Behavior based on the nature of the term:
         - plain term: the function try to match the value on the drs_name field.
         - pattern term: the function try to match the value on the pattern field (regex).
-        - composite term: 
+        - composite term:
             - if the composite has got a separator, the function splits the value according to the \
               separator of the term then it try to match every part of the composite \
               with every split of the value.
@@ -485,7 +486,7 @@ def _find_terms_in_collection(collection_id: str,
     statement = select(PTerm).join(Collection).where(Collection.id==collection_id,
                                                      where_expression)
     results = session.exec(statement)
-    result = results.all()    
+    result = results.all()
     return result
 
 
@@ -496,14 +497,14 @@ def find_terms_in_collection(project_id:str,
                                 -> list[DataDescriptor]:
     """
     Finds one or more terms, based on the specified search settings, in the given collection of a project.
-    This function performs an exact match on the `project_id` and `collection_id`, 
+    This function performs an exact match on the `project_id` and `collection_id`,
     and does **not** search for similar or related projects and collections.
     The given `term_id` is searched according to the search type specified in the parameter `settings`,
     which allows a flexible matching (e.g., `LIKE` may return multiple results).
     If the parameter `settings` is `None`, this function performs an exact match on the `term_id`.
     If any of the provided ids (`project_id`, `collection_id` or `term_id`) is not found,
     the function returns an empty list.
-    
+
     Behavior based on search type:
         - `EXACT` and absence of `settings`: returns zero or one term instance in the list.
         - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
@@ -541,7 +542,7 @@ def _find_terms_from_data_descriptor_in_project(data_descriptor_id: str,
     statement = select(PTerm).join(Collection).where(Collection.data_descriptor_id==data_descriptor_id,
                                                      where_expression)
     results = session.exec(statement)
-    result = results.all()    
+    result = results.all()
     return result
 
 
@@ -553,14 +554,14 @@ def find_terms_from_data_descriptor_in_project(project_id: str,
     """
     Finds one or more terms in the given project which are instances of the given data descriptor
     in the universe, based on the specified search settings, in the given collection of a project.
-    This function performs an exact match on the `project_id` and `data_descriptor_id`, 
+    This function performs an exact match on the `project_id` and `data_descriptor_id`,
     and does **not** search for similar or related projects and data descriptors.
     The given `term_id` is searched according to the search type specified in the parameter `settings`,
     which allows a flexible matching (e.g., `LIKE` may return multiple results).
     If the parameter `settings` is `None`, this function performs an exact match on the `term_id`.
     If any of the provided ids (`project_id`, `data_descriptor_id` or `term_id`) is not found,
     the function returns an empty list.
-    
+
     Behavior based on search type:
         - `EXACT` and absence of `settings`: returns zero or one term instance and \
           collection id in the list.
@@ -601,14 +602,14 @@ def find_terms_from_data_descriptor_in_all_projects(data_descriptor_id: str,
     """
     Finds one or more terms in all projects which are instances of the given data descriptor
     in the universe, based on the specified search settings, in the given collection of a project.
-    This function performs an exact match on the `data_descriptor_id`, 
+    This function performs an exact match on the `data_descriptor_id`,
     and does **not** search for similar or related data descriptors.
     The given `term_id` is searched according to the search type specified in the parameter `settings`,
     which allows a flexible matching (e.g., `LIKE` may return multiple results).
     If the parameter `settings` is `None`, this function performs an exact match on the `term_id`.
     If any of the provided ids (`data_descriptor_id` or `term_id`) is not found,
     the function returns an empty list.
-    
+
     Behavior based on search type:
         - `EXACT` and absence of `settings`: returns zero or one term instance and \
           collection id in the list.
@@ -632,7 +633,8 @@ def find_terms_from_data_descriptor_in_all_projects(data_descriptor_id: str,
                                                                     data_descriptor_id,
                                                                     term_id,
                                                                     settings)
-        result.append((matching_terms, project_id))
+        if matching_terms:
+            result.append((matching_terms, project_id))
     return result
 
 
@@ -678,7 +680,7 @@ def find_terms_in_project(project_id: str,
                             -> list[DataDescriptor]:
     """
     Finds one or more terms, based on the specified search settings, in a project.
-    This function performs an exact match on the `project_id` and 
+    This function performs an exact match on the `project_id` and
     does **not** search for similar or related projects.
     The given `term_id` is searched according to the search type specified in the parameter `settings`,
     which allows a flexible matching (e.g., `LIKE` may return multiple results).
@@ -757,15 +759,15 @@ def find_collections_in_project(project_id: str,
                                     -> list[dict]:
     """
     Finds one or more collections of the given project.
-    This function performs an exact match on the `project_id` and 
+    This function performs an exact match on the `project_id` and
     does **not** search for similar or related projects.
-    The given `collection_id` is searched according to the search type specified in 
+    The given `collection_id` is searched according to the search type specified in
     the parameter `settings`,
     which allows a flexible matching (e.g., `LIKE` may return multiple results).
     If the parameter `settings` is `None`, this function performs an exact match on the `collection_id`.
     If any of the provided ids (`project_id` or `collection_id`) is not found, the function returns
     an empty list.
-        
+
     Behavior based on search type:
         - `EXACT` and absence of `settings`: returns zero or one collection context in the list.
         - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
@@ -800,7 +802,7 @@ def _get_all_collections_in_project(session: Session) -> list[Collection]:
 def get_all_collections_in_project(project_id: str) -> list[str]:
     """
     Gets all collections of the given project.
-    This function performs an exact match on the `project_id` and 
+    This function performs an exact match on the `project_id` and
     does **not** search for similar or related projects.
     If the provided `project_id` is not found, the function returns an empty list.
 
@@ -829,7 +831,7 @@ def get_all_terms_in_project(project_id: str,
                              selected_term_fields: Iterable[str]|None = None) -> list[DataDescriptor]:
     """
     Gets all terms of the given project.
-    This function performs an exact match on the `project_id` and 
+    This function performs an exact match on the `project_id` and
     does **not** search for similar or related projects.
     Terms are unique within a collection but may have some synonyms in a project.
     If the provided `project_id` is not found, the function returns an empty list.
@@ -873,10 +875,10 @@ def get_all_terms_in_all_projects(selected_term_fields: Iterable[str]|None = Non
 def find_project(project_id: str) -> dict|None:
     """
     Finds a project.
-    This function performs an exact match on the `project_id` and 
+    This function performs an exact match on the `project_id` and
     does **not** search for similar or related projects.
     If the provided `project_id` is not found, the function returns `None`.
-    
+
     :param project_id: A project id to be found
     :type project_id: str
     :returns: The specs of the project found. Returns `None` if no matches are found.
@@ -894,7 +896,7 @@ def find_project(project_id: str) -> dict|None:
 def get_all_projects() -> list[str]:
     """
     Gets all projects.
-    
+
     :returns: A list of project ids.
     :rtype: list[str]
     """
@@ -903,6 +905,7 @@ def get_all_projects() -> list[str]:
 
 if __name__ == "__main__":
     settings = SearchSettings()
-    settings.selected_term_fields = ('id', 'ror')
-    matching_terms = find_terms_in_collection('cmip6', 'institution_id', 'ipsl', settings)
+    settings.selected_term_fields = ('id', 'drs_name')
+    settings.case_sensitive = False
+    matching_terms = find_terms_from_data_descriptor_in_all_projects('organisation', 'IpsL', settings)
     print(matching_terms)
