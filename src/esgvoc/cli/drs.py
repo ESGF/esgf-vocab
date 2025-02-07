@@ -35,7 +35,8 @@ def drsvalid(
     file: Optional[typer.FileText] = typer.Option(None, "--file", "-f", help="File containing DRS validation inputs, one per line in the form <project> <drstype> <string>"),
     verbose: bool = typer.Option(False, "-v", "--verbose", help="Provide detailed validation results"),
     output: Optional[str] = typer.Option(None, "-o", "--output", help="File to save the DRS entries validation"),
-    rm_prefix: Optional[str] = typer.Option(None,"-p","--prefix", help="Remove given prefix from all checked directory")
+    rm_prefix: Optional[str] = typer.Option(None,"-p","--prefix", help="Remove given prefix from all checked directory"),
+    pedantic: Optional[bool] = typer.Option(False,"-e","--enforce", help="Enable pedantic mode, enforcing strict compliance, mean that warnings are now errors.")
 
 
 
@@ -91,13 +92,17 @@ def drsvalid(
 
         string = entries[i]
         i += 1
-        validator = DrsValidator(current_project)
+        validator = DrsValidator(current_project, pedantic=pedantic)
         report = None
         match current_drs_type:
             case "filename":
                 report = validator.validate_file_name(string)
             case "directory":
-                report = validator.validate_directory(string, rm_prefix+"/" if rm_prefix[-1]!="/" else "")
+                if rm_prefix:
+                    prefix = rm_prefix+"/" if rm_prefix[-1]!="/" else ""
+                else:
+                    prefix=None
+                report = validator.validate_directory(string, prefix)
             case "dataset":
                 report = validator.validate_dataset_id(string)
             case _:
