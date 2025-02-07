@@ -82,15 +82,21 @@ class DrsValidator(DrsApplication):
     Valid a DRS directory, dataset id and file name expression against a project.
     """
    
-    def validate_directory(self, drs_expression: str) -> DrsValidationReport:
+    def validate_directory(self, drs_expression: str,
+                           prefix: str|None = None) -> DrsValidationReport:
         """
         Validate a DRS directory expression.
 
         :param drs_expression: A DRS directory expression.
         :type drs_expression: str
+        :param prefix: A directory prefix to be removed from the directory expression.
+        :type prefix: str|None
         :returns: A validation report.
         :rtype: DrsValidationReport
         """
+        if prefix:
+            # Remove prefix if present. Always returns a copy.
+            drs_expression = drs_expression.removeprefix(prefix) 
         return self._validate(drs_expression, self.directory_specs)
     
     def validate_dataset_id(self, drs_expression: str) -> DrsValidationReport:
