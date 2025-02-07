@@ -35,6 +35,9 @@ def drsvalid(
     file: Optional[typer.FileText] = typer.Option(None, "--file", "-f", help="File containing DRS validation inputs, one per line in the form <project> <drstype> <string>"),
     verbose: bool = typer.Option(False, "-v", "--verbose", help="Provide detailed validation results"),
     output: Optional[str] = typer.Option(None, "-o", "--output", help="File to save the DRS entries validation"),
+    rm_prefix: Optional[str] = typer.Option(None,"-p","--prefix", help="Remove given prefix from all checked directory")
+
+
 
 ) -> List[DrsValidationReport]:
     """
@@ -94,7 +97,7 @@ def drsvalid(
             case "filename":
                 report = validator.validate_file_name(string)
             case "directory":
-                report = validator.validate_directory(string)
+                report = validator.validate_directory(string, rm_prefix+"/" if rm_prefix[-1]!="/" else "")
             case "dataset":
                 report = validator.validate_dataset_id(string)
             case _:
