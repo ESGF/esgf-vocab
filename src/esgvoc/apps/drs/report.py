@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-from collections.abc import Iterable, Mapping
-from typing import Any, ClassVar, Protocol
+from typing import Any, ClassVar, Iterable, Mapping, Protocol
 
 from pydantic import BaseModel, SerializeAsAny, computed_field
 
@@ -345,9 +344,9 @@ class DrsReport(BaseModel):
     """The project id associated to the result of the DRS application."""
     type: DrsType
     """The type of the DRS"""
-    errors: SerializeAsAny[list[DrsIssue]]
+    errors: list[SerializeAsAny[DrsIssue]]
     """A list of DRS issues that are considered as errors."""
-    warnings: SerializeAsAny[list[DrsIssue]]
+    warnings: list[SerializeAsAny[DrsIssue]]
     """A list of DRS issues that are considered as warnings."""
     @computed_field # type: ignore
     @property
