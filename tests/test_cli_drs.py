@@ -23,7 +23,7 @@ def test_valid_drs(monkeypatch):
     for entry in _SOME_VALID_CLI_ENTRIES:
         monkeypatch.setattr('sys.stdin', io.StringIO(""))
         monkeypatch.setattr('sys.stdin.isatty', (lambda: False))
-        reports = drsvalid(drs_entries = entry, file=None)
+        reports = drsvalid(drs_entries = entry, file=None, rm_prefix=None)
         
         for report in reports:
             print(report)
