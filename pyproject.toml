@@ -43,6 +43,7 @@ dev-dependencies = [
     "myst-nb>=1.1.2",
     "sphinx-tabs>=3.4.7",
     "sphinx-copybutton>=0.5.2",
+    "pre-commit>=4.1.0",
 ]
 [tool.rye.scripts]
 ev = { cmd = "python src/esgvoc/cli/main.py" }
