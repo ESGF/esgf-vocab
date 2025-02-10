@@ -1,4 +1,3 @@
-
 Generate DRS
 #########
 
@@ -18,7 +17,7 @@ From mapping collection:term drs_name
 
       .. code-block:: bash
 
-        not available with CLI look with python api
+        Not available with CLI look with python api
 
 
    .. group-tab:: API as python lib
@@ -46,7 +45,7 @@ From mapping collection:term drs_name
       .. image:: ../_static/API_drsgen_map.png
 
       .. note::
-        those functions return a DrsGenerationReport object that can be use to know more about the generation.
+        Those functions return a DrsGenerationReport object that can be use to know more about the generation.
 
 
 
@@ -69,7 +68,7 @@ From a bag of drs_name
       .. image:: ../_static/CLI_drsgen_frombag.png
 
       .. note::
-        the command `esgvoc drsgen` supports piped and redirected input
+        The command `esgvoc drsgen` supports piped and redirected input
 
    .. group-tab:: API as python lib
 
@@ -86,4 +85,4 @@ From a bag of drs_name
       .. image:: ../_static/API_drsgen_frombag.png
 
       .. note::
-        those functions return a DrsGenerationReport object that can be use to know more about the generation.
+        Those functions return a DrsGenerationReport object that can be use to know more about the generation.

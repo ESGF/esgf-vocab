@@ -1,7 +1,7 @@
 Valid
 #####
 
-the command valid check if a string input correspond to a term drs_name attribute or not. This feature can be use in CLI and API.
+The command valid check if a string input correspond to a term drs_name attribute or not. This feature can be use in CLI and API.
 
 Knowing the term id :
 ====================
@@ -31,7 +31,7 @@ Knowing the term id :
       .. image:: ../_static/API_Valid_Term.png
 
       .. note::
-         the API return a DrsValidationReport Object. The __str__ dunder function reports errors if any. The __bool__ dunder funciton permits to use result in if statement.
+         The API return a DrsValidationReport Object. The __str__ dunder function reports errors if any. The __bool__ dunder funciton permits to use result in if statement.
 
 
 Knowing the only the collection id :
@@ -81,7 +81,7 @@ Knowing the only the project id :
       .. image:: ../_static/CLI_Valid_project.png
 
       .. note::
-         this command look for the drs_name in every term in the specified project. therefore, it could be pretty long compared to the above functions.
+         This command look for the drs_name in every term in the specified project. therefore, it could be pretty long compared to the above functions.
 
    .. group-tab:: API as python lib
 
@@ -94,7 +94,7 @@ Knowing the only the project id :
       .. image:: ../_static/API_Valid_project.png
 
       .. note::
-         the function `ev.valid_term_project` return a list of MatchingTerm.
+         The function `ev.valid_term_project` return a list of MatchingTerm.
 
 Find it in all known projects
 =============================
@@ -111,7 +111,7 @@ Find it in all known projects
       .. image:: ../_static/CLI_Valid_all_project.png
 
       .. note::
-         this command look for the drs_name in every project. therefore, it could be pretty long compared to the above functions.
+         This command look for the drs_name in every project. therefore, it could be pretty long compared to the above functions.
 
    .. group-tab:: API as python lib
 
@@ -124,4 +124,4 @@ Find it in all known projects
       .. image:: ../_static/API_Valid_all_project.png
 
       .. note::
-         the function `ev.valid_term_in_all_projects` return a list of MatchingTerm.
+         The function `ev.valid_term_in_all_projects` return a list of MatchingTerm.
