@@ -8,7 +8,7 @@ from rich.table import Table
 
 import esgvoc.api as ev
 from esgvoc.apps.drs.generator import DrsGenerator
-from esgvoc.apps.drs.report import DrsGeneratorReport, DrsValidationReport
+from esgvoc.apps.drs.report import DrsGeneratorReport, DrsValidatorReport
 from esgvoc.apps.drs.validator import DrsValidator
 
 app = typer.Typer()
@@ -42,7 +42,7 @@ def drsvalid(
 
 
 
-) -> List[DrsValidationReport]:
+) -> List[DrsValidatorReport]:
     """
     Validates DRS strings for a specific project and type.
 

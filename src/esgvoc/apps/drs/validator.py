@@ -6,7 +6,7 @@ from esgvoc.api.project_specs import (DrsCollection, DrsConstant, DrsPart,
                                       DrsPartKind, DrsSpecification, DrsType,
                                       ProjectSpecs)
 from esgvoc.apps.drs.report import (BlankTerm, ComplianceIssue, DrsIssue,
-                                    DrsValidationReport, ExtraChar,
+                                    DrsValidatorReport, ExtraChar,
                                     ExtraSeparator, ExtraTerm,
                                     FileNameExtensionIssue, InvalidTerm,
                                     MissingTerm, ParsingIssue, Space,
@@ -74,7 +74,7 @@ class DrsValidator(DrsApplication):
     """
 
     def validate_directory(self, drs_expression: str,
-                           prefix: str|None = None) -> DrsValidationReport:
+                           prefix: str|None = None) -> DrsValidatorReport:
         """
         Validate a DRS directory expression.
 
@@ -90,7 +90,7 @@ class DrsValidator(DrsApplication):
             drs_expression = drs_expression.removeprefix(prefix)
         return self._validate(drs_expression, self.directory_specs)
 
-    def validate_dataset_id(self, drs_expression: str) -> DrsValidationReport:
+    def validate_dataset_id(self, drs_expression: str) -> DrsValidatorReport:
         """
         Validate a DRS dataset id expression.
 
@@ -101,7 +101,7 @@ class DrsValidator(DrsApplication):
         """
         return self._validate(drs_expression, self.dataset_id_specs)
 
-    def validate_file_name(self, drs_expression: str) -> DrsValidationReport:
+    def validate_file_name(self, drs_expression: str) -> DrsValidatorReport:
         """
         Validate a file name expression.
 
@@ -120,7 +120,7 @@ class DrsValidator(DrsApplication):
                                          [issue], [])
         return result
 
-    def validate(self, drs_expression: str, drs_type: DrsType|str) -> DrsValidationReport:
+    def validate(self, drs_expression: str, drs_type: DrsType|str) -> DrsValidatorReport:
         """
         Validate a DRS expression.
 
@@ -240,15 +240,15 @@ class DrsValidator(DrsApplication):
                        type: DrsType,
                        drs_expression: str,
                        errors: list[DrsIssue],
-                       warnings: list[DrsIssue]) -> DrsValidationReport:
-        return DrsValidationReport(project_id=self.project_id, type=type,
+                       warnings: list[DrsIssue]) -> DrsValidatorReport:
+        return DrsValidatorReport(project_id=self.project_id, type=type,
                                    expression=drs_expression,
                                    errors=cast(list[ValidatorError], errors),
                                    warnings=cast(list[ValidatorWarning], warnings))
 
     def _validate(self,
                   drs_expression: str,
-                  specs: DrsSpecification) -> DrsValidationReport:
+                  specs: DrsSpecification) -> DrsValidatorReport:
         terms, errors, warnings = self._parse(drs_expression, specs.separator, specs.type)
         if not terms:
             return self._create_report(specs.type, drs_expression, errors, warnings) # Early exit.

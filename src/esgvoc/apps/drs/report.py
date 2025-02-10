@@ -421,9 +421,9 @@ class DrsReport(BaseModel):
         return self.validated
 
 
-class DrsValidationReport(DrsReport):
+class DrsValidatorReport(DrsReport):
     """
-    The DRS validation report class.
+    The DRS validator report class.
     """
 
     expression: str
