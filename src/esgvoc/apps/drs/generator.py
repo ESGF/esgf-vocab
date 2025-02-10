@@ -4,8 +4,8 @@ import esgvoc.api.projects as projects
 from esgvoc.api.project_specs import (DrsCollection, DrsConstant, DrsPartKind,
                                       DrsSpecification, DrsType)
 from esgvoc.apps.drs.report import (AssignedTerm, ConflictingCollections,
-                                    DrsGeneratorReport, GenerationIssue,
-                                    GeneratorError, GeneratorWarning,
+                                    DrsGenerationReport, GenerationError,
+                                    GenerationIssue, GenerationWarning,
                                     InvalidTerm, MissingTerm,
                                     TooManyTermCollection)
 from esgvoc.apps.drs.validator import DrsApplication
@@ -30,7 +30,7 @@ class DrsGenerator(DrsApplication):
     a mapping of collection ids and terms or an unordered bag of terms.
     """
 
-    def generate_directory_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
+    def generate_directory_from_mapping(self, mapping: Mapping[str, str]) -> DrsGenerationReport:
         """
         Generate a directory DRS expression from a mapping of collection ids and terms.
 
@@ -41,7 +41,7 @@ class DrsGenerator(DrsApplication):
         """
         return self._generate_from_mapping(mapping, self.directory_specs)
 
-    def generate_directory_from_bag_of_terms(self, terms: Iterable[str]) -> DrsGeneratorReport:
+    def generate_directory_from_bag_of_terms(self, terms: Iterable[str]) -> DrsGenerationReport:
         """
         Generate a directory DRS expression from an unordered bag of terms.
 
@@ -52,7 +52,7 @@ class DrsGenerator(DrsApplication):
         """
         return self._generate_from_bag_of_terms(terms, self.directory_specs)
 
-    def generate_dataset_id_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
+    def generate_dataset_id_from_mapping(self, mapping: Mapping[str, str]) -> DrsGenerationReport:
         """
         Generate a dataset id DRS expression from a mapping of collection ids and terms.
 
@@ -63,7 +63,7 @@ class DrsGenerator(DrsApplication):
         """
         return self._generate_from_mapping(mapping, self.dataset_id_specs)
 
-    def generate_dataset_id_from_bag_of_terms(self, terms: Iterable[str]) -> DrsGeneratorReport:
+    def generate_dataset_id_from_bag_of_terms(self, terms: Iterable[str]) -> DrsGenerationReport:
         """
         Generate a dataset id DRS expression from an unordered bag of terms.
 
@@ -75,7 +75,7 @@ class DrsGenerator(DrsApplication):
         return self._generate_from_bag_of_terms(terms, self.dataset_id_specs)
 
 
-    def generate_file_name_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
+    def generate_file_name_from_mapping(self, mapping: Mapping[str, str]) -> DrsGenerationReport:
         """
         Generate a file name DRS expression from a mapping of collection ids and terms.
         The file name extension is append automatically, according to the DRS specification,
@@ -91,7 +91,7 @@ class DrsGenerator(DrsApplication):
                                           self._get_full_file_name_extension()
         return report
 
-    def generate_file_name_from_bag_of_terms(self, terms: Iterable[str]) -> DrsGeneratorReport:
+    def generate_file_name_from_bag_of_terms(self, terms: Iterable[str]) -> DrsGenerationReport:
         """
         Generate a file name DRS expression from an unordered bag of terms.
         The file name extension is append automatically, according to the DRS specification,
@@ -108,7 +108,7 @@ class DrsGenerator(DrsApplication):
         return report
 
     def generate_from_mapping(self, mapping: Mapping[str, str],
-                              drs_type: DrsType|str) -> DrsGeneratorReport:
+                              drs_type: DrsType|str) -> DrsGenerationReport:
         """
         Generate a DRS expression from a mapping of collection ids and terms.
 
@@ -126,9 +126,11 @@ class DrsGenerator(DrsApplication):
                 return self.generate_file_name_from_mapping(mapping=mapping)
             case DrsType.DATASET_ID:
                 return self.generate_dataset_id_from_mapping(mapping=mapping)
+            case _:
+                raise ValueError(f'unsupported drs type {drs_type}')
 
     def generate_from_bag_of_terms(self, terms: Iterable[str], drs_type: DrsType|str) \
-                                                                              -> DrsGeneratorReport:
+                                                                              -> DrsGenerationReport:
         """
         Generate a DRS expression from an unordered bag of terms.
 
@@ -146,20 +148,22 @@ class DrsGenerator(DrsApplication):
                 return self.generate_file_name_from_bag_of_terms(terms=terms)
             case DrsType.DATASET_ID:
                 return self.generate_dataset_id_from_bag_of_terms(terms=terms)
+            case _:
+                raise ValueError(f'unsupported drs type {drs_type}')
 
 
     def _generate_from_mapping(self, mapping: Mapping[str, str], specs: DrsSpecification) \
-                                                                              -> DrsGeneratorReport:
+                                                                              -> DrsGenerationReport:
         drs_expression, errors, warnings = self.__generate_from_mapping(mapping, specs, True)
         if self.pedantic:
             errors.extend(warnings)
             warnings.clear()
-        return DrsGeneratorReport(project_id=self.project_id, type=specs.type,
+        return DrsGenerationReport(project_id=self.project_id, type=specs.type,
                                   given_mapping_or_bag_of_terms=mapping,
                                   mapping_used=mapping,
                                   generated_drs_expression=drs_expression,
-                                  errors=cast(list[GeneratorError], errors),
-                                  warnings=cast(list[GeneratorWarning], warnings))
+                                  errors=cast(list[GenerationError], errors),
+                                  warnings=cast(list[GenerationWarning], warnings))
 
     def __generate_from_mapping(self, mapping: Mapping[str, str],
                                 specs: DrsSpecification,
@@ -185,13 +189,13 @@ class DrsGenerator(DrsApplication):
                                                  term_position=part_position,
                                                  collection_id_or_constant_value=collection_id)
                             errors.append(issue)
-                            part_value = DrsGeneratorReport.INVALID_TAG
+                            part_value = DrsGenerationReport.INVALID_TAG
                 else:
                     other_issue = MissingTerm(collection_id=collection_id,
                                                collection_position=part_position)
                     if collection_part.is_required:
                         errors.append(other_issue)
-                        part_value = DrsGeneratorReport.MISSING_TAG
+                        part_value = DrsGenerationReport.MISSING_TAG
                     else:
                         warnings.append(other_issue)
                         continue # The for loop.
@@ -205,7 +209,7 @@ class DrsGenerator(DrsApplication):
         return drs_expression, errors, warnings
 
     def _generate_from_bag_of_terms(self, terms: Iterable[str], specs: DrsSpecification) \
-                                                                              -> DrsGeneratorReport:
+                                                                              -> DrsGenerationReport:
         collection_terms_mapping: dict[str, set[str]] = dict()
         for term in terms:
             matching_terms = projects.valid_term_in_project(term, self.project_id)
@@ -221,11 +225,11 @@ class DrsGenerator(DrsApplication):
         if self.pedantic:
             errors.extend(warnings)
             warnings.clear()
-        return DrsGeneratorReport(project_id=self.project_id, type=specs.type,
+        return DrsGenerationReport(project_id=self.project_id, type=specs.type,
                                   given_mapping_or_bag_of_terms=terms,
                                   mapping_used=mapping,generated_drs_expression=drs_expression,
-                                  errors=cast(list[GeneratorError], errors),
-                                  warnings=cast(list[GeneratorWarning], warnings))
+                                  errors=cast(list[GenerationError], errors),
+                                  warnings=cast(list[GenerationWarning], warnings))
 
     @staticmethod
     def _resolve_conflicts(collection_terms_mapping: dict[str, set[str]]) \

@@ -8,7 +8,7 @@ from rich.table import Table
 
 import esgvoc.api as ev
 from esgvoc.apps.drs.generator import DrsGenerator
-from esgvoc.apps.drs.report import DrsGeneratorReport, DrsValidatorReport
+from esgvoc.apps.drs.report import DrsGenerationReport, DrsValidationReport
 from esgvoc.apps.drs.validator import DrsValidator
 
 app = typer.Typer()
@@ -42,7 +42,7 @@ def drsvalid(
 
 
 
-) -> List[DrsValidatorReport]:
+) -> List[DrsValidationReport]:
     """
     Validates DRS strings for a specific project and type.
 
@@ -150,7 +150,7 @@ def drsgen(
     file: Optional[typer.FileText] = typer.Option(None, "--file", "-f", help="File containing DRS generation inputs, one per line in the form <project> <drstype> <bag_of_terms>"),
     verbose: bool = typer.Option(False, "-v", "--verbose", help="Provide detailed generation results"),
     output: Optional[str] = typer.Option(None, "-o", "--output", help="File to save the generated DRS entries"),
-) -> List[DrsGeneratorReport]:
+) -> List[DrsGenerationReport]:
     """
     Generates DRS strings for a specific project and type based on input bag of terms.
 

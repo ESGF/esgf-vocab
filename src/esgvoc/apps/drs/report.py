@@ -369,14 +369,14 @@ class AssignedTerm(GenerationIssue):
         return self.__str__()
 
 
-GeneratorError =  Annotated[AssignedTerm | ConflictingCollections |  InvalidTerm | MissingTerm | \
+GenerationError =  Annotated[AssignedTerm | ConflictingCollections |  InvalidTerm | MissingTerm | \
                             TooManyTermCollection, Field(discriminator='kind')]
-GeneratorWarning = Annotated[AssignedTerm | MissingTerm, Field(discriminator='kind')]
+GenerationWarning = Annotated[AssignedTerm | MissingTerm, Field(discriminator='kind')]
 
-ValidatorError = Annotated[BlankTerm | ExtraChar | ExtraSeparator | ExtraTerm | \
+ValidationError = Annotated[BlankTerm | ExtraChar | ExtraSeparator | ExtraTerm | \
                            FileNameExtensionIssue | InvalidTerm | MissingTerm | Space | Unparsable,
                            Field(discriminator='kind')]
-ValidatorWarning = Annotated[ExtraSeparator | MissingTerm | Space, Field(discriminator='kind')]
+ValidationWarning = Annotated[ExtraSeparator | MissingTerm | Space, Field(discriminator='kind')]
 
 
 class DrsReport(BaseModel):
@@ -421,18 +421,18 @@ class DrsReport(BaseModel):
         return self.validated
 
 
-class DrsValidatorReport(DrsReport):
+class DrsValidationReport(DrsReport):
     """
-    The DRS validator report class.
+    The DRS validation report class.
     """
 
     expression: str
     """The DRS expression been checked."""
 
-    errors: list[ValidatorError]
+    errors: list[ValidationError]
     """A list of DRS parsing and compliance issues that are considered as errors."""
 
-    warnings: list[ValidatorWarning]
+    warnings: list[ValidationWarning]
     """A list of DRS parsing and compliance issues that are considered as warnings."""
 
     def __str__(self) -> str:
@@ -443,9 +443,9 @@ class DrsValidatorReport(DrsReport):
         return self.__str__()
 
 
-class DrsGeneratorReport(DrsReport):
+class DrsGenerationReport(DrsReport):
     """
-    The DRS generator report.
+    The DRS generation report.
     """
 
     MISSING_TAG: ClassVar[str] = '[MISSING]'
@@ -463,10 +463,10 @@ class DrsGeneratorReport(DrsReport):
     generated_drs_expression: str
     """The generated DRS expression with possible tags to replace missing or invalid terms."""
 
-    errors: list[GeneratorError]
+    errors: list[GenerationError]
     """A list of DRS generation issues that are considered as errors."""
 
-    warnings: list[GeneratorWarning]
+    warnings: list[GenerationWarning]
     """A list of DRS generation issues that are considered as warnings."""
 
     def __str__(self) -> str:

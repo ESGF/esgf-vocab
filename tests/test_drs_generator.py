@@ -4,7 +4,7 @@ import pytest
 
 from esgvoc.apps.drs.generator import DrsGenerator
 from esgvoc.apps.drs.report import (AssignedTerm, ConflictingCollections,
-                                    DrsGeneratorReport, GenerationIssue,
+                                    DrsGenerationReport, GenerationIssue,
                                     InvalidTerm, MissingTerm,
                                     TooManyTermCollection)
 
@@ -48,7 +48,7 @@ def _generate_expression_and_check(test: tuple) -> None:
     project_id, method_name, _in, expected_errors, expected_warnings, _out = test
     generator = DrsGenerator(project_id)
     method = getattr(generator, method_name)
-    report: DrsGeneratorReport = method(_in)
+    report: DrsGenerationReport = method(_in)
     assert _out == report.generated_drs_expression
     assert len(expected_errors) == report.nb_errors
     assert len(expected_warnings) == report.nb_warnings

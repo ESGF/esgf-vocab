@@ -6,12 +6,12 @@ from esgvoc.api.project_specs import (DrsCollection, DrsConstant, DrsPart,
                                       DrsPartKind, DrsSpecification, DrsType,
                                       ProjectSpecs)
 from esgvoc.apps.drs.report import (BlankTerm, ComplianceIssue, DrsIssue,
-                                    DrsValidatorReport, ExtraChar,
+                                    DrsValidationReport, ExtraChar,
                                     ExtraSeparator, ExtraTerm,
                                     FileNameExtensionIssue, InvalidTerm,
                                     MissingTerm, ParsingIssue, Space,
-                                    Unparsable, ValidatorError,
-                                    ValidatorWarning)
+                                    Unparsable, ValidationError,
+                                    ValidationWarning)
 
 
 class DrsApplication:
@@ -56,17 +56,6 @@ class DrsApplication:
                              f'project {self.project_id}')
         return full_extension
 
-    def _get_specs(self, drs_type: DrsType|str) -> DrsSpecification:
-        match drs_type:
-            case DrsType.DIRECTORY:
-                specs = self.directory_specs
-            case DrsType.FILE_NAME:
-                specs = self.file_name_specs
-            case DrsType.DATASET_ID:
-                specs = self.dataset_id_specs
-            case _:
-                raise ValueError(f'unsupported DRS type {drs_type}')
-        return specs
 
 class DrsValidator(DrsApplication):
     """
@@ -74,7 +63,7 @@ class DrsValidator(DrsApplication):
     """
 
     def validate_directory(self, drs_expression: str,
-                           prefix: str|None = None) -> DrsValidatorReport:
+                           prefix: str|None = None) -> DrsValidationReport:
         """
         Validate a DRS directory expression.
 
@@ -90,7 +79,7 @@ class DrsValidator(DrsApplication):
             drs_expression = drs_expression.removeprefix(prefix)
         return self._validate(drs_expression, self.directory_specs)
 
-    def validate_dataset_id(self, drs_expression: str) -> DrsValidatorReport:
+    def validate_dataset_id(self, drs_expression: str) -> DrsValidationReport:
         """
         Validate a DRS dataset id expression.
 
@@ -101,7 +90,7 @@ class DrsValidator(DrsApplication):
         """
         return self._validate(drs_expression, self.dataset_id_specs)
 
-    def validate_file_name(self, drs_expression: str) -> DrsValidatorReport:
+    def validate_file_name(self, drs_expression: str) -> DrsValidationReport:
         """
         Validate a file name expression.
 
@@ -120,7 +109,7 @@ class DrsValidator(DrsApplication):
                                          [issue], [])
         return result
 
-    def validate(self, drs_expression: str, drs_type: DrsType|str) -> DrsValidatorReport:
+    def validate(self, drs_expression: str, drs_type: DrsType|str) -> DrsValidationReport:
         """
         Validate a DRS expression.
 
@@ -138,6 +127,8 @@ class DrsValidator(DrsApplication):
                 return self.validate_file_name(drs_expression=drs_expression)
             case DrsType.DATASET_ID:
                 return self.validate_dataset_id(drs_expression=drs_expression)
+            case _:
+                raise ValueError(f'unsupported drs type {drs_type}')
 
     def _parse(self,
                drs_expression: str,
@@ -240,15 +231,15 @@ class DrsValidator(DrsApplication):
                        type: DrsType,
                        drs_expression: str,
                        errors: list[DrsIssue],
-                       warnings: list[DrsIssue]) -> DrsValidatorReport:
-        return DrsValidatorReport(project_id=self.project_id, type=type,
+                       warnings: list[DrsIssue]) -> DrsValidationReport:
+        return DrsValidationReport(project_id=self.project_id, type=type,
                                    expression=drs_expression,
-                                   errors=cast(list[ValidatorError], errors),
-                                   warnings=cast(list[ValidatorWarning], warnings))
+                                   errors=cast(list[ValidationError], errors),
+                                   warnings=cast(list[ValidationWarning], warnings))
 
     def _validate(self,
                   drs_expression: str,
-                  specs: DrsSpecification) -> DrsValidatorReport:
+                  specs: DrsSpecification) -> DrsValidationReport:
         terms, errors, warnings = self._parse(drs_expression, specs.separator, specs.type)
         if not terms:
             return self._create_report(specs.type, drs_expression, errors, warnings) # Early exit.
