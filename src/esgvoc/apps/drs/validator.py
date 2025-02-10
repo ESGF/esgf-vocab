@@ -131,8 +131,13 @@ class DrsValidator(DrsApplication):
         :returns: A validation report.
         :rtype: DrsValidationReport
         """
-        specs = self._get_specs(drs_type)
-        return self._validate(drs_expression, specs)
+        match drs_type:
+            case DrsType.DIRECTORY:
+                return self.validate_directory(drs_expression=drs_expression)
+            case DrsType.FILE_NAME:
+                return self.validate_file_name(drs_expression=drs_expression)
+            case DrsType.DATASET_ID:
+                return self.validate_dataset_id(drs_expression=drs_expression)
 
     def _parse(self,
                drs_expression: str,

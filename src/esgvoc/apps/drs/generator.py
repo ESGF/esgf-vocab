@@ -87,7 +87,8 @@ class DrsGenerator(DrsApplication):
         :rtype: DrsGeneratorReport
         """
         report = self._generate_from_mapping(mapping, self.file_name_specs)
-        report.generated_drs_expression = report.generated_drs_expression + self._get_full_file_name_extension()
+        report.generated_drs_expression = report.generated_drs_expression + \
+                                          self._get_full_file_name_extension()
         return report
 
     def generate_file_name_from_bag_of_tokens(self, tokens: Iterable[str]) -> DrsGeneratorReport:
@@ -102,7 +103,8 @@ class DrsGenerator(DrsApplication):
         :rtype: DrsGeneratorReport
         """
         report = self._generate_from_bag_of_tokens(tokens, self.file_name_specs)
-        report.generated_drs_expression = report.generated_drs_expression + self._get_full_file_name_extension()
+        report.generated_drs_expression = report.generated_drs_expression + \
+                                          self._get_full_file_name_extension()
         return report
 
     def generate_from_mapping(self, mapping: Mapping[str, str],
@@ -117,11 +119,13 @@ class DrsGenerator(DrsApplication):
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
-        specs = self._get_specs(drs_type)
-        report = self._generate_from_mapping(mapping, specs)
-        if DrsType.FILE_NAME == drs_type:
-            report.generated_drs_expression = report.generated_drs_expression + self._get_full_file_name_extension()
-        return report
+        match drs_type:
+            case DrsType.DIRECTORY:
+                return self.generate_directory_from_mapping(mapping=mapping)
+            case DrsType.FILE_NAME:
+                return self.generate_file_name_from_mapping(mapping=mapping)
+            case DrsType.DATASET_ID:
+                return self.generate_dataset_id_from_mapping(mapping=mapping)
 
     def generate_from_bag_of_tokens(self, tokens: Iterable[str], drs_type: DrsType|str) \
                                                                               -> DrsGeneratorReport:
@@ -135,8 +139,13 @@ class DrsGenerator(DrsApplication):
         :returns: A generation report.
         :rtype: DrsGeneratorReport
         """
-        specs = self._get_specs(drs_type)
-        return self._generate_from_bag_of_tokens(tokens, specs)
+        match drs_type:
+            case DrsType.DIRECTORY:
+                return self.generate_directory_from_bag_of_tokens(tokens=tokens)
+            case DrsType.FILE_NAME:
+                return self.generate_file_name_from_bag_of_tokens(tokens=tokens)
+            case DrsType.DATASET_ID:
+                return self.generate_dataset_id_from_bag_of_tokens(tokens=tokens)
 
 
     def _generate_from_mapping(self, mapping: Mapping[str, str], specs: DrsSpecification) \
