@@ -50,7 +50,7 @@ Knowing the only the collection id :
 
 
       .. note::
-         this command look for the drs_name in every term in the specified collection.
+         This command look for the drs_name in every term in the specified collection.
 
    .. group-tab:: API as python lib
 
@@ -63,7 +63,7 @@ Knowing the only the collection id :
       .. image:: ../_static/API_Valid_collection.png
 
       .. note::
-         the function `ev.valid_term_collection` return a list of MatchingTerm.
+         The function `ev.valid_term_collection` return a list of MatchingTerm.
 
 
 Knowing the only the project id :
