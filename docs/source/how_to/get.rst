@@ -16,7 +16,7 @@ One term
 
 
       .. note::
-        it is possible to ask multiple term with the same command :
+        It is possible to ask multiple term with the same command :
         `esgvoc get universe:institution:ipsl universe:institution:llnl`
 
 
