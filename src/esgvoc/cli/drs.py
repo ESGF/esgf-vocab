@@ -226,7 +226,7 @@ def drsgen(
             entry = str(report.mapping_used)
             warnings = "\n".join(["⚠️ " + str(warning) for warning in report.warnings])
             errors = "\n".join([f"🔍 {error}" for error in report.errors])
-            result = report.computed_drs_expression
+            result = report.generated_drs_expression
             table.add_row(entry, warnings, errors, result)
             table.add_row("----", "----", "----", "----")
             if table.columns[3].width is not None and len(result) > table.columns[3].width:
