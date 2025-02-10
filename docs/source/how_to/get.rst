@@ -31,8 +31,8 @@ One term
       .. image:: ../_static/Jup_one_term.png
 
 
-All terms from one datadescriptor/collection
-===========================================
+All terms from one data descriptor or collection
+================================================
 
 
 .. tabs::
