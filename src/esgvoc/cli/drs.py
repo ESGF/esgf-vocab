@@ -1,13 +1,15 @@
-from esgvoc.apps.drs.generator import DrsGenerator
-from esgvoc.apps.drs.report import DrsValidationReport, DrsGeneratorReport
-from esgvoc.apps.drs.validator import DrsValidator
+import shlex
 import sys
+from typing import List, Optional
+
 import typer
 from rich.console import Console
 from rich.table import Table
-from typing import List, Optional
+
 import esgvoc.api as ev
-import shlex
+from esgvoc.apps.drs.generator import DrsGenerator
+from esgvoc.apps.drs.report import DrsGeneratorReport, DrsValidationReport
+from esgvoc.apps.drs.validator import DrsValidator
 
 app = typer.Typer()
 console = Console()
@@ -119,7 +121,7 @@ def drsvalid(
 
         for report in reports:
             entry = str(report.expression)
-            proj_and_type = str(report.project_id) + " " + report.type + " "  
+            proj_and_type = str(report.project_id) + " " + report.type + " "
             warnings = "\n".join(["⚠️ " + str(warning) for warning in report.warnings])
             errors = "\n".join(["⚠️ " + str(error) for error in report.errors])
             valid = "✅ Valid" if report else "❌ Invalid"
@@ -144,16 +146,16 @@ def drsvalid(
 
 @app.command()
 def drsgen(
-    drs_entries: Optional[List[str]] = typer.Argument(None, help="List of inputs to generate DRS in the form <project> <drstype> <bag_of_tokens>"),
-    file: Optional[typer.FileText] = typer.Option(None, "--file", "-f", help="File containing DRS generation inputs, one per line in the form <project> <drstype> <bag_of_tokens>"),
+    drs_entries: Optional[List[str]] = typer.Argument(None, help="List of inputs to generate DRS in the form <project> <drstype> <bag_of_terms>"),
+    file: Optional[typer.FileText] = typer.Option(None, "--file", "-f", help="File containing DRS generation inputs, one per line in the form <project> <drstype> <bag_of_terms>"),
     verbose: bool = typer.Option(False, "-v", "--verbose", help="Provide detailed generation results"),
     output: Optional[str] = typer.Option(None, "-o", "--output", help="File to save the generated DRS entries"),
 ) -> List[DrsGeneratorReport]:
     """
-    Generates DRS strings for a specific project and type based on input bag of tokens.
+    Generates DRS strings for a specific project and type based on input bag of terms.
 
     Args:
-        drs_entries (Optional[List[str]]): A list of inputs in the form <project> <drstype> <bag_of_tokens>.
+        drs_entries (Optional[List[str]]): A list of inputs in the form <project> <drstype> <bag_of_terms>.
         file (Optional[typer.FileText]): File containing DRS generation inputs, one per line.
         verbose (bool): If true, prints detailed generation results.
         output (Optional[str]): File path to save the generated DRS entries.
@@ -197,19 +199,19 @@ def drsgen(
         if current_drs_type is None:
             raise typer.BadParameter(f"Invalid drs_type: {entries[i]}")
 
-        bag_of_tokens = entries[i]
-        bag_of_tokens = set(entries[i].split(" "))
+        bag_of_terms = entries[i]
+        bag_of_terms = set(entries[i].split(" "))
         i += 1
 
         generator = DrsGenerator(current_project)
         report = None
         match current_drs_type:
             case "filename":
-                report = generator.generate_file_name_from_bag_of_tokens(bag_of_tokens)
+                report = generator.generate_file_name_from_bag_of_terms(bag_of_terms)
             case "directory":
-                report = generator.generate_directory_from_bag_of_tokens(bag_of_tokens)
+                report = generator.generate_directory_from_bag_of_terms(bag_of_terms)
             case "dataset":
-                report = generator.generate_dataset_id_from_bag_of_tokens(bag_of_tokens)
+                report = generator.generate_dataset_id_from_bag_of_terms(bag_of_terms)
             case _:
                 raise RuntimeError("drstype is not known")
         generated_reports.append(report)

@@ -13,14 +13,14 @@ class IssueKind(str, Enum):
     UNPARSABLE = 'Unparsable'
     EXTRA_SEPARATOR = 'ExtraSeparator'
     EXTRA_CHAR = 'ExtraChar'
-    BLANK_TOKEN = 'BlankToken'
+    BLANK_TERM = 'BlankTerm'
     FILE_NAME = 'FileNameExtensionIssue'
-    INVALID_TOKEN = 'InvalidToken'
-    EXTRA_TOKEN = 'ExtraToken'
-    MISSING_TOKEN = 'MissingToken'
-    TOO_MANY = 'TooManyTokensCollection'
+    INVALID_TERM = 'InvalidTerm'
+    EXTRA_TERM = 'ExtraTerm'
+    MISSING_TERM = 'MissingTerm'
+    TOO_MANY = 'TooManyTermsCollection'
     CONFLICT = 'ConflictingCollections'
-    ASSIGNED = 'AssignedToken'
+    ASSIGNED = 'AssignedTerm'
     UNKNOWN = 'unknown'
 
 
@@ -40,8 +40,8 @@ class ParsingIssueVisitor(Protocol):
     def visit_extra_char_issue(self, issue: "ExtraChar") -> Any:
         """Visit an extra char issue."""
         pass
-    def visit_blank_token_issue(self, issue: "BlankToken") -> Any:
-        """Visit a blank token issue."""
+    def visit_blank_term_issue(self, issue: "BlankTerm") -> Any:
+        """Visit a blank term issue."""
         pass
 
 
@@ -52,14 +52,14 @@ class ComplianceIssueVisitor(Protocol):
     def visit_filename_extension_issue(self, issue: "FileNameExtensionIssue") -> Any:
         """Visit a file name extension issue."""
         pass
-    def visit_invalid_token_issue(self, issue: "InvalidToken") -> Any:
-        """Visit an invalid token issue."""
+    def visit_invalid_term_issue(self, issue: "InvalidTerm") -> Any:
+        """Visit an invalid term issue."""
         pass
-    def visit_extra_token_issue(self, issue: "ExtraToken") -> Any:
-        """Visit an extra token issue."""
+    def visit_extra_term_issue(self, issue: "ExtraTerm") -> Any:
+        """Visit an extra term issue."""
         pass
-    def visit_missing_token_issue(self, issue: "MissingToken") -> Any:
-        """Visit a missing token issue."""
+    def visit_missing_term_issue(self, issue: "MissingTerm") -> Any:
+        """Visit a missing term issue."""
         pass
 
 
@@ -71,20 +71,20 @@ class GenerationIssueVisitor(Protocol):
     """
     Specifications for a generator issues visitor.
     """
-    def visit_invalid_token_issue(self, issue: "InvalidToken") -> Any:
-        """Visit an invalid token issue."""
+    def visit_invalid_term_issue(self, issue: "InvalidTerm") -> Any:
+        """Visit an invalid term issue."""
         pass
-    def visit_missing_token_issue(self, issue: "MissingToken") -> Any:
-        """Visit a missing token issue."""
+    def visit_missing_term_issue(self, issue: "MissingTerm") -> Any:
+        """Visit a missing term issue."""
         pass
-    def visit_too_many_tokens_collection_issue(self, issue: "TooManyTokensCollection") -> Any:
-        """Visit a too many tokens collection issue."""
+    def visit_too_many_terms_collection_issue(self, issue: "TooManyTermCollection") -> Any:
+        """Visit a too many terms collection issue."""
         pass
     def visit_conflicting_collections_issue(self, issue: "ConflictingCollections") -> Any:
         """Visit a conflicting collections issue."""
         pass
-    def visit_assign_token_issue(self, issue: "AssignedToken") -> Any:
-        """Visit an assign token issue."""
+    def visit_assign_term_issue(self, issue: "AssignedTerm") -> Any:
+        """Visit an assign term issue."""
         pass
 
 
@@ -183,15 +183,15 @@ class ExtraChar(ParsingIssue):
         return self.__str__()
 
 
-class BlankToken(ParsingIssue):
+class BlankTerm(ParsingIssue):
     """
-    Represents a problem of blank token in the DRS expression (i.e., space[s] surrounded by separators).
+    Represents a problem of blank term in the DRS expression (i.e., space[s] surrounded by separators).
     """
-    kind: Literal[IssueKind.BLANK_TOKEN] = IssueKind.BLANK_TOKEN
+    kind: Literal[IssueKind.BLANK_TERM] = IssueKind.BLANK_TERM
     def accept(self, visitor: ParsingIssueVisitor) -> Any:
-        return visitor.visit_blank_token_issue(self)
+        return visitor.visit_blank_term_issue(self)
     def __str__(self):
-        return f"blank token at column {self.column}"
+        return f"blank term at column {self.column}"
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -226,14 +226,14 @@ class FileNameExtensionIssue(ComplianceIssue):
         return f"filename extension missing or not compliant with '{self.expected_extension}'"
 
 
-class TokenIssue(ComplianceIssue):
+class TermIssue(ComplianceIssue):
     """
-    Generic class for the DRS token issues.
+    Generic class for the DRS term issues.
     """
-    token: str
-    """The faulty token."""
-    token_position: int
-    """The position of the faulty token (the part position, not the column of the characters."""
+    term: str
+    """The faulty term."""
+    term_position: int
+    """The position of the faulty term (the part position, not the column of the characters."""
 
 
 class GenerationIssue(DrsIssue):
@@ -253,76 +253,76 @@ class GenerationIssue(DrsIssue):
         pass
 
 
-class InvalidToken(TokenIssue, GenerationIssue):
+class InvalidTerm(TermIssue, GenerationIssue):
     """
-    Represents a problem of invalid token against a collection or a constant part of a DRS specification.
+    Represents a problem of invalid term against a collection or a constant part of a DRS specification.
     """
     collection_id_or_constant_value: str
     """The collection id or the constant part of a DRS specification."""
-    kind: Literal[IssueKind.INVALID_TOKEN] = IssueKind.INVALID_TOKEN
+    kind: Literal[IssueKind.INVALID_TERM] = IssueKind.INVALID_TERM
     def accept(self, visitor: ComplianceIssueVisitor|GenerationIssueVisitor) -> Any:
-        return visitor.visit_invalid_token_issue(self)
+        return visitor.visit_invalid_term_issue(self)
     def __str__(self):
-        return f"token '{self.token}' not compliant with {self.collection_id_or_constant_value} at position {self.token_position}"
+        return f"term '{self.term}' not compliant with {self.collection_id_or_constant_value} at position {self.term_position}"
     def __repr__(self) -> str:
         return self.__str__()
 
 
-class ExtraToken(TokenIssue):
+class ExtraTerm(TermIssue):
     """
-    Represents a problem of extra token at the end of the given DRS expression.
-    All part of the DRS specification have been processed and this token is not necessary
+    Represents a problem of extra term at the end of the given DRS expression.
+    All part of the DRS specification have been processed and this term is not necessary
     (`collection_id` is `None`) or it has been invalidated by an optional collection part
     of the DRS specification (`collection_id` is set).
     """
     collection_id: str|None
     """The optional collection id or `None`."""
-    kind: Literal[IssueKind.EXTRA_TOKEN] = IssueKind.EXTRA_TOKEN
+    kind: Literal[IssueKind.EXTRA_TERM] = IssueKind.EXTRA_TERM
     def accept(self, visitor: ComplianceIssueVisitor) -> Any:
-        return visitor.visit_extra_token_issue(self)
+        return visitor.visit_extra_term_issue(self)
     def __str__(self):
-        repr = f"extra token {self.token}"
+        repr = f"extra term {self.term}"
         if self.collection_id:
             repr += f" invalidated by the optional collection {self.collection_id}"
-        return repr + f" at position {self.token_position}"
+        return repr + f" at position {self.term_position}"
     def __repr__(self) -> str:
         return self.__str__()
 
 
-class MissingToken(ComplianceIssue, GenerationIssue):
+class MissingTerm(ComplianceIssue, GenerationIssue):
     """
-    Represents a problem of missing token for a collection part of the DRS specification.
+    Represents a problem of missing term for a collection part of the DRS specification.
     """
     collection_id: str
     """The collection id."""
     collection_position: int
     """The collection part position (not the column of the characters)."""
-    kind: Literal[IssueKind.MISSING_TOKEN] = IssueKind.MISSING_TOKEN
+    kind: Literal[IssueKind.MISSING_TERM] = IssueKind.MISSING_TERM
     def accept(self, visitor: ComplianceIssueVisitor|GenerationIssueVisitor) -> Any:
-        return visitor.visit_missing_token_issue(self)
+        return visitor.visit_missing_term_issue(self)
     def __str__(self):
-        return f'missing token for {self.collection_id} at position {self.collection_position}'
+        return f'missing term for {self.collection_id} at position {self.collection_position}'
     def __repr__(self) -> str:
         return self.__str__()
 
 
-class TooManyTokensCollection(GenerationIssue):
+class TooManyTermCollection(GenerationIssue):
     """
-    Represents a problem while inferring a mapping collection - token in the generation
-    of a DRS expression based on a bag of tokens. The problem is that more than one token
-    is able to match this collection. The generator is unable to choose from these tokens
+    Represents a problem while inferring a mapping collection - term in the generation
+    of a DRS expression based on a bag of terms. The problem is that more than one term
+    is able to match this collection. The generator is unable to choose from these terms
     """
     collection_id: str
     """The collection id."""
-    tokens: list[str]
-    """The faulty tokens."""
+    terms: list[str]
+    """The faulty terms."""
     kind: Literal[IssueKind.TOO_MANY] = IssueKind.TOO_MANY
     def accept(self, visitor: GenerationIssueVisitor) -> Any:
-        return visitor.visit_too_many_tokens_collection_issue(self)
+        return visitor.visit_too_many_terms_collection_issue(self)
 
     def __str__(self):
-        tokens_str = ", ".join(token for token in self.tokens)
-        result = f'collection {self.collection_id} has more than one token ({tokens_str})'
+        terms_str = ", ".join(term for term in self.terms)
+        result = f'collection {self.collection_id} has more than one term ({terms_str})'
         return result
     def __repr__(self) -> str:
         return self.__str__()
@@ -330,53 +330,53 @@ class TooManyTokensCollection(GenerationIssue):
 
 class ConflictingCollections(GenerationIssue):
     """
-    Represents a problem while inferring a mapping collection - token in the generation
-    of a DRS expression based on a bag of tokens. The problem is that these collections shares the
-    very same tokens. The generator is unable to choose which token for which collection.
+    Represents a problem while inferring a mapping collection - term in the generation
+    of a DRS expression based on a bag of terms. The problem is that these collections shares the
+    very same terms. The generator is unable to choose which term for which collection.
     """
     collection_ids: list[str]
     """The ids of the collections."""
-    tokens: list[str]
-    """The shared tokens."""
+    terms: list[str]
+    """The shared terms."""
     kind: Literal[IssueKind.CONFLICT] = IssueKind.CONFLICT
     def accept(self, visitor: GenerationIssueVisitor) -> Any:
         return visitor.visit_conflicting_collections_issue(self)
     def __str__(self):
         collection_ids_str = ", ".join(collection_id for collection_id in self.collection_ids)
-        tokens_str = ", ".join(token for token in self.tokens)
-        result = f"collections {collection_ids_str} are competing for the same token(s) {tokens_str}"
+        terms_str = ", ".join(term for term in self.terms)
+        result = f"collections {collection_ids_str} are competing for the same term(s) {terms_str}"
         return result
     def __repr__(self) -> str:
         return self.__str__()
 
 
-class AssignedToken(GenerationIssue):
+class AssignedTerm(GenerationIssue):
     """
-    Represents a decision of the Generator to assign this token to the collection, that may not be.
+    Represents a decision of the Generator to assign this term to the collection, that may not be.
     relevant.
     """
     collection_id: str
     """The collection id."""
-    token: str
-    """The token."""
+    term: str
+    """The term."""
     kind: Literal[IssueKind.ASSIGNED] = IssueKind.ASSIGNED
     def accept(self, visitor: GenerationIssueVisitor) -> Any:
-        return visitor.visit_assign_token_issue(self)
+        return visitor.visit_assign_term_issue(self)
     def __str__(self):
-        result = f"assign token {self.token} for collection {self.collection_id}"
+        result = f"assign term {self.term} for collection {self.collection_id}"
         return result
     def __repr__(self) -> str:
         return self.__str__()
 
 
-GeneratorError =  Annotated[AssignedToken | ConflictingCollections |  InvalidToken | MissingToken | \
-                            TooManyTokensCollection, Field(discriminator='kind')]
-GeneratorWarning = Annotated[AssignedToken | MissingToken, Field(discriminator='kind')]
+GeneratorError =  Annotated[AssignedTerm | ConflictingCollections |  InvalidTerm | MissingTerm | \
+                            TooManyTermCollection, Field(discriminator='kind')]
+GeneratorWarning = Annotated[AssignedTerm | MissingTerm, Field(discriminator='kind')]
 
-ValidatorError = Annotated[BlankToken | ExtraChar | ExtraSeparator | ExtraToken | \
-                           FileNameExtensionIssue | InvalidToken | MissingToken | Space | Unparsable,
+ValidatorError = Annotated[BlankTerm | ExtraChar | ExtraSeparator | ExtraTerm | \
+                           FileNameExtensionIssue | InvalidTerm | MissingTerm | Space | Unparsable,
                            Field(discriminator='kind')]
-ValidatorWarning = Annotated[ExtraSeparator | MissingToken | Space, Field(discriminator='kind')]
+ValidatorWarning = Annotated[ExtraSeparator | MissingTerm | Space, Field(discriminator='kind')]
 
 
 class DrsReport(BaseModel):
@@ -454,14 +454,14 @@ class DrsGeneratorReport(DrsReport):
     INVALID_TAG: ClassVar[str] = '[INVALID]'
     """Tag used in the DRS generated expression to replace a invalid term."""
 
-    given_mapping_or_bag_of_tokens: Mapping|Iterable
-    """The mapping or the bag of tokens given."""
+    given_mapping_or_bag_of_terms: Mapping|Iterable
+    """The mapping or the bag of terms given."""
 
     mapping_used: Mapping
-    """The mapping inferred from the given bag of tokens (same mapping otherwise)."""
+    """The mapping inferred from the given bag of terms (same mapping otherwise)."""
 
     generated_drs_expression: str
-    """The generated DRS expression with possible tags to replace missing or invalid tokens."""
+    """The generated DRS expression with possible tags to replace missing or invalid terms."""
 
     errors: list[GeneratorError]
     """A list of DRS generation issues that are considered as errors."""

@@ -3,10 +3,10 @@ from typing import Any, Generator
 import pytest
 
 from esgvoc.apps.drs.generator import DrsGenerator
-from esgvoc.apps.drs.report import (AssignedToken, ConflictingCollections,
+from esgvoc.apps.drs.report import (AssignedTerm, ConflictingCollections,
                                     DrsGeneratorReport, GenerationIssue,
-                                    InvalidToken, MissingToken,
-                                    TooManyTokensCollection)
+                                    InvalidTerm, MissingTerm,
+                                    TooManyTermCollection)
 
 
 class IssueChecker:
@@ -17,30 +17,30 @@ class IssueChecker:
     def _check_type(self, issue: GenerationIssue) -> None:
         assert isinstance(issue, self.expected_result[0])
 
-    def visit_invalid_token_issue(self, issue: InvalidToken) -> Any:
+    def visit_invalid_term_issue(self, issue: InvalidTerm) -> Any:
         self._check_type(issue)
-        assert self.expected_result[1] == issue.token
+        assert self.expected_result[1] == issue.term
         assert self.expected_result[2] == issue.collection_id_or_constant_value
-        assert self.expected_result[3] == issue.token_position
+        assert self.expected_result[3] == issue.term_position
 
-    def visit_missing_token_issue(self, issue: MissingToken) -> Any:
+    def visit_missing_term_issue(self, issue: MissingTerm) -> Any:
         self._check_type(issue)
         assert self.expected_result[1] == issue.collection_id
         assert self.expected_result[2] == issue.collection_position
 
-    def visit_too_many_tokens_collection_issue(self, issue: TooManyTokensCollection) -> Any:
+    def visit_too_many_terms_collection_issue(self, issue: TooManyTermCollection) -> Any:
         self._check_type(issue)
         assert self.expected_result[1] == issue.collection_id
-        assert self.expected_result[2] == issue.tokens
+        assert self.expected_result[2] == issue.terms
 
     def visit_conflicting_collections_issue(self, issue: ConflictingCollections) -> Any:
         self._check_type(issue)
         assert self.expected_result[1] == issue.collection_ids
-        assert self.expected_result[2] == issue.tokens
+        assert self.expected_result[2] == issue.terms
 
-    def visit_assign_token_issue(self, issue: AssignedToken) -> Any:
+    def visit_assign_term_issue(self, issue: AssignedTerm) -> Any:
         self._check_type(issue)
-        self.expected_result[1] == issue.token
+        self.expected_result[1] == issue.term
         self.expected_result[2] == issue.collection_id
 
 
@@ -73,22 +73,22 @@ _SOME_CONFLICTS = [
     ),
     (
         {"c0": {"w0", "w1"}, "c1": {"w1"}},
-        [(AssignedToken, "w1", "c1"), (AssignedToken, "w0", "c0")],
+        [(AssignedTerm, "w1", "c1"), (AssignedTerm, "w0", "c0")],
         {'c0': {'w0'}, 'c1': {'w1'}}
     ),
     (
         {"c0": {"w0", "w1", "w2"}, "c1": {"w0", "w1"}},
-        [(AssignedToken, "w2", "c0")],
+        [(AssignedTerm, "w2", "c0")],
         {'c0': {'w2'}, 'c1': {'w0', 'w1'}}
     ),
     (
         {"c0": {"w0"}, "c1": {"w0", "w1"}, "c2": {"w1"}},
-        [(AssignedToken, "w0", "c0"), (AssignedToken, "w1", "c2")],
+        [(AssignedTerm, "w0", "c0"), (AssignedTerm, "w1", "c2")],
         {'c0': {'w0'}, 'c1': set(), 'c2': {'w1'}}
     ),
     (
         {"c0": {"w0"}, "c1": {"w0"}, "c2": {"w0", "w1"}, "c3": {"w0", "w1", "w2"}},
-        [(AssignedToken, "w1", "c2"), (AssignedToken, "w2", "c3")],
+        [(AssignedTerm, "w1", "c2"), (AssignedTerm, "w2", "c3")],
         {'c0': {'w0'}, 'c1': {'w0'}, 'c2': {'w1'}, 'c3': {'w2'}}
     ),
     (
@@ -104,12 +104,12 @@ _SOME_CONFLICTS = [
     (
         {"c0": {"w0"}, "c1": {"w0"}, "c2": {"w0", "w1"}, "c3": {"w0", "w1", "w2"},
          "c4": {"w3", "w4", "w5"}, "c5": {"w3", "w4"}, "c6": {"w6", "w7"}, "c7": {"w8"}},
-        [(AssignedToken, "w1", "c2"), (AssignedToken, "w2", "c3"), (AssignedToken, "w5", "c4")],
+        [(AssignedTerm, "w1", "c2"), (AssignedTerm, "w2", "c3"), (AssignedTerm, "w5", "c4")],
         {'c0': {'w0'}, 'c1': {'w0'}, 'c2': {'w1'}, 'c3': {'w2'}, 'c4': {'w5'}, 'c5': {'w3', 'w4'}, 'c6': {'w7', 'w6'}, 'c7': {'w8'}}
     ),
     (
         {"c0": {"w0"}, "c1": {"w0"}, "c2": {"w0"}, "c3": {"w1", "w2"}, "c4": {"w1", "w2"}, "c5": {"w1", "w2", "w3"}},
-        [(AssignedToken, "w3", "c5")],
+        [(AssignedTerm, "w3", "c5")],
         {'c0': {'w0'}, 'c1': {'w0'}, 'c2': {'w0'}, 'c3': {'w2', 'w1'}, 'c4': {'w2', 'w1'}, 'c5': {'w3'}}
     )
 ]
@@ -159,8 +159,8 @@ _SOME_MAPPINGS = [
         {'c0': {'w0'}, 'c1': {'w0'}, 'c2': {'w1'}, 'c3': {'w2'}, 'c4': {'w5'}, 'c5': {'w3', 'w4'}, 'c6': {'w7', 'w6'}, 'c7': {'w8'}},
         [
             (ConflictingCollections, ["c0", "c1"], ["w0"]),
-            (TooManyTokensCollection, "c5", ["w3", "w4"]),
-            (TooManyTokensCollection, "c6", ["w6", "w7"])
+            (TooManyTermCollection, "c5", ["w3", "w4"]),
+            (TooManyTermCollection, "c6", ["w6", "w7"])
         ],
         {'c2': 'w1', 'c3': 'w2', 'c4': 'w5', 'c7': 'w8'}
     ),
@@ -173,15 +173,15 @@ _SOME_MAPPINGS = [
         {'c5': 'w3'}
     )
 ]
-def _provide_collection_tokens_mappings() -> Generator:
+def _provide_collection_terms_mappings() -> Generator:
     for mapping in _SOME_MAPPINGS:
         yield mapping
-@pytest.fixture(params=_provide_collection_tokens_mappings())
-def collection_tokens_mapping(request) -> tuple[str, str]:
+@pytest.fixture(params=_provide_collection_terms_mappings())
+def collection_terms_mapping(request) -> tuple[str, str]:
     return request.param
-def test_check_collection_tokens_mapping(collection_tokens_mapping):
-    _in, expected_errors, _out = collection_tokens_mapping
-    result_mapping,  result_errors = DrsGenerator._check_collection_tokens_mapping(_in)
+def test_check_collection_terms_mapping(collection_terms_mapping):
+    _in, expected_errors, _out = collection_terms_mapping
+    result_mapping,  result_errors = DrsGenerator._check_collection_terms_mapping(_in)
     assert _out == result_mapping
     assert len(expected_errors) == len(result_errors)
     for index in range(0, len(expected_errors)):
@@ -222,8 +222,8 @@ _SOME_MAPPINGS = [
             'institution_id': 'IPSL'
         },
         [
-            (InvalidToken, 'MIROC', 'source_id', 4),
-            (MissingToken, 'experiment_id', 5)
+            (InvalidTerm, 'MIROC', 'source_id', 4),
+            (MissingTerm, 'experiment_id', 5)
         ],
         [],
         "CMIP6Plus.CMIP.IPSL.[INVALID].[MISSING].r2i2p1f2.ACmon.od550aer.gn"
@@ -243,12 +243,12 @@ _SOME_MAPPINGS = [
             'institution_id': 'IPSL',
         },
         [],
-        [(MissingToken, "time_range", 7)],
+        [(MissingTerm, "time_range", 7)],
         "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc"
     ),
     (
         "cmip6plus",
-        "generate_dataset_id_from_bag_of_tokens",
+        "generate_dataset_id_from_bag_of_terms",
         {
             'r2i2p1f2',
             'CMIP',
@@ -266,7 +266,7 @@ _SOME_MAPPINGS = [
     ),
     (
         "cmip6plus",
-        "generate_file_name_from_bag_of_tokens",
+        "generate_file_name_from_bag_of_terms",
         {
             'r2i2p1f2',
             'CMIP',

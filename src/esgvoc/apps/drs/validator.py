@@ -5,11 +5,11 @@ import esgvoc.apps.drs.constants as constants
 from esgvoc.api.project_specs import (DrsCollection, DrsConstant, DrsPart,
                                       DrsPartKind, DrsSpecification, DrsType,
                                       ProjectSpecs)
-from esgvoc.apps.drs.report import (BlankToken, ComplianceIssue, DrsIssue,
+from esgvoc.apps.drs.report import (BlankTerm, ComplianceIssue, DrsIssue,
                                     DrsValidationReport, ExtraChar,
-                                    ExtraSeparator, ExtraToken,
-                                    FileNameExtensionIssue, InvalidToken,
-                                    MissingToken, ParsingIssue, Space,
+                                    ExtraSeparator, ExtraTerm,
+                                    FileNameExtensionIssue, InvalidTerm,
+                                    MissingTerm, ParsingIssue, Space,
                                     Unparsable, ValidatorError,
                                     ValidatorWarning)
 
@@ -142,7 +142,7 @@ class DrsValidator(DrsApplication):
     def _parse(self,
                drs_expression: str,
                separator: str,
-               drs_type: DrsType) -> tuple[list[str]|None,  # Tokens
+               drs_type: DrsType) -> tuple[list[str]|None,  # terms
                                            list[DrsIssue],  # Errors
                                            list[DrsIssue]]: # Warnings
         errors: list[DrsIssue] = list()
@@ -163,68 +163,68 @@ class DrsValidator(DrsApplication):
                 cursor_offset = previous_len - len(drs_expression)
             if end_with_space:
                 drs_expression = drs_expression.rstrip()
-        tokens = drs_expression.split(separator)
-        if len(tokens) < 2:
+        terms = drs_expression.split(separator)
+        if len(terms) < 2:
             errors.append(Unparsable(expected_drs_type=drs_type))
             return None, errors, warnings # Early exit
-        max_token_index = len(tokens)
+        max_term_index = len(terms)
         cursor_position = initial_cursor_position = len(drs_expression) + 1
-        has_white_token = False
-        for index in range(max_token_index-1, -1, -1):
-            token = tokens[index]
-            if (is_white_token := token.isspace()) or (not token):
-                has_white_token = has_white_token or is_white_token
-                cursor_position -= len(token) + 1
-                del tokens[index]
+        has_white_term = False
+        for index in range(max_term_index-1, -1, -1):
+            term = terms[index]
+            if (is_white_term := term.isspace()) or (not term):
+                has_white_term = has_white_term or is_white_term
+                cursor_position -= len(term) + 1
+                del terms[index]
                 continue
             else:
                 break
         if cursor_position != initial_cursor_position:
-            max_token_index = len(tokens)
+            max_term_index = len(terms)
             column = cursor_position+cursor_offset
-            if (drs_type == DrsType.DIRECTORY) and (not has_white_token):
+            if (drs_type == DrsType.DIRECTORY) and (not has_white_term):
                 issue = ExtraSeparator(column=column)
                 warnings.append(issue)
             else:
                 issue = ExtraChar(column=column)
                 errors.append(issue)
-        for index in range(max_token_index-1, -1, -1):
-            token = tokens[index]
-            len_token = len(token)
-            if not token:
+        for index in range(max_term_index-1, -1, -1):
+            term = terms[index]
+            len_term = len(term)
+            if not term:
                 column = cursor_position + cursor_offset
                 issue = ExtraSeparator(column=column)
                 if (drs_type != DrsType.DIRECTORY) or self.pedantic or (index == 0):
                     errors.append(issue)
                 else:
                     warnings.append(issue)
-                del tokens[index]
-            if token.isspace():
-                column = cursor_position + cursor_offset - len_token
-                issue = BlankToken(column=column)
+                del terms[index]
+            if term.isspace():
+                column = cursor_position + cursor_offset - len_term
+                issue = BlankTerm(column=column)
                 errors.append(issue)
-                del tokens[index]
-            cursor_position -= len_token + 1
+                del terms[index]
+            cursor_position -= len_term + 1
 
         # Mypy doesn't understand that ParsingIssues are DrsIssues...
         sorted_errors = DrsValidator._sort_parser_issues(errors) # type: ignore
         sorted_warnings = DrsValidator._sort_parser_issues(warnings) # type: ignore
-        return tokens, sorted_errors, sorted_warnings # type: ignore
+        return terms, sorted_errors, sorted_warnings # type: ignore
 
     @staticmethod
     def _sort_parser_issues(issues: list[ParsingIssue]) -> list[ParsingIssue]:
         return sorted(issues, key=lambda issue: issue.column if issue.column else 0)
 
-    def _validate_token(self, token: str, part: DrsPart) -> bool:
+    def _validate_term(self, term: str, part: DrsPart) -> bool:
         match part.kind:
             case DrsPartKind.COLLECTION:
                 casted_part: DrsCollection = cast(DrsCollection, part)
                 try:
-                    matching_terms = projects.valid_term_in_collection(token,
+                    matching_terms = projects.valid_term_in_collection(term,
                                                                        self.project_id,
                                                                        casted_part.collection_id)
                 except Exception as e:
-                    msg = f'problem while validating token: {e}.Abort.'
+                    msg = f'problem while validating term: {e}.Abort.'
                     raise ValueError(msg) from e
                 if len(matching_terms) > 0:
                     return True
@@ -232,7 +232,7 @@ class DrsValidator(DrsApplication):
                     return False
             case DrsPartKind.CONSTANT:
                 part_casted: DrsConstant = cast(DrsConstant, part)
-                return part_casted.value != token
+                return part_casted.value != term
             case _:
                 raise ValueError(f'unsupported DRS specs part type {part.kind}')
 
@@ -249,62 +249,62 @@ class DrsValidator(DrsApplication):
     def _validate(self,
                   drs_expression: str,
                   specs: DrsSpecification) -> DrsValidationReport:
-        tokens, errors, warnings = self._parse(drs_expression, specs.separator, specs.type)
-        if not tokens:
+        terms, errors, warnings = self._parse(drs_expression, specs.separator, specs.type)
+        if not terms:
             return self._create_report(specs.type, drs_expression, errors, warnings) # Early exit.
-        token_index = 0
-        token_max_index = len(tokens)
+        term_index = 0
+        term_max_index = len(terms)
         part_index = 0
         part_max_index = len(specs.parts)
         matching_code_mapping = dict()
         while part_index < part_max_index:
-            token = tokens[token_index]
+            term = terms[term_index]
             part = specs.parts[part_index]
-            if self._validate_token(token, part):
-                token_index += 1
+            if self._validate_term(term, part):
+                term_index += 1
                 part_index += 1
                 matching_code_mapping[part.__str__()] = 0
             elif part.kind == DrsPartKind.CONSTANT or \
                  cast(DrsCollection, part).is_required:
-                issue: ComplianceIssue = InvalidToken(token=token,
-                                                      token_position=token_index+1,
+                issue: ComplianceIssue = InvalidTerm(term=term,
+                                                      term_position=term_index+1,
                                                       collection_id_or_constant_value=str(part))
                 errors.append(issue)
                 matching_code_mapping[part.__str__()] = 1
-                token_index += 1
+                term_index += 1
                 part_index += 1
-            else: # The part is not required so try to match the token with the next part.
+            else: # The part is not required so try to match the term with the next part.
                 part_index += 1
                 matching_code_mapping[part.__str__()] = -1
-            if token_index == token_max_index:
+            if term_index == term_max_index:
                 break
         # Cases:
-        # - All tokens and collections have been processed.
-        # - Not enough token to process all collections.
-        # - Extra tokens left whereas all collections have been processed:
-        #   + The last collections are required => report extra tokens.
-        #   + The last collections are not required and these tokens were not validated by them.
+        # - All terms and collections have been processed.
+        # - Not enough term to process all collections.
+        # - Extra terms left whereas all collections have been processed:
+        #   + The last collections are required => report extra terms.
+        #   + The last collections are not required and these terms were not validated by them.
         #     => Should report error even if the collections are not required.
-        if part_index < part_max_index: # Missing tokens.
+        if part_index < part_max_index: # Missing terms.
             for index in range(part_index, part_max_index):
                 part = specs.parts[index]
-                issue = MissingToken(collection_id=str(part), collection_position=index+1)
+                issue = MissingTerm(collection_id=str(part), collection_position=index+1)
                 if part.kind == DrsPartKind.CONSTANT or \
                    cast(DrsCollection, part).is_required:
                     errors.append(issue)
                 else:
                     warnings.append(issue)
-        elif token_index < token_max_index: # Extra tokens.
-            part_index -= token_max_index - token_index
-            for index in range(token_index, token_max_index):
-                token = tokens[index]
+        elif term_index < term_max_index: # Extra terms.
+            part_index -= term_max_index - term_index
+            for index in range(term_index, term_max_index):
+                term = terms[index]
                 part = specs.parts[part_index]
                 if part.kind != DrsPartKind.CONSTANT           and \
                    (not cast(DrsCollection, part).is_required) and \
                     matching_code_mapping[part.__str__()] < 0:
-                    issue = ExtraToken(token=token, token_position=index, collection_id=str(part))
+                    issue = ExtraTerm(term=term, term_position=index, collection_id=str(part))
                 else:
-                    issue = ExtraToken(token=token, token_position=index, collection_id=None)
+                    issue = ExtraTerm(term=term, term_position=index, collection_id=None)
                 errors.append(issue)
                 part_index += 1
         return self._create_report(specs.type, drs_expression, errors, warnings)

@@ -2,11 +2,11 @@ from typing import Any, Callable, Generator, cast
 
 import pytest
 
-from esgvoc.apps.drs.report import (BlankToken, DrsIssue, ExtraChar,
-                                    ExtraSeparator, ExtraToken,
-                                    FileNameExtensionIssue, InvalidToken,
-                                    MissingToken, ParsingIssue, Space,
-                                    TokenIssue, Unparsable)
+from esgvoc.apps.drs.report import (BlankTerm, DrsIssue, ExtraChar,
+                                    ExtraSeparator, ExtraTerm,
+                                    FileNameExtensionIssue, InvalidTerm,
+                                    MissingTerm, ParsingIssue, Space,
+                                    TermIssue, Unparsable)
 from esgvoc.apps.drs.validator import DrsValidator
 
 
@@ -14,20 +14,20 @@ def _check_issue(issue: DrsIssue, expected_result: tuple[type, Any]):
     assert isinstance(issue, expected_result[0])
     if issubclass(type(issue), ParsingIssue):
         assert cast(ExtraSeparator, issue).column == expected_result[1]
-    elif issubclass(type(issue), TokenIssue):
-        issue = cast(TokenIssue, issue)
-        assert issue.token == expected_result[1]
-        assert issue.token_position == expected_result[2]
+    elif issubclass(type(issue), TermIssue):
+        issue = cast(TermIssue, issue)
+        assert issue.term == expected_result[1]
+        assert issue.term_position == expected_result[2]
 
-        if isinstance(issue, InvalidToken):
+        if isinstance(issue, InvalidTerm):
             assert issue.collection_id_or_constant_value == expected_result[3]
         else:
             if issue.collection_id:
                 assert issue.collection_id == expected_result[3]
             else:
                 assert issue.collection_id is None
-    elif issubclass(type(issue), MissingToken):
-        issue = cast(MissingToken, issue)
+    elif issubclass(type(issue), MissingTerm):
+        issue = cast(MissingTerm, issue)
         assert str(issue.collection_id) == expected_result[1]
         assert issue.collection_position == expected_result[2]
     elif issubclass(type(issue), FileNameExtensionIssue):
@@ -152,7 +152,7 @@ _SOME_DIRECTORY_EXPRESSIONS_TYPO_ERRORS = [
         "cmip6plus",
         (
             "CMIP6Plus/CMIP/NCC/MIROC6/amip/ /r2i2p1f2/ACmon/od550aer/gn/v20190923",
-            [(BlankToken, 32)],
+            [(BlankTerm, 32)],
             []
         )
     ),
@@ -169,7 +169,7 @@ _SOME_DIRECTORY_EXPRESSIONS_TYPO_ERRORS = [
         (
             "  CMIP6Plus/CMIP/NCC/MIROC6/amip/  /r2i2p1f2/ACmon/od550aer/gn/v20190923/ // ",
             [
-                (BlankToken, 34),
+                (BlankTerm, 34),
                 (ExtraChar, 73)
             ],
             [(Space, None)]
@@ -195,7 +195,7 @@ _SOME_FILE_NAME_EXPRESSION_WARNINGS = [
         (
             "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc",
             [],
-            [(MissingToken, "time_range", 7)]
+            [(MissingTerm, "time_range", 7)]
         )
     )
 ]
@@ -264,7 +264,7 @@ _SOME_FILE_NAME_EXPRESSION_EXTRA_TOKEN_ERRORS = [
         "cmip6plus",
         (
             "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-20121.nc",
-            [(ExtraToken, "201211-20121", 6, "time_range")],
+            [(ExtraTerm, "201211-20121", 6, "time_range")],
             []
         )
     ),
@@ -272,7 +272,7 @@ _SOME_FILE_NAME_EXPRESSION_EXTRA_TOKEN_ERRORS = [
         "cmip6plus",
         (
             "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211- 20121.nc",
-            [(ExtraToken, "201211- 20121", 6, "time_range")],
+            [(ExtraTerm, "201211- 20121", 6, "time_range")],
             []
         )
     ),
@@ -280,7 +280,7 @@ _SOME_FILE_NAME_EXPRESSION_EXTRA_TOKEN_ERRORS = [
         "cmip6plus",
         (
             "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212_hello.nc",
-            [(ExtraToken, "hello", 7, None)],
+            [(ExtraTerm, "hello", 7, None)],
             []
         )
     )
@@ -431,7 +431,7 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
         "cmip6plus",
         (
             "CMIP6Plus.CMIP.IPSL. MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-            [(InvalidToken, " MIROC6", 4, "source_id")],
+            [(InvalidTerm, " MIROC6", 4, "source_id")],
             []
         )
     ),
@@ -439,7 +439,7 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
         "cmip6plus",
         (
             "CMIP6Plus.CMIP.IPSL.  MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-            [(InvalidToken, "  MIROC6", 4, "source_id")],
+            [(InvalidTerm, "  MIROC6", 4, "source_id")],
             []
         )
     ),
@@ -447,7 +447,7 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
         "cmip6plus",
         (
             "CMIP6Plus.CMIP.IPSL. .MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-            [(BlankToken, 21)],
+            [(BlankTerm, 21)],
             []
         )
     ),
@@ -457,7 +457,7 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
             ".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer.gn. ..",
             [
                 (ExtraSeparator, 1),
-                (BlankToken, 22),
+                (BlankTerm, 22),
                 (ExtraSeparator, 37),
                 (ExtraChar, 64)
             ],
@@ -470,9 +470,9 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
             ".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",
             [
                 (ExtraSeparator, 1),
-                (BlankToken, 22),
+                (BlankTerm, 22),
                 (ExtraSeparator, 37),
-                (BlankToken, 62),
+                (BlankTerm, 62),
                 (ExtraSeparator, 64)
             ],
             []
@@ -484,9 +484,9 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
             " .CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",
             [
                 (ExtraSeparator, 2),
-                (BlankToken, 23),
+                (BlankTerm, 23),
                 (ExtraSeparator, 38),
-                (BlankToken, 63),
+                (BlankTerm, 63),
                 (ExtraSeparator, 65)
             ],
             [(Space, None)]
@@ -497,8 +497,8 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
         (
             "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer-gn",
             [
-                (InvalidToken, "od550aer-gn", 8, "variable_id"),
-                (MissingToken, "grid_label", 9)
+                (InvalidTerm, "od550aer-gn", 8, "variable_id"),
+                (MissingTerm, "grid_label", 9)
             ],
             []
         )
@@ -508,8 +508,8 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
         (
             "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer/gn",
             [
-                (InvalidToken, "od550aer/gn", 8, "variable_id"),
-                (MissingToken, "grid_label", 9)
+                (InvalidTerm, "od550aer/gn", 8, "variable_id"),
+                (MissingTerm, "grid_label", 9)
             ],
             []
         )
@@ -534,7 +534,7 @@ _SOME_DATASET_ID_EXPRESSION_TOKEN_ERRORS = [
         "cmip6plus",
         (
             "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer",
-            [(MissingToken, "grid_label", 9)],
+            [(MissingTerm, "grid_label", 9)],
             []
         )
     ),
@@ -543,8 +543,8 @@ _SOME_DATASET_ID_EXPRESSION_TOKEN_ERRORS = [
         (
             "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon",
             [
-                (MissingToken, "variable_id", 8),
-                (MissingToken, "grid_label", 9)
+                (MissingTerm, "variable_id", 8),
+                (MissingTerm, "grid_label", 9)
             ],
             []
         )
@@ -553,7 +553,7 @@ _SOME_DATASET_ID_EXPRESSION_TOKEN_ERRORS = [
         "cmip6plus",
         (
             "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.hello",
-            [(ExtraToken, "hello", 9)],
+            [(ExtraTerm, "hello", 9)],
             []
         )
     ),
@@ -562,8 +562,8 @@ _SOME_DATASET_ID_EXPRESSION_TOKEN_ERRORS = [
         (
             "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.hello.world",
             [
-                (ExtraToken, "hello", 9),
-                (ExtraToken, "world", 10)
+                (ExtraTerm, "hello", 9),
+                (ExtraTerm, "world", 10)
             ],
             []
         )
@@ -587,7 +587,7 @@ _SOME_DATASET_ID_EXPRESSION_ERRORS = [
         "cmip6plus",
         (
             "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.world",
-            [(InvalidToken, "world", 9, "grid_label")],
+            [(InvalidTerm, "world", 9, "grid_label")],
             []
         )
     ),
@@ -596,8 +596,8 @@ _SOME_DATASET_ID_EXPRESSION_ERRORS = [
         (
             "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.hello.world",
             [
-                (InvalidToken, "hello", 8, "variable_id"),
-                (InvalidToken, "world", 9, "grid_label")
+                (InvalidTerm, "hello", 8, "variable_id"),
+                (InvalidTerm, "world", 9, "grid_label")
             ],
             []
         )
@@ -606,7 +606,7 @@ _SOME_DATASET_ID_EXPRESSION_ERRORS = [
         "cmip6plus",
         (
             "Hello.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-            [(InvalidToken, "Hello", 1, "mip_era")],
+            [(InvalidTerm, "Hello", 1, "mip_era")],
             []
         )
     ),
