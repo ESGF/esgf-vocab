@@ -1,9 +1,27 @@
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, Iterable, Mapping, Protocol
+from enum import Enum
+from typing import (Annotated, Any, ClassVar, Iterable, Literal, Mapping,
+                    Protocol)
 
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel, Field, computed_field
 
 from esgvoc.api.project_specs import DrsType
+
+
+class IssueKind(str, Enum):
+    SPACE = 'Space'
+    UNPARSABLE = 'Unparsable'
+    EXTRA_SEPARATOR = 'ExtraSeparator'
+    EXTRA_CHAR = 'ExtraChar'
+    BLANK_TOKEN = 'BlankToken'
+    FILE_NAME = 'FileNameExtensionIssue'
+    INVALID_TOKEN = 'InvalidToken'
+    EXTRA_TOKEN = 'ExtraToken'
+    MISSING_TOKEN = 'MissingToken'
+    TOO_MANY = 'TooManyTokensCollection'
+    CONFLICT = 'ConflictingCollections'
+    ASSIGNED = 'AssignedToken'
+    UNKNOWN = 'unknown'
 
 
 class ParsingIssueVisitor(Protocol):
@@ -71,14 +89,12 @@ class GenerationIssueVisitor(Protocol):
 
 
 class DrsIssue(BaseModel, ABC):
+    kind: str
+    """The class name of the issue for JSON serialization/deserialization."""
+
     """
     Generic class for all the DRS issues.
     """
-    @computed_field # type: ignore
-    @property
-    def class_name(self) -> str:
-       """The class name of the issue for JSON serialization."""
-       return self.__class__.__name__
     @abstractmethod
     def accept(self, visitor) -> Any:
         """
@@ -116,6 +132,7 @@ class Space(ParsingIssue):
     Represents a problem of unnecessary space[s] at the beginning or end of the DRS expression.
     Note: `column` is `None`.
     """
+    kind: Literal[IssueKind.SPACE] = IssueKind.SPACE
     def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_space_issue(self)
     def __str__(self):
@@ -131,6 +148,7 @@ class Unparsable(ParsingIssue):
     """
     expected_drs_type: DrsType
     """The expected DRS type of the expression (directory, file name or dataset id)."""
+    kind: Literal[IssueKind.UNPARSABLE] = IssueKind.UNPARSABLE
     def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_unparsable_issue(self)
     def __str__(self):
@@ -143,6 +161,7 @@ class ExtraSeparator(ParsingIssue):
     """
     Represents a problem of multiple separator occurrences in the DRS expression.
     """
+    kind: Literal[IssueKind.EXTRA_SEPARATOR] = IssueKind.EXTRA_SEPARATOR
     def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_extra_separator_issue(self)
     def __str__(self):
@@ -155,6 +174,7 @@ class ExtraChar(ParsingIssue):
     """
     Represents a problem of extra characters at the end of the DRS expression.
     """
+    kind: Literal[IssueKind.EXTRA_CHAR] = IssueKind.EXTRA_CHAR
     def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_extra_char_issue(self)
     def __str__(self):
@@ -167,6 +187,7 @@ class BlankToken(ParsingIssue):
     """
     Represents a problem of blank token in the DRS expression (i.e., space[s] surrounded by separators).
     """
+    kind: Literal[IssueKind.BLANK_TOKEN] = IssueKind.BLANK_TOKEN
     def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_blank_token_issue(self)
     def __str__(self):
@@ -198,6 +219,7 @@ class FileNameExtensionIssue(ComplianceIssue):
     """
     expected_extension: str
     """The expected file name extension."""
+    kind: Literal[IssueKind.FILE_NAME] = IssueKind.FILE_NAME
     def accept(self, visitor: ComplianceIssueVisitor) -> Any:
         return visitor.visit_filename_extension_issue(self)
     def __str__(self):
@@ -237,6 +259,7 @@ class InvalidToken(TokenIssue, GenerationIssue):
     """
     collection_id_or_constant_value: str
     """The collection id or the constant part of a DRS specification."""
+    kind: Literal[IssueKind.INVALID_TOKEN] = IssueKind.INVALID_TOKEN
     def accept(self, visitor: ComplianceIssueVisitor|GenerationIssueVisitor) -> Any:
         return visitor.visit_invalid_token_issue(self)
     def __str__(self):
@@ -254,6 +277,7 @@ class ExtraToken(TokenIssue):
     """
     collection_id: str|None
     """The optional collection id or `None`."""
+    kind: Literal[IssueKind.EXTRA_TOKEN] = IssueKind.EXTRA_TOKEN
     def accept(self, visitor: ComplianceIssueVisitor) -> Any:
         return visitor.visit_extra_token_issue(self)
     def __str__(self):
@@ -273,6 +297,7 @@ class MissingToken(ComplianceIssue, GenerationIssue):
     """The collection id."""
     collection_position: int
     """The collection part position (not the column of the characters)."""
+    kind: Literal[IssueKind.MISSING_TOKEN] = IssueKind.MISSING_TOKEN
     def accept(self, visitor: ComplianceIssueVisitor|GenerationIssueVisitor) -> Any:
         return visitor.visit_missing_token_issue(self)
     def __str__(self):
@@ -291,6 +316,7 @@ class TooManyTokensCollection(GenerationIssue):
     """The collection id."""
     tokens: list[str]
     """The faulty tokens."""
+    kind: Literal[IssueKind.TOO_MANY] = IssueKind.TOO_MANY
     def accept(self, visitor: GenerationIssueVisitor) -> Any:
         return visitor.visit_too_many_tokens_collection_issue(self)
 
@@ -312,6 +338,7 @@ class ConflictingCollections(GenerationIssue):
     """The ids of the collections."""
     tokens: list[str]
     """The shared tokens."""
+    kind: Literal[IssueKind.CONFLICT] = IssueKind.CONFLICT
     def accept(self, visitor: GenerationIssueVisitor) -> Any:
         return visitor.visit_conflicting_collections_issue(self)
     def __str__(self):
@@ -332,6 +359,7 @@ class AssignedToken(GenerationIssue):
     """The collection id."""
     token: str
     """The token."""
+    kind: Literal[IssueKind.ASSIGNED] = IssueKind.ASSIGNED
     def accept(self, visitor: GenerationIssueVisitor) -> Any:
         return visitor.visit_assign_token_issue(self)
     def __str__(self):
@@ -341,12 +369,14 @@ class AssignedToken(GenerationIssue):
         return self.__str__()
 
 
-GeneratorError =  AssignedToken | ConflictingCollections |  InvalidToken | MissingToken | TooManyTokensCollection
-GeneratorWarning = AssignedToken | MissingToken
+GeneratorError =  Annotated[AssignedToken | ConflictingCollections |  InvalidToken | MissingToken | \
+                            TooManyTokensCollection, Field(discriminator='kind')]
+GeneratorWarning = Annotated[AssignedToken | MissingToken, Field(discriminator='kind')]
 
-ValidatorError = BlankToken | ExtraChar | ExtraSeparator | ExtraToken | FileNameExtensionIssue | \
-                 InvalidToken | MissingToken | Space | Unparsable
-ValidatorWarning = ExtraSeparator | MissingToken | Space
+ValidatorError = Annotated[BlankToken | ExtraChar | ExtraSeparator | ExtraToken | \
+                           FileNameExtensionIssue | InvalidToken | MissingToken | Space | Unparsable,
+                           Field(discriminator='kind')]
+ValidatorWarning = Annotated[ExtraSeparator | MissingToken | Space, Field(discriminator='kind')]
 
 
 class DrsReport(BaseModel):
