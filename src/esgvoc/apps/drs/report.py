@@ -9,19 +9,34 @@ from esgvoc.api.project_specs import DrsType
 
 
 class IssueKind(str, Enum):
+    """
+    The kinds of validation and generation issues.
+    """
+
     SPACE = 'Space'
+    """Represents a problem of unnecessary space[s] at the beginning or end of the DRS expression."""
     UNPARSABLE = 'Unparsable'
+    """Represents a problem of non-compliance of the DRS expression."""
     EXTRA_SEPARATOR = 'ExtraSeparator'
+    """Represents a problem of multiple separator occurrences in the DRS expression."""
     EXTRA_CHAR = 'ExtraChar'
+    """Represents a problem of extra characters at the end of the DRS expression."""
     BLANK_TERM = 'BlankTerm'
+    """Represents a problem of blank term in the DRS expression (i.e., space[s] surrounded by separators)."""
     FILE_NAME = 'FileNameExtensionIssue'
+    """Represents a problem on the given file name extension (missing or not compliant)."""
     INVALID_TERM = 'InvalidTerm'
+    """Represents a problem of invalid term against a collection or a constant part of a DRS specification."""
     EXTRA_TERM = 'ExtraTerm'
+    """Represents a problem of extra term at the end of the given DRS expression."""
     MISSING_TERM = 'MissingTerm'
+    """Represents a problem of missing term for a collection part of the DRS specification."""
     TOO_MANY = 'TooManyTermsCollection'
+    """Represents a problem while inferring a mapping: one term is able to match a collection"""
     CONFLICT = 'ConflictingCollections'
+    """Represents a problem while inferring a mapping: collections shares the very same terms"""
     ASSIGNED = 'AssignedTerm'
-    UNKNOWN = 'unknown'
+    """Represents a decision of the Generator to assign a term to a collection, that may not be."""
 
 
 class ParsingIssueVisitor(Protocol):

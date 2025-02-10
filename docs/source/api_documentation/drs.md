@@ -23,6 +23,6 @@
 ```{eval-rst}
 .. automodule:: esgvoc.apps.drs.report
    :members:
-   :inherited-members: BaseModel
+   :inherited-members: BaseModel, str, Enum
    :member-order: groupwise
 ```
