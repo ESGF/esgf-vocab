@@ -360,6 +360,12 @@ class DrsReport(BaseModel):
     type: DrsType
     """The type of the DRS"""
 
+    errors: list
+    """A list of DRS issues that are considered as errors."""
+
+    warnings: list
+    """A list of DRS issues that are considered as warnings."""
+
     @computed_field # type: ignore
     @property
     def nb_errors(self) -> int:
@@ -383,12 +389,6 @@ class DrsReport(BaseModel):
 
     def __bool__(self) -> bool:
         return self.validated
-
-    errors: list
-    """A list of DRS issues that are considered as errors."""
-
-    warnings: list
-    """A list of DRS issues that are considered as warnings."""
 
 
 class DrsValidationReport(DrsReport):
@@ -417,22 +417,31 @@ class DrsGeneratorReport(DrsReport):
     """
     The DRS generator report.
     """
+
     MISSING_TAG: ClassVar[str] = '[MISSING]'
     """Tag used in the DRS generated expression to replace a missing term."""
+
     INVALID_TAG: ClassVar[str] = '[INVALID]'
     """Tag used in the DRS generated expression to replace a invalid term."""
+
     given_mapping_or_bag_of_tokens: Mapping|Iterable
     """The mapping or the bag of tokens given."""
+
     mapping_used: Mapping
     """The mapping inferred from the given bag of tokens (same mapping otherwise)."""
+
     generated_drs_expression: str
     """The generated DRS expression with possible tags to replace missing or invalid tokens."""
+
     errors: list[GeneratorError]
     """A list of DRS generation issues that are considered as errors."""
+
     warnings: list[GeneratorWarning]
     """A list of DRS generation issues that are considered as warnings."""
+
     def __str__(self) -> str:
         return f"'{self.generated_drs_expression}' has {self.nb_errors} error(s) and " + \
                f"{self.nb_warnings} warning(s)"
+
     def __repr__(self) -> str:
         return self.__str__()
