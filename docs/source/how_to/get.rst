@@ -16,7 +16,8 @@ One term
 
 
       .. note::
-        It is possible to ask multiple term with the same command :
+        It is possible to submit multiple requests with the same command:
+
         `esgvoc get universe:institution:ipsl universe:institution:llnl`
 
 
@@ -47,7 +48,7 @@ All terms from one data descriptor or collection
 
 
         .. note::
-                It is possible to ask multiple term with the same command :
+                It is possible to submit multiple requests with the same command:
 
                 `esgvoc get universe:institution: cmip6:institution_id: cmip6:grid_label:`
 
@@ -66,9 +67,9 @@ All terms from one data descriptor or collection
         .. image:: ../_static/Jup_terms_from_one_collection.png
 
         .. note::
-                A `datadescriptor` is the equivalent collection for the universe.
+                In the universe, a `data descriptor` is the equivalent to a collection in a project.
 
-                the final informations are contained in datadescriptors, collection terms are link to their datadescriptors with optional additionnal information.
+                the final information are contained in data descriptors, collection terms are link to their datadescriptors with optional additionnal information.
 
 
 A term from a CV
@@ -87,9 +88,9 @@ A term from a CV
 
 
         .. note::
-                The term `ipsl` is the same in cmip6 (institution_id) and in universe (institution) since the cmip6 one is a link to the universe one:
+                The term `ipsl` is the same in cmip6 (institution_id) and in universe (institution) since the cmip6 one refers to the universe one:
 
-                try the one from cmip6plus : `esgvoc get cmip6plus::ipsl. To showcase the possibility to add information in project CV term. We added a 'myprop' attribute in this term in cmip6plus CV.
+                Try the one from cmip6plus: `esgvoc get cmip6plus::ipsl. To showcase the possibility to add information in project CV term. We added a 'myprop' attribute in this term in cmip6plus CV.
 
    .. group-tab:: API as python lib
 
@@ -104,6 +105,6 @@ A term from a CV
         .. image:: ../_static/Jup_one_term_from_one_CV.png
 
         .. note::
-                the term `ipsl` is the same in cmip6 (institution_id) and in universe (institution) since the cmip6 one is a link to the universe one:
+                The term `ipsl` is the same in cmip6 (institution_id) and in universe (institution) since the cmip6 one refers to the universe one:
 
-                try the one from cmip6plus : `esgvoc get cmip6plus::ipsl. To showcase the possibility to add information in project CV term. We added a 'myprop' attribute in this term in cmip6plus CV.
+                Try the one from cmip6plus: `esgvoc get cmip6plus::ipsl. To showcase the possibility to add information in project CV term. We added a 'myprop' attribute in this term in cmip6plus CV.
