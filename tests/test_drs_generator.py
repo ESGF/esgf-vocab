@@ -1,16 +1,20 @@
 from typing import Any, Generator
+
 import pytest
+
 from esgvoc.apps.drs.generator import DrsGenerator
-from esgvoc.apps.drs.report import (DrsGeneratorReport, GeneratorIssue, AssignedToken, MissingToken, 
-                                    InvalidToken, TooManyTokensCollection, ConflictingCollections)
+from esgvoc.apps.drs.report import (AssignedToken, ConflictingCollections,
+                                    DrsGeneratorReport, GenerationIssue,
+                                    InvalidToken, MissingToken,
+                                    TooManyTokensCollection)
 
 
 class IssueChecker:
-    
+
     def __init__(self, expected_result: tuple[type, Any]) -> None:
         self.expected_result = expected_result
-    
-    def _check_type(self, issue: GeneratorIssue) -> None:
+
+    def _check_type(self, issue: GenerationIssue) -> None:
         assert isinstance(issue, self.expected_result[0])
 
     def visit_invalid_token_issue(self, issue: InvalidToken) -> Any:
@@ -23,17 +27,17 @@ class IssueChecker:
         self._check_type(issue)
         assert self.expected_result[1] == issue.collection_id
         assert self.expected_result[2] == issue.collection_position
-    
+
     def visit_too_many_tokens_collection_issue(self, issue: TooManyTokensCollection) -> Any:
         self._check_type(issue)
         assert self.expected_result[1] == issue.collection_id
         assert self.expected_result[2] == issue.tokens
-    
+
     def visit_conflicting_collections_issue(self, issue: ConflictingCollections) -> Any:
         self._check_type(issue)
         assert self.expected_result[1] == issue.collection_ids
         assert self.expected_result[2] == issue.tokens
-    
+
     def visit_assign_token_issue(self, issue: AssignedToken) -> Any:
         self._check_type(issue)
         self.expected_result[1] == issue.token
@@ -204,7 +208,7 @@ _SOME_MAPPINGS = [
         [],
         "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn"
     ),
-    (   
+    (
         "cmip6plus",
         "generate_dataset_id_from_mapping",
         {

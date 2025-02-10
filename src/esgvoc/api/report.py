@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Protocol
 
-from pydantic import BaseModel, SerializeAsAny, computed_field
+from pydantic import BaseModel, computed_field
 
 import esgvoc.core.constants as api_settings
 from esgvoc.core.db.models.mixins import TermKind
@@ -91,21 +91,24 @@ class ValidationReport(BaseModel):
     """
     Term validation report.
     """
+
     expression: str
     """The given expression."""
-    errors: list[SerializeAsAny[ValidationError]]
+
+    errors: list[UniverseTermError|ProjectTermError]
     """The validation errors."""
+
     @computed_field # type: ignore
     @property
     def nb_errors(self) -> int:
         """The number of validation errors."""
         return len(self.errors) if self.errors else 0
+
     @computed_field # type: ignore
     @property
     def validated(self) -> bool:
         """The expression is validated or not."""
         return False if self.errors else True
-
 
     def __len__(self) -> int:
         return self.nb_errors
@@ -115,5 +118,6 @@ class ValidationReport(BaseModel):
 
     def __str__(self) -> str:
         return f"'{self.expression}' has {self.nb_errors} error(s)"
+
     def __repr__(self) -> str:
         return self.__str__()

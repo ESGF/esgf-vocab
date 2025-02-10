@@ -1,33 +1,26 @@
+from typing import Any, Callable, Generator, cast
+
 import pytest
 
-from typing import Generator, Callable, cast, Any
-
+from esgvoc.apps.drs.report import (BlankToken, DrsIssue, ExtraChar,
+                                    ExtraSeparator, ExtraToken,
+                                    FileNameExtensionIssue, InvalidToken,
+                                    MissingToken, ParsingIssue, Space,
+                                    TokenIssue, Unparsable)
 from esgvoc.apps.drs.validator import DrsValidator
-from esgvoc.apps.drs.report import (DrsIssue,
-                                    ParserIssue,
-                                    TokenIssue,
-                                    Space,
-                                    Unparsable,
-                                    ExtraSeparator,
-                                    ExtraChar,
-                                    BlankToken,
-                                    InvalidToken,
-                                    ExtraToken,
-                                    MissingToken,
-                                    FileNameExtensionIssue)
 
 
 def _check_issue(issue: DrsIssue, expected_result: tuple[type, Any]):
     assert isinstance(issue, expected_result[0])
-    if issubclass(type(issue), ParserIssue):
+    if issubclass(type(issue), ParsingIssue):
         assert cast(ExtraSeparator, issue).column == expected_result[1]
     elif issubclass(type(issue), TokenIssue):
         issue = cast(TokenIssue, issue)
         assert issue.token == expected_result[1]
         assert issue.token_position == expected_result[2]
-        
+
         if isinstance(issue, InvalidToken):
-            assert issue.collection_id_or_constant_value == expected_result[3] 
+            assert issue.collection_id_or_constant_value == expected_result[3]
         else:
             if issue.collection_id:
                 assert issue.collection_id == expected_result[3]
@@ -106,7 +99,7 @@ def test_dataset_id_validation(dataset_id_expression):
 
 _SOME_DIRECTORY_EXPRESSION_TYPO_WARNINGS = [
     (
-        "cmip6plus", 
+        "cmip6plus",
         (
             "CMIP6Plus/CMIP/NCC/MIROC6/amip//r2i2p1f2/ACmon/od550aer/gn/v20190923",
             [],

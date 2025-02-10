@@ -1,26 +1,17 @@
 from typing import cast
-from esgvoc.api.project_specs import (ProjectSpecs,
-                               DrsType,
-                               DrsPart,
-                               DrsSpecification,
-                               DrsPartKind,
-                               DrsCollection,
-                               DrsConstant)
+
 import esgvoc.api.projects as projects
 import esgvoc.apps.drs.constants as constants
-from esgvoc.apps.drs.report import (DrsValidationReport,
-                                    DrsIssue,
-                                    ParserIssue,
-                                    ValidationIssue,
-                                    Space,
-                                    Unparsable,
-                                    ExtraSeparator,
-                                    ExtraChar,
-                                    BlankToken,
-                                    InvalidToken,
-                                    ExtraToken,
-                                    MissingToken,
-                                    FileNameExtensionIssue)
+from esgvoc.api.project_specs import (DrsCollection, DrsConstant, DrsPart,
+                                      DrsPartKind, DrsSpecification, DrsType,
+                                      ProjectSpecs)
+from esgvoc.apps.drs.report import (BlankToken, ComplianceIssue, DrsIssue,
+                                    DrsValidationReport, ExtraChar,
+                                    ExtraSeparator, ExtraToken,
+                                    FileNameExtensionIssue, InvalidToken,
+                                    MissingToken, ParsingIssue, Space,
+                                    Unparsable, ValidatorError,
+                                    ValidatorWarning)
 
 
 class DrsApplication:
@@ -64,7 +55,7 @@ class DrsApplication:
             raise ValueError('missing properties in the DRS file name specifications of the ' +
                              f'project {self.project_id}')
         return full_extension
-    
+
     def _get_specs(self, drs_type: DrsType|str) -> DrsSpecification:
         match drs_type:
             case DrsType.DIRECTORY:
@@ -76,12 +67,12 @@ class DrsApplication:
             case _:
                 raise ValueError(f'unsupported DRS type {drs_type}')
         return specs
-    
+
 class DrsValidator(DrsApplication):
     """
     Valid a DRS directory, dataset id and file name expression against a project.
     """
-   
+
     def validate_directory(self, drs_expression: str,
                            prefix: str|None = None) -> DrsValidationReport:
         """
@@ -96,9 +87,9 @@ class DrsValidator(DrsApplication):
         """
         if prefix:
             # Remove prefix if present. Always returns a copy.
-            drs_expression = drs_expression.removeprefix(prefix) 
+            drs_expression = drs_expression.removeprefix(prefix)
         return self._validate(drs_expression, self.directory_specs)
-    
+
     def validate_dataset_id(self, drs_expression: str) -> DrsValidationReport:
         """
         Validate a DRS dataset id expression.
@@ -142,7 +133,7 @@ class DrsValidator(DrsApplication):
         """
         specs = self._get_specs(drs_type)
         return self._validate(drs_expression, specs)
-    
+
     def _parse(self,
                drs_expression: str,
                separator: str,
@@ -156,7 +147,7 @@ class DrsValidator(DrsApplication):
         start_with_space = drs_expression[0].isspace()
         end_with_space = drs_expression[-1].isspace()
         if start_with_space or end_with_space:
-            issue: ParserIssue = Space()
+            issue: ParsingIssue = Space()
             if self.pedantic:
                 errors.append(issue)
             else:
@@ -209,14 +200,14 @@ class DrsValidator(DrsApplication):
                 errors.append(issue)
                 del tokens[index]
             cursor_position -= len_token + 1
-        
-        # Mypy doesn't understand that ParserIssues are DrsIssues...
+
+        # Mypy doesn't understand that ParsingIssues are DrsIssues...
         sorted_errors = DrsValidator._sort_parser_issues(errors) # type: ignore
         sorted_warnings = DrsValidator._sort_parser_issues(warnings) # type: ignore
         return tokens, sorted_errors, sorted_warnings # type: ignore
-    
+
     @staticmethod
-    def _sort_parser_issues(issues: list[ParserIssue]) -> list[ParserIssue]:
+    def _sort_parser_issues(issues: list[ParsingIssue]) -> list[ParsingIssue]:
         return sorted(issues, key=lambda issue: issue.column if issue.column else 0)
 
     def _validate_token(self, token: str, part: DrsPart) -> bool:
@@ -246,7 +237,9 @@ class DrsValidator(DrsApplication):
                        errors: list[DrsIssue],
                        warnings: list[DrsIssue]) -> DrsValidationReport:
         return DrsValidationReport(project_id=self.project_id, type=type,
-                                   expression=drs_expression, errors=errors, warnings=warnings)
+                                   expression=drs_expression,
+                                   errors=cast(list[ValidatorError], errors),
+                                   warnings=cast(list[ValidatorWarning], warnings))
 
     def _validate(self,
                   drs_expression: str,
@@ -268,7 +261,7 @@ class DrsValidator(DrsApplication):
                 matching_code_mapping[part.__str__()] = 0
             elif part.kind == DrsPartKind.CONSTANT or \
                  cast(DrsCollection, part).is_required:
-                issue: ValidationIssue = InvalidToken(token=token,
+                issue: ComplianceIssue = InvalidToken(token=token,
                                                       token_position=token_index+1,
                                                       collection_id_or_constant_value=str(part))
                 errors.append(issue)

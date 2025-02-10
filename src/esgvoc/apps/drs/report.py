@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import Any, ClassVar, Iterable, Mapping, Protocol
 
-from pydantic import BaseModel, SerializeAsAny, computed_field
+from pydantic import BaseModel, computed_field
 
 from esgvoc.api.project_specs import DrsType
 
 
-class ParserIssueVisitor(Protocol):
+class ParsingIssueVisitor(Protocol):
     """
-    Specifications for a parser issues visitor.
+    Specifications for a parsing issues visitor.
     """
     def visit_space_issue(self, issue: "Space") -> Any:
         """Visit a space issue."""
@@ -27,9 +27,9 @@ class ParserIssueVisitor(Protocol):
         pass
 
 
-class ValidationIssueVisitor(Protocol):
+class ComplianceIssueVisitor(Protocol):
     """
-    Specifications for a validation issues visitor.
+    Specifications for a compliance issues visitor.
     """
     def visit_filename_extension_issue(self, issue: "FileNameExtensionIssue") -> Any:
         """Visit a file name extension issue."""
@@ -45,7 +45,11 @@ class ValidationIssueVisitor(Protocol):
         pass
 
 
-class GeneratorIssueVisitor(Protocol):
+class ValidationIssueVisitor(ParsingIssueVisitor, ComplianceIssueVisitor):
+    pass
+
+
+class GenerationIssueVisitor(Protocol):
     """
     Specifications for a generator issues visitor.
     """
@@ -87,31 +91,32 @@ class DrsIssue(BaseModel, ABC):
         pass
 
 
-class ParserIssue(DrsIssue):
+class ParsingIssue(DrsIssue):
     """
-    Generic class for the DRS parser issues.
+    Generic class for the DRS parsing issues.
     """
     column: int|None = None
     """the column of faulty characters."""
 
     @abstractmethod
-    def accept(self, visitor: ParserIssueVisitor) -> Any:
+    def accept(self, visitor: ParsingIssueVisitor) -> Any:
         """
-        Accept an DRS parser issue visitor.
+        Accept an DRS parsing issue visitor.
 
-        :param visitor: The DRS parser issue visitor.
-        :type visitor: ParserIssueVisitor
+        :param visitor: The DRS parsing issue visitor.
+        :type visitor: ParsingIssueVisitor
         :return: Depending on the visitor.
         :rtype: Any
         """
         pass
 
-class Space(ParserIssue):
+
+class Space(ParsingIssue):
     """
     Represents a problem of unnecessary space[s] at the beginning or end of the DRS expression.
     Note: `column` is `None`.
     """
-    def accept(self, visitor: ParserIssueVisitor) -> Any:
+    def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_space_issue(self)
     def __str__(self):
         return "expression is surrounded by white space[s]"
@@ -119,14 +124,14 @@ class Space(ParserIssue):
         return self.__str__()
 
 
-class Unparsable(ParserIssue):
+class Unparsable(ParsingIssue):
     """
     Represents a problem of non-compliance of the DRS expression.
     Note: `column` is `None`.
     """
     expected_drs_type: DrsType
     """The expected DRS type of the expression (directory, file name or dataset id)."""
-    def accept(self, visitor: ParserIssueVisitor) -> Any:
+    def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_unparsable_issue(self)
     def __str__(self):
         return "unable to parse this expression"
@@ -134,11 +139,11 @@ class Unparsable(ParserIssue):
         return self.__str__()
 
 
-class ExtraSeparator(ParserIssue):
+class ExtraSeparator(ParsingIssue):
     """
     Represents a problem of multiple separator occurrences in the DRS expression.
     """
-    def accept(self, visitor: ParserIssueVisitor) -> Any:
+    def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_extra_separator_issue(self)
     def __str__(self):
         return f"extra separator(s) at column {self.column}"
@@ -146,11 +151,11 @@ class ExtraSeparator(ParserIssue):
         return self.__str__()
 
 
-class ExtraChar(ParserIssue):
+class ExtraChar(ParsingIssue):
     """
     Represents a problem of extra characters at the end of the DRS expression.
     """
-    def accept(self, visitor: ParserIssueVisitor) -> Any:
+    def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_extra_char_issue(self)
     def __str__(self):
         return f"extra character(s) at column {self.column}"
@@ -158,11 +163,11 @@ class ExtraChar(ParserIssue):
         return self.__str__()
 
 
-class BlankToken(ParserIssue):
+class BlankToken(ParsingIssue):
     """
     Represents a problem of blank token in the DRS expression (i.e., space[s] surrounded by separators).
     """
-    def accept(self, visitor: ParserIssueVisitor) -> Any:
+    def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_blank_token_issue(self)
     def __str__(self):
         return f"blank token at column {self.column}"
@@ -170,36 +175,36 @@ class BlankToken(ParserIssue):
         return self.__str__()
 
 
-class ValidationIssue(DrsIssue):
+class ComplianceIssue(DrsIssue):
     """
-    Generic class for the validation issues.
+    Generic class for the compliance issues.
     """
     @abstractmethod
-    def accept(self, visitor: ValidationIssueVisitor) -> Any:
+    def accept(self, visitor: ComplianceIssueVisitor) -> Any:
         """
-        Accept an DRS validation issue visitor.
+        Accept an DRS compliance issue visitor.
 
-        :param visitor: The DRS validation issue visitor.
-        :type visitor: ValidationIssueVisitor
+        :param visitor: The DRS compliance issue visitor.
+        :type visitor: ComplianceIssueVisitor
         :return: Depending on the visitor.
         :rtype: Any
         """
         pass
 
 
-class FileNameExtensionIssue(ValidationIssue):
+class FileNameExtensionIssue(ComplianceIssue):
     """
     Represents a problem on the given file name extension (missing or not compliant).
     """
     expected_extension: str
     """The expected file name extension."""
-    def accept(self, visitor: ValidationIssueVisitor) -> Any:
+    def accept(self, visitor: ComplianceIssueVisitor) -> Any:
         return visitor.visit_filename_extension_issue(self)
     def __str__(self):
         return f"filename extension missing or not compliant with '{self.expected_extension}'"
 
 
-class TokenIssue(ValidationIssue):
+class TokenIssue(ComplianceIssue):
     """
     Generic class for the DRS token issues.
     """
@@ -209,30 +214,30 @@ class TokenIssue(ValidationIssue):
     """The position of the faulty token (the part position, not the column of the characters."""
 
 
-class GeneratorIssue(DrsIssue):
+class GenerationIssue(DrsIssue):
     """
-    Generic class for the DRS generator issues.
+    Generic class for the DRS generation issues.
     """
     @abstractmethod
-    def accept(self, visitor: GeneratorIssueVisitor) -> Any:
+    def accept(self, visitor: GenerationIssueVisitor) -> Any:
         """
-        Accept an DRS generator issue visitor.
+        Accept an DRS generation issue visitor.
 
-        :param visitor: The DRS generator issue visitor.
-        :type visitor: GeneratorIssueVisitor
+        :param visitor: The DRS generation issue visitor.
+        :type visitor: GenerationIssueVisitor
         :return: Depending on the visitor.
         :rtype: Any
         """
         pass
 
 
-class InvalidToken(TokenIssue, GeneratorIssue):
+class InvalidToken(TokenIssue, GenerationIssue):
     """
     Represents a problem of invalid token against a collection or a constant part of a DRS specification.
     """
     collection_id_or_constant_value: str
     """The collection id or the constant part of a DRS specification."""
-    def accept(self, visitor: ValidationIssueVisitor|GeneratorIssueVisitor) -> Any:
+    def accept(self, visitor: ComplianceIssueVisitor|GenerationIssueVisitor) -> Any:
         return visitor.visit_invalid_token_issue(self)
     def __str__(self):
         return f"token '{self.token}' not compliant with {self.collection_id_or_constant_value} at position {self.token_position}"
@@ -249,7 +254,7 @@ class ExtraToken(TokenIssue):
     """
     collection_id: str|None
     """The optional collection id or `None`."""
-    def accept(self, visitor: ValidationIssueVisitor) -> Any:
+    def accept(self, visitor: ComplianceIssueVisitor) -> Any:
         return visitor.visit_extra_token_issue(self)
     def __str__(self):
         repr = f"extra token {self.token}"
@@ -260,7 +265,7 @@ class ExtraToken(TokenIssue):
         return self.__str__()
 
 
-class MissingToken(ValidationIssue, GeneratorIssue):
+class MissingToken(ComplianceIssue, GenerationIssue):
     """
     Represents a problem of missing token for a collection part of the DRS specification.
     """
@@ -268,7 +273,7 @@ class MissingToken(ValidationIssue, GeneratorIssue):
     """The collection id."""
     collection_position: int
     """The collection part position (not the column of the characters)."""
-    def accept(self, visitor: ValidationIssueVisitor|GeneratorIssueVisitor) -> Any:
+    def accept(self, visitor: ComplianceIssueVisitor|GenerationIssueVisitor) -> Any:
         return visitor.visit_missing_token_issue(self)
     def __str__(self):
         return f'missing token for {self.collection_id} at position {self.collection_position}'
@@ -276,7 +281,7 @@ class MissingToken(ValidationIssue, GeneratorIssue):
         return self.__str__()
 
 
-class TooManyTokensCollection(GeneratorIssue):
+class TooManyTokensCollection(GenerationIssue):
     """
     Represents a problem while inferring a mapping collection - token in the generation
     of a DRS expression based on a bag of tokens. The problem is that more than one token
@@ -286,7 +291,7 @@ class TooManyTokensCollection(GeneratorIssue):
     """The collection id."""
     tokens: list[str]
     """The faulty tokens."""
-    def accept(self, visitor: GeneratorIssueVisitor) -> Any:
+    def accept(self, visitor: GenerationIssueVisitor) -> Any:
         return visitor.visit_too_many_tokens_collection_issue(self)
 
     def __str__(self):
@@ -297,7 +302,7 @@ class TooManyTokensCollection(GeneratorIssue):
         return self.__str__()
 
 
-class ConflictingCollections(GeneratorIssue):
+class ConflictingCollections(GenerationIssue):
     """
     Represents a problem while inferring a mapping collection - token in the generation
     of a DRS expression based on a bag of tokens. The problem is that these collections shares the
@@ -307,7 +312,7 @@ class ConflictingCollections(GeneratorIssue):
     """The ids of the collections."""
     tokens: list[str]
     """The shared tokens."""
-    def accept(self, visitor: GeneratorIssueVisitor) -> Any:
+    def accept(self, visitor: GenerationIssueVisitor) -> Any:
         return visitor.visit_conflicting_collections_issue(self)
     def __str__(self):
         collection_ids_str = ", ".join(collection_id for collection_id in self.collection_ids)
@@ -318,7 +323,7 @@ class ConflictingCollections(GeneratorIssue):
         return self.__str__()
 
 
-class AssignedToken(GeneratorIssue):
+class AssignedToken(GenerationIssue):
     """
     Represents a decision of the Generator to assign this token to the collection, that may not be.
     relevant.
@@ -327,7 +332,7 @@ class AssignedToken(GeneratorIssue):
     """The collection id."""
     token: str
     """The token."""
-    def accept(self, visitor: GeneratorIssueVisitor) -> Any:
+    def accept(self, visitor: GenerationIssueVisitor) -> Any:
         return visitor.visit_assign_token_issue(self)
     def __str__(self):
         result = f"assign token {self.token} for collection {self.collection_id}"
@@ -336,48 +341,74 @@ class AssignedToken(GeneratorIssue):
         return self.__str__()
 
 
+GeneratorError =  AssignedToken | ConflictingCollections |  InvalidToken | MissingToken | TooManyTokensCollection
+GeneratorWarning = AssignedToken | MissingToken
+
+ValidatorError = BlankToken | ExtraChar | ExtraSeparator | ExtraToken | FileNameExtensionIssue | \
+                 InvalidToken | MissingToken | Space | Unparsable
+ValidatorWarning = ExtraSeparator | MissingToken | Space
+
+
 class DrsReport(BaseModel):
     """
     Generic DRS application report class.
     """
+
     project_id: str
     """The project id associated to the result of the DRS application."""
+
     type: DrsType
     """The type of the DRS"""
-    errors: list[SerializeAsAny[DrsIssue]]
-    """A list of DRS issues that are considered as errors."""
-    warnings: list[SerializeAsAny[DrsIssue]]
-    """A list of DRS issues that are considered as warnings."""
+
     @computed_field # type: ignore
     @property
     def nb_errors(self) -> int:
         """The number of errors."""
         return len(self.errors) if self.errors else 0
+
     @computed_field # type: ignore
     @property
     def nb_warnings(self) -> int:
         """The number of warnings."""
         return len(self.warnings) if self.warnings else 0
+
     @computed_field # type: ignore
     @property
     def validated(self) -> bool:
         """The correctness of the result of the DRS application."""
         return False if self.errors else True
+
     def __len__(self) -> int:
         return self.nb_errors
+
     def __bool__(self) -> bool:
         return self.validated
+
+    errors: list
+    """A list of DRS issues that are considered as errors."""
+
+    warnings: list
+    """A list of DRS issues that are considered as warnings."""
 
 
 class DrsValidationReport(DrsReport):
     """
     The DRS validation report class.
     """
+
     expression: str
     """The DRS expression been checked."""
+
+    errors: list[ValidatorError]
+    """A list of DRS parsing and compliance issues that are considered as errors."""
+
+    warnings: list[ValidatorWarning]
+    """A list of DRS parsing and compliance issues that are considered as warnings."""
+
     def __str__(self) -> str:
         return f"'{self.expression}' has {self.nb_errors} error(s) and " + \
                f"{self.nb_warnings} warning(s)"
+
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -396,6 +427,10 @@ class DrsGeneratorReport(DrsReport):
     """The mapping inferred from the given bag of tokens (same mapping otherwise)."""
     generated_drs_expression: str
     """The generated DRS expression with possible tags to replace missing or invalid tokens."""
+    errors: list[GeneratorError]
+    """A list of DRS generation issues that are considered as errors."""
+    warnings: list[GeneratorWarning]
+    """A list of DRS generation issues that are considered as warnings."""
     def __str__(self) -> str:
         return f"'{self.generated_drs_expression}' has {self.nb_errors} error(s) and " + \
                f"{self.nb_warnings} warning(s)"

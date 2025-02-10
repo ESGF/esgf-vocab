@@ -11,7 +11,7 @@ from esgvoc.api._utils import (get_universe_session, instantiate_pydantic_term,
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.api.report import (ProjectTermError, UniverseTermError,
-                               ValidationError, ValidationReport)
+                               ValidationReport)
 from esgvoc.api.search import (MatchingTerm, SearchSettings,
                                _create_str_comparison_expression)
 from esgvoc.core.db.connection import DBConnection
@@ -21,7 +21,7 @@ from esgvoc.core.db.models.universe import UTerm
 
 # [OPTIMIZATION]
 _VALID_TERM_IN_COLLECTION_CACHE: dict[str, list[MatchingTerm]] = dict()
-_VALID_VALUE_AGAINST_GIVEN_TERM_CACHE: dict[str, list[ValidationError]] = dict()
+_VALID_VALUE_AGAINST_GIVEN_TERM_CACHE: dict[str, list[UniverseTermError|ProjectTermError]] = dict()
 
 
 class DrsValidationException(Exception): ...
@@ -87,7 +87,7 @@ def _valid_value_composite_term_with_separator(value: str,
                                                term: UTerm|PTerm,
                                                universe_session: Session,
                                                project_session: Session)\
-                                                   -> list[ValidationError]:
+                                                   -> list[UniverseTermError|ProjectTermError]:
     result = list()
     separator, parts = _get_composite_term_separator_parts(term)
     if separator in value:
@@ -141,7 +141,7 @@ def _valid_value_composite_term_separator_less(value: str,
                                                term: UTerm|PTerm,
                                                universe_session: Session,
                                                project_session: Session)\
-                                                   -> list[ValidationError]:
+                                                   -> list[UniverseTermError|ProjectTermError]:
     result = list()
     try:
         pattern = _transform_to_pattern(term, universe_session, project_session)
@@ -169,7 +169,7 @@ def _valid_value_for_composite_term(value: str,
                                     term: UTerm|PTerm,
                                     universe_session: Session,
                                     project_session: Session)\
-                                        -> list[ValidationError]:
+                                        -> list[UniverseTermError|ProjectTermError]:
     result = list()
     separator, _ = _get_composite_term_separator_parts(term)
     if separator:
@@ -181,7 +181,7 @@ def _valid_value_for_composite_term(value: str,
     return result
 
 
-def _create_term_error(value: str, term: UTerm|PTerm) -> ValidationError:
+def _create_term_error(value: str, term: UTerm|PTerm) -> UniverseTermError|ProjectTermError:
     if isinstance(term, UTerm):
         return UniverseTermError(value=value, term=term.specs, term_kind=term.kind,
                                  data_descriptor_id=term.data_descriptor.id)
@@ -193,7 +193,7 @@ def _create_term_error(value: str, term: UTerm|PTerm) -> ValidationError:
 def _valid_value(value: str,
                  term: UTerm|PTerm,
                  universe_session: Session,
-                 project_session: Session) -> list[ValidationError]:
+                 project_session: Session) -> list[UniverseTermError|ProjectTermError]:
     result = list()
     match term.kind:
         case TermKind.PLAIN:
@@ -259,7 +259,7 @@ def _valid_value_against_given_term(value: str,
                                     term_id: str,
                                     universe_session: Session,
                                     project_session: Session)\
-                                        -> list[ValidationError]:
+                                        -> list[UniverseTermError|ProjectTermError]:
     # [OPTIMIZATION]
     key = value + project_id + collection_id + term_id
     if key in _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE:

@@ -1,22 +1,14 @@
-from typing import cast, Iterable, Mapping, Any
+from typing import Any, Iterable, Mapping, cast
 
 import esgvoc.api.projects as projects
-
-from esgvoc.api.project_specs import (DrsSpecification,
-                               DrsPartKind,
-                               DrsCollection,
-                               DrsConstant,
-                               DrsType)
-
+from esgvoc.api.project_specs import (DrsCollection, DrsConstant, DrsPartKind,
+                                      DrsSpecification, DrsType)
+from esgvoc.apps.drs.report import (AssignedToken, ConflictingCollections,
+                                    DrsGeneratorReport, GenerationIssue,
+                                    GeneratorError, GeneratorWarning,
+                                    InvalidToken, MissingToken,
+                                    TooManyTokensCollection)
 from esgvoc.apps.drs.validator import DrsApplication
-from esgvoc.apps.drs.report import (DrsGeneratorReport,
-                                    DrsIssue,
-                                    GeneratorIssue,
-                                    TooManyTokensCollection,
-                                    InvalidToken,
-                                    MissingToken,
-                                    ConflictingCollections,
-                                    AssignedToken)
 
 
 def _get_first_item(items: set[Any]) -> Any:
@@ -37,7 +29,7 @@ class DrsGenerator(DrsApplication):
     Generate a directory, dataset id and file name expression specified by the given project from
     a mapping of collection ids and tokens or an unordered bag of tokens.
     """
-    
+
     def generate_directory_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
         """
         Generate a directory DRS expression from a mapping of collection ids and tokens.
@@ -48,7 +40,7 @@ class DrsGenerator(DrsApplication):
         :rtype: DrsGeneratorReport
         """
         return self._generate_from_mapping(mapping, self.directory_specs)
-    
+
     def generate_directory_from_bag_of_tokens(self, tokens: Iterable[str]) -> DrsGeneratorReport:
         """
         Generate a directory DRS expression from an unordered bag of tokens.
@@ -70,7 +62,7 @@ class DrsGenerator(DrsApplication):
         :rtype: DrsGeneratorReport
         """
         return self._generate_from_mapping(mapping, self.dataset_id_specs)
-    
+
     def generate_dataset_id_from_bag_of_tokens(self, tokens: Iterable[str]) -> DrsGeneratorReport:
         """
         Generate a dataset id DRS expression from an unordered bag of tokens.
@@ -81,7 +73,7 @@ class DrsGenerator(DrsApplication):
         :rtype: DrsGeneratorReport
         """
         return self._generate_from_bag_of_tokens(tokens, self.dataset_id_specs)
-    
+
 
     def generate_file_name_from_mapping(self, mapping: Mapping[str, str]) -> DrsGeneratorReport:
         """
@@ -96,8 +88,8 @@ class DrsGenerator(DrsApplication):
         """
         report = self._generate_from_mapping(mapping, self.file_name_specs)
         report.generated_drs_expression = report.generated_drs_expression + self._get_full_file_name_extension()
-        return report 
-    
+        return report
+
     def generate_file_name_from_bag_of_tokens(self, tokens: Iterable[str]) -> DrsGeneratorReport:
         """
         Generate a file name DRS expression from an unordered bag of tokens.
@@ -111,7 +103,7 @@ class DrsGenerator(DrsApplication):
         """
         report = self._generate_from_bag_of_tokens(tokens, self.file_name_specs)
         report.generated_drs_expression = report.generated_drs_expression + self._get_full_file_name_extension()
-        return report 
+        return report
 
     def generate_from_mapping(self, mapping: Mapping[str, str],
                               drs_type: DrsType|str) -> DrsGeneratorReport:
@@ -157,15 +149,15 @@ class DrsGenerator(DrsApplication):
                                   given_mapping_or_bag_of_tokens=mapping,
                                   mapping_used=mapping,
                                   generated_drs_expression=drs_expression,
-                                  errors=cast(list[DrsIssue], errors),
-                                  warnings=cast(list[DrsIssue], warnings))
+                                  errors=cast(list[GeneratorError], errors),
+                                  warnings=cast(list[GeneratorWarning], warnings))
 
     def __generate_from_mapping(self, mapping: Mapping[str, str],
                                 specs: DrsSpecification,
                                 has_to_valid_terms: bool)\
-                                          -> tuple[str, list[GeneratorIssue], list[GeneratorIssue]]:
-        errors: list[GeneratorIssue] = list()
-        warnings: list[GeneratorIssue] = list()
+                                          -> tuple[str, list[GenerationIssue], list[GenerationIssue]]:
+        errors: list[GenerationIssue] = list()
+        warnings: list[GenerationIssue] = list()
         drs_expression = ""
         part_position: int = 0
         for part in specs.parts:
@@ -197,9 +189,9 @@ class DrsGenerator(DrsApplication):
             else:
                 constant_part = cast(DrsConstant, part)
                 part_value = constant_part.value
-            
+
             drs_expression += part_value + specs.separator
-        
+
         drs_expression = drs_expression[0:len(drs_expression)-len(specs.separator)]
         return drs_expression, errors, warnings
 
@@ -223,17 +215,17 @@ class DrsGenerator(DrsApplication):
         return DrsGeneratorReport(project_id=self.project_id, type=specs.type,
                                   given_mapping_or_bag_of_tokens=tokens,
                                   mapping_used=mapping,generated_drs_expression=drs_expression,
-                                  errors=cast(list[DrsIssue], errors),
-                                  warnings=cast(list[DrsIssue], warnings))
-    
+                                  errors=cast(list[GeneratorError], errors),
+                                  warnings=cast(list[GeneratorWarning], warnings))
+
     @staticmethod
     def _resolve_conflicts(collection_tokens_mapping: dict[str, set[str]]) \
-                                            -> tuple[dict[str, set[str]], list[GeneratorIssue]]:
-        warnings: list[GeneratorIssue] = list()
+                                            -> tuple[dict[str, set[str]], list[GenerationIssue]]:
+        warnings: list[GenerationIssue] = list()
         conflicting_collection_ids_list: list[list[str]] = list()
         collection_ids: list[str] = list(collection_tokens_mapping.keys())
         len_collection_ids: int = len(collection_ids)
-        
+
         for l_collection_index in range(0, len_collection_ids - 1):
             conflicting_collection_ids: list[str] = list()
             for r_collection_index in range(l_collection_index + 1, len_collection_ids):
@@ -259,7 +251,7 @@ class DrsGenerator(DrsApplication):
             # 1. Non-conflicting collections with only one token are assigned.
             #    Non-conflicting collections with more than one token will be raise an error
             #    in the _check method.
-            
+
             #    Nothing to do.
 
             # 2a. Collections with one token that are conflicting to each other will raise an error.
@@ -341,8 +333,8 @@ class DrsGenerator(DrsApplication):
 
     @staticmethod
     def _check_collection_tokens_mapping(collection_tokens_mapping: dict[str, set[str]]) \
-                                                     -> tuple[dict[str, str], list[GeneratorIssue]]:
-        errors: list[GeneratorIssue] = list()
+                                                     -> tuple[dict[str, str], list[GenerationIssue]]:
+        errors: list[GenerationIssue] = list()
         # 1. Looking for collections that share strictly the same token(s).
         collection_ids: list[str] = list(collection_tokens_mapping.keys())
         len_collection_ids: int = len(collection_ids)
@@ -372,7 +364,7 @@ class DrsGenerator(DrsApplication):
             errors.append(issue)
             for collection_id in faulty_collections:
                 del collection_tokens_mapping[collection_id]
-        
+
         # 2. Looking for collections with more than one token.
         result: dict[str, str] = dict()
         for collection_id, token_set in collection_tokens_mapping.items():
