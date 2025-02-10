@@ -17,7 +17,7 @@ From mapping collection:term drs_name
 
       .. code-block:: bash
 
-        Not available with CLI look with python api
+        Not available with CLI.
 
 
    .. group-tab:: API as python lib
@@ -68,7 +68,7 @@ From a bag of drs_name
       .. image:: ../_static/CLI_drsgen_frombag.png
 
       .. note::
-        The command `esgvoc drsgen` supports piped and redirected input
+        The command `esgvoc drsgen` supports piped and redirected standard input.
 
    .. group-tab:: API as python lib
 

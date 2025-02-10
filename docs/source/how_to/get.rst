@@ -69,7 +69,7 @@ All terms from one data descriptor or collection
         .. note::
                 In the universe, a `data descriptor` is the equivalent to a collection in a project.
 
-                the final information are contained in data descriptors, collection terms are link to their datadescriptors with optional additionnal information.
+                The final information are contained in data descriptors, terms in collections are references to their opposites in data descriptors with optional and/or additional information.
 
 
 A term from a CV

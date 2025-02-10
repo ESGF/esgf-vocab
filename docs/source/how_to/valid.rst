@@ -3,7 +3,7 @@ Valid
 
 The command valid check if a string input correspond to a term drs_name attribute or not. This feature can be use in CLI and API.
 
-Knowing the term id :
+Knowing the term id:
 ====================
 
 .. tabs::
@@ -31,10 +31,10 @@ Knowing the term id :
       .. image:: ../_static/API_Valid_Term.png
 
       .. note::
-         The API return a DrsValidationReport Object. The __str__ dunder function reports errors if any. The __bool__ dunder funciton permits to use result in if statement.
+         The API returns a DrsValidationReport Object. The __str__ dunder function reports errors if any. The __bool__ dunder function permits to use result in if statement.
 
 
-Knowing the only the collection id :
+Knowing the only the collection id:
 ===================================
 
 
@@ -50,7 +50,7 @@ Knowing the only the collection id :
 
 
       .. note::
-         This command look for the drs_name in every term in the specified collection.
+         This command looks for the drs_name in every term in the specified collection.
 
    .. group-tab:: API as python lib
 
@@ -63,11 +63,11 @@ Knowing the only the collection id :
       .. image:: ../_static/API_Valid_collection.png
 
       .. note::
-         The function `ev.valid_term_collection` return a list of MatchingTerm.
+         The function `ev.valid_term_collection` returns a list of MatchingTerm.
 
 
-Knowing the only the project id :
-=================================
+Knowing the only the project id:
+================================
 
 
 .. tabs::
@@ -81,7 +81,7 @@ Knowing the only the project id :
       .. image:: ../_static/CLI_Valid_project.png
 
       .. note::
-         This command look for the drs_name in every term in the specified project. therefore, it could be pretty long compared to the above functions.
+         This command looks for the drs_name in every term in the specified project. Therefore, it could be pretty long compared to the above functions.
 
    .. group-tab:: API as python lib
 
@@ -94,7 +94,7 @@ Knowing the only the project id :
       .. image:: ../_static/API_Valid_project.png
 
       .. note::
-         The function `ev.valid_term_project` return a list of MatchingTerm.
+         The function `ev.valid_term_project` returns a list of MatchingTerm.
 
 Find it in all known projects
 =============================
@@ -111,7 +111,7 @@ Find it in all known projects
       .. image:: ../_static/CLI_Valid_all_project.png
 
       .. note::
-         This command look for the drs_name in every project. therefore, it could be pretty long compared to the above functions.
+         This command looks for the drs_name in every project. Therefore, it could be pretty long compared to the above functions.
 
    .. group-tab:: API as python lib
 
@@ -124,4 +124,4 @@ Find it in all known projects
       .. image:: ../_static/API_Valid_all_project.png
 
       .. note::
-         The function `ev.valid_term_in_all_projects` return a list of MatchingTerm.
+         The function `ev.valid_term_in_all_projects` returns a list of MatchingTerm.
