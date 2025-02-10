@@ -189,7 +189,7 @@ def test_check_collection_terms_mapping(collection_terms_mapping):
         result_errors[index].accept(checker)
 
 
-_SOME_MAPPINGS = [
+_SOME_GENERATIONS = [
     (
         "cmip6plus",
         "generate_dataset_id_from_mapping",
@@ -285,7 +285,7 @@ _SOME_MAPPINGS = [
     )
 ]
 def _provide_mappings() -> Generator:
-    for mapping in _SOME_MAPPINGS:
+    for mapping in _SOME_GENERATIONS:
         yield mapping
 @pytest.fixture(params=_provide_mappings())
 def mapping(request) -> tuple[str, str]:
