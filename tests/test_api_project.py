@@ -70,7 +70,7 @@ def test_get_all_terms_in_project(project_id) -> None:
 
 def test_get_all_terms_in_all_projects() -> None:
     terms = projects.get_all_terms_in_all_projects()
-    assert len(terms) > 0
+    assert len(terms) >= 2
 
 
 def test_get_all_collections_in_project(project_id) -> None:

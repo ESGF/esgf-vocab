@@ -839,20 +839,21 @@ def get_all_terms_in_project(project_id: str,
 
 
 def get_all_terms_in_all_projects(selected_term_fields: Iterable[str]|None = None) \
-                                                                            -> list[DataDescriptor]:
+                                                          -> list[tuple[str, list[DataDescriptor]]]:
     """
     Gets all terms of all projects.
 
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
     fields of the terms are returned.
     :type selected_term_fields: Iterable[str]|None
-    :returns: A list of term instances.
-    :rtype: list[DataDescriptor]
+    :returns: A list of tuple project_id and term instances of that project.
+    :rtype: list[tuple[str, list[DataDescriptor]]]
     """
     project_ids = get_all_projects()
     result = list()
     for project_id in project_ids:
-        result.extend(get_all_terms_in_project(project_id, selected_term_fields))
+        terms = get_all_terms_in_project(project_id, selected_term_fields)
+        result.append((project_id, terms))
     return result
 
 
