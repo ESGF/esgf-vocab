@@ -35,19 +35,16 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "experiment": Experiment, 
     "forcing_index": ForcingIndex,
     "frequency": Frequency,
-    "grid": GridLabel, # DEBUG: the value of the key type for the terms of the DD grid is not consistent.
-    "grid-label": GridLabel, # DEBUG: the value of the key type for the terms of the DD grid is not consistent.
-    "grid_label": GridLabel, # DEBUG: the value of the key type for the terms of the DD grid is not consistent.
+    "grid": GridLabel,#Universe
+    "grid_label": GridLabel, # cmip6, cmip6plus
     "initialisation_index": InitialisationIndex, 
     "institution": Institution,
-    "integer": Variable, # DEBUG: key type should be the pydantic class for the terms of DD variable!
     "license": License,
     "mip_era": MipEra,
     "model_component": ModelComponent,
     "organisation": Organisation, 
     "physic_index": PhysicIndex,
     "product": Product,
-    "real": Variable, # DEBUG: key type should be the pydantic class for the terms of DD variable!
     "realisation_index": RealisationIndex ,
     "realm": Realm,
     "resolution": Resolution,
