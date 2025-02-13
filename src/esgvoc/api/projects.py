@@ -27,11 +27,21 @@ _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE: dict[str, list[UniverseTermError|ProjectT
 class DrsValidationException(Exception): ...
 
 
-def get_project_specs(project_id: str) -> ProjectSpecs:
+def get_project_specs(project_id: str) -> ProjectSpecs|None:
+    """
+    Returns the specifications of a given project.
+    This function performs an exact match on the `project_id` and
+    does **not** search for similar or related projects.
+    If the provided `project_id` is not found, the function returns `None`.
+
+    :param project_id: The given project id.
+    :type project_id: str
+    :returns: The specifications of the given project or `None` if the project is not found.
+    :rtype: ProjectSpecs|None
+    """
     project_specs = find_project(project_id)
     if not project_specs:
-        msg = f'Unable to find project {project_id}'
-        raise ValueError(msg)
+        return None
     try:
         result = ProjectSpecs(**project_specs)
     except Exception as e:
