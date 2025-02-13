@@ -25,7 +25,12 @@ from esgvoc.api.data_descriptors.table import Table
 from esgvoc.api.data_descriptors.time_range import TimeRange 
 from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
-
+from esgvoc.api.data_descriptors.area_label import AreaLabel
+from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
+from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
+from esgvoc.api.data_descriptors.temporal_label import TemporalLabel
+from esgvoc.api.data_descriptors.branded_suffix import BrandedSuffix
+from esgvoc.api.data_descriptors.branded_variable import BrandedVariable
 
 DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "activity": Activity,
@@ -54,5 +59,11 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "table" : Table,
     "time_range": TimeRange,
     "variable": Variable,
-    "variant_label": VariantLabel
+    "variant_label": VariantLabel,
+    "area_label": AreaLabel,
+    "temporal_label": TemporalLabel,
+    "vertical_label" : VerticalLabel,
+    "horizontal_label" : HorizontalLabel,
+    "branded_suffix" : BrandedSuffix,
+    "branded_variable" : BrandedVariable
 }

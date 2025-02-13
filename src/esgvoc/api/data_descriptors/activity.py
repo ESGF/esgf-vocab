@@ -1,7 +1,7 @@
-from esgvoc.api.data_descriptors.data_descriptor import DrsPlainTermDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
-class Activity(DrsPlainTermDataDescriptor):
+class Activity(PlainTermDataDescriptor):
     """
     An 'activity' refers to a coordinated set of modeling experiments designed to address specific \
     scientific questions or objectives. Each activity is focused on different aspects of climate \

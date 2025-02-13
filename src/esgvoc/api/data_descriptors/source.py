@@ -1,8 +1,8 @@
 from pydantic import Field
-from esgvoc.api.data_descriptors.data_descriptor import DrsPlainTermDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
-class Source(DrsPlainTermDataDescriptor):
+class Source(PlainTermDataDescriptor):
     """
     A 'source' refers to a numerical representations of the Earth's climate system. They simulate \
     the interactions between the atmosphere, oceans, land surface, and ice. These models are based \

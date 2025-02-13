@@ -1,5 +1,5 @@
 from pydantic import Field
-from esgvoc.api.data_descriptors.data_descriptor import DrsPlainTermDataDescriptor, ConfiguredBaseModel
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor, ConfiguredBaseModel
 
 
 class Dates(ConfiguredBaseModel):
@@ -15,7 +15,7 @@ class Member(ConfiguredBaseModel):
     membership_type: str # prior, current
 
 
-class Consortium(DrsPlainTermDataDescriptor):
+class Consortium(PlainTermDataDescriptor):
     validation_method: str = Field(default = "list")
     name: str|None = None 
     status: str|None = None

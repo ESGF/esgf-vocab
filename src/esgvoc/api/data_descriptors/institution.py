@@ -1,7 +1,7 @@
 from pydantic import Field
-from esgvoc.api.data_descriptors.data_descriptor import DrsPlainTermDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
-class Institution(DrsPlainTermDataDescriptor):
+class Institution(PlainTermDataDescriptor):
     """
     An registered institution for WCRP modelisation MIP.
     """

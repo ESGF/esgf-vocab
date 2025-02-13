@@ -1,8 +1,8 @@
 from pydantic import Field
-from esgvoc.api.data_descriptors.data_descriptor import DrsPlainTermDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
-class Variable(DrsPlainTermDataDescriptor):
+class Variable(PlainTermDataDescriptor):
     """
     A variable refers to a specific type of climate-related quantity or measurement that is \
     simulated and stored in a data file. These variables represent key physical, chemical, or \

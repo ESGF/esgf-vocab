@@ -1,8 +1,8 @@
 from pydantic import Field
-from esgvoc.api.data_descriptors.data_descriptor import DrsPlainTermDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
-class Experiment(DrsPlainTermDataDescriptor):
+class Experiment(PlainTermDataDescriptor):
     """
     An 'experiment' refers to a specific, controlled simulation conducted using climate models to \
     investigate particular aspects of the Earth's climate system. These experiments are designed \

@@ -24,9 +24,6 @@ class DataDescriptorVisitor(Protocol):
     def visit_plain_term(self, term: "PlainTermDataDescriptor") -> Any:
         """Visit a plain term."""
         pass
-    def visit_drs_plain_term(self, term: "DrsPlainTermDataDescriptor") -> Any:
-        """Visit a DRS plain term."""
-        pass
     def visit_pattern_term(self, term: "PatternTermDataDescriptor") -> Any:
         """Visit a pattern term."""
         pass
@@ -70,18 +67,9 @@ class PlainTermDataDescriptor(DataDescriptor):
     """
     A data descriptor that describes hand written terms.
     """
+    drs_name: str
     def accept(self, visitor: DataDescriptorVisitor) -> Any:
         return visitor.visit_plain_term(self)
-
-
-class DrsPlainTermDataDescriptor(PlainTermDataDescriptor):
-    """
-    A data descriptor that describes hand written terms with DRS name.
-    """
-    drs_name: str
-    """The DRS name."""
-    def accept(self, visitor: DataDescriptorVisitor) -> Any:
-        return visitor.visit_drs_plain_term(self)
 
 
 class PatternTermDataDescriptor(DataDescriptor):
