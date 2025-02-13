@@ -41,7 +41,11 @@ def get_project_specs(project_id: str) -> ProjectSpecs:
 
 
 def _get_project_connection(project_id: str) -> DBConnection|None:
-    return service.state_service.projects[project_id].db_connection
+    if project_id in service.state_service.projects:
+        return service.state_service.projects[project_id].db_connection
+    else:
+        return None
+
 
 def _get_project_session_with_exception(project_id: str) -> Session:
     if connection:=_get_project_connection(project_id):
