@@ -1,21 +1,26 @@
 from typing import Iterable, MutableSequence
 
-from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
-import esgvoc.core.constants as api_settings
-from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
-from esgvoc.core.db.models.project import PTerm
-from esgvoc.core.db.models.universe import UTerm
 from sqlmodel import Session
 
+import esgvoc.core.constants as api_settings
 import esgvoc.core.service as service
+from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
+from esgvoc.api.data_descriptors.data_descriptor import (DataDescriptor,
+                                                         DataDescriptorSubSet)
+from esgvoc.core.db.models.project import PTerm
+from esgvoc.core.db.models.universe import UTerm
+
 UNIVERSE_DB_CONNECTION = service.state_service.universe.db_connection
+
+
+class APIException(Exception): ...
 
 
 def get_pydantic_class(data_descriptor_id_or_term_type: str) -> type[DataDescriptor]:
     if data_descriptor_id_or_term_type in DATA_DESCRIPTOR_CLASS_MAPPING:
         return DATA_DESCRIPTOR_CLASS_MAPPING[data_descriptor_id_or_term_type]
     else:
-        raise ValueError(f"{data_descriptor_id_or_term_type} pydantic class not found")
+        raise RuntimeError(f"{data_descriptor_id_or_term_type} pydantic class not found")
 
 
 def get_universe_session() -> Session:

@@ -1,38 +1,26 @@
-from esgvoc.api.search import MatchingTerm, SearchType, SearchSettings
-from esgvoc.api.report import (ValidationError,
-                               ValidationReport,
-                               ValidationErrorVisitor,
-                               ProjectTermError,
-                               UniverseTermError)
-from esgvoc.api.universe import (get_all_terms_in_universe,
-                                 get_all_data_descriptors_in_universe,
-                                 find_data_descriptors_in_universe,
-                                 get_all_terms_in_data_descriptor,
+from esgvoc.api._utils import APIException
+from esgvoc.api.project_specs import (DrsCollection, DrsConstant, DrsPart,
+                                      DrsPartKind, DrsSpecification, DrsType,
+                                      ProjectSpecs)
+from esgvoc.api.projects import (
+    find_collections_in_project, find_project,
+    find_terms_from_data_descriptor_in_all_projects,
+    find_terms_from_data_descriptor_in_project, find_terms_in_all_projects,
+    find_terms_in_collection, find_terms_in_project,
+    get_all_collections_in_project, get_all_projects,
+    get_all_terms_in_all_projects, get_all_terms_in_collection,
+    get_all_terms_in_project, valid_term, valid_term_in_all_projects,
+    valid_term_in_collection, valid_term_in_project)
+from esgvoc.api.report import (ProjectTermError, UniverseTermError,
+                               ValidationError, ValidationErrorVisitor,
+                               ValidationReport)
+from esgvoc.api.search import MatchingTerm, SearchSettings, SearchType
+from esgvoc.api.universe import (find_data_descriptors_in_universe,
+                                 find_terms_in_data_descriptor,
                                  find_terms_in_universe,
-                                 find_terms_in_data_descriptor)
-from esgvoc.api.projects import (get_all_projects,
-                                 find_project,
-                                 get_all_terms_in_all_projects,
-                                 get_all_terms_in_project,
-                                 get_all_collections_in_project,
-                                 find_collections_in_project,
-                                 get_all_terms_in_collection,
-                                 find_terms_in_project,
-                                 find_terms_in_all_projects,
-                                 find_terms_from_data_descriptor_in_all_projects,
-                                 find_terms_from_data_descriptor_in_project,
-                                 find_terms_in_collection,
-                                 valid_term_in_all_projects,
-                                 valid_term_in_project,
-                                 valid_term_in_collection,
-                                 valid_term)
-from esgvoc.api.project_specs import (DrsType,
-                               DrsPartKind,
-                               DrsConstant,
-                               DrsCollection,
-                               DrsPart,
-                               DrsSpecification,
-                               ProjectSpecs)
+                                 get_all_data_descriptors_in_universe,
+                                 get_all_terms_in_data_descriptor,
+                                 get_all_terms_in_universe)
 
 __all__ = ["MatchingTerm",
            "SearchType",
@@ -70,4 +58,5 @@ __all__ = ["MatchingTerm",
            "DrsCollection",
            "DrsPart",
            "DrsSpecification",
-           "ProjectSpecs"]
+           "ProjectSpecs",
+           "APIException"]

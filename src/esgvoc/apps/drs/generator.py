@@ -1,6 +1,7 @@
 from typing import Any, Iterable, Mapping, cast
 
 import esgvoc.api.projects as projects
+from esgvoc.api import APIException
 from esgvoc.api.project_specs import (DrsCollection, DrsConstant, DrsPartKind,
                                       DrsSpecification, DrsType)
 from esgvoc.apps.drs.report import (AssignedTerm, ConflictingCollections,
@@ -127,7 +128,7 @@ class DrsGenerator(DrsApplication):
             case DrsType.DATASET_ID:
                 return self.generate_dataset_id_from_mapping(mapping=mapping)
             case _:
-                raise ValueError(f'unsupported drs type {drs_type}')
+                raise APIException(f'unsupported drs type {drs_type}')
 
     def generate_from_bag_of_terms(self, terms: Iterable[str], drs_type: DrsType|str) \
                                                                               -> DrsGenerationReport:
@@ -149,7 +150,7 @@ class DrsGenerator(DrsApplication):
             case DrsType.DATASET_ID:
                 return self.generate_dataset_id_from_bag_of_terms(terms=terms)
             case _:
-                raise ValueError(f'unsupported drs type {drs_type}')
+                raise APIException(f'unsupported drs type {drs_type}')
 
 
     def _generate_from_mapping(self, mapping: Mapping[str, str], specs: DrsSpecification) \

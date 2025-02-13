@@ -6,7 +6,8 @@ from sqlmodel import Session, and_, select
 import esgvoc.api.universe as universe
 import esgvoc.core.constants as constants
 import esgvoc.core.service as service
-from esgvoc.api._utils import (get_universe_session, instantiate_pydantic_term,
+from esgvoc.api._utils import (APIException, get_universe_session,
+                               instantiate_pydantic_term,
                                instantiate_pydantic_terms)
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import ProjectSpecs
@@ -24,9 +25,6 @@ _VALID_TERM_IN_COLLECTION_CACHE: dict[str, list[MatchingTerm]] = dict()
 _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE: dict[str, list[UniverseTermError|ProjectTermError]] = dict()
 
 
-class DrsValidationException(Exception): ...
-
-
 def _get_project_connection(project_id: str) -> DBConnection|None:
     if project_id in service.state_service.projects:
         return service.state_service.projects[project_id].db_connection
@@ -39,7 +37,7 @@ def _get_project_session_with_exception(project_id: str) -> Session:
         project_session = connection.create_session()
         return project_session
     else:
-        raise ValueError(f'unable to find project {project_id}')
+        raise APIException(f'unable to find project {project_id}')
 
 
 def _resolve_term(composite_term_part: dict,
@@ -109,8 +107,8 @@ def _transform_to_pattern(term: UTerm|PTerm,
             if constants.DRS_SPECS_JSON_KEY in term.specs:
                 result = term.specs[constants.DRS_SPECS_JSON_KEY]
             else:
-                raise DrsValidationException(f"the term {term.id} doesn't have drs name. " +
-                                             "Can't validate it.")
+                raise APIException(f"the term {term.id} doesn't have drs name. " +
+                                    "Can't validate it.")
         case TermKind.PATTERN:
             result = term.specs[constants.PATTERN_JSON_KEY]
         case TermKind.COMPOSITE:
@@ -122,7 +120,7 @@ def _transform_to_pattern(term: UTerm|PTerm,
                 result = f'{result}{pattern}{separator}'
             result = result.rstrip(separator)
         case _:
-            raise NotImplementedError(f'unsupported term kind {term.kind}')
+            raise RuntimeError(f'unsupported term kind {term.kind}')
     return result
 
 
@@ -145,8 +143,8 @@ def _valid_value_composite_term_separator_less(value: str,
             pattern = f'^{pattern}$'
             regex = re.compile(pattern)
         except Exception as e:
-            msg = f'regex compilation error:\n{e}'
-            raise ValueError(msg) from e
+            msg = f'regex compilation error while processing term {term.id}:\n{e}'
+            raise RuntimeError(msg) from e
         match = regex.match(value)
         if match is None:
             result.append(_create_term_error(value, term))
@@ -192,8 +190,8 @@ def _valid_value(value: str,
                 if term.specs[constants.DRS_SPECS_JSON_KEY] != value:
                     result.append(_create_term_error(value, term))
             else:
-                raise DrsValidationException(f"the term {term.id} doesn't have drs name. " +
-                                             "Can't validate it.")
+                raise APIException(f"the term {term.id} doesn't have drs name. " +
+                                    "Can't validate it.")
         case TermKind.PATTERN:
             # OPTIM: Pattern can be compiled and stored for further matching.
             pattern_match = re.match(term.specs[constants.PATTERN_JSON_KEY], value)
@@ -204,13 +202,13 @@ def _valid_value(value: str,
                                                           universe_session,
                                                           project_session))
         case _:
-            raise NotImplementedError(f'unsupported term kind {term.kind}')
+            raise RuntimeError(f'unsupported term kind {term.kind}')
     return result
 
 
 def _check_value(value: str) -> str:
     if not value or value.isspace():
-        raise ValueError('value should be set')
+        raise APIException('value should be set')
     else:
         return value
 
@@ -256,21 +254,16 @@ def _valid_value_against_given_term(value: str,
     if key in _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE:
         result = _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE[key]
     else:
-        try:
-            terms = _find_terms_in_collection(collection_id,
-                                              term_id,
-                                              project_session,
-                                              None)
-            if terms:
-                term = terms[0]
-                result = _valid_value(value, term, universe_session, project_session)
-            else:
-                raise ValueError(f'unable to find term {term_id} ' +
-                                 f'in collection {collection_id}')
-        except Exception as e:
-            msg = f'unable to valid term {term_id} ' +\
-                  f'in collection {collection_id}'
-            raise RuntimeError(msg) from e
+        terms = _find_terms_in_collection(collection_id,
+                                          term_id,
+                                          project_session,
+                                          None)
+        if terms:
+            term = terms[0]
+            result = _valid_value(value, term, universe_session, project_session)
+        else:
+            raise APIException(f'unable to find term {term_id} ' +
+                               f'in collection {collection_id}')
         _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE[key] = result
     return result
 
@@ -295,7 +288,7 @@ def valid_term(value: str,
               composite so as to compare it as a regex to the value.
 
     If any of the provided ids (`project_id`, `collection_id` or `term_id`) is not found,
-    the function raises a ValueError.
+    the function raises a APIException.
 
     :param value: A value to be validated
     :type value: str
@@ -307,7 +300,7 @@ def valid_term(value: str,
     :type term_id: str
     :returns: A validation report that contains the possible errors
     :rtype: ValidationReport
-    :raises ValueError: If any of the provided ids is not found
+    :raises APIException: If any of the provided ids is not found
     """
     value = _check_value(value)
     with get_universe_session() as universe_session, \
@@ -353,7 +346,7 @@ def _valid_term_in_collection(value: str,
                                                    term_id=term_id_found))
         else:
             msg = f'unable to find collection {collection_id}'
-            raise ValueError(msg)
+            raise APIException(msg)
         _VALID_TERM_IN_COLLECTION_CACHE[key] = result
     return result
 
@@ -377,7 +370,7 @@ def valid_term_in_collection(value: str,
               composite so as to compare it as a regex to the value.
 
     If any of the provided ids (`project_id` or `collection_id`) is not found,
-    the function raises a ValueError.
+    the function raises a APIException.
 
     :param value: A value to be validated
     :type value: str
@@ -387,7 +380,7 @@ def valid_term_in_collection(value: str,
     :type collection_id: str
     :returns: The list of terms that the value matches.
     :rtype: list[MatchingTerm]
-    :raises ValueError: If any of the provided ids is not found
+    :raises APIException: If any of the provided ids is not found
     """
     with get_universe_session() as universe_session, \
          _get_project_session_with_exception(project_id) as project_session:
@@ -422,7 +415,7 @@ def valid_term_in_project(value: str, project_id: str) -> list[MatchingTerm]:
             - if the composite hasn't got a separator, the function aggregates the parts of the \
               composite so as to compare it as a regex to the value.
 
-    If the `project_id` is not found, the function raises a ValueError.
+    If the `project_id` is not found, the function raises a APIException.
 
     :param value: A value to be validated
     :type value: str
@@ -430,7 +423,7 @@ def valid_term_in_project(value: str, project_id: str) -> list[MatchingTerm]:
     :type project_id: str
     :returns: The list of terms that the value matches.
     :rtype: list[MatchingTerm]
-    :raises ValueError: If the `project_id` is not found
+    :raises APIException: If the `project_id` is not found
     """
     with get_universe_session() as universe_session, \
          _get_project_session_with_exception(project_id) as project_session:
