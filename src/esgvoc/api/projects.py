@@ -27,29 +27,6 @@ _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE: dict[str, list[UniverseTermError|ProjectT
 class DrsValidationException(Exception): ...
 
 
-def get_project_specs(project_id: str) -> ProjectSpecs|None:
-    """
-    Returns the specifications of a given project.
-    This function performs an exact match on the `project_id` and
-    does **not** search for similar or related projects.
-    If the provided `project_id` is not found, the function returns `None`.
-
-    :param project_id: The given project id.
-    :type project_id: str
-    :returns: The specifications of the given project or `None` if the project is not found.
-    :rtype: ProjectSpecs|None
-    """
-    project_specs = find_project(project_id)
-    if not project_specs:
-        return None
-    try:
-        result = ProjectSpecs(**project_specs)
-    except Exception as e:
-        msg = f'Unable to read specs in project {project_id}'
-        raise RuntimeError(msg) from e
-    return result
-
-
 def _get_project_connection(project_id: str) -> DBConnection|None:
     if project_id in service.state_service.projects:
         return service.state_service.projects[project_id].db_connection
@@ -886,9 +863,9 @@ def get_all_terms_in_all_projects(selected_term_fields: Iterable[str]|None = Non
     return result
 
 
-def find_project(project_id: str) -> dict|None:
+def find_project(project_id: str) -> ProjectSpecs|None:
     """
-    Finds a project.
+    Finds a project and returns its specifications.
     This function performs an exact match on the `project_id` and
     does **not** search for similar or related projects.
     If the provided `project_id` is not found, the function returns `None`.
@@ -896,14 +873,18 @@ def find_project(project_id: str) -> dict|None:
     :param project_id: A project id to be found
     :type project_id: str
     :returns: The specs of the project found. Returns `None` if no matches are found.
-    :rtype: dict|None
+    :rtype: ProjectSpecs|None
     """
-    result = None
+    result: ProjectSpecs|None = None
     if connection:=_get_project_connection(project_id):
         with connection.create_session() as session:
             project = session.get(Project, constants.SQLITE_FIRST_PK)
             # Project can't be missing if session exists.
-            result = project.specs # type: ignore
+            try:
+                result = ProjectSpecs(**project.specs)
+            except Exception as e:
+                msg = f'Unable to read specs in project {project_id}'
+                raise RuntimeError(msg) from e
     return result
 
 

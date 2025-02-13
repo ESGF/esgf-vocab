@@ -1,6 +1,6 @@
-import pytest
-
 from typing import Generator
+
+import pytest
 
 import esgvoc.api.projects as projects
 from esgvoc.api import SearchSettings, SearchType
@@ -60,7 +60,7 @@ def test_get_all_projects() -> None:
 def test_find_project(project_id) -> None:
     project = projects.find_project(project_id)
     assert project is not None
-    assert project['project_id'] == project_id
+    assert project.project_id == project_id
 
 
 def test_get_all_terms_in_project(project_id) -> None:
@@ -176,8 +176,3 @@ def test_valid_term_in_project() -> None:
         assert len(matching_terms) == nb_matching_terms
         if nb_matching_terms == 1:
             assert matching_terms[0].term_id == term_id
-
-
-def test_parse_project_specs(project_id: str) -> None:
-    result = projects.get_project_specs(project_id)
-    assert result is not None
