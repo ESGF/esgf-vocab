@@ -873,9 +873,9 @@ def find_project(project_id: str) -> ProjectSpecs|None:
     if connection:=_get_project_connection(project_id):
         with connection.create_session() as session:
             project = session.get(Project, constants.SQLITE_FIRST_PK)
-            # Project can't be missing if session exists.
             try:
-                result = ProjectSpecs(**project.specs)
+                # Project can't be missing if session exists.
+                result = ProjectSpecs(**project.specs) # type: ignore
             except Exception as e:
                 msg = f'Unable to read specs in project {project_id}'
                 raise RuntimeError(msg) from e
