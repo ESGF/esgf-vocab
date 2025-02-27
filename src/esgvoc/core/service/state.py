@@ -97,9 +97,9 @@ class BaseState:
             "local": self.local_version if self.local_version else None,
             "db" : self.db_version if self.db_version else None,
             "github_local_sync": self.github_version == self.local_version if self.github_access and self.github_version and self.local_version else None,
-            "local_db_sync": self.local_version == self.db_version if self.local_access and self.local_version and self.db_version else None,
+            "local_db_sync": self.local_version == self.db_version if self.local_access and self.local_version else None,
 
-            "github_db_sync": self.github_version == self.db_version if self.github_access and self.github_version and self.db_version else None
+            "github_db_sync": self.github_version == self.db_version if self.github_access and self.github_version else None
         }
 
     def clone_remote(self):
