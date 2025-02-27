@@ -54,9 +54,12 @@ class BaseState:
                 self.github_version = self.rf.get_github_version(owner, repo, self.branch) 
                 self.github_access = True
                 logger.debug(f"Latest GitHub commit: {self.github_version}")
+            except IndexError as e:
+                self.github_access = False
             except Exception as e:
                 logger.exception(f"Failed to fetch GitHub version: {e} ,for {self.github_repo},owner : {owner}, repo : {repo},branch : {self.branch}")
                 self.github_access = False
+        
             if self.github_version is None:
                 self.github_access = False
 
@@ -82,7 +85,8 @@ class BaseState:
 
 
     def fetch_versions(self):
-        self.fetch_version_remote()
+        if self.github_access:
+            self.fetch_version_remote()
         self.fetch_version_local()
         self.fetch_version_db()
               
