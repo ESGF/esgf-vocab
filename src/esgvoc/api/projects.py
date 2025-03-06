@@ -1,7 +1,8 @@
 import re
 from collections.abc import Iterable, Sequence
 
-from sqlmodel import Session, and_, select
+from sqlalchemy import text
+from sqlmodel import Session, and_, col, select
 
 import esgvoc.api.universe as universe
 import esgvoc.core.constants as constants
@@ -17,7 +18,7 @@ from esgvoc.api.search import (MatchingTerm, SearchSettings,
                                _create_str_comparison_expression)
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
-from esgvoc.core.db.models.project import Collection, Project, PTerm
+from esgvoc.core.db.models.project import Collection, Project, PTerm, PTermFTS5
 from esgvoc.core.db.models.universe import UTerm
 
 # [OPTIMIZATION]
@@ -38,6 +39,21 @@ def _get_project_session_with_exception(project_id: str) -> Session:
         return project_session
     else:
         raise APIException(f'unable to find project {project_id}')
+
+
+# Caller of this function must catch sqlalchemy.exc.StatementError as
+# the given expression may crash the query.
+def _search_terms(expression: str, project_session: Session,
+                  collection_id: str|None = None) -> list[PTerm]:
+    matching_condition = col(PTermFTS5.specs).match(expression)
+    if collection_id:
+        collection_condition = col(Collection.id).is_(other=collection_id)
+        statement = select(PTermFTS5).join(Collection).where(collection_condition, matching_condition)
+    else:
+        statement = select(PTermFTS5).where(matching_condition)
+    sttmt = select(PTerm).from_statement(statement.order_by(text('rank')))
+    result = project_session.exec(sttmt).all() # type: ignore
+    return result
 
 
 def _resolve_term(composite_term_part: dict,
@@ -893,8 +909,7 @@ def get_all_projects() -> list[str]:
 
 
 if __name__ == "__main__":
-    settings = SearchSettings()
-    settings.selected_term_fields = ('id', 'drs_name')
-    settings.case_sensitive = False
-    matching_terms = find_terms_from_data_descriptor_in_all_projects('organisation', 'IpsL', settings)
-    print(matching_terms)
+    project_id = 'cmip6plus'
+    if connection:=_get_project_connection(project_id):
+        with connection.create_session() as session:
+            print(_search_terms('pARIS NOT CNES', session, 'institution_id'))
