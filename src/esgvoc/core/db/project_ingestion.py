@@ -1,18 +1,17 @@
 import logging
 from pathlib import Path
 
-import esgvoc.core.constants
-from esgvoc.core.data_handler import JsonLdResource
-from esgvoc.core.db.connection import DBConnection
-from esgvoc.core.service.data_merger import DataMerger
-from esgvoc.core.db.models.mixins import TermKind
 from pydantic import BaseModel
+from sqlalchemy import text
 
+import esgvoc.core.constants
 import esgvoc.core.db.connection as db
-from esgvoc.core.db.connection import read_json_file
+import esgvoc.core.service as service
+from esgvoc.core.data_handler import JsonLdResource
+from esgvoc.core.db.connection import DBConnection, read_json_file
+from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import Collection, Project, PTerm
-import  esgvoc.core.service as service
-
+from esgvoc.core.service.data_merger import DataMerger
 
 _LOGGER = logging.getLogger("project_ingestion")
 
@@ -28,7 +27,7 @@ def infer_term_kind(json_specs: dict) -> TermKind:
 def ingest_metadata_project(connection:DBConnection,git_hash):
     with connection.create_session() as session:
         project = Project(id=str(connection.file_path.stem), git_hash=git_hash,specs={})
-        session.add(project)    
+        session.add(project)
         session.commit()
 
 ###############################
@@ -72,7 +71,7 @@ def ingest_collection(collection_dir_path: Path,
 
     for term_file_path in collection_dir_path.iterdir():
         _LOGGER.debug(f"found term path : {term_file_path}")
-        if term_file_path.is_file() and term_file_path.suffix==".json": 
+        if term_file_path.is_file() and term_file_path.suffix==".json":
             try:
                 json_specs = DataMerger(data=JsonLdResource(uri =str(term_file_path)),
                                         # locally_available={"https://espri-mod.github.io/mip-cmor-tables":".cache/repos/WCRP-universe"}).merge_linked_json()[-1]
@@ -83,7 +82,7 @@ def ingest_collection(collection_dir_path: Path,
 
                 if term_kind_collection is None:
                     term_kind_collection = term_kind
-                
+
             except Exception as e:
                 _LOGGER.warning(f'Unable to read term {term_file_path}. Skip.\n{str(e)}')
                 continue
@@ -115,7 +114,7 @@ def ingest_project(project_dir_path: Path,
         msg = f'Unable to read project SQLite file at {project_db_file_path}. Abort.'
         _LOGGER.fatal(msg)
         raise RuntimeError(msg) from e
-        
+
     with project_connection.create_session() as project_db_session:
         try:
             project_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.PROJECT_SPECS_FILENAME)
@@ -125,10 +124,9 @@ def ingest_project(project_dir_path: Path,
             msg = f'Unable to read project specs file  {project_specs_file_path}. Abort.'
             _LOGGER.fatal(msg)
             raise RuntimeError(msg) from e
-        
+
         project = Project(id=project_id, specs=project_json_specs,git_hash=git_hash)
         project_db_session.add(project)
-        
 
         for collection_dir_path in project_dir_path.iterdir():
             if collection_dir_path.is_dir() and (collection_dir_path / "000_context.jsonld").exists(): #TODO maybe put that in settings
@@ -143,13 +141,14 @@ def ingest_project(project_dir_path: Path,
                     raise RuntimeError(msg) from e
         project_db_session.commit()
 
-
-
-
-
-
-
-
-
-
-
+        # Well, the following instructions are not data duplication. It is more building an index.
+        # Read: https://sqlite.org/fts5.html
+        try:
+            sql_query = 'INSERT INTO pterms_fts5(pk, id, specs, kind, collection_pk) ' + \
+                        'SELECT pk, id, specs, kind, collection_pk FROM pterms;'
+            project_db_session.exec(text(sql_query))
+        except Exception as e:
+            msg = f'Unable to insert rows into pterms_fts5 table for {project_db_file_path}. Abort.'
+            _LOGGER.fatal(msg)
+            raise RuntimeError(msg) from e
+        project_db_session.commit()
