@@ -90,7 +90,7 @@ A term from a CV
         .. note::
                 The term `ipsl` is the same in cmip6 (institution_id) and in universe (institution) since the cmip6 one refers to the universe one:
 
-                Try the one from cmip6plus: `esgvoc get cmip6plus::ipsl. To showcase the possibility to add information in project CV term. We added a 'myprop' attribute in this term in cmip6plus CV.
+                Try the one from cmip6plus: `esgvoc get cmip6plus::ipsl`. To showcase the possibility to add information in project CV term. We added a 'myprop' attribute in this term in cmip6plus CV.
 
    .. group-tab:: API as python lib
 
@@ -107,4 +107,4 @@ A term from a CV
         .. note::
                 The term `ipsl` is the same in cmip6 (institution_id) and in universe (institution) since the cmip6 one refers to the universe one:
 
-                Try the one from cmip6plus: `esgvoc get cmip6plus::ipsl. To showcase the possibility to add information in project CV term. We added a 'myprop' attribute in this term in cmip6plus CV.
+                Try the one from cmip6plus: `esgvoc get cmip6plus::ipsl`. To showcase the possibility to add information in project CV term. We added a 'myprop' attribute in this term in cmip6plus CV.

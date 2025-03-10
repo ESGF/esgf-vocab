@@ -28,7 +28,7 @@ The API offers three main types of functions:
 
 ## Example usage
 
-Below are some examples of how to use the API. For complete documentation, refer to the [API Reference](#) or the [Notebook Guide](https://esgf.github.io/esgf-vocab/guides/basics_esgvoc.html).
+Below are some examples of how to use the API. For complete documentation, refer to the API documentation or the [Notebook Guide](https://esgf.github.io/esgf-vocab/guides/basics_esgvoc.html).
 
 ```python
 import esgvoc.api as ev
@@ -63,4 +63,3 @@ Since Pydantic objects are Python-native and compatible with many frameworks, th
 - **Web Frameworks**: Using terms directly in APIs or web applications (e.g., FastAPI, Django).
 - **Data Pipelines**: Injecting validated terms into ETL workflows or analytics systems.
 - **Configuration Management**: Mapping terms into application configurations or schemas.
-
