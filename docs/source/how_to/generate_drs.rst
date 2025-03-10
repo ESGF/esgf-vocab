@@ -1,5 +1,5 @@
 Generate DRS
-#########
+############
 
 The Data Reference Syntax (DRS) of the World Climate Research Programme's (WCRP) Coupled Model Intercomparison Project (CMIP) is a standardized framework for organizing, naming, and accessing climate model output data. It ensures consistency across the distributed CMIP archives, enabling efficient data discovery, citation, and interoperability.
 
