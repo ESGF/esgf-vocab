@@ -1,6 +1,6 @@
 [project]
 name = "esgvoc"
-version = "0.2.1"
+dynamic = ["version"]
 description = "python library and CLI to interact with WCRP CVs"
 authors = [
     {name = "Sébastien Gardoll", email = "sebastien@gardoll.fr"},
@@ -54,7 +54,7 @@ evs = {cmd = "python src/esgvoc/cli/main.py status"}
 evv = {cmd = "python src/esgvoc/cli/main.py valid"}
 
 [project.scripts]
-esgvoc = "esgvoc.cli.main:main" 
+esgvoc = "esgvoc.cli.main:main"
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -66,3 +66,6 @@ packages = ["src/esgvoc"]
 log_cli = true
 log_cli_level = "ERROR"
 log_cli_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+
+[tool.hatch.version]
+path = "src/esgvoc/__init__.py"
