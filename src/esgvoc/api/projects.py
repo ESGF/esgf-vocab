@@ -1,14 +1,15 @@
 import re
-from collections.abc import Iterable, Sequence
+from typing import Iterable, Sequence, cast
 
 from sqlalchemy import text
-from sqlmodel import Session, and_, col, select
+from sqlmodel import Session, and_, select
 
 import esgvoc.api.universe as universe
 import esgvoc.core.constants as constants
 import esgvoc.core.service as service
-from esgvoc.api._utils import (APIException, get_universe_session,
-                               instantiate_pydantic_term,
+from esgvoc.api._utils import (APIException, execute_match_statement,
+                               generate_matching_condition,
+                               get_universe_session, instantiate_pydantic_term,
                                instantiate_pydantic_terms)
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import ProjectSpecs
@@ -39,21 +40,6 @@ def _get_project_session_with_exception(project_id: str) -> Session:
         return project_session
     else:
         raise APIException(f'unable to find project {project_id}')
-
-
-# Caller of this function must catch sqlalchemy.exc.StatementError as
-# the given expression may crash the query.
-def _search_terms(expression: str, project_session: Session,
-                  collection_id: str|None = None) -> list[PTerm]:
-    matching_condition = col(PTermFTS5.specs).match(expression)
-    if collection_id:
-        collection_condition = col(Collection.id).is_(other=collection_id)
-        statement = select(PTermFTS5).join(Collection).where(collection_condition, matching_condition)
-    else:
-        statement = select(PTermFTS5).where(matching_condition)
-    sttmt = select(PTerm).from_statement(statement.order_by(text('rank')))
-    result = project_session.exec(sttmt).all() # type: ignore
-    return result
 
 
 def _resolve_term(composite_term_part: dict,
@@ -908,8 +894,231 @@ def get_all_projects() -> list[str]:
     return list(service.state_service.projects.keys())
 
 
+def _get_term_in_project(term_id: str, session: Session) -> PTerm | None:
+    statement = select(PTerm).where(PTerm.id == term_id)
+    results = session.exec(statement)
+    result = results.first()  # Term ids are not supposed to be unique within a project.
+    return result
+
+
+def get_term_in_project(project_id: str, term_id: str,
+                        selected_term_fields: Iterable[str] | None = None) -> DataDescriptor | None:
+    """
+    TODO: docstring.
+    """
+    result: DataDescriptor | None = None
+    if connection := _get_project_connection(project_id):
+        with connection.create_session() as session:
+            term_found = _get_term_in_project(term_id, session)
+            if term_found:
+                result = instantiate_pydantic_term(term_found, selected_term_fields)
+    return result
+
+
+def _get_term_in_collection(collection_id: str, term_id: str, session: Session) -> PTerm | None:
+    statement = select(PTerm).join(Collection).where(Collection.id == collection_id,
+                                                     PTerm.id == term_id)
+    results = session.exec(statement)
+    result = results.one_or_none()
+    return result
+
+
+def get_term_in_collection(project_id: str, collection_id: str, term_id: str,
+                           selected_term_fields: Iterable[str] | None = None) -> DataDescriptor | None:
+    """
+    TODO: docstring.
+    """
+    result: DataDescriptor | None = None
+    if connection := _get_project_connection(project_id):
+        with connection.create_session() as session:
+            term_found = _get_term_in_collection(collection_id, term_id, session)
+            if term_found:
+                result = instantiate_pydantic_term(term_found, selected_term_fields)
+    return result
+
+
+def _get_collection_in_project(collection_id: str, session: Session) -> Collection | None:
+    statement = select(Collection).where(Collection.id == collection_id)
+    results = session.exec(statement)
+    result = results.one_or_none()
+    return result
+
+
+def get_collection_in_project(project_id: str, collection_id: str) -> tuple[str, dict] | None:
+    """
+    TODO: docstring.
+    """
+    result: tuple[str, dict] | None = None
+    if connection := _get_project_connection(project_id):
+        with connection.create_session() as session:
+            collection_found = _get_collection_in_project(collection_id, session)
+            if collection_found:
+                result = collection_found.id, collection_found.context
+    return result
+
+
+def get_project(project_id: str) -> ProjectSpecs | None:
+    """
+    Get a project and returns its specifications.
+    This function performs an exact match on the `project_id` and
+    does **not** search for similar or related projects.
+    If the provided `project_id` is not found, the function returns `None`.
+
+    :param project_id: A project id to be found
+    :type project_id: str
+    :returns: The specs of the project found. Returns `None` if no matches are found.
+    :rtype: ProjectSpecs | None
+    """
+    result: ProjectSpecs | None = None
+    if connection := _get_project_connection(project_id):
+        with connection.create_session() as session:
+            project = session.get(Project, constants.SQLITE_FIRST_PK)
+            try:
+                # Project can't be missing if session exists.
+                result = ProjectSpecs(**project.specs)  # type: ignore
+            except Exception as e:
+                msg = f'Unable to read specs in project {project_id}'
+                raise RuntimeError(msg) from e
+    return result
+
+
+def _get_collection_from_data_descriptor_in_project(data_descriptor_id: str,
+                                                    session: Session) -> Collection | None:
+    statement = select(Collection).where(Collection.data_descriptor_id == data_descriptor_id)
+    result = session.exec(statement).one_or_none()
+    return result
+
+
+def get_collection_from_data_descriptor_in_project(project_id: str,
+                                                   data_descriptor_id: str) \
+                                                    -> tuple[str, dict] | None:
+    """
+    TODO: docstring.
+    """
+    result: tuple[str, dict] | None = None
+    if connection := _get_project_connection(project_id):
+        with connection.create_session() as session:
+            collection_found = _get_collection_from_data_descriptor_in_project(data_descriptor_id,
+                                                                               session)
+            if collection_found:
+                result = collection_found.id, collection_found.context
+    return result
+
+
+def get_collection_from_data_descriptor_in_all_projects(data_descriptor_id: str) \
+                                                                     -> list[tuple[str, str, dict]]:
+    """
+    TODO: docstring.
+    """
+    result = list()
+    project_ids = get_all_projects()
+    for project_id in project_ids:
+        collection_found = get_collection_from_data_descriptor_in_project(project_id,
+                                                                          data_descriptor_id)
+        if collection_found:
+            result.append((project_id, collection_found[0], collection_found[1]))
+    return result
+
+
+def R_find_collections_in_project(expression: str, session: Session,
+                                 only_id: bool = False) -> list[Collection]:
+    pass  # TODO: to be implemented.
+
+
+def Rfind_collections_in_project(expression: str, project_id: str,
+                                only_id: bool = False) -> list[tuple[str, dict]]:
+    """
+    TODO: docstring.
+    """
+    result = list()
+    if connection := _get_project_connection(project_id):
+        with connection.create_session() as session:
+            collections_found = R_find_collections_in_project(expression, session, only_id)
+            for collection in collections_found:
+                result.append(collection.id, collection.context)
+
+
+def R_find_terms_in_collection(expression: str, collection_id: str, session: Session,
+                              only_id: bool = False) -> Sequence[PTerm]:
+    matching_condition = generate_matching_condition(PTermFTS5, expression, only_id)
+    where_condition = Collection.id == collection_id, matching_condition
+    tmp_statement = select(PTermFTS5).join(Collection).where(*where_condition)
+    statement = select(PTerm).from_statement(tmp_statement.order_by(text('rank')))
+    return execute_match_statement(expression, statement, session)
+
+
+def R_find_terms_in_project(expression: str, session: Session,
+                           only_id: bool = False) -> Sequence[PTerm]:
+    matching_condition = generate_matching_condition(PTermFTS5, expression, only_id)
+    tmp_statement = select(PTermFTS5).where(matching_condition)
+    statement = select(PTerm).from_statement(tmp_statement.order_by(text('rank')))
+    return execute_match_statement(expression, statement, session)
+
+
+def Rfind_terms_in_collection(expression: str, project_id: str, collection_id: str, only_id: bool = False,
+                             selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
+    """
+    TODO: docstring.
+    """
+    result = list()
+    if connection := _get_project_connection(project_id):
+        with connection.create_session() as session:
+            pterms_found = R_find_terms_in_collection(expression, collection_id, session, only_id)
+            instantiate_pydantic_terms(pterms_found, result, selected_term_fields)
+    return result
+
+
+def Rfind_terms_in_project(expression: str, project_id: str, only_id: bool = False,
+                          selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
+    """
+    TODO: docstring.
+    """
+    result = list()
+    if connection := _get_project_connection(project_id):
+        with connection.create_session() as session:
+            pterms_found = R_find_terms_in_project(expression, session, only_id)
+            instantiate_pydantic_terms(pterms_found, result, selected_term_fields)
+    return result
+
+
+def Rfind_terms_in_all_projects(expression: str, only_id: bool = False,
+                               selected_term_fields: Iterable[str] | None = None) \
+                                                                -> list[tuple[str, list[DataDescriptor]]]:
+    """
+    TODO: docstring.
+    """
+    result = list()
+    project_ids = get_all_projects()
+    for project_id in project_ids:
+        terms_found = Rfind_terms_in_project(expression, project_id, only_id, selected_term_fields)
+        if terms_found:
+            result.append(project_id, terms_found)
+    return result
+
+
+def _find_items_in_project(expression: str, session: Session, only_id: bool = False) \
+                                                               -> list[Collection | PTerm]:
+    pass  # TODO: to be implemented.
+
+
+def find_items_in_project(expression: str, project_id: str, only_id: bool = False,
+                          selected_term_fields: Iterable[str] | None = None) \
+                                                         -> list[tuple[str, dict] | DataDescriptor]:
+    """
+    TODO: docstring.
+    """
+    result = list()
+    if connection := _get_project_connection(project_id):
+        with connection.create_session() as session:
+            items_found = _find_items_in_project(expression, session, only_id)
+            for item in items_found:
+                if issubclass(item, DataDescriptor):
+                    result.append(instantiate_pydantic_term(cast(PTerm, item), selected_term_fields))
+                else:
+                    result.append(item.id, item.context) # It should be a data descriptor.
+    return result
+
+
 if __name__ == "__main__":
     project_id = 'cmip6plus'
-    if connection:=_get_project_connection(project_id):
-        with connection.create_session() as session:
-            print(_search_terms('pARIS NOT CNES', session, 'institution_id'))
+    print(Rfind_terms_in_project('pARIS NOT CNES', project_id))

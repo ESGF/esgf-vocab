@@ -1,6 +1,9 @@
-from typing import Iterable, MutableSequence
+from typing import Iterable, MutableSequence, Sequence
 
-from sqlmodel import Session
+from sqlalchemy import ColumnElement
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm.context import FromStatement
+from sqlmodel import Session, col
 
 import esgvoc.core.constants as api_settings
 import esgvoc.core.service as service
@@ -52,3 +55,21 @@ def instantiate_pydantic_terms(db_terms: Iterable[UTerm|PTerm],
     for db_term in db_terms:
         term = instantiate_pydantic_term(db_term, selected_term_fields)
         list_to_populate.append(term)
+
+
+def generate_matching_condition(cls: type, expression: str, only_id: bool) -> ColumnElement[bool]:
+    if only_id:
+        result = col(cls.id).match(expression)
+    else:
+        result = col(cls.specs).match(expression)
+    return result
+
+
+def execute_match_statement(expression: str, statement: FromStatement, session: Session) -> Sequence:
+    try:
+        raw_results = session.exec(statement)
+        # raw_results.all() returns a list of sqlalquemy rows.
+        results = [result[0] for result in raw_results.all()]
+        return results
+    except OperationalError:
+        raise APIException(f'unable to interpret expression {expression}')
