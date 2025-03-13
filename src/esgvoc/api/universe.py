@@ -372,7 +372,7 @@ def find_items_in_universe(expression: str, only_id: bool = False)  -> list[Item
                                 text("'term' AS TYPE"),
                                 UDataDescriptor.id,
                                 text('rank')).join(UDataDescriptor) \
-                                                .where(term_where_condition)
+                                             .where(term_where_condition)
         try:
             # Items found are kind of tuple with an object, a kindness, a parent id and a rank.
             dds_found = session.exec(dd_statement).all()
@@ -380,9 +380,7 @@ def find_items_in_universe(expression: str, only_id: bool = False)  -> list[Item
             tmp_result = list()
             tmp_result.extend(dds_found)
             tmp_result.extend(terms_found)
-            tmp_result = sorted(tmp_result, key=lambda r: r[3], reverse=True)
-            print(tmp_result[0])
-            print(tmp_result[-1])
+            tmp_result = sorted(tmp_result, key=lambda r: r[3], reverse=False)
             result = [Item(id=r[0], kind=r[1], parent_id=r[2]) for r in tmp_result]
         except OperationalError:
             raise APIException(f"unable to interpret expression '{expression}'")
@@ -390,4 +388,4 @@ def find_items_in_universe(expression: str, only_id: bool = False)  -> list[Item
 
 
 if __name__ == "__main__":
-    find_items_in_universe('institution')
+    find_items_in_universe('ipsl', True)

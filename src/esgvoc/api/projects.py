@@ -1131,7 +1131,7 @@ def find_items_in_project(expression: str, project_id: str, only_id: bool = Fals
                 tmp_result = list()
                 tmp_result.extend(collections_found)
                 tmp_result.extend(terms_found)
-                tmp_result = sorted(tmp_result, key=lambda r: r[3], reverse=True)
+                tmp_result = sorted(tmp_result, key=lambda r: r[3], reverse=False)
                 result = [Item(id=r[0], kind=r[1], parent_id=r[2]) for r in tmp_result]
             except OperationalError:
                 raise APIException(f"unable to interpret expression '{expression}'")
