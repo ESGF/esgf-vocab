@@ -92,7 +92,7 @@ def project_create_db(db_file_path: Path):
             session.exec(text(sql_query))
             session.commit()
     except Exception as e:
-        msg = f'Unable to create table pterms_fts5 for {db_file_path}. Abort.'
+        msg = f'Unable to create table pcollections_fts5 for {db_file_path}. Abort.'
         _LOGGER.fatal(msg)
         raise RuntimeError(msg) from e
 

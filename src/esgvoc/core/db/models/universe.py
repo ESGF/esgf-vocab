@@ -82,13 +82,13 @@ def universe_create_db(db_file_path: Path) -> None:
         raise RuntimeError(msg) from e
     try:
         with connection.create_session() as session:
-            sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS pcollections_fts5 USING ' + \
+            sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS data_descriptors_fts5 USING ' + \
                         'fts5(pk, id, universe_pk, context, ' + \
                         'term_kind, content=data_descriptors, content_rowid=pk);'
             session.exec(text(sql_query))
             session.commit()
     except Exception as e:
-        msg = f'Unable to create table pterms_fts5 for {db_file_path}. Abort.'
+        msg = f'Unable to create table data_descriptors_fts5 for {db_file_path}. Abort.'
         _LOGGER.fatal(msg)
         raise RuntimeError(msg) from e
 
