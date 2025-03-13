@@ -1,12 +1,17 @@
-from typing import Iterable, Sequence, cast
+from typing import Iterable, Sequence
 
-from sqlmodel import Session, select
+from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
+from sqlmodel import Session, col, select
 
-from esgvoc.api._utils import (get_universe_session, instantiate_pydantic_term,
+from esgvoc.api._utils import (APIException, Item, get_universe_session,
+                               instantiate_pydantic_term,
                                instantiate_pydantic_terms)
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.search import SearchSettings, _create_str_comparison_expression
-from esgvoc.core.db.models.universe import UDataDescriptor, UTerm
+from esgvoc.core.db.models.universe import (UDataDescriptor,
+                                            UDataDescriptorFTS5, UTerm,
+                                            UTermFTS5)
 
 
 def _find_terms_in_data_descriptor(data_descriptor_id: str,
@@ -345,29 +350,44 @@ def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, onl
     return result
 
 
-def _find_items_in_universe(expression: str, session: Session, only_id: bool = False) \
-                                                                   -> list[UDataDescriptor | UTerm]:
-    pass  # TODO: to be implemented.
-
-
-def find_items_in_universe(expression: str, project_id: str, only_id: bool = False,
-                           selected_term_fields: Iterable[str] | None = None) \
-                                                         -> list[tuple[str, dict] | DataDescriptor]:
+def find_items_in_universe(expression: str, only_id: bool = False)  -> list[Item]:
     """
     TODO: docstring.
     """
     result = list()
     with get_universe_session() as session:
-        items_found = _find_items_in_universe(expression, session, only_id)
-        for item in items_found:
-            if issubclass(item, DataDescriptor):
-                result.append(instantiate_pydantic_term(cast(UTerm, item), selected_term_fields))
-            else:
-                result.append(item.id, item.context) # It should be a data descriptor.
+        if only_id:
+            dd_column = col(UDataDescriptorFTS5.id)
+            term_column = col(UTermFTS5.id)
+        else:
+            dd_column = col(UDataDescriptorFTS5.id)  # TODO: use specs when implemented!
+            term_column = col(UTermFTS5.specs)
+        dd_where_condition = dd_column.match(expression)
+        dd_statement = select(UDataDescriptorFTS5.id,
+                              text("'data_descriptor' AS TYPE"),
+                              text("'universe' AS TYPE"),
+                              text('rank')).where(dd_where_condition)
+        term_where_condition = term_column.match(expression)
+        term_statement = select(UTermFTS5.id,
+                                text("'term' AS TYPE"),
+                                UDataDescriptor.id,
+                                text('rank')).join(UDataDescriptor) \
+                                                .where(term_where_condition)
+        try:
+            # Items found are kind of tuple with an object, a kindness, a parent id and a rank.
+            dds_found = session.exec(dd_statement).all()
+            terms_found = session.exec(term_statement).all()
+            tmp_result = list()
+            tmp_result.extend(dds_found)
+            tmp_result.extend(terms_found)
+            tmp_result = sorted(tmp_result, key=lambda r: r[3], reverse=True)
+            print(tmp_result[0])
+            print(tmp_result[-1])
+            result = [Item(id=r[0], kind=r[1], parent_id=r[2]) for r in tmp_result]
+        except OperationalError:
+            raise APIException(f"unable to interpret expression '{expression}'")
     return result
 
 
 if __name__ == "__main__":
-    settings = SearchSettings()
-    settings.selected_term_fields = ('id',)
-    print(find_terms_in_data_descriptor('institution', 'ipsl', settings))
+    find_items_in_universe('institution')
