@@ -35,6 +35,7 @@ class ItemKind(Enum):
 class Item(BaseModel):
     id: str
     kind: ItemKind = Field(sa_column=Column(sa.Enum(ItemKind)))
+    parent_id: str
 
 
 def get_pydantic_class(data_descriptor_id_or_term_type: str) -> type[DataDescriptor]:

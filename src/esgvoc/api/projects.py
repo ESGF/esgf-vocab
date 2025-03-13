@@ -1101,9 +1101,8 @@ def Rfind_terms_in_all_projects(expression: str, only_id: bool = False,
 def find_items_in_project(expression: str, project_id: str, only_id: bool = False) -> list[Item]:
     """
     TODO: docstring.
-    order by rank.
+    order by rank: index 0 in list the higher ranked.
     """
-    # TODO: parent of collections and terms.
     result = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
@@ -1113,20 +1112,27 @@ def find_items_in_project(expression: str, project_id: str, only_id: bool = Fals
             else:
                 collection_column = col(PCollectionFTS5.id)  # TODO: use specs when implemented!
                 term_column = col(PTermFTS5.specs)
+
             collection_where_condition = collection_column.match(expression)
-            term_where_condition = term_column.match(expression)
             collection_statement = select(PCollectionFTS5.id,
                                           text("'collection' AS TYPE"),
+                                          text(f"'{project_id}' AS TYPE"),
                                           text('rank')).where(collection_where_condition)
+            term_where_condition = term_column.match(expression)
             term_statement = select(PTermFTS5.id,
                                     text("'term' AS TYPE"),
-                                    text('rank')).where(term_where_condition)
-            statement_to_be_executed = term_statement.union(collection_statement)
+                                    Collection.id,
+                                    text('rank')).join(Collection) \
+                                                 .where(term_where_condition)
             try:
-                items_found = session.exec(statement_to_be_executed.order_by(text('rank')))
-                for item_found in items_found:
-                    item = Item(id=item_found[0], kind=item_found[1])
-                    result.append(item)
+                # Items found are kind of tuple with an object, a kindness, a parent id and a rank.
+                collections_found = session.exec(collection_statement).all()
+                terms_found = session.exec(term_statement).all()
+                tmp_result = list()
+                tmp_result.extend(collections_found)
+                tmp_result.extend(terms_found)
+                tmp_result = sorted(tmp_result, key=lambda r: r[3], reverse=True)
+                result = [Item(id=r[0], kind=r[1], parent_id=r[2]) for r in tmp_result]
             except OperationalError:
                 raise APIException(f"unable to interpret expression '{expression}'")
     return result
@@ -1134,4 +1140,4 @@ def find_items_in_project(expression: str, project_id: str, only_id: bool = Fals
 
 if __name__ == "__main__":
     project_id = 'cmip6plus'
-    print(find_items_in_project('^IPsl', project_id, True))
+    print(find_items_in_project('institution', project_id, False)[0])
