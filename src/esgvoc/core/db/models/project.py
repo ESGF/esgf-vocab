@@ -29,6 +29,8 @@ class Collection(SQLModel, PkMixin, IdMixin, table=True):
     term_kind: TermKind = Field(sa_column=Column(sa.Enum(TermKind)))
 
 
+# Well, the following instructions are not data duplication. It is more building an index.
+# Read: https://sqlite.org/fts5.html
 class PCollectionFTS5(SQLModel, PkMixin, IdMixin, table=True):
     __tablename__ = "pcollections_fts5"
     data_descriptor_id: str
