@@ -31,7 +31,6 @@ class ItemKind(Enum):
 
 # TODO:
 # - to be documented
-# - add parent container.
 class Item(BaseModel):
     id: str
     kind: ItemKind = Field(sa_column=Column(sa.Enum(ItemKind)))
