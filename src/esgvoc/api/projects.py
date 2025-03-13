@@ -20,8 +20,9 @@ from esgvoc.api.search import (MatchingTerm, SearchSettings,
                                _create_str_comparison_expression)
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
-from esgvoc.core.db.models.project import (Collection, PCollectionFTS5,
-                                           Project, PTerm, PTermFTS5)
+from esgvoc.core.db.models.project import (Collection, CollectionFTS,
+                                           PCollectionFTS5, Project, PTerm,
+                                           PTermFTS5)
 from esgvoc.core.db.models.universe import UTerm
 
 # [OPTIMIZATION]
@@ -1024,13 +1025,20 @@ def get_collection_from_data_descriptor_in_all_projects(data_descriptor_id: str)
 
 def R_find_collections_in_project(expression: str, session: Session,
                                  only_id: bool = False) -> list[Collection]:
-    pass  # TODO: to be implemented.
+    # TODO: replace the following instructions by this, when specs will ba available in Collection.
+    # matching_condition = generate_matching_condition(CollectionFTS, only_id)
+    matching_condition = col(CollectionFTS.id).match(expression)
+    tmp_statement = select(CollectionFTS).where(matching_condition)
+    statement = select(Collection).from_statement(tmp_statement.order_by(text('rank')))
+    return execute_match_statement(expression, statement, session)
 
 
 def Rfind_collections_in_project(expression: str, project_id: str,
                                 only_id: bool = False) -> list[tuple[str, dict]]:
     """
     TODO: docstring.
+
+    only_id alway True at the moment.
     """
     result = list()
     if connection := _get_project_connection(project_id):
