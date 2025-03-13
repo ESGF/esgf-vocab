@@ -1,9 +1,12 @@
+from enum import Enum
 from typing import Iterable, MutableSequence, Sequence
 
+import sqlalchemy as sa
+from pydantic import BaseModel
 from sqlalchemy import ColumnElement
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm.context import FromStatement
-from sqlmodel import Session, col
+from sqlmodel import Column, Field, Session, col
 
 import esgvoc.core.constants as api_settings
 import esgvoc.core.service as service
@@ -17,6 +20,21 @@ UNIVERSE_DB_CONNECTION = service.state_service.universe.db_connection
 
 
 class APIException(Exception): ...
+
+
+# TODO: to be documented
+class ItemKind(Enum):
+    DATA_DESCRIPTOR = "data_descriptor"
+    COLLECTION = "collection"
+    TERM = "term"
+
+
+# TODO:
+# - to be documented
+# - add parent container.
+class Item(BaseModel):
+    id: str
+    kind: ItemKind = Field(sa_column=Column(sa.Enum(ItemKind)))
 
 
 def get_pydantic_class(data_descriptor_id_or_term_type: str) -> type[DataDescriptor]:
@@ -72,4 +90,4 @@ def execute_match_statement(expression: str, statement: FromStatement, session: 
         results = [result[0] for result in raw_results.all()]
         return results
     except OperationalError:
-        raise APIException(f'unable to interpret expression {expression}')
+        raise APIException(f"unable to interpret expression '{expression}'")

@@ -1,13 +1,14 @@
 import re
-from typing import Iterable, Sequence, cast
+from typing import Iterable, Sequence
 
 from sqlalchemy import text
-from sqlmodel import Session, and_, select
+from sqlalchemy.exc import OperationalError
+from sqlmodel import Session, and_, col, select
 
 import esgvoc.api.universe as universe
 import esgvoc.core.constants as constants
 import esgvoc.core.service as service
-from esgvoc.api._utils import (APIException, execute_match_statement,
+from esgvoc.api._utils import (APIException, Item, execute_match_statement,
                                generate_matching_condition,
                                get_universe_session, instantiate_pydantic_term,
                                instantiate_pydantic_terms)
@@ -19,7 +20,8 @@ from esgvoc.api.search import (MatchingTerm, SearchSettings,
                                _create_str_comparison_expression)
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
-from esgvoc.core.db.models.project import Collection, Project, PTerm, PTermFTS5
+from esgvoc.core.db.models.project import (Collection, PCollectionFTS5,
+                                           Project, PTerm, PTermFTS5)
 from esgvoc.core.db.models.universe import UTerm
 
 # [OPTIMIZATION]
@@ -1096,29 +1098,40 @@ def Rfind_terms_in_all_projects(expression: str, only_id: bool = False,
     return result
 
 
-def _find_items_in_project(expression: str, session: Session, only_id: bool = False) \
-                                                               -> list[Collection | PTerm]:
-    pass  # TODO: to be implemented.
-
-
-def find_items_in_project(expression: str, project_id: str, only_id: bool = False,
-                          selected_term_fields: Iterable[str] | None = None) \
-                                                         -> list[tuple[str, dict] | DataDescriptor]:
+def find_items_in_project(expression: str, project_id: str, only_id: bool = False) -> list[Item]:
     """
     TODO: docstring.
+    order by rank.
     """
+    # TODO: parent of collections and terms.
     result = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
-            items_found = _find_items_in_project(expression, session, only_id)
-            for item in items_found:
-                if issubclass(item, DataDescriptor):
-                    result.append(instantiate_pydantic_term(cast(PTerm, item), selected_term_fields))
-                else:
-                    result.append(item.id, item.context) # It should be a data descriptor.
+            if only_id:
+                collection_column = col(PCollectionFTS5.id)
+                term_column = col(PTermFTS5.id)
+            else:
+                collection_column = col(PCollectionFTS5.id)  # TODO: use specs when implemented!
+                term_column = col(PTermFTS5.specs)
+            collection_where_condition = collection_column.match(expression)
+            term_where_condition = term_column.match(expression)
+            collection_statement = select(PCollectionFTS5.id,
+                                          text("'collection' AS TYPE"),
+                                          text('rank')).where(collection_where_condition)
+            term_statement = select(PTermFTS5.id,
+                                    text("'term' AS TYPE"),
+                                    text('rank')).where(term_where_condition)
+            statement_to_be_executed = term_statement.union(collection_statement)
+            try:
+                items_found = session.exec(statement_to_be_executed.order_by(text('rank')))
+                for item_found in items_found:
+                    item = Item(id=item_found[0], kind=item_found[1])
+                    result.append(item)
+            except OperationalError:
+                raise APIException(f"unable to interpret expression '{expression}'")
     return result
 
 
 if __name__ == "__main__":
     project_id = 'cmip6plus'
-    print(Rfind_terms_in_project('pARIS NOT CNES', project_id))
+    print(find_items_in_project('^IPsl', project_id, True))
