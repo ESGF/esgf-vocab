@@ -29,7 +29,7 @@ class Collection(SQLModel, PkMixin, IdMixin, table=True):
     term_kind: TermKind = Field(sa_column=Column(sa.Enum(TermKind)))
 
 
-# Well, the following instructions are not data duplication. It is more building an index.
+# Well, the following instructions are not data duplication. It is more building an index.
 # Read: https://sqlite.org/fts5.html
 class PCollectionFTS5(SQLModel, PkMixin, IdMixin, table=True):
     __tablename__ = "pcollections_fts5"
@@ -48,7 +48,7 @@ class PTerm(SQLModel, PkMixin, IdMixin, table=True):
     __table_args__ = (sa.Index("drs_name_index", specs.sa_column["drs_name"]), )
 
 
-# Well, the following instructions are not data duplication. It is more building an index.
+# Well, the following instructions are not data duplication. It is more building an index.
 # Read: https://sqlite.org/fts5.html
 class PTermFTS5(SQLModel, PkMixin, IdMixin, table=True):
     __tablename__ = "pterms_fts5"
@@ -65,7 +65,7 @@ def project_create_db(db_file_path: Path):
         _LOGGER.fatal(msg)
         raise RuntimeError(msg) from e
     try:
-        # Do not include pterms_fts5 table: it is build from a raw SQL query.
+        # Do not include pterms_fts5 table: it is build from a raw SQL query.
         tables_to_be_created = [SQLModel.metadata.tables['projects'],
                                 SQLModel.metadata.tables['collections'],
                                 SQLModel.metadata.tables['pterms']]

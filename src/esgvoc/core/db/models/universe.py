@@ -27,7 +27,7 @@ class UDataDescriptor(SQLModel, PkMixin, IdMixin, table=True):
     term_kind: TermKind = Field(sa_column=Column(sa.Enum(TermKind)))
 
 
-# Well, the following instructions are not data duplication. It is more building an index.
+# Well, the following instructions are not data duplication. It is more building an index.
 # Read: https://sqlite.org/fts5.html
 class UDataDescriptorFTS5(SQLModel, PkMixin, IdMixin, table=True):
     __tablename__ = "udata_descriptors_fts5"
@@ -44,7 +44,7 @@ class UTerm(SQLModel, PkMixin, IdMixin, table=True):
     data_descriptor: UDataDescriptor = Relationship(back_populates="terms")
 
 
-# Well, the following instructions are not data duplication. It is more building an index.
+# Well, the following instructions are not data duplication. It is more building an index.
 # Read: https://sqlite.org/fts5.html
 class UTermFTS5(SQLModel, PkMixin, IdMixin, table=True):
     __tablename__ = "uterms_fts5"

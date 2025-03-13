@@ -74,7 +74,6 @@ class DrsGenerator(DrsApplication):
         """
         return self._generate_from_bag_of_terms(terms, self.dataset_id_specs)
 
-
     def generate_file_name_from_mapping(self, mapping: Mapping[str, str]) -> DrsGenerationReport:
         """
         Generate a file name DRS expression from a mapping of collection ids and terms.
@@ -88,7 +87,7 @@ class DrsGenerator(DrsApplication):
         """
         report = self._generate_from_mapping(mapping, self.file_name_specs)
         report.generated_drs_expression = report.generated_drs_expression + \
-                                          self._get_full_file_name_extension()
+                                          self._get_full_file_name_extension() # noqa E127
         return report
 
     def generate_file_name_from_bag_of_terms(self, terms: Iterable[str]) -> DrsGenerationReport:
@@ -104,11 +103,11 @@ class DrsGenerator(DrsApplication):
         """
         report = self._generate_from_bag_of_terms(terms, self.file_name_specs)
         report.generated_drs_expression = report.generated_drs_expression + \
-                                          self._get_full_file_name_extension()
+                                          self._get_full_file_name_extension() # noqa E127
         return report
 
     def generate_from_mapping(self, mapping: Mapping[str, str],
-                              drs_type: DrsType|str) -> DrsGenerationReport:
+                              drs_type: DrsType | str) -> DrsGenerationReport:
         """
         Generate a DRS expression from a mapping of collection ids and terms.
 
@@ -129,8 +128,8 @@ class DrsGenerator(DrsApplication):
             case _:
                 raise RuntimeError(f'unsupported drs type {drs_type}')
 
-    def generate_from_bag_of_terms(self, terms: Iterable[str], drs_type: DrsType|str) \
-                                                                              -> DrsGenerationReport:
+    def generate_from_bag_of_terms(self, terms: Iterable[str], drs_type: DrsType | str) \
+                                                                             -> DrsGenerationReport: # noqa E127
         """
         Generate a DRS expression from an unordered bag of terms.
 
@@ -151,24 +150,23 @@ class DrsGenerator(DrsApplication):
             case _:
                 raise RuntimeError(f'unsupported drs type {drs_type}')
 
-
     def _generate_from_mapping(self, mapping: Mapping[str, str], specs: DrsSpecification) \
-                                                                              -> DrsGenerationReport:
+                                                                            -> DrsGenerationReport: # noqa E127
         drs_expression, errors, warnings = self.__generate_from_mapping(mapping, specs, True)
         if self.pedantic:
             errors.extend(warnings)
             warnings.clear()
         return DrsGenerationReport(project_id=self.project_id, type=specs.type,
-                                  given_mapping_or_bag_of_terms=mapping,
-                                  mapping_used=mapping,
-                                  generated_drs_expression=drs_expression,
-                                  errors=cast(list[GenerationError], errors),
-                                  warnings=cast(list[GenerationWarning], warnings))
+                                   given_mapping_or_bag_of_terms=mapping,
+                                   mapping_used=mapping,
+                                   generated_drs_expression=drs_expression,
+                                   errors=cast(list[GenerationError], errors),
+                                   warnings=cast(list[GenerationWarning], warnings))
 
     def __generate_from_mapping(self, mapping: Mapping[str, str],
                                 specs: DrsSpecification,
-                                has_to_valid_terms: bool)\
-                                          -> tuple[str, list[GenerationIssue], list[GenerationIssue]]:
+                                has_to_valid_terms: bool) \
+                                        -> tuple[str, list[GenerationIssue], list[GenerationIssue]]: # noqa E127
         errors: list[GenerationIssue] = list()
         warnings: list[GenerationIssue] = list()
         drs_expression = ""
@@ -186,19 +184,19 @@ class DrsGenerator(DrsApplication):
                                                                            collection_id)
                         if not matching_terms:
                             issue = InvalidTerm(term=part_value,
-                                                 term_position=part_position,
-                                                 collection_id_or_constant_value=collection_id)
+                                                term_position=part_position,
+                                                collection_id_or_constant_value=collection_id)
                             errors.append(issue)
                             part_value = DrsGenerationReport.INVALID_TAG
                 else:
                     other_issue = MissingTerm(collection_id=collection_id,
-                                               collection_position=part_position)
+                                              collection_position=part_position)
                     if collection_part.is_required:
                         errors.append(other_issue)
                         part_value = DrsGenerationReport.MISSING_TAG
                     else:
                         warnings.append(other_issue)
-                        continue # The for loop.
+                        continue  # The for loop.
             else:
                 constant_part = cast(DrsConstant, part)
                 part_value = constant_part.value
@@ -209,7 +207,7 @@ class DrsGenerator(DrsApplication):
         return drs_expression, errors, warnings
 
     def _generate_from_bag_of_terms(self, terms: Iterable[str], specs: DrsSpecification) \
-                                                                              -> DrsGenerationReport:
+                                                                             -> DrsGenerationReport: # noqa E127
         collection_terms_mapping: dict[str, set[str]] = dict()
         for term in terms:
             matching_terms = projects.valid_term_in_project(term, self.project_id)
@@ -226,14 +224,14 @@ class DrsGenerator(DrsApplication):
             errors.extend(warnings)
             warnings.clear()
         return DrsGenerationReport(project_id=self.project_id, type=specs.type,
-                                  given_mapping_or_bag_of_terms=terms,
-                                  mapping_used=mapping,generated_drs_expression=drs_expression,
-                                  errors=cast(list[GenerationError], errors),
-                                  warnings=cast(list[GenerationWarning], warnings))
+                                   given_mapping_or_bag_of_terms=terms,
+                                   mapping_used=mapping, generated_drs_expression=drs_expression,
+                                   errors=cast(list[GenerationError], errors),
+                                   warnings=cast(list[GenerationWarning], warnings))
 
     @staticmethod
     def _resolve_conflicts(collection_terms_mapping: dict[str, set[str]]) \
-                                            -> tuple[dict[str, set[str]], list[GenerationIssue]]:
+                                               -> tuple[dict[str, set[str]], list[GenerationIssue]]: # noqa E127
         warnings: list[GenerationIssue] = list()
         conflicting_collection_ids_list: list[list[str]] = list()
         collection_ids: list[str] = list(collection_terms_mapping.keys())
@@ -242,8 +240,8 @@ class DrsGenerator(DrsApplication):
         for l_collection_index in range(0, len_collection_ids - 1):
             conflicting_collection_ids: list[str] = list()
             for r_collection_index in range(l_collection_index + 1, len_collection_ids):
-                if collection_terms_mapping[collection_ids[l_collection_index]].isdisjoint \
-                       (collection_terms_mapping[collection_ids[r_collection_index]]):
+                if collection_terms_mapping[collection_ids[l_collection_index]].isdisjoint(
+                       collection_terms_mapping[collection_ids[r_collection_index]]):
                     continue
                 else:
                     not_registered = True
@@ -286,7 +284,7 @@ class DrsGenerator(DrsApplication):
                     DrsGenerator._remove_ids_from_conflicts(conflicting_collection_ids_list,
                                                             collection_ids_to_be_removed)
                     DrsGenerator._remove_term_from_other_term_sets(collection_terms_mapping,
-                                                      collection_ids_to_be_removed)
+                                                                   collection_ids_to_be_removed)
                 # Every time conflicting_collection_ids_list is modified, we must restart the loop,
                 # as conflicting collections may be resolved.
                 continue
@@ -306,7 +304,7 @@ class DrsGenerator(DrsApplication):
                 DrsGenerator._remove_ids_from_conflicts(conflicting_collection_ids_list,
                                                         wining_collection_ids)
                 DrsGenerator._remove_term_from_other_term_sets(collection_terms_mapping,
-                                                  wining_collection_ids)
+                                                               wining_collection_ids)
                 # Every time conflicting_collection_ids_list is modified, we must restart the loop,
                 # as conflicting collections may be resolved.
                 continue
@@ -316,13 +314,10 @@ class DrsGenerator(DrsApplication):
             wining_id_and_term_pairs: list[tuple[str, str]] = list()
             for collection_ids in conflicting_collection_ids_list:
                 for collection_index in range(0, len(collection_ids)):
+                    collection_set = collection_ids[collection_index + 1:] + collection_ids[:collection_index]
                     diff: set[str] = collection_terms_mapping[collection_ids[collection_index]]\
-                                         .difference(
-                                                     *[collection_terms_mapping[index]
-                                               for index in collection_ids[collection_index + 1 :] +\
-                                                        collection_ids[:collection_index]
-                                                      ]
-                                                    )
+                                         .difference(*[collection_terms_mapping[index] # noqa E127
+                                                     for index in collection_set])
                     if len(diff) == 1:
                         wining_id_and_term_pairs.append((collection_ids[collection_index],
                                                          _get_first_item(diff)))
@@ -341,12 +336,12 @@ class DrsGenerator(DrsApplication):
                                                                wining_collection_ids)
                 continue
             else:
-                break # Stop the loop when no progress is made.
+                break  # Stop the loop when no progress is made.
         return collection_terms_mapping, warnings
 
     @staticmethod
     def _check_collection_terms_mapping(collection_terms_mapping: dict[str, set[str]]) \
-                                                     -> tuple[dict[str, str], list[GenerationIssue]]:
+                                                    -> tuple[dict[str, str], list[GenerationIssue]]: # noqa E127
         errors: list[GenerationIssue] = list()
         # 1. Looking for collections that share strictly the same term(s).
         collection_ids: list[str] = list(collection_terms_mapping.keys())
@@ -358,7 +353,7 @@ class DrsGenerator(DrsApplication):
             for r_collection_index in range(l_collection_index + 1, len_collection_ids):
                 r_collection_id = collection_ids[r_collection_index]
                 r_term_set = collection_terms_mapping[r_collection_id]
-                # check if the set is empty because the difference will always be an empty set!
+                # Check if the set is empty because the difference will always be an empty set!
                 if l_term_set and (not l_term_set.difference(r_term_set)):
                     not_registered = True
                     for faulty_collections in faulty_collections_list:
@@ -386,9 +381,9 @@ class DrsGenerator(DrsApplication):
                 result[collection_id] = _get_first_item(term_set)
             elif len_term_set > 1:
                 other_issue = TooManyTermCollection(collection_id=collection_id,
-                                                     terms=_transform_set_and_sort(term_set))
+                                                    terms=_transform_set_and_sort(term_set))
                 errors.append(other_issue)
-            #else: Don't add emptied collection to the result.
+            # else: Don't add emptied collection to the result.
         return result, errors
 
     @staticmethod
@@ -414,7 +409,7 @@ if __name__ == "__main__":
     project_id = 'cmip6plus'
     generator = DrsGenerator(project_id)
     mapping = \
-    {
+    { # noqa E127
         'member_id': 'r2i2p1f2',
         'activity_id': 'CMIP',
         'source_id': 'MIROC6',

@@ -1,11 +1,13 @@
-from pathlib import Path
 import json
+from pathlib import Path
+
 from sqlalchemy import Engine
 from sqlmodel import Session, create_engine
 
 
 class DBConnection:
     SQLITE_URL_PREFIX = 'sqlite://'
+
     def __init__(self, db_file_path: Path, echo: bool = False) -> None:
         self.engine = create_engine(f'{DBConnection.SQLITE_URL_PREFIX}/{db_file_path}', echo=echo)
         self.name = db_file_path.stem
@@ -20,7 +22,7 @@ class DBConnection:
     def create_session(self) -> Session:
         return Session(self.engine)
 
-    def get_name(self) -> str|None:
+    def get_name(self) -> str | None:
         return self.name
 
     def get_file_path(self) -> Path:

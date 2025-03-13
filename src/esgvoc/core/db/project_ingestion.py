@@ -15,6 +15,7 @@ from esgvoc.core.service.data_merger import DataMerger
 
 _LOGGER = logging.getLogger("project_ingestion")
 
+
 def infer_term_kind(json_specs: dict) -> TermKind:
     if esgvoc.core.constants.PATTERN_JSON_KEY in json_specs:
         return TermKind.PATTERN
@@ -24,15 +25,16 @@ def infer_term_kind(json_specs: dict) -> TermKind:
         return TermKind.PLAIN
 
 
-def ingest_metadata_project(connection:DBConnection,git_hash):
+def ingest_metadata_project(connection: DBConnection, git_hash):
     with connection.create_session() as session:
-        project = Project(id=str(connection.file_path.stem), git_hash=git_hash,specs={})
+        project = Project(id=str(connection.file_path.stem), git_hash=git_hash, specs={})
         session.add(project)
         session.commit()
 
-###############################
+
 def get_data_descriptor_id_from_context(collection_context: dict) -> str:
-    data_descriptor_url = collection_context[esgvoc.core.constants.CONTEXT_JSON_KEY][esgvoc.core.constants.DATA_DESCRIPTOR_JSON_KEY]
+    data_descriptor_url = collection_context[esgvoc.core.constants.CONTEXT_JSON_KEY]\
+                                            [esgvoc.core.constants.DATA_DESCRIPTOR_JSON_KEY] # noqa E211
     return Path(data_descriptor_url).name
 
 
@@ -49,8 +51,6 @@ def instantiate_project_term(universe_term_json_specs: dict,
 def ingest_collection(collection_dir_path: Path,
                       project: Project,
                       project_db_session) -> None:
-
-
     collection_id = collection_dir_path.name
     collection_context_file_path = collection_dir_path.joinpath(esgvoc.core.constants.CONTEXT_FILENAME)
     try:
@@ -66,16 +66,17 @@ def ingest_collection(collection_dir_path: Path,
         context=collection_context,
         project=project,
         data_descriptor_id=data_descriptor_id,
-        term_kind="") # we ll know it only when we ll add a term (hypothesis all term have the same kind in a collection
+        term_kind="")  # We ll know it only when we ll add a term
+                       # (hypothesis all term have the same kind in a collection) # noqa E116
     term_kind_collection = None
 
     for term_file_path in collection_dir_path.iterdir():
         _LOGGER.debug(f"found term path : {term_file_path}")
-        if term_file_path.is_file() and term_file_path.suffix==".json":
+        if term_file_path.is_file() and term_file_path.suffix == ".json":
             try:
-                json_specs = DataMerger(data=JsonLdResource(uri =str(term_file_path)),
+                json_specs = DataMerger(data=JsonLdResource(uri=str(term_file_path)),
                                         # locally_available={"https://espri-mod.github.io/mip-cmor-tables":".cache/repos/WCRP-universe"}).merge_linked_json()[-1]
-                                        locally_available={"https://espri-mod.github.io/mip-cmor-tables":service.service_settings.universe.local_path}).merge_linked_json()[-1]
+                                        locally_available={"https://espri-mod.github.io/mip-cmor-tables": service.service_settings.universe.local_path}).merge_linked_json()[-1]
 
                 term_kind = infer_term_kind(json_specs)
                 term_id = json_specs["id"]
@@ -104,9 +105,10 @@ def ingest_collection(collection_dir_path: Path,
         collection.term_kind = term_kind_collection
     project_db_session.add(collection)
 
+
 def ingest_project(project_dir_path: Path,
                    project_db_file_path: Path,
-                   git_hash : str
+                   git_hash: str
                    ):
     try:
         project_connection = db.DBConnection(project_db_file_path)
@@ -125,11 +127,12 @@ def ingest_project(project_dir_path: Path,
             _LOGGER.fatal(msg)
             raise RuntimeError(msg) from e
 
-        project = Project(id=project_id, specs=project_json_specs,git_hash=git_hash)
+        project = Project(id=project_id, specs=project_json_specs, git_hash=git_hash)
         project_db_session.add(project)
 
         for collection_dir_path in project_dir_path.iterdir():
-            if collection_dir_path.is_dir() and (collection_dir_path / "000_context.jsonld").exists(): #TODO maybe put that in settings
+            # TODO maybe put that in settings
+            if collection_dir_path.is_dir() and (collection_dir_path / "000_context.jsonld").exists():
                 _LOGGER.debug(f"found collection dir : {collection_dir_path}")
                 try:
                     ingest_collection(collection_dir_path,
@@ -141,7 +144,7 @@ def ingest_project(project_dir_path: Path,
                     raise RuntimeError(msg) from e
         project_db_session.commit()
 
-        # Well, the following instructions are not data duplication. It is more building an index.
+        # Well, the following instructions are not data duplication. It is more building an index.
         # Read: https://sqlite.org/fts5.html
         try:
             sql_query = 'INSERT INTO pterms_fts5(pk, id, specs, kind, collection_pk) ' + \

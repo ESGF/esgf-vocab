@@ -16,6 +16,7 @@ from esgvoc.core.service.data_merger import DataMerger
 
 _LOGGER = logging.getLogger(__name__)
 
+
 def infer_term_kind(json_specs: dict) -> TermKind:
     if esgvoc.core.constants.PATTERN_JSON_KEY in json_specs:
         return TermKind.PATTERN
@@ -34,7 +35,8 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
         raise IOError(msg) from e
 
     for data_descriptor_dir_path in universe_repo_dir_path.iterdir():
-        if data_descriptor_dir_path.is_dir() and (data_descriptor_dir_path / "000_context.jsonld").exists(): # TODO maybe put that in setting
+        if data_descriptor_dir_path.is_dir() and \
+           (data_descriptor_dir_path / "000_context.jsonld").exists():  # TODO may be put that in setting
             try:
                 ingest_data_descriptor(data_descriptor_dir_path, connection)
             except Exception as e:
@@ -65,16 +67,15 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
         session.commit()
 
 
-def ingest_metadata_universe(connection,git_hash):
+def ingest_metadata_universe(connection, git_hash):
     with connection.create_session() as session:
         universe = Universe(git_hash=git_hash)
         session.add(universe)
         session.commit()
 
+
 def ingest_data_descriptor(data_descriptor_path: Path,
                            connection: db.DBConnection) -> None:
-
-
     data_descriptor_id = data_descriptor_path.name
 
     context_file_path = data_descriptor_path.joinpath(esgvoc.core.constants.CONTEXT_FILENAME)
@@ -87,9 +88,10 @@ def ingest_data_descriptor(data_descriptor_path: Path,
         return
 
     with connection.create_session() as session:
+        # We ll know it only when we ll add a term (hypothesis all term have the same kind in a data_descriptor)
         data_descriptor = UDataDescriptor(id=data_descriptor_id,
-                                         context=context,
-                                         term_kind="") # we ll know it only when we ll add a term (hypothesis all term have the same kind in a data_descriptor)
+                                          context=context,
+                                          term_kind="")
         term_kind_dd = None
 
         _LOGGER.debug(f"add data_descriptor : {data_descriptor_id}")
@@ -97,8 +99,8 @@ def ingest_data_descriptor(data_descriptor_path: Path,
             _LOGGER.debug(f"found term path : {term_file_path}, {term_file_path.suffix}")
             if term_file_path.is_file() and term_file_path.suffix == ".json":
                 try:
-                    json_specs=DataMerger(data=JsonLdResource(uri=str(term_file_path)),
-                                          locally_available={"https://espri-mod.github.io/mip-cmor-tables":service.service_settings.universe.local_path}).merge_linked_json()[-1]
+                    json_specs = DataMerger(data=JsonLdResource(uri=str(term_file_path)),
+                                            locally_available={"https://espri-mod.github.io/mip-cmor-tables": service.service_settings.universe.local_path}).merge_linked_json()[-1]
                     term_kind = infer_term_kind(json_specs)
                     term_id = json_specs["id"]
 
@@ -106,7 +108,8 @@ def ingest_data_descriptor(data_descriptor_path: Path,
                         term_kind_dd = term_kind
 
                 except Exception as e:
-                    _LOGGER.warning(f'Unable to read term {term_file_path} for data descriptor {data_descriptor_path}. Skip.\n{str(e)}')
+                    _LOGGER.warning(f'Unable to read term {term_file_path} for data descriptor ' +
+                                    f'{data_descriptor_path}. Skip.\n{str(e)}')
                     continue
                 if term_id and json_specs and data_descriptor and term_kind:
                     _LOGGER.debug("adding {term_id}")
@@ -122,9 +125,10 @@ def ingest_data_descriptor(data_descriptor_path: Path,
         session.add(data_descriptor)
         session.commit()
 
+
 def get_universe_term(data_descriptor_id: str,
-                     term_id: str,
-                     universe_db_session: Session) -> tuple[TermKind, dict]:
+                      term_id: str,
+                      universe_db_session: Session) -> tuple[TermKind, dict]:
     statement = (
         select(UTerm)
         .join(UDataDescriptor)
@@ -136,9 +140,8 @@ def get_universe_term(data_descriptor_id: str,
 
 
 if __name__ == "__main__":
-    #ingest_universe(db.UNIVERSE_DIR_PATH, db.UNIVERSE_DB_FILE_PATH)
     import os
     root_dir = Path(str(os.getcwd())).parent.parent
     print(root_dir)
-    universe_create_db(root_dir /  Path(".cache/dbs/universe.sqlite"))
-    ingest_universe(root_dir / Path(".cache/repos/mip-cmor-tables"),root_dir /  Path(".cache/dbs/universe.sqlite"))
+    universe_create_db(root_dir / Path(".cache/dbs/universe.sqlite"))
+    ingest_universe(root_dir / Path(".cache/repos/mip-cmor-tables"), root_dir / Path(".cache/dbs/universe.sqlite"))

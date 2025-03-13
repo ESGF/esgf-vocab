@@ -46,15 +46,19 @@ class ParsingIssueVisitor(Protocol):
     def visit_space_issue(self, issue: "Space") -> Any:
         """Visit a space issue."""
         pass
+
     def visit_unparsable_issue(self, issue: "Unparsable") -> Any:
         """Visit a unparsable issue."""
         pass
+
     def visit_extra_separator_issue(self, issue: "ExtraSeparator") -> Any:
         """Visit an extra separator issue."""
         pass
+
     def visit_extra_char_issue(self, issue: "ExtraChar") -> Any:
         """Visit an extra char issue."""
         pass
+
     def visit_blank_term_issue(self, issue: "BlankTerm") -> Any:
         """Visit a blank term issue."""
         pass
@@ -67,12 +71,15 @@ class ComplianceIssueVisitor(Protocol):
     def visit_filename_extension_issue(self, issue: "FileNameExtensionIssue") -> Any:
         """Visit a file name extension issue."""
         pass
+
     def visit_invalid_term_issue(self, issue: "InvalidTerm") -> Any:
         """Visit an invalid term issue."""
         pass
+
     def visit_extra_term_issue(self, issue: "ExtraTerm") -> Any:
         """Visit an extra term issue."""
         pass
+
     def visit_missing_term_issue(self, issue: "MissingTerm") -> Any:
         """Visit a missing term issue."""
         pass
@@ -89,15 +96,19 @@ class GenerationIssueVisitor(Protocol):
     def visit_invalid_term_issue(self, issue: "InvalidTerm") -> Any:
         """Visit an invalid term issue."""
         pass
+
     def visit_missing_term_issue(self, issue: "MissingTerm") -> Any:
         """Visit a missing term issue."""
         pass
+
     def visit_too_many_terms_collection_issue(self, issue: "TooManyTermCollection") -> Any:
         """Visit a too many terms collection issue."""
         pass
+
     def visit_conflicting_collections_issue(self, issue: "ConflictingCollections") -> Any:
         """Visit a conflicting collections issue."""
         pass
+
     def visit_assign_term_issue(self, issue: "AssignedTerm") -> Any:
         """Visit an assign term issue."""
         pass
@@ -126,7 +137,7 @@ class ParsingIssue(DrsIssue):
     """
     Generic class for the DRS parsing issues.
     """
-    column: int|None = None
+    column: int | None = None
     """the column of faulty characters."""
 
     @abstractmethod
@@ -148,10 +159,13 @@ class Space(ParsingIssue):
     Note: `column` is `None`.
     """
     kind: Literal[IssueKind.SPACE] = IssueKind.SPACE
+
     def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_space_issue(self)
+
     def __str__(self):
         return "expression is surrounded by white space[s]"
+
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -164,10 +178,13 @@ class Unparsable(ParsingIssue):
     expected_drs_type: DrsType
     """The expected DRS type of the expression (directory, file name or dataset id)."""
     kind: Literal[IssueKind.UNPARSABLE] = IssueKind.UNPARSABLE
+
     def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_unparsable_issue(self)
+
     def __str__(self):
         return "unable to parse this expression"
+
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -177,10 +194,13 @@ class ExtraSeparator(ParsingIssue):
     Represents a problem of multiple separator occurrences in the DRS expression.
     """
     kind: Literal[IssueKind.EXTRA_SEPARATOR] = IssueKind.EXTRA_SEPARATOR
+
     def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_extra_separator_issue(self)
+
     def __str__(self):
         return f"extra separator(s) at column {self.column}"
+
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -190,10 +210,13 @@ class ExtraChar(ParsingIssue):
     Represents a problem of extra characters at the end of the DRS expression.
     """
     kind: Literal[IssueKind.EXTRA_CHAR] = IssueKind.EXTRA_CHAR
+
     def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_extra_char_issue(self)
+
     def __str__(self):
         return f"extra character(s) at column {self.column}"
+
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -203,10 +226,13 @@ class BlankTerm(ParsingIssue):
     Represents a problem of blank term in the DRS expression (i.e., space[s] surrounded by separators).
     """
     kind: Literal[IssueKind.BLANK_TERM] = IssueKind.BLANK_TERM
+
     def accept(self, visitor: ParsingIssueVisitor) -> Any:
         return visitor.visit_blank_term_issue(self)
+
     def __str__(self):
         return f"blank term at column {self.column}"
+
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -235,8 +261,10 @@ class FileNameExtensionIssue(ComplianceIssue):
     expected_extension: str
     """The expected file name extension."""
     kind: Literal[IssueKind.FILE_NAME] = IssueKind.FILE_NAME
+
     def accept(self, visitor: ComplianceIssueVisitor) -> Any:
         return visitor.visit_filename_extension_issue(self)
+
     def __str__(self):
         return f"filename extension missing or not compliant with '{self.expected_extension}'"
 
@@ -275,10 +303,14 @@ class InvalidTerm(TermIssue, GenerationIssue):
     collection_id_or_constant_value: str
     """The collection id or the constant part of a DRS specification."""
     kind: Literal[IssueKind.INVALID_TERM] = IssueKind.INVALID_TERM
-    def accept(self, visitor: ComplianceIssueVisitor|GenerationIssueVisitor) -> Any:
+
+    def accept(self, visitor: ComplianceIssueVisitor | GenerationIssueVisitor) -> Any:
         return visitor.visit_invalid_term_issue(self)
+
     def __str__(self):
-        return f"term '{self.term}' not compliant with {self.collection_id_or_constant_value} at position {self.term_position}"
+        return f"term '{self.term}' not compliant with {self.collection_id_or_constant_value} at " + \
+               f"position {self.term_position}"
+
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -290,16 +322,19 @@ class ExtraTerm(TermIssue):
     (`collection_id` is `None`) or it has been invalidated by an optional collection part
     of the DRS specification (`collection_id` is set).
     """
-    collection_id: str|None
+    collection_id: str | None
     """The optional collection id or `None`."""
     kind: Literal[IssueKind.EXTRA_TERM] = IssueKind.EXTRA_TERM
+
     def accept(self, visitor: ComplianceIssueVisitor) -> Any:
         return visitor.visit_extra_term_issue(self)
+
     def __str__(self):
         repr = f"extra term {self.term}"
         if self.collection_id:
             repr += f" invalidated by the optional collection {self.collection_id}"
         return repr + f" at position {self.term_position}"
+
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -313,10 +348,13 @@ class MissingTerm(ComplianceIssue, GenerationIssue):
     collection_position: int
     """The collection part position (not the column of the characters)."""
     kind: Literal[IssueKind.MISSING_TERM] = IssueKind.MISSING_TERM
-    def accept(self, visitor: ComplianceIssueVisitor|GenerationIssueVisitor) -> Any:
+
+    def accept(self, visitor: ComplianceIssueVisitor | GenerationIssueVisitor) -> Any:
         return visitor.visit_missing_term_issue(self)
+
     def __str__(self):
         return f'missing term for {self.collection_id} at position {self.collection_position}'
+
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -332,6 +370,7 @@ class TooManyTermCollection(GenerationIssue):
     terms: list[str]
     """The faulty terms."""
     kind: Literal[IssueKind.TOO_MANY] = IssueKind.TOO_MANY
+
     def accept(self, visitor: GenerationIssueVisitor) -> Any:
         return visitor.visit_too_many_terms_collection_issue(self)
 
@@ -339,6 +378,7 @@ class TooManyTermCollection(GenerationIssue):
         terms_str = ", ".join(term for term in self.terms)
         result = f'collection {self.collection_id} has more than one term ({terms_str})'
         return result
+
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -354,13 +394,16 @@ class ConflictingCollections(GenerationIssue):
     terms: list[str]
     """The shared terms."""
     kind: Literal[IssueKind.CONFLICT] = IssueKind.CONFLICT
+
     def accept(self, visitor: GenerationIssueVisitor) -> Any:
         return visitor.visit_conflicting_collections_issue(self)
+
     def __str__(self):
         collection_ids_str = ", ".join(collection_id for collection_id in self.collection_ids)
         terms_str = ", ".join(term for term in self.terms)
         result = f"collections {collection_ids_str} are competing for the same term(s) {terms_str}"
         return result
+
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -375,22 +418,25 @@ class AssignedTerm(GenerationIssue):
     term: str
     """The term."""
     kind: Literal[IssueKind.ASSIGNED] = IssueKind.ASSIGNED
+
     def accept(self, visitor: GenerationIssueVisitor) -> Any:
         return visitor.visit_assign_term_issue(self)
+
     def __str__(self):
         result = f"assign term {self.term} for collection {self.collection_id}"
         return result
+
     def __repr__(self) -> str:
         return self.__str__()
 
 
-GenerationError =  Annotated[AssignedTerm | ConflictingCollections |  InvalidTerm | MissingTerm | \
+GenerationError = Annotated[AssignedTerm | ConflictingCollections | InvalidTerm | MissingTerm |
                             TooManyTermCollection, Field(discriminator='kind')]
 GenerationWarning = Annotated[AssignedTerm | MissingTerm, Field(discriminator='kind')]
 
-ValidationError = Annotated[BlankTerm | ExtraChar | ExtraSeparator | ExtraTerm | \
-                           FileNameExtensionIssue | InvalidTerm | MissingTerm | Space | Unparsable,
-                           Field(discriminator='kind')]
+ValidationError = Annotated[BlankTerm | ExtraChar | ExtraSeparator | ExtraTerm |
+                            FileNameExtensionIssue | InvalidTerm | MissingTerm | Space | Unparsable,
+                            Field(discriminator='kind')]
 ValidationWarning = Annotated[ExtraSeparator | MissingTerm | Space, Field(discriminator='kind')]
 
 
@@ -411,19 +457,19 @@ class DrsReport(BaseModel):
     warnings: list
     """A list of DRS issues that are considered as warnings."""
 
-    @computed_field # type: ignore
+    @computed_field  # type: ignore
     @property
     def nb_errors(self) -> int:
         """The number of errors."""
         return len(self.errors) if self.errors else 0
 
-    @computed_field # type: ignore
+    @computed_field  # type: ignore
     @property
     def nb_warnings(self) -> int:
         """The number of warnings."""
         return len(self.warnings) if self.warnings else 0
 
-    @computed_field # type: ignore
+    @computed_field  # type: ignore
     @property
     def validated(self) -> bool:
         """The correctness of the result of the DRS application."""
@@ -469,7 +515,7 @@ class DrsGenerationReport(DrsReport):
     INVALID_TAG: ClassVar[str] = '[INVALID]'
     """Tag used in the DRS generated expression to replace a invalid term."""
 
-    given_mapping_or_bag_of_terms: Mapping|Iterable
+    given_mapping_or_bag_of_terms: Mapping | Iterable
     """The mapping or the bag of terms given."""
 
     mapping_used: Mapping

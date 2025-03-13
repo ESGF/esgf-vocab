@@ -25,7 +25,7 @@ class DrsApplication:
         """The project id."""
         self.pedantic: bool = pedantic
         """Same as the option of GCC: turn warnings into errors. Default False."""
-        project_specs: ProjectSpecs|None = projects.find_project(project_id)
+        project_specs: ProjectSpecs | None = projects.find_project(project_id)
         if not project_specs:
             raise APIException(f'unable to find project {project_id}')
         for specs in project_specs.drs_specs:
@@ -66,7 +66,7 @@ class DrsValidator(DrsApplication):
     """
 
     def validate_directory(self, drs_expression: str,
-                           prefix: str|None = None) -> DrsValidationReport:
+                           prefix: str | None = None) -> DrsValidationReport:
         """
         Validate a DRS directory expression.
 
@@ -112,7 +112,7 @@ class DrsValidator(DrsApplication):
                                          [issue], [])
         return result
 
-    def validate(self, drs_expression: str, drs_type: DrsType|str) -> DrsValidationReport:
+    def validate(self, drs_expression: str, drs_type: DrsType | str) -> DrsValidationReport:
         """
         Validate a DRS expression.
 
@@ -136,9 +136,9 @@ class DrsValidator(DrsApplication):
     def _parse(self,
                drs_expression: str,
                separator: str,
-               drs_type: DrsType) -> tuple[list[str]|None,  # terms
+               drs_type: DrsType) -> tuple[list[str] | None,  # terms
                                            list[DrsIssue],  # Errors
-                                           list[DrsIssue]]: # Warnings
+                                           list[DrsIssue]]:  # Warnings
         errors: list[DrsIssue] = list()
         warnings: list[DrsIssue] = list()
         cursor_offset = 0
@@ -160,7 +160,7 @@ class DrsValidator(DrsApplication):
         terms = drs_expression.split(separator)
         if len(terms) < 2:
             errors.append(Unparsable(expected_drs_type=drs_type))
-            return None, errors, warnings # Early exit
+            return None, errors, warnings  # Early exit
         max_term_index = len(terms)
         cursor_position = initial_cursor_position = len(drs_expression) + 1
         has_white_term = False
@@ -200,10 +200,10 @@ class DrsValidator(DrsApplication):
                 del terms[index]
             cursor_position -= len_term + 1
 
-        # Mypy doesn't understand that ParsingIssues are DrsIssues...
-        sorted_errors = DrsValidator._sort_parser_issues(errors) # type: ignore
-        sorted_warnings = DrsValidator._sort_parser_issues(warnings) # type: ignore
-        return terms, sorted_errors, sorted_warnings # type: ignore
+        # Mypy doesn't understand that ParsingIssues are DrsIssues...
+        sorted_errors = DrsValidator._sort_parser_issues(errors)  # type: ignore
+        sorted_warnings = DrsValidator._sort_parser_issues(warnings)  # type: ignore
+        return terms, sorted_errors, sorted_warnings  # type: ignore
 
     @staticmethod
     def _sort_parser_issues(issues: list[ParsingIssue]) -> list[ParsingIssue]:
@@ -245,7 +245,7 @@ class DrsValidator(DrsApplication):
                   specs: DrsSpecification) -> DrsValidationReport:
         terms, errors, warnings = self._parse(drs_expression, specs.separator, specs.type)
         if not terms:
-            return self._create_report(specs.type, drs_expression, errors, warnings) # Early exit.
+            return self._create_report(specs.type, drs_expression, errors, warnings)  # Early exit.
         term_index = 0
         term_max_index = len(terms)
         part_index = 0
@@ -259,27 +259,27 @@ class DrsValidator(DrsApplication):
                 part_index += 1
                 matching_code_mapping[part.__str__()] = 0
             elif part.kind == DrsPartKind.CONSTANT or \
-                 cast(DrsCollection, part).is_required:
+                 cast(DrsCollection, part).is_required:  # noqa E127
                 issue: ComplianceIssue = InvalidTerm(term=term,
-                                                      term_position=term_index+1,
-                                                      collection_id_or_constant_value=str(part))
+                                                     term_position=term_index+1,
+                                                     collection_id_or_constant_value=str(part))
                 errors.append(issue)
                 matching_code_mapping[part.__str__()] = 1
                 term_index += 1
                 part_index += 1
-            else: # The part is not required so try to match the term with the next part.
+            else:  # The part is not required so try to match the term with the next part.
                 part_index += 1
                 matching_code_mapping[part.__str__()] = -1
             if term_index == term_max_index:
                 break
         # Cases:
         # - All terms and collections have been processed.
-        # - Not enough term to process all collections.
+        # - Not enough term to process all collections.
         # - Extra terms left whereas all collections have been processed:
         #   + The last collections are required => report extra terms.
         #   + The last collections are not required and these terms were not validated by them.
         #     => Should report error even if the collections are not required.
-        if part_index < part_max_index: # Missing terms.
+        if part_index < part_max_index:  # Missing terms.
             for index in range(part_index, part_max_index):
                 part = specs.parts[index]
                 issue = MissingTerm(collection_id=str(part), collection_position=index+1)
@@ -288,14 +288,14 @@ class DrsValidator(DrsApplication):
                     errors.append(issue)
                 else:
                     warnings.append(issue)
-        elif term_index < term_max_index: # Extra terms.
+        elif term_index < term_max_index:  # Extra terms.
             part_index -= term_max_index - term_index
             for index in range(term_index, term_max_index):
                 term = terms[index]
                 part = specs.parts[part_index]
                 if part.kind != DrsPartKind.CONSTANT           and \
                    (not cast(DrsCollection, part).is_required) and \
-                    matching_code_mapping[part.__str__()] < 0:
+                    matching_code_mapping[part.__str__()] < 0: # noqa E125
                     issue = ExtraTerm(term=term, term_position=index, collection_id=str(part))
                 else:
                     issue = ExtraTerm(term=term, term_position=index, collection_id=None)
@@ -307,9 +307,7 @@ class DrsValidator(DrsApplication):
 if __name__ == "__main__":
     project_id = 'cmip6plus'
     validator = DrsValidator(project_id)
-    drs_expressions = [
-".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",
-]
+    drs_expressions = [".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",]
     import time
     for drs_expression in drs_expressions:
         start_time = time.perf_counter_ns()
