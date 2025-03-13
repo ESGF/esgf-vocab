@@ -152,3 +152,12 @@ def ingest_project(project_dir_path: Path,
             _LOGGER.fatal(msg)
             raise RuntimeError(msg) from e
         project_db_session.commit()
+        try:
+            sql_query = 'INSERT INTO pcollections_fts5(pk, id, data_descriptor_id, context, project_pk, term_kind) ' + \
+                        'SELECT pk, id, data_descriptor_id, context, project_pk, term_kind FROM collections;'
+            project_db_session.exec(text(sql_query))
+        except Exception as e:
+            msg = f'Unable to insert rows into pcollections_fts5 table for {project_db_file_path}. Abort.'
+            _LOGGER.fatal(msg)
+            raise RuntimeError(msg) from e
+        project_db_session.commit()

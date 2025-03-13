@@ -29,6 +29,14 @@ class Collection(SQLModel, PkMixin, IdMixin, table=True):
     term_kind: TermKind = Field(sa_column=Column(sa.Enum(TermKind)))
 
 
+class PCollectionFTS5(SQLModel, PkMixin, IdMixin, table=True):
+    __tablename__ = "pcollections_fts5"
+    data_descriptor_id: str
+    context: dict = Field(sa_column=sa.Column(JSON))
+    project_pk: int | None = Field(default=None, foreign_key="projects.pk")
+    term_kind: TermKind = Field(sa_column=Column(sa.Enum(TermKind)))
+
+
 class PTerm(SQLModel, PkMixin, IdMixin, table=True):
     __tablename__ = "pterms"
     specs: dict = Field(sa_column=sa.Column(JSON))
@@ -68,6 +76,17 @@ def project_create_db(db_file_path: Path):
         with connection.create_session() as session:
             sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS pterms_fts5 USING ' + \
                         'fts5(pk, id, specs, kind, collection_pk, content=pterms, content_rowid=pk);'
+            session.exec(text(sql_query))
+            session.commit()
+    except Exception as e:
+        msg = f'Unable to create table pterms_fts5 for {db_file_path}. Abort.'
+        _LOGGER.fatal(msg)
+        raise RuntimeError(msg) from e
+    try:
+        with connection.create_session() as session:
+            sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS pcollections_fts5 USING ' + \
+                        'fts5(pk, id, data_descriptor_id, context, project_pk, ' + \
+                        'term_kind, content=collections, content_rowid=pk);'
             session.exec(text(sql_query))
             session.commit()
     except Exception as e:
