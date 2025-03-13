@@ -4,8 +4,9 @@ from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 from sqlmodel import Session, col, select
 
-from esgvoc.api._utils import (APIException, Item, get_universe_session,
-                               instantiate_pydantic_term,
+from esgvoc.api._utils import (APIException, Item, execute_match_statement,
+                               generate_matching_condition,
+                               get_universe_session, instantiate_pydantic_term,
                                instantiate_pydantic_terms)
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.search import SearchSettings, _create_str_comparison_expression
@@ -295,13 +296,19 @@ def get_data_descriptor_in_universe(data_descriptor_id: str, session: Session) -
 
 def R_find_data_descriptors_in_universe(expression: str, session: Session,
                                        only_id: bool = False) -> Sequence[UDataDescriptor]:
-    pass  # TODO: to be implemented.
+    # TODO: replace the following instructions by this, when specs will ba available in UDataDescriptor.
+    # matching_condition = generate_matching_condition(CollectionFTS, only_id)
+    matching_condition = col(UDataDescriptorFTS5.id).match(expression)
+    tmp_statement = select(UDataDescriptorFTS5).where(matching_condition)
+    statement = select(UDataDescriptor).from_statement(tmp_statement.order_by(text('rank')))
+    return execute_match_statement(expression, statement, session)
 
 
 def Rfind_data_descriptors_in_universe(expression: str,
                                       only_id: bool = False) -> list[tuple[str, dict]]:
     """
     TODO: docstring
+    only_id alway true
     """
     result = list()
     with get_universe_session() as session:
@@ -313,8 +320,10 @@ def Rfind_data_descriptors_in_universe(expression: str,
 
 
 def R_find_terms_in_universe(expression: str, session: Session, only_id: bool = False) -> Sequence[UTerm]:
-    pass  # TODO: to be implemented.
-
+    matching_condition = generate_matching_condition(UTermFTS5, expression, only_id)
+    tmp_statement = select(UTermFTS5).where(matching_condition)
+    statement = select(UTerm).from_statement(tmp_statement.order_by(text('rank')))
+    return execute_match_statement(expression, statement, session)
 
 
 def Rfind_terms_in_universe(expression: str, only_id: bool = False,
@@ -332,7 +341,11 @@ def Rfind_terms_in_universe(expression: str, only_id: bool = False,
 
 def R_find_terms_in_data_descriptor(expression: str, data_descriptor_id: str, session: Session,
                                    only_id: bool = False) -> Sequence[UTerm]:
-    pass  # TODO: to be implemented.
+    matching_condition = generate_matching_condition(UTermFTS5, expression, only_id)
+    where_condition = UDataDescriptorFTS5.id == data_descriptor_id, matching_condition
+    tmp_statement = select(UTermFTS5).join(UDataDescriptorFTS5).where(*where_condition)
+    statement = select(UTerm).from_statement(tmp_statement.order_by(text('rank')))
+    return execute_match_statement(expression, statement, session)
 
 
 def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, only_id: bool = False,
