@@ -19,22 +19,23 @@ from esgvoc.core.db.models.universe import UTerm
 UNIVERSE_DB_CONNECTION = service.state_service.universe.db_connection
 
 
-class APIException(Exception): ...
+class APIException(Exception): ... # noqa
 
 
-# TODO: to be documented
 class ItemKind(Enum):
     DATA_DESCRIPTOR = "data_descriptor"
     COLLECTION = "collection"
     TERM = "term"
 
 
-# TODO:
-# - to be documented
 class Item(BaseModel):
+    """An item from the universe or a project (data descriptor, collection or term)."""
     id: str
+    """The id of the item."""
     kind: ItemKind = Field(sa_column=Column(sa.Enum(ItemKind)))
+    """The kind of the item."""
     parent_id: str
+    """The id of the parent of the item."""
 
 
 def get_pydantic_class(data_descriptor_id_or_term_type: str) -> type[DataDescriptor]:
@@ -52,8 +53,8 @@ def get_universe_session() -> Session:
         raise RuntimeError('universe connection is not initialized')
 
 
-def instantiate_pydantic_term(term: UTerm|PTerm,
-                              selected_term_fields: Iterable[str]|None) -> DataDescriptor:
+def instantiate_pydantic_term(term: UTerm | PTerm,
+                              selected_term_fields: Iterable[str] | None) -> DataDescriptor:
     type = term.specs[api_settings.TERM_TYPE_JSON_KEY]
     if selected_term_fields:
         subset = DataDescriptorSubSet(id=term.id, type=type)
@@ -67,9 +68,9 @@ def instantiate_pydantic_term(term: UTerm|PTerm,
         return term_class(**term.specs)
 
 
-def instantiate_pydantic_terms(db_terms: Iterable[UTerm|PTerm],
+def instantiate_pydantic_terms(db_terms: Iterable[UTerm | PTerm],
                                list_to_populate: MutableSequence[DataDescriptor],
-                               selected_term_fields: Iterable[str]|None) -> None:
+                               selected_term_fields: Iterable[str] | None) -> None:
     for db_term in db_terms:
         term = instantiate_pydantic_term(db_term, selected_term_fields)
         list_to_populate.append(term)

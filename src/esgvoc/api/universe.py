@@ -18,13 +18,13 @@ from esgvoc.core.db.models.universe import (UDataDescriptor,
 def _find_terms_in_data_descriptor(data_descriptor_id: str,
                                    term_id: str,
                                    session: Session,
-                                   settings: SearchSettings|None) -> Sequence[UTerm]:
+                                   settings: SearchSettings | None) -> Sequence[UTerm]:
     """Settings only apply on the term_id comparison."""
     where_expression = _create_str_comparison_expression(field=UTerm.id,
                                                          value=term_id,
                                                          settings=settings)
-    statement = select(UTerm).join(UDataDescriptor).where(UDataDescriptor.id==data_descriptor_id,
-                                                         where_expression)
+    statement = select(UTerm).join(UDataDescriptor).where(UDataDescriptor.id == data_descriptor_id,
+                                                          where_expression)
     results = session.exec(statement)
     result = results.all()
     return result
@@ -32,7 +32,7 @@ def _find_terms_in_data_descriptor(data_descriptor_id: str,
 
 def find_terms_in_data_descriptor(data_descriptor_id: str,
                                   term_id: str,
-                                  settings: SearchSettings|None = None) \
+                                  settings: SearchSettings | None = None) \
                                      -> list[DataDescriptor]:
     """
     Finds one or more terms in the given data descriptor based on the specified search settings.
@@ -55,7 +55,7 @@ def find_terms_in_data_descriptor(data_descriptor_id: str,
     :param term_id: A term id to be found
     :type term_id: str
     :param settings: The search settings
-    :type settings: SearchSettings|None
+    :type settings: SearchSettings | None
     :returns: A list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
     """
@@ -68,7 +68,7 @@ def find_terms_in_data_descriptor(data_descriptor_id: str,
 
 def _find_terms_in_universe(term_id: str,
                             session: Session,
-                            settings: SearchSettings|None) -> Sequence[UTerm]:
+                            settings: SearchSettings | None) -> Sequence[UTerm]:
     where_expression = _create_str_comparison_expression(field=UTerm.id,
                                                          value=term_id,
                                                          settings=settings)
@@ -78,7 +78,7 @@ def _find_terms_in_universe(term_id: str,
 
 
 def find_terms_in_universe(term_id: str,
-                           settings: SearchSettings|None = None) \
+                           settings: SearchSettings | None = None) \
                               -> list[DataDescriptor]:
     """
     Finds one or more terms of the universe.
@@ -92,7 +92,7 @@ def find_terms_in_universe(term_id: str,
     :param term_id: A term id to be found
     :type term_id: str
     :param settings: The search settings
-    :type settings: SearchSettings|None
+    :type settings: SearchSettings | None
     :returns: A list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
     """
@@ -112,7 +112,7 @@ def _get_all_terms_in_data_descriptor(data_descriptor: UDataDescriptor,
 
 def _find_data_descriptors_in_universe(data_descriptor_id: str,
                                        session: Session,
-                                       settings: SearchSettings|None) -> Sequence[UDataDescriptor]:
+                                       settings: SearchSettings | None) -> Sequence[UDataDescriptor]:
     where_expression = _create_str_comparison_expression(field=UDataDescriptor.id,
                                                          value=data_descriptor_id,
                                                          settings=settings)
@@ -123,7 +123,7 @@ def _find_data_descriptors_in_universe(data_descriptor_id: str,
 
 
 def get_all_terms_in_data_descriptor(data_descriptor_id: str,
-                                     selected_term_fields: Iterable[str]|None = None) \
+                                     selected_term_fields: Iterable[str] | None = None) \
                                                                             -> list[DataDescriptor]:
     """
     Gets all the terms of the given data descriptor.
@@ -135,7 +135,7 @@ def get_all_terms_in_data_descriptor(data_descriptor_id: str,
     :type data_descriptor_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
     fields of the terms are returned.
-    :type selected_term_fields: Iterable[str]|None
+    :type selected_term_fields: Iterable[str] | None
     :returns: a list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
     """
@@ -152,7 +152,7 @@ def get_all_terms_in_data_descriptor(data_descriptor_id: str,
 
 
 def find_data_descriptors_in_universe(data_descriptor_id: str,
-                                      settings: SearchSettings|None = None) \
+                                      settings: SearchSettings | None = None) \
                                         -> list[dict]:
     """
     Finds one or more data descriptor of the universe, based on the specified search settings.
@@ -171,7 +171,7 @@ def find_data_descriptors_in_universe(data_descriptor_id: str,
     :param data_descriptor_id: A data descriptor id to be found
     :type data_descriptor_id: str
     :param settings: The search settings
-    :type settings: SearchSettings|None
+    :type settings: SearchSettings | None
     :returns: A list of data descriptor contexts. Returns an empty list if no matches are found.
     :rtype: list[dict]
     """
@@ -207,14 +207,14 @@ def get_all_data_descriptors_in_universe() -> list[str]:
     return result
 
 
-def get_all_terms_in_universe(selected_term_fields: Iterable[str]|None = None) -> list[DataDescriptor]:
+def get_all_terms_in_universe(selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
     """
     Gets all the terms of the universe.
     Terms are unique within a data descriptor but may have some synonyms in the universe.
 
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
     fields of the terms are returned.
-    :type selected_term_fields: Iterable[str]|None
+    :type selected_term_fields: Iterable[str] | None
     :returns: A list of term instances.
     :rtype: list[DataDescriptor]
     """

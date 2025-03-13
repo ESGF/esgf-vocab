@@ -1,5 +1,6 @@
-from typing import Iterable
 from enum import Enum
+from typing import Iterable
+
 from pydantic import BaseModel
 from sqlalchemy import ColumnElement, func
 from sqlmodel import col
@@ -43,13 +44,13 @@ class SearchSettings(BaseModel):
     """Enable case sensitivity or not."""
     not_operator: bool = False
     """Give the opposite result like the NOT SQL operator."""
-    selected_term_fields: Iterable[str]|None = None
+    selected_term_fields: Iterable[str] | None = None
     """Term fields to select"""
 
 
 def _create_str_comparison_expression(field: str,
                                       value: str,
-                                      settings: SearchSettings|None) -> ColumnElement:
+                                      settings: SearchSettings | None) -> ColumnElement:
     '''
     SQLite LIKE is case insensitive (and so STARTS/ENDS_WITH which are implemented with LIKE).
     So the case sensitive LIKE is implemented with REGEX.
@@ -58,8 +59,7 @@ def _create_str_comparison_expression(field: str,
     If the provided `settings` is None, this functions returns an exact search expression.
     '''
     does_wild_cards_in_value_have_to_be_interpreted = False
-    # Shortcut.
-    if settings is None:
+    if settings is None:  # Shortcut.
         return col(field).is_(other=value)
     else:
         match settings.type:

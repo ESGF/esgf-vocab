@@ -30,11 +30,12 @@ class ValidationError(BaseModel, ABC):
     """JSON specification of the term."""
     term_kind: TermKind
     """The kind of term."""
-    @computed_field # type: ignore
+    @computed_field  # type: ignore
     @property
     def class_name(self) -> str:
-       """The class name of the issue for JSON serialization."""
-       return self.__class__.__name__
+        """The class name of the issue for JSON serialization."""
+        return self.__class__.__name__
+
     @abstractmethod
     def accept(self, visitor: ValidationErrorVisitor) -> Any:
         """
@@ -46,6 +47,7 @@ class ValidationError(BaseModel, ABC):
         :rtype: Any
         """
         pass
+
 
 class UniverseTermError(ValidationError):
     """
@@ -60,9 +62,10 @@ class UniverseTermError(ValidationError):
 
     def __str__(self) -> str:
         term_id = self.term[api_settings.TERM_ID_JSON_KEY]
-        result = f"The term {term_id} from the data descriptor {self.data_descriptor_id} "+\
+        result = f"The term {term_id} from the data descriptor {self.data_descriptor_id} " + \
                  f"does not validate the given value '{self.value}'"
         return result
+
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -80,9 +83,10 @@ class ProjectTermError(ValidationError):
 
     def __str__(self) -> str:
         term_id = self.term[api_settings.TERM_ID_JSON_KEY]
-        result = f"The term {term_id} from the collection {self.collection_id} "+\
+        result = f"The term {term_id} from the collection {self.collection_id} " + \
                  f"does not validate the given value '{self.value}'"
         return result
+
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -95,16 +99,16 @@ class ValidationReport(BaseModel):
     expression: str
     """The given expression."""
 
-    errors: list[UniverseTermError|ProjectTermError]
+    errors: list[UniverseTermError | ProjectTermError]
     """The validation errors."""
 
-    @computed_field # type: ignore
+    @computed_field  # type: ignore
     @property
     def nb_errors(self) -> int:
         """The number of validation errors."""
         return len(self.errors) if self.errors else 0
 
-    @computed_field # type: ignore
+    @computed_field  # type: ignore
     @property
     def validated(self) -> bool:
         """The expression is validated or not."""

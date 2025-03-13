@@ -64,10 +64,11 @@ class DrsSpecification(BaseModel):
     """The type of the specification."""
     separator: str
     """The textual separator string or character."""
-    properties: dict|None = None
+    properties: dict | None = None
     """The other specifications (e.g., file name extension for file name DRS specification)."""
     parts: list[DrsPart]
     """The parts of the DRS specification."""
+
 
 class ProjectSpecs(BaseModel):
     """
@@ -79,4 +80,4 @@ class ProjectSpecs(BaseModel):
     """The description of the project."""
     drs_specs: list[DrsSpecification]
     """The DRS specifications of the project (directory, file name and dataset id."""
-    model_config = ConfigDict(extra = "allow")
+    model_config = ConfigDict(extra="allow")
