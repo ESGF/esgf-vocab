@@ -1,17 +1,18 @@
 import logging
 from pathlib import Path
 
-import esgvoc.core.constants
-from esgvoc.core.data_handler import JsonLdResource
-from esgvoc.core.service.data_merger import DataMerger
+from sqlalchemy import text
 from sqlmodel import Session, select
 
+import esgvoc.core.constants
 import esgvoc.core.db.connection as db
+import esgvoc.core.service as service
+from esgvoc.core.data_handler import JsonLdResource
 from esgvoc.core.db.connection import read_json_file
 from esgvoc.core.db.models.mixins import TermKind
-from esgvoc.core.db.models.universe import UDataDescriptor, UTerm, Universe
-from esgvoc.core.db.models.universe import universe_create_db
-import esgvoc.core.service as service
+from esgvoc.core.db.models.universe import (UDataDescriptor, Universe, UTerm,
+                                            universe_create_db)
+from esgvoc.core.service.data_merger import DataMerger
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
         _LOGGER.fatal(msg)
         raise IOError(msg) from e
 
-    for data_descriptor_dir_path in universe_repo_dir_path.iterdir(): 
+    for data_descriptor_dir_path in universe_repo_dir_path.iterdir():
         if data_descriptor_dir_path.is_dir() and (data_descriptor_dir_path / "000_context.jsonld").exists(): # TODO maybe put that in setting
             try:
                 ingest_data_descriptor(data_descriptor_dir_path, connection)
@@ -40,11 +41,34 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
                 msg = f'Unexpected error while processing data descriptor {data_descriptor_dir_path}. Abort.'
                 _LOGGER.fatal(msg)
                 raise RuntimeError(msg) from e
-        
+
+    with connection.create_session() as session:
+        # Well, the following instructions are not data duplication. It is more building an index.
+        # Read: https://sqlite.org/fts5.html
+        try:
+            sql_query = 'INSERT INTO uterms_fts5(pk, id, specs, kind, data_descriptor_pk) ' + \
+                        'SELECT pk, id, specs, kind, data_descriptor_pk FROM uterms;'
+            session.exec(text(sql_query))
+        except Exception as e:
+            msg = f'Unable to insert rows into uterms_fts5 table for {universe_db_file_path}. Abort.'
+            _LOGGER.fatal(msg)
+            raise RuntimeError(msg) from e
+        session.commit()
+        try:
+            sql_query = 'INSERT INTO udata_descriptors_fts5(pk, id, universe_pk, context, term_kind) ' + \
+                        'SELECT pk, id, universe_pk, context, term_kind FROM udata_descriptors;'
+            session.exec(text(sql_query))
+        except Exception as e:
+            msg = f'Unable to insert rows into udata_descriptors_fts5 table for {universe_db_file_path}. Abort.'
+            _LOGGER.fatal(msg)
+            raise RuntimeError(msg) from e
+        session.commit()
+
+
 def ingest_metadata_universe(connection,git_hash):
     with connection.create_session() as session:
         universe = Universe(git_hash=git_hash)
-        session.add(universe)    
+        session.add(universe)
         session.commit()
 
 def ingest_data_descriptor(data_descriptor_path: Path,
@@ -60,7 +84,7 @@ def ingest_data_descriptor(data_descriptor_path: Path,
         msg = f'Unable to read the context file {context_file_path} of data descriptor \
                {data_descriptor_id}. Skip.\n{str(e)}'
         _LOGGER.warning(msg)
-        return        
+        return
 
     with connection.create_session() as session:
         data_descriptor = UDataDescriptor(id=data_descriptor_id,
