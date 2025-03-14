@@ -56,7 +56,7 @@ def get_universe_session() -> Session:
 def instantiate_pydantic_term(term: UTerm | PTerm,
                               selected_term_fields: Iterable[str] | None) -> DataDescriptor:
     type = term.specs[api_settings.TERM_TYPE_JSON_KEY]
-    if selected_term_fields:
+    if selected_term_fields is not None:
         subset = DataDescriptorSubSet(id=term.id, type=type)
         for field in selected_term_fields:
             setattr(subset, field, term.specs.get(field, None))
