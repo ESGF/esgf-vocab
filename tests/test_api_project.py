@@ -16,8 +16,11 @@ _SOME_PROJ_DD_COL_IDS = [(_SOME_PROJECT_IDS[0], _SOME_DATA_DESCRIPTOR_IDS[0], _S
                          (_SOME_PROJECT_IDS[1], _SOME_DATA_DESCRIPTOR_IDS[2], _SOME_COLLECTION_IDS[2])]
 _SOME_TERM_IDS = ['ipsl', 'daily', 'miroc6']
 _SOME_PROJ_COL_TERM_IDS = [(_SOME_PROJECT_IDS[0], _SOME_COLLECTION_IDS[0], _SOME_TERM_IDS[0]),
-                      (_SOME_PROJECT_IDS[0], _SOME_COLLECTION_IDS[1], _SOME_TERM_IDS[1]),
-                      (_SOME_PROJECT_IDS[0], _SOME_COLLECTION_IDS[2], _SOME_TERM_IDS[2])]
+                           (_SOME_PROJECT_IDS[0], _SOME_COLLECTION_IDS[1], _SOME_TERM_IDS[1]),
+                           (_SOME_PROJECT_IDS[0], _SOME_COLLECTION_IDS[2], _SOME_TERM_IDS[2]),
+                           (_SOME_PROJECT_IDS[1], _SOME_COLLECTION_IDS[0], _SOME_TERM_IDS[0]),
+                           (_SOME_PROJECT_IDS[1], _SOME_COLLECTION_IDS[1], _SOME_TERM_IDS[1]),
+                           (_SOME_PROJECT_IDS[1], _SOME_COLLECTION_IDS[2], _SOME_TERM_IDS[2])]
 _SOME_ITEM_IDS = list(zip(_SOME_COLLECTION_IDS, [ItemKind.COLLECTION for _ in _SOME_COLLECTION_IDS])) + \
                  list(zip(_SOME_TERM_IDS, [ItemKind.TERM for _ in _SOME_TERM_IDS]))
 
@@ -48,7 +51,7 @@ def _provide_proj_col_term_ids() -> Generator:
 
 
 @pytest.fixture(params=_provide_proj_col_term_ids())
-def proj_col_term_ids(request) -> tuple[str, str]:
+def proj_col_term_id(request) -> tuple[str, str]:
     return request.param
 
 
@@ -175,11 +178,11 @@ def test_get_term_in_project(project_id, term_id) -> None:
     assert term_found.id == term_id
 
 
-def test_get_term_in_collection(proj_col_term_ids) -> None:
-    term_found = projects.get_term_in_collection(proj_col_term_ids[0], proj_col_term_ids[1],
-                                                 proj_col_term_ids[2], [])
+def test_get_term_in_collection(proj_col_term_id) -> None:
+    term_found = projects.get_term_in_collection(proj_col_term_id[0], proj_col_term_id[1],
+                                                 proj_col_term_id[2], [])
     assert term_found
-    assert term_found.id == proj_col_term_ids[2]
+    assert term_found.id == proj_col_term_id[2]
 
 
 def test_get_collection_in_project(project_id, collection_id) -> None:
@@ -198,3 +201,55 @@ def test_get_collection_from_data_descriptor_in_project(proj_dd_col_id) -> None:
 def test_get_collection_from_data_descriptor_in_all_projects(data_descriptor_id):
     collections_found = projects.get_collection_from_data_descriptor_in_all_projects(data_descriptor_id)
     assert len(collections_found) == len(_SOME_PROJECT_IDS)
+
+
+def test_find_collections_in_project(proj_dd_col_id) -> None:
+    collections_found = projects.Rfind_collections_in_project(proj_dd_col_id[2], proj_dd_col_id[0])
+    has_been_found = False
+    for collection_found in collections_found:
+        if collection_found[0] == proj_dd_col_id[2]:
+            has_been_found = True
+            break
+    assert has_been_found
+
+
+def test_find_terms_in_collection(proj_col_term_id) -> None:
+    terms_found = projects.Rfind_terms_in_collection(proj_col_term_id[2],
+                                                     proj_col_term_id[0],
+                                                     proj_col_term_id[1],
+                                                     selected_term_fields=[])
+    has_been_found = False
+    for term_found in terms_found:
+        if term_found.id == proj_col_term_id[2]:
+            has_been_found = True
+            break
+    assert has_been_found
+
+
+def test_find_terms_in_project(proj_col_term_id) -> None:
+    terms_found = projects.Rfind_terms_in_project(proj_col_term_id[2],
+                                                  proj_col_term_id[0],
+                                                  selected_term_fields=[])
+    has_been_found = False
+    for term_found in terms_found:
+        if term_found.id == proj_col_term_id[2]:
+            has_been_found = True
+            break
+    assert has_been_found
+
+
+def test_find_terms_in_all_projects(term_id) -> None:
+    terms_found = projects.Rfind_terms_in_all_projects(term_id)
+    for term_found in terms_found:
+        assert len(term_found[1]) >= 1
+
+
+def test_find_items_in_project(project_id, item_id) -> None:
+    items_found = projects.find_items_in_project(item_id[0], project_id)
+    has_been_found = False
+    for item_found in items_found:
+        if item_found.id == item_id[0]:
+            assert item_found.kind == item_id[1]
+            has_been_found = True
+            break
+    assert has_been_found
