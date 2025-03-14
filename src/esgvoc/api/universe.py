@@ -104,7 +104,7 @@ def find_terms_in_universe(term_id: str,
 
 
 def _get_all_terms_in_data_descriptor(data_descriptor: UDataDescriptor,
-                                      selected_term_fields: Iterable[str]|None) -> list[DataDescriptor]:
+                                      selected_term_fields: Iterable[str] | None) -> list[DataDescriptor]:
     result: list[DataDescriptor] = list()
     instantiate_pydantic_terms(data_descriptor.terms, result, selected_term_fields)
     return result
@@ -281,7 +281,7 @@ def _get_data_descriptor_in_universe(data_descriptor_id: str, session: Session) 
     return result
 
 
-def get_data_descriptor_in_universe(data_descriptor_id: str, session: Session) -> tuple[str, dict] | None:
+def get_data_descriptor_in_universe(data_descriptor_id: str) -> tuple[str, dict] | None:
     """
     TODO: docstring
     """
@@ -342,8 +342,8 @@ def Rfind_terms_in_universe(expression: str, only_id: bool = False,
 def R_find_terms_in_data_descriptor(expression: str, data_descriptor_id: str, session: Session,
                                    only_id: bool = False) -> Sequence[UTerm]:
     matching_condition = generate_matching_condition(UTermFTS5, expression, only_id)
-    where_condition = UDataDescriptorFTS5.id == data_descriptor_id, matching_condition
-    tmp_statement = select(UTermFTS5).join(UDataDescriptorFTS5).where(*where_condition)
+    where_condition = UDataDescriptor.id == data_descriptor_id, matching_condition
+    tmp_statement = select(UTermFTS5).join(UDataDescriptor).where(*where_condition)
     statement = select(UTerm).from_statement(tmp_statement.order_by(text('rank')))
     return execute_match_statement(expression, statement, session)
 
