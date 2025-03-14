@@ -71,16 +71,19 @@ def test_get_terms_in_data_descriptor(data_descriptor_id) -> None:
 
 def test_get_term_in_data_descriptor(dd_term_ids) -> None:
     term_found = universe.get_term_in_data_descriptor(dd_term_ids[0], dd_term_ids[1], [])
+    assert term_found
     assert term_found.id == dd_term_ids[1]
 
 
 def test_get_term_in_universe(term_id) -> None:
     term_found = universe.get_term_in_universe(term_id, [])
+    assert term_found
     assert term_found.id == term_id
 
 
 def test_get_data_descriptor_in_universe(data_descriptor_id) -> None:
     data_descriptor_found = universe.get_data_descriptor_in_universe(data_descriptor_id)
+    assert data_descriptor_found
     assert data_descriptor_found[0] == data_descriptor_id
 
 
