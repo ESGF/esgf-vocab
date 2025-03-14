@@ -5,7 +5,7 @@ import sqlalchemy as sa
 from pydantic import BaseModel
 from sqlalchemy import ColumnElement
 from sqlalchemy.exc import OperationalError
-from sqlalchemy.orm.context import FromStatement
+from sqlalchemy.orm.context import ExecutableReturnsRows
 from sqlmodel import Column, Field, Session, col
 
 import esgvoc.core.constants as api_settings
@@ -13,8 +13,8 @@ import esgvoc.core.service as service
 from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
 from esgvoc.api.data_descriptors.data_descriptor import (DataDescriptor,
                                                          DataDescriptorSubSet)
-from esgvoc.core.db.models.project import PTerm
-from esgvoc.core.db.models.universe import UTerm
+from esgvoc.core.db.models.project import PTerm, PTermFTS5
+from esgvoc.core.db.models.universe import UTerm, UTermFTS5
 
 UNIVERSE_DB_CONNECTION = service.state_service.universe.db_connection
 
@@ -76,7 +76,8 @@ def instantiate_pydantic_terms(db_terms: Iterable[UTerm | PTerm],
         list_to_populate.append(term)
 
 
-def generate_matching_condition(cls: type, expression: str, only_id: bool) -> ColumnElement[bool]:
+def generate_matching_condition(cls: type[UTermFTS5] | type[PTermFTS5],
+                                expression: str, only_id: bool) -> ColumnElement[bool]:
     if only_id:
         result = col(cls.id).match(expression)
     else:
@@ -84,9 +85,10 @@ def generate_matching_condition(cls: type, expression: str, only_id: bool) -> Co
     return result
 
 
-def execute_match_statement(expression: str, statement: FromStatement, session: Session) -> Sequence:
+def execute_match_statement(expression: str, statement: ExecutableReturnsRows, session: Session) \
+                                                                                        -> Sequence:
     try:
-        raw_results = session.exec(statement)
+        raw_results = session.exec(statement)  # type: ignore
         # raw_results.all() returns a list of sqlalquemy rows.
         results = [result[0] for result in raw_results.all()]
         return results

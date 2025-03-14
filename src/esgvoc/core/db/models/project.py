@@ -45,7 +45,7 @@ class PTerm(SQLModel, PkMixin, IdMixin, table=True):
     kind: TermKind = Field(sa_column=Column(sa.Enum(TermKind)))
     collection_pk: int | None = Field(default=None, foreign_key="collections.pk")
     collection: Collection = Relationship(back_populates="terms")
-    __table_args__ = (sa.Index("drs_name_index", specs.sa_column["drs_name"]), )
+    __table_args__ = (sa.Index("drs_name_index", specs.sa_column["drs_name"]), )  # type: ignore
 
 
 # Well, the following instructions are not data duplication. It is more building an index.
@@ -78,7 +78,7 @@ def project_create_db(db_file_path: Path):
         with connection.create_session() as session:
             sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS pterms_fts5 USING ' + \
                         'fts5(pk, id, specs, kind, collection_pk, content=pterms, content_rowid=pk);'
-            session.exec(text(sql_query))
+            session.exec(text(sql_query))  # type: ignore
             session.commit()
     except Exception as e:
         msg = f'Unable to create table pterms_fts5 for {db_file_path}. Abort.'
@@ -89,7 +89,7 @@ def project_create_db(db_file_path: Path):
             sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS pcollections_fts5 USING ' + \
                         'fts5(pk, id, data_descriptor_id, context, project_pk, ' + \
                         'term_kind, content=collections, content_rowid=pk);'
-            session.exec(text(sql_query))
+            session.exec(text(sql_query))  # type: ignore
             session.commit()
     except Exception as e:
         msg = f'Unable to create table pcollections_fts5 for {db_file_path}. Abort.'

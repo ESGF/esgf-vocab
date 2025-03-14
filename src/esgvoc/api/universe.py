@@ -1,4 +1,4 @@
-from typing import Iterable, Sequence
+from typing import Any, Iterable, Sequence
 
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
@@ -274,14 +274,14 @@ def get_term_in_universe(term_id: str,
     return result
 
 
-def _get_data_descriptor_in_universe(data_descriptor_id: str, session: Session) -> UDataDescriptor:
+def _get_data_descriptor_in_universe(data_descriptor_id: str, session: Session) -> UDataDescriptor | None:
     statement = select(UDataDescriptor).where(UDataDescriptor.id == data_descriptor_id)
     results = session.exec(statement)
     result = results.one_or_none()
     return result
 
 
-def get_data_descriptor_in_universe(data_descriptor_id: str, session: Session) -> tuple[str, dict]:
+def get_data_descriptor_in_universe(data_descriptor_id: str, session: Session) -> tuple[str, dict] | None:
     """
     TODO: docstring
     """
@@ -296,8 +296,8 @@ def get_data_descriptor_in_universe(data_descriptor_id: str, session: Session) -
 
 def R_find_data_descriptors_in_universe(expression: str, session: Session,
                                        only_id: bool = False) -> Sequence[UDataDescriptor]:
-    # TODO: replace the following instructions by this, when specs will ba available in UDataDescriptor.
-    # matching_condition = generate_matching_condition(CollectionFTS, only_id)
+    # TODO: replace the following instructions by this, when specs will ba available in UDataDescriptor.
+    # matching_condition = generate_matching_condition(CollectionFTS, only_id)
     matching_condition = col(UDataDescriptorFTS5.id).match(expression)
     tmp_statement = select(UDataDescriptorFTS5).where(matching_condition)
     statement = select(UDataDescriptor).from_statement(tmp_statement.order_by(text('rank')))
@@ -310,12 +310,12 @@ def Rfind_data_descriptors_in_universe(expression: str,
     TODO: docstring
     only_id alway true
     """
-    result = list()
+    result: list[tuple[str, dict]] = list()
     with get_universe_session() as session:
-        data_descriptors_found = _get_data_descriptor_in_universe(expression, session, only_id)
+        data_descriptors_found = R_find_data_descriptors_in_universe(expression, session, only_id)
         if data_descriptors_found:
             for data_descriptor_found in data_descriptors_found:
-                result.append(data_descriptor_found.id, data_descriptor_found.context)
+                result.append((data_descriptor_found.id, data_descriptor_found.context))
     return result
 
 
@@ -331,7 +331,7 @@ def Rfind_terms_in_universe(expression: str, only_id: bool = False,
     """
     TODO: docstring
     """
-    result = list()
+    result: list[DataDescriptor] = list()
     with get_universe_session() as session:
         uterms_found = R_find_terms_in_universe(expression, session, only_id)
         if uterms_found:
@@ -354,7 +354,7 @@ def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, onl
     """
     TODO: docstring
     """
-    result = list()
+    result: list[DataDescriptor] = list()
     with get_universe_session() as session:
         uterms_found = R_find_terms_in_data_descriptor(expression, data_descriptor_id,
                                                       session, only_id)
@@ -374,7 +374,7 @@ def find_items_in_universe(expression: str, only_id: bool = False)  -> list[Item
             term_column = col(UTermFTS5.id)
         else:
             dd_column = col(UDataDescriptorFTS5.id)  # TODO: use specs when implemented!
-            term_column = col(UTermFTS5.specs)
+            term_column = col(UTermFTS5.specs)  # type: ignore
         dd_where_condition = dd_column.match(expression)
         dd_statement = select(UDataDescriptorFTS5.id,
                               text("'data_descriptor' AS TYPE"),
@@ -390,7 +390,7 @@ def find_items_in_universe(expression: str, only_id: bool = False)  -> list[Item
             # Items found are kind of tuple with an object, a kindness, a parent id and a rank.
             dds_found = session.exec(dd_statement).all()
             terms_found = session.exec(term_statement).all()
-            tmp_result = list()
+            tmp_result: list[Any] = list()
             tmp_result.extend(dds_found)
             tmp_result.extend(terms_found)
             tmp_result = sorted(tmp_result, key=lambda r: r[3], reverse=False)

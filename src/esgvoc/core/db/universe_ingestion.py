@@ -50,7 +50,7 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
         try:
             sql_query = 'INSERT INTO uterms_fts5(pk, id, specs, kind, data_descriptor_pk) ' + \
                         'SELECT pk, id, specs, kind, data_descriptor_pk FROM uterms;'
-            session.exec(text(sql_query))
+            session.exec(text(sql_query))  # type: ignore
         except Exception as e:
             msg = f'Unable to insert rows into uterms_fts5 table for {universe_db_file_path}. Abort.'
             _LOGGER.fatal(msg)
@@ -59,7 +59,7 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
         try:
             sql_query = 'INSERT INTO udata_descriptors_fts5(pk, id, universe_pk, context, term_kind) ' + \
                         'SELECT pk, id, universe_pk, context, term_kind FROM udata_descriptors;'
-            session.exec(text(sql_query))
+            session.exec(text(sql_query))  # type: ignore
         except Exception as e:
             msg = f'Unable to insert rows into udata_descriptors_fts5 table for {universe_db_file_path}. Abort.'
             _LOGGER.fatal(msg)

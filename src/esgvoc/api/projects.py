@@ -1,5 +1,5 @@
 import re
-from typing import Iterable, Sequence
+from typing import Any, Iterable, Sequence
 
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
@@ -20,9 +20,8 @@ from esgvoc.api.search import (MatchingTerm, SearchSettings,
                                _create_str_comparison_expression)
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
-from esgvoc.core.db.models.project import (Collection, CollectionFTS,
-                                           PCollectionFTS5, Project, PTerm,
-                                           PTermFTS5)
+from esgvoc.core.db.models.project import (Collection, PCollectionFTS5,
+                                           Project, PTerm, PTermFTS5)
 from esgvoc.core.db.models.universe import UTerm
 
 # [OPTIMIZATION]
@@ -1024,11 +1023,11 @@ def get_collection_from_data_descriptor_in_all_projects(data_descriptor_id: str)
 
 
 def R_find_collections_in_project(expression: str, session: Session,
-                                 only_id: bool = False) -> list[Collection]:
+                                 only_id: bool = False) -> Sequence[Collection]:
     # TODO: replace the following instructions by this, when specs will ba available in Collection.
     # matching_condition = generate_matching_condition(CollectionFTS, only_id)
-    matching_condition = col(CollectionFTS.id).match(expression)
-    tmp_statement = select(CollectionFTS).where(matching_condition)
+    matching_condition = col(PCollectionFTS5.id).match(expression)
+    tmp_statement = select(PCollectionFTS5).where(matching_condition)
     statement = select(Collection).from_statement(tmp_statement.order_by(text('rank')))
     return execute_match_statement(expression, statement, session)
 
@@ -1040,12 +1039,13 @@ def Rfind_collections_in_project(expression: str, project_id: str,
 
     only_id alway True at the moment.
     """
-    result = list()
+    result: list[tuple[str, dict]] = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
             collections_found = R_find_collections_in_project(expression, session, only_id)
             for collection in collections_found:
-                result.append(collection.id, collection.context)
+                result.append((collection.id, collection.context))
+    return result
 
 
 def R_find_terms_in_collection(expression: str, collection_id: str, session: Session,
@@ -1070,7 +1070,7 @@ def Rfind_terms_in_collection(expression: str, project_id: str, collection_id: s
     """
     TODO: docstring.
     """
-    result = list()
+    result: list[DataDescriptor] = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
             pterms_found = R_find_terms_in_collection(expression, collection_id, session, only_id)
@@ -1083,7 +1083,7 @@ def Rfind_terms_in_project(expression: str, project_id: str, only_id: bool = Fal
     """
     TODO: docstring.
     """
-    result = list()
+    result: list[DataDescriptor] = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
             pterms_found = R_find_terms_in_project(expression, session, only_id)
@@ -1097,12 +1097,12 @@ def Rfind_terms_in_all_projects(expression: str, only_id: bool = False,
     """
     TODO: docstring.
     """
-    result = list()
+    result: list[tuple[str, list[DataDescriptor]]] = list()
     project_ids = get_all_projects()
     for project_id in project_ids:
         terms_found = Rfind_terms_in_project(expression, project_id, only_id, selected_term_fields)
         if terms_found:
-            result.append(project_id, terms_found)
+            result.append((project_id, terms_found))
     return result
 
 
@@ -1119,7 +1119,7 @@ def find_items_in_project(expression: str, project_id: str, only_id: bool = Fals
                 term_column = col(PTermFTS5.id)
             else:
                 collection_column = col(PCollectionFTS5.id)  # TODO: use specs when implemented!
-                term_column = col(PTermFTS5.specs)
+                term_column = col(PTermFTS5.specs)  # type: ignore
 
             collection_where_condition = collection_column.match(expression)
             collection_statement = select(PCollectionFTS5.id,
@@ -1136,7 +1136,7 @@ def find_items_in_project(expression: str, project_id: str, only_id: bool = Fals
                 # Items found are kind of tuple with an object, a kindness, a parent id and a rank.
                 collections_found = session.exec(collection_statement).all()
                 terms_found = session.exec(term_statement).all()
-                tmp_result = list()
+                tmp_result: list[Any] = list()
                 tmp_result.extend(collections_found)
                 tmp_result.extend(terms_found)
                 tmp_result = sorted(tmp_result, key=lambda r: r[3], reverse=False)

@@ -149,7 +149,7 @@ def ingest_project(project_dir_path: Path,
         try:
             sql_query = 'INSERT INTO pterms_fts5(pk, id, specs, kind, collection_pk) ' + \
                         'SELECT pk, id, specs, kind, collection_pk FROM pterms;'
-            project_db_session.exec(text(sql_query))
+            project_db_session.exec(text(sql_query))  # type: ignore
         except Exception as e:
             msg = f'Unable to insert rows into pterms_fts5 table for {project_db_file_path}. Abort.'
             _LOGGER.fatal(msg)
@@ -158,7 +158,7 @@ def ingest_project(project_dir_path: Path,
         try:
             sql_query = 'INSERT INTO pcollections_fts5(pk, id, data_descriptor_id, context, project_pk, term_kind) ' + \
                         'SELECT pk, id, data_descriptor_id, context, project_pk, term_kind FROM collections;'
-            project_db_session.exec(text(sql_query))
+            project_db_session.exec(text(sql_query))  # type: ignore
         except Exception as e:
             msg = f'Unable to insert rows into pcollections_fts5 table for {project_db_file_path}. Abort.'
             _LOGGER.fatal(msg)
