@@ -5,7 +5,7 @@ import sqlalchemy as sa
 from pydantic import BaseModel
 from sqlalchemy import ColumnElement
 from sqlalchemy.exc import OperationalError
-from sqlalchemy.orm.context import ExecutableReturnsRows
+from sqlalchemy.sql.selectable import ExecutableReturnsRows
 from sqlmodel import Column, Field, Session, col
 
 import esgvoc.core.constants as api_settings
