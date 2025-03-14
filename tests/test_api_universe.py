@@ -3,13 +3,15 @@ from typing import Generator
 import pytest
 
 import esgvoc.api.universe as universe
+from esgvoc.api._utils import ItemKind
 
 _SOME_DATA_DESCRIPTOR_IDS = ['institution', 'product', 'variable']
 _SOME_TERM_IDS = ['ipsl', 'observations', 'airmass']
 _SOME_DD_TERM_IDS = [(_SOME_DATA_DESCRIPTOR_IDS[0], _SOME_TERM_IDS[0]),
                      (_SOME_DATA_DESCRIPTOR_IDS[1], _SOME_TERM_IDS[1]),
                      (_SOME_DATA_DESCRIPTOR_IDS[2], _SOME_TERM_IDS[2])]
-_SOME_ITEM_IDS = _SOME_DATA_DESCRIPTOR_IDS + _SOME_TERM_IDS
+_SOME_ITEM_IDS = list(zip(_SOME_DATA_DESCRIPTOR_IDS, [ItemKind.DATA_DESCRIPTOR for _ in _SOME_DATA_DESCRIPTOR_IDS])) + \
+                 list(zip(_SOME_TERM_IDS, [ItemKind.TERM for _ in _SOME_TERM_IDS]))
 
 
 def _provide_item_ids() -> Generator:
@@ -113,10 +115,11 @@ def test_find_terms_in_data_descriptor(dd_term_ids) -> None:
 
 
 def test_find_items_in_universe(item_id) -> None:
-    items_found = universe.find_items_in_universe(item_id)
+    items_found = universe.find_items_in_universe(item_id[0])
     has_been_found = False
     for item_found in items_found:
-        if item_found.id == item_id:
+        if item_found.id == item_id[0]:
+            assert item_found.kind == item_id[1]
             has_been_found = True
             break
     assert has_been_found
