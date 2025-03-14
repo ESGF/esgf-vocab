@@ -363,7 +363,7 @@ def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, onl
     return result
 
 
-def find_items_in_universe(expression: str, only_id: bool = False)  -> list[Item]:
+def find_items_in_universe(expression: str, only_id: bool = False) -> list[Item]:
     """
     TODO: docstring.
     """
