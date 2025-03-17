@@ -113,4 +113,5 @@ api_documentation/projects.md
 api_documentation/project_specs.md
 api_documentation/drs.md
 api_documentation/data_descriptors.md
+api_documentation/miscellaneous.md
 ```
