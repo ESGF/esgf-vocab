@@ -30,3 +30,7 @@ repos:
         verbose: true
         language: python
         additional_dependencies: [wily]
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.1.1
+    hooks:
+      - id: flake8
