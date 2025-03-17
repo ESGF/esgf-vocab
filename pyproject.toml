@@ -45,6 +45,7 @@ dev-dependencies = [
     "sphinx-copybutton>=0.5.2",
     "pre-commit>=4.1.0",
     "hatch>=1.14.0", # Required for version updating through rye.
+    "pytest-cov>=6.0.0"
 ]
 [tool.rye.scripts]
 ev = { cmd = "python src/esgvoc/cli/main.py" }

@@ -27,3 +27,4 @@ tmp*
 *.py[oc]
 sb.py
 CHANGELOG.md
+.coverage
