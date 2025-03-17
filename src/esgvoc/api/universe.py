@@ -263,7 +263,18 @@ def _get_term_in_universe(term_id: str, session: Session) -> UTerm | None:
 def get_term_in_universe(term_id: str,
                          selected_term_fields: Iterable[str] | None = None) -> DataDescriptor | None:
     """
-    TODO: docstring
+    Returns the first occurrence of a term according to the id of the terms in the universe.
+    Terms are unique within a data descriptor but may have some synonyms in the universe.
+    This function performs an exact match on the `term_id` and does not search
+    for similar or related terms. If the provided `term_id` is not found, the function returns `None`.
+
+    :param term_id: An id of a term to be found.
+    :type term_id: str
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned.
+    :type selected_term_fields: Iterable[str] | None
+    :returns: A term instance. Returns `None` if no match is found.
+    :rtype: DataDescriptor | None
     """
     with get_universe_session() as session:
         term_found = _get_term_in_universe(term_id, session)
