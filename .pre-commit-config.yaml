@@ -17,7 +17,7 @@ repos:
       # Run the linter.
       - id: ruff
         language_version: python3
-        args: [ --fix, --exit-non-zero-on-fix, --show-fixes ]
+        args: [ --exit-non-zero-on-fix ]
   - repo: https://github.com/PyCQA/isort
     rev: 6.0.1
     hooks:
