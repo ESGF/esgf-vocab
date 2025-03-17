@@ -11,8 +11,7 @@ from sqlmodel import Column, Field, Session, col
 import esgvoc.core.constants as api_settings
 import esgvoc.core.service as service
 from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
-from esgvoc.api.data_descriptors.data_descriptor import (DataDescriptor,
-                                                         DataDescriptorSubSet)
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
 from esgvoc.core.db.models.project import PTerm, PTermFTS5
 from esgvoc.core.db.models.universe import UTerm, UTermFTS5
 
@@ -24,8 +23,11 @@ class APIException(Exception): ... # noqa
 
 class ItemKind(Enum):
     DATA_DESCRIPTOR = "data_descriptor"
+    """Corresponds to a data descriptor"""
     COLLECTION = "collection"
+    """Corresponds to a collection"""
     TERM = "term"
+    """Corresponds to a term"""
 
 
 class Item(BaseModel):
@@ -92,5 +94,5 @@ def execute_match_statement(expression: str, statement: ExecutableReturnsRows, s
         # raw_results.all() returns a list of sqlalquemy rows.
         results = [result[0] for result in raw_results.all()]
         return results
-    except OperationalError:
-        raise APIException(f"unable to interpret expression '{expression}'")
+    except OperationalError as e:
+        raise APIException(f"unable to interpret expression '{expression}'") from e
