@@ -4,15 +4,18 @@ from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 from sqlmodel import Session, col, select
 
-from esgvoc.api._utils import (APIException, Item, execute_match_statement,
-                               generate_matching_condition,
-                               get_universe_session, instantiate_pydantic_term,
-                               instantiate_pydantic_terms)
+from esgvoc.api._utils import (
+    APIException,
+    Item,
+    execute_match_statement,
+    generate_matching_condition,
+    get_universe_session,
+    instantiate_pydantic_term,
+    instantiate_pydantic_terms,
+)
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.search import SearchSettings, _create_str_comparison_expression
-from esgvoc.core.db.models.universe import (UDataDescriptor,
-                                            UDataDescriptorFTS5, UTerm,
-                                            UTermFTS5)
+from esgvoc.core.db.models.universe import UDataDescriptor, UDataDescriptorFTS5, UTerm, UTermFTS5
 
 
 def _find_terms_in_data_descriptor(data_descriptor_id: str,
@@ -242,12 +245,14 @@ def get_term_in_data_descriptor(data_descriptor_id: str,
                                 selected_term_fields: Iterable[str] | None = None) \
                                                                            -> DataDescriptor | None:
     """
-    Returns a term according to the id of the terms in the given data descriptor.
-    This function performs an exact match on the `term_id` and does not search
-    for similar or related terms. If the provided `term_id` is not found, the function returns `None`.
+    Returns the term in the given data descriptor whose id corresponds exactly to the given term id.
+    This function performs an exact match on the `term_id` and the `data_descriptor_id` and does
+    not search for similar or related terms and data descriptors.
+    If the provided `term_id` is not found, the function returns `None`.
 
     :param data_descriptor_id: The given data descriptor id.
-    :param term_id: An id of a term to be found.
+    :type data_descriptor_id: str
+    :param term_id: The id of a term to be found.
     :type term_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
     fields of the terms are returned. If empty, selects the id and type fields.
@@ -274,12 +279,13 @@ def _get_term_in_universe(term_id: str, session: Session) -> UTerm | None:
 def get_term_in_universe(term_id: str,
                          selected_term_fields: Iterable[str] | None = None) -> DataDescriptor | None:
     """
-    Returns the first occurrence of a term according to the id of the terms in the universe.
+    Returns the first occurrence of the terms in the universe whose id corresponds exactly to
+    the given term id.
     Terms are unique within a data descriptor but may have some synonyms in the universe.
     This function performs an exact match on the `term_id` and does not search
     for similar or related terms. If the provided `term_id` is not found, the function returns `None`.
 
-    :param term_id: An id of a term to be found.
+    :param term_id: The id of a term to be found.
     :type term_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
     fields of the terms are returned. If empty, selects the id and type fields.
@@ -305,7 +311,16 @@ def _get_data_descriptor_in_universe(data_descriptor_id: str, session: Session) 
 
 def get_data_descriptor_in_universe(data_descriptor_id: str) -> tuple[str, dict] | None:
     """
-    TODO: docstring
+    Returns the id and the context of the data descriptor in the universe whose id corresponds
+    exactly to the given data descriptor id.
+    This function performs an exact match on the `data_descriptor_id` and does not
+    search for similar or related data descriptors.
+    If the provided `data_descriptor_id` is not found, the function returns `None`.
+
+    :param data_descriptor_id: An id of a data descriptor to be found.
+    :type data_descriptor_id: str
+    :returns: The data descriptor id and context. Returns `None` if no match is found.
+    :rtype: tuple[str, dict] | None
     """
     with get_universe_session() as session:
         data_descriptor_found = _get_data_descriptor_in_universe(data_descriptor_id, session)
@@ -319,8 +334,7 @@ def get_data_descriptor_in_universe(data_descriptor_id: str) -> tuple[str, dict]
 def R_find_data_descriptors_in_universe(expression: str, session: Session,
                                         only_id: bool = False) -> Sequence[UDataDescriptor]:
     # TODO: replace the following instructions by this, when specs will ba available in UDataDescriptor.
-    # matching_condition = generate_matching_condition(CollectionFTS, only_id)
-    matching_condition = col(UDataDescriptorFTS5.id).match(expression)
+    matching_condition = generate_matching_condition(UDataDescriptorFTS5, True)
     tmp_statement = select(UDataDescriptorFTS5).where(matching_condition)
     statement = select(UDataDescriptor).from_statement(tmp_statement.order_by(text('rank')))
     return execute_match_statement(expression, statement, session)
@@ -329,8 +343,28 @@ def R_find_data_descriptors_in_universe(expression: str, session: Session,
 def Rfind_data_descriptors_in_universe(expression: str,
                                        only_id: bool = False) -> list[tuple[str, dict]]:
     """
-    TODO: docstring
-    only_id alway true
+    Find data descriptors in the universe based on a full text search defined by the given `expression`.
+    The `expression` comes from the powerful
+    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
+    and corresponds to the expression of the `MATCH` operator.
+    It can be composed of one or multiple keywords combined with boolean
+    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
+    with the wildcard `*`.
+    The function returns a list of data descriptor ids and contexts, sorted according to the
+    bm25 ranking metric (list index `0` has the highest rank).
+    If the provided `expression` does not hit any data descriptor, the returned list is empty.
+    The function searches for the `expression` in the data descriptor specifications.
+    However, if `only_id` is `True` (default is `False`), the search is restricted to the id of the
+    data descriptors. **At the moment, `only_id` is set to `True` as the data descriptors
+    haven't got any description.**
+
+    :param expression: The full text search expression.
+    :type expression: str
+    :param only_id: Performs the search only on ids, otherwise on all the specifications.
+    :type only_id: bool
+    :returns: A list of data descriptor ids and contexts. Returns an empty list if no matches are found.
+    :rtype: list[tuple[str, dict]]
+    :raises APIException: If the `expression` cannot be interpreted.
     """
     result: list[tuple[str, dict]] = list()
     with get_universe_session() as session:
@@ -351,7 +385,26 @@ def R_find_terms_in_universe(expression: str, session: Session, only_id: bool = 
 def Rfind_terms_in_universe(expression: str, only_id: bool = False,
                             selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
     """
-    TODO: docstring
+    Find terms in the universe based on a full-text search defined by the given `expression`.
+    The `expression` comes from the powerful
+    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
+    and corresponds to the expression of the `MATCH` operator.
+    It can be composed of one or multiple keywords combined with boolean
+    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
+    with the wildcard `*`.
+    The function returns a list of term instances sorted according to the
+    bm25 ranking metric (list index `0` has the highest rank).
+    If the provided `expression` does not hit any term, the returned list is empty.
+    The function searches for the `expression` in the term specifications.
+    However, if `only_id` is `True` (default is `False`), the search is restricted to the id of the terms.
+
+    :param expression: The full text search expression.
+    :type expression: str
+    :param only_id: Performs the search only on ids, otherwise on all the specifications.
+    :type only_id: bool
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
+    :raises APIException: If the `expression` cannot be interpreted.
     """
     result: list[DataDescriptor] = list()
     with get_universe_session() as session:
@@ -374,7 +427,27 @@ def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, onl
                                    selected_term_fields: Iterable[str] | None = None) \
                                                                             -> list[DataDescriptor]:
     """
-    TODO: docstring
+    Find terms in the given data descriptor based on a full-text search defined by the given `expression`.
+    The `expression` comes from the powerful
+    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
+    and corresponds to the expression of the `MATCH` operator.
+    It can be composed of one or multiple keywords combined with boolean
+    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
+    with the wildcard `*`.
+    The function returns a list of term instances sorted according to the
+    bm25 ranking metric (list index `0` has the highest rank).
+    If the provided `expression` does not hit any term or the given `data_descriptor_id` does not
+    correspond exactly to an id of a data descriptor, the returned list is empty.
+    The function searches for the `expression` in the term specifications.
+    However, if `only_id` is `True` (default is `False`), the search is restricted to the id of the terms.
+
+    :param expression: The full text search expression.
+    :type expression: str
+    :param only_id: Performs the search only on ids, otherwise on all the specifications.
+    :type only_id: bool
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
+    :raises APIException: If the `expression` cannot be interpreted.
     """
     result: list[DataDescriptor] = list()
     with get_universe_session() as session:
@@ -387,7 +460,27 @@ def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, onl
 
 def find_items_in_universe(expression: str, only_id: bool = False) -> list[Item]:
     """
-    TODO: docstring.
+    Find items, at the moment terms and data descriptors, in the universe based on a full-text
+    search defined by the given `expression`. The `expression` comes from the powerful
+    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
+    and corresponds to the expression of the `MATCH` operator.
+    It can be composed of one or multiple keywords combined with boolean
+    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
+    with the wildcard `*`.
+    The function returns a list of item instances sorted according to the
+    bm25 ranking metric (list index `0` has the highest rank).
+    If the provided `expression` does not hit any item, the returned list is empty.
+    The function searches for the `expression` in the term and data descriptor specifications.
+    However, if `only_id` is `True` (default is `False`), the search is restricted to the id of the
+    terms and data descriptors.
+
+    :param expression: The full text search expression.
+    :type expression: str
+    :param only_id: Performs the search only on ids, otherwise on all the specifications.
+    :type only_id: bool
+    :returns: A list of item instances. Returns an empty list if no matches are found.
+    :rtype: list[Item]
+    :raises APIException: If the `expression` cannot be interpreted.
     """
     result = list()
     with get_universe_session() as session:
@@ -417,8 +510,8 @@ def find_items_in_universe(expression: str, only_id: bool = False) -> list[Item]
             tmp_result.extend(terms_found)
             tmp_result = sorted(tmp_result, key=lambda r: r[3], reverse=False)
             result = [Item(id=r[0], kind=r[1], parent_id=r[2]) for r in tmp_result]
-        except OperationalError:
-            raise APIException(f"unable to interpret expression '{expression}'")
+        except OperationalError as e:
+            raise APIException(f"unable to interpret expression '{expression}'") from e
     return result
 
 
