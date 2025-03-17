@@ -22,3 +22,11 @@ repos:
     rev: 5.13.2
     hooks:
       - id: isort
+  - repo: local
+    hooks:
+    -   id: wily
+        name: wily
+        entry: wily diff
+        verbose: true
+        language: python
+        additional_dependencies: [wily]
