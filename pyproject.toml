@@ -75,6 +75,4 @@ log_cli_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 path = "src/esgvoc/__init__.py"
 
 [tool.mypy]
-exclude = [
-    'tests'
-]
+exclude = ['tests']
