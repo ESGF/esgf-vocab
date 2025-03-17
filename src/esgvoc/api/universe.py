@@ -134,7 +134,7 @@ def get_all_terms_in_data_descriptor(data_descriptor_id: str,
     :param data_descriptor_id: A data descriptor id
     :type data_descriptor_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned.
+    fields of the terms are returned. If empty, selects the id and type fields.
     :type selected_term_fields: Iterable[str] | None
     :returns: a list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
@@ -213,7 +213,7 @@ def get_all_terms_in_universe(selected_term_fields: Iterable[str] | None = None)
     Terms are unique within a data descriptor but may have some synonyms in the universe.
 
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned.
+    fields of the terms are returned. If empty, selects the id and type fields.
     :type selected_term_fields: Iterable[str] | None
     :returns: A list of term instances.
     :rtype: list[DataDescriptor]
@@ -242,7 +242,18 @@ def get_term_in_data_descriptor(data_descriptor_id: str,
                                 selected_term_fields: Iterable[str] | None = None) \
                                                                            -> DataDescriptor | None:
     """
-    TODO: docstring
+    Returns a term according to the id of the terms in the given data descriptor.
+    This function performs an exact match on the `term_id` and does not search
+    for similar or related terms. If the provided `term_id` is not found, the function returns `None`.
+
+    :param data_descriptor_id: The given data descriptor id.
+    :param term_id: An id of a term to be found.
+    :type term_id: str
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned. If empty, selects the id and type fields.
+    :type selected_term_fields: Iterable[str] | None
+    :returns: A term instance. Returns `None` if no match is found.
+    :rtype: DataDescriptor | None
     """
     with get_universe_session() as session:
         term_found = _get_term_in_data_descriptor(data_descriptor_id, term_id, session)
@@ -271,7 +282,7 @@ def get_term_in_universe(term_id: str,
     :param term_id: An id of a term to be found.
     :type term_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned.
+    fields of the terms are returned. If empty, selects the id and type fields.
     :type selected_term_fields: Iterable[str] | None
     :returns: A term instance. Returns `None` if no match is found.
     :rtype: DataDescriptor | None
@@ -306,7 +317,7 @@ def get_data_descriptor_in_universe(data_descriptor_id: str) -> tuple[str, dict]
 
 
 def R_find_data_descriptors_in_universe(expression: str, session: Session,
-                                       only_id: bool = False) -> Sequence[UDataDescriptor]:
+                                        only_id: bool = False) -> Sequence[UDataDescriptor]:
     # TODO: replace the following instructions by this, when specs will ba available in UDataDescriptor.
     # matching_condition = generate_matching_condition(CollectionFTS, only_id)
     matching_condition = col(UDataDescriptorFTS5.id).match(expression)
@@ -316,7 +327,7 @@ def R_find_data_descriptors_in_universe(expression: str, session: Session,
 
 
 def Rfind_data_descriptors_in_universe(expression: str,
-                                      only_id: bool = False) -> list[tuple[str, dict]]:
+                                       only_id: bool = False) -> list[tuple[str, dict]]:
     """
     TODO: docstring
     only_id alway true
@@ -338,7 +349,7 @@ def R_find_terms_in_universe(expression: str, session: Session, only_id: bool = 
 
 
 def Rfind_terms_in_universe(expression: str, only_id: bool = False,
-                           selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
+                            selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
     """
     TODO: docstring
     """
@@ -351,7 +362,7 @@ def Rfind_terms_in_universe(expression: str, only_id: bool = False,
 
 
 def R_find_terms_in_data_descriptor(expression: str, data_descriptor_id: str, session: Session,
-                                   only_id: bool = False) -> Sequence[UTerm]:
+                                    only_id: bool = False) -> Sequence[UTerm]:
     matching_condition = generate_matching_condition(UTermFTS5, expression, only_id)
     where_condition = UDataDescriptor.id == data_descriptor_id, matching_condition
     tmp_statement = select(UTermFTS5).join(UDataDescriptor).where(*where_condition)
@@ -360,7 +371,7 @@ def R_find_terms_in_data_descriptor(expression: str, data_descriptor_id: str, se
 
 
 def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, only_id: bool = False,
-                                  selected_term_fields: Iterable[str] | None = None) \
+                                   selected_term_fields: Iterable[str] | None = None) \
                                                                             -> list[DataDescriptor]:
     """
     TODO: docstring
@@ -368,7 +379,7 @@ def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, onl
     result: list[DataDescriptor] = list()
     with get_universe_session() as session:
         uterms_found = R_find_terms_in_data_descriptor(expression, data_descriptor_id,
-                                                      session, only_id)
+                                                       session, only_id)
         if uterms_found:
             instantiate_pydantic_terms(uterms_found, result, selected_term_fields)
     return result
