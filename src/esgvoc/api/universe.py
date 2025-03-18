@@ -40,7 +40,7 @@ def find_terms_in_data_descriptor(data_descriptor_id: str,
     """
     Finds one or more terms in the given data descriptor based on the specified search settings.
     This function performs an exact match on the `data_descriptor_id` and
-    does **not** search for similar or related descriptors.
+    does not search for similar or related descriptors.
     The given `term_id` is searched according to the search type specified in
     the parameter `settings`,
     which allows a flexible matching (e.g., `LIKE` may return multiple results).
@@ -130,7 +130,7 @@ def get_all_terms_in_data_descriptor(data_descriptor_id: str,
                                                                             -> list[DataDescriptor]:
     """
     Gets all the terms of the given data descriptor.
-    This function performs an exact match on the `data_descriptor_id` and does **not** search
+    This function performs an exact match on the `data_descriptor_id` and does not search
     for similar or related descriptors.
     If the provided `data_descriptor_id` is not found, the function returns an empty list.
 
@@ -245,12 +245,12 @@ def get_term_in_data_descriptor(data_descriptor_id: str,
                                 selected_term_fields: Iterable[str] | None = None) \
                                                                            -> DataDescriptor | None:
     """
-    Returns the term in the given data descriptor whose id corresponds exactly to the given term id.
+    Returns the term, in the given data descriptor, whose id corresponds exactly to the given term id.
     This function performs an exact match on the `term_id` and the `data_descriptor_id` and does
     not search for similar or related terms and data descriptors.
     If the provided `term_id` is not found, the function returns `None`.
 
-    :param data_descriptor_id: The given data descriptor id.
+    :param data_descriptor_id: The id of the given data descriptor.
     :type data_descriptor_id: str
     :param term_id: The id of a term to be found.
     :type term_id: str
@@ -279,7 +279,7 @@ def _get_term_in_universe(term_id: str, session: Session) -> UTerm | None:
 def get_term_in_universe(term_id: str,
                          selected_term_fields: Iterable[str] | None = None) -> DataDescriptor | None:
     """
-    Returns the first occurrence of the terms in the universe whose id corresponds exactly to
+    Returns the first occurrence of the terms, in the universe, whose id corresponds exactly to
     the given term id.
     Terms are unique within a data descriptor but may have some synonyms in the universe.
     This function performs an exact match on the `term_id` and does not search
@@ -311,7 +311,7 @@ def _get_data_descriptor_in_universe(data_descriptor_id: str, session: Session) 
 
 def get_data_descriptor_in_universe(data_descriptor_id: str) -> tuple[str, dict] | None:
     """
-    Returns the id and the context of the data descriptor in the universe whose id corresponds
+    Returns the id and the context of the data descriptor, in the universe whose, id corresponds
     exactly to the given data descriptor id.
     This function performs an exact match on the `data_descriptor_id` and does not
     search for similar or related data descriptors.
@@ -353,7 +353,7 @@ def Rfind_data_descriptors_in_universe(expression: str,
     with the wildcard `*`.
     The function returns a list of data descriptor ids and contexts, sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
-    If the provided `expression` does not hit any data descriptor, the returned list is empty.
+    If the provided `expression` does not hit any data descriptor, the function returns an empty list.
     The function searches for the `expression` in the data descriptor specifications.
     However, if `only_id` is `True` (default is `False`), the search is restricted to the id of the
     data descriptors. **At the moment, `only_id` is set to `True` as the data descriptors
@@ -395,7 +395,7 @@ def Rfind_terms_in_universe(expression: str, only_id: bool = False,
     with the wildcard `*`.
     The function returns a list of term instances sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
-    If the provided `expression` does not hit any term, the returned list is empty.
+    If the provided `expression` does not hit any term, the function returns an empty list.
     The function searches for the `expression` in the term specifications.
     However, if `only_id` is `True` (default is `False`), the search is restricted to the id of the terms.
 
@@ -403,6 +403,9 @@ def Rfind_terms_in_universe(expression: str, only_id: bool = False,
     :type expression: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned. If empty, selects the id and type fields.
+    :type selected_term_fields: Iterable[str] | None
     :returns: A list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
     :raises APIException: If the `expression` cannot be interpreted.
@@ -437,8 +440,10 @@ def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, onl
     with the wildcard `*`.
     The function returns a list of term instances sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
+    This function performs an exact match on the `data_descriptor_id`,
+    and does not search for similar or related data descriptor.
     If the provided `expression` does not hit any term or the given `data_descriptor_id` does not
-    correspond exactly to an id of a data descriptor, the returned list is empty.
+    match exactly to an id of a data descriptor, the function returns an empty list.
     The function searches for the `expression` in the term specifications.
     However, if `only_id` is `True` (default is `False`), the search is restricted to the id of the terms.
 
@@ -446,6 +451,9 @@ def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, onl
     :type expression: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned. If empty, selects the id and type fields.
+    :type selected_term_fields: Iterable[str] | None
     :returns: A list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
     :raises APIException: If the `expression` cannot be interpreted.
@@ -470,10 +478,11 @@ def find_items_in_universe(expression: str, only_id: bool = False) -> list[Item]
     with the wildcard `*`.
     The function returns a list of item instances sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
-    If the provided `expression` does not hit any item, the returned list is empty.
+    If the provided `expression` does not hit any item, the function returns an empty list.
     The function searches for the `expression` in the term and data descriptor specifications.
     However, if `only_id` is `True` (default is `False`), the search is restricted to the id of the
-    terms and data descriptors.
+    terms and data descriptors. **At the moment, `only_id` is set to `True` for the data descriptors
+    because they haven't got any description.**
 
     :param expression: The full text search expression.
     :type expression: str
