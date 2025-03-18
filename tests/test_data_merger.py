@@ -20,18 +20,22 @@ from esgvoc.core.repo_fetcher import RepoFetcher
 
 
 def test_local_organisation_ipsl():
-    
-    uri = ".cache/repos/WCRP-universe/organisation/ipsl.json"
+    from esgvoc.core.service import current_state
+    uri_base = current_state.universe.local_path
+    assert(uri_base is not None)
+    uri = uri_base + "/organisation/ipsl.json"
     merger = DataMerger(data= JsonLdResource(uri = uri), allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables/"})
     jsonlist = merger.merge_linked_json()
     assert jsonlist[-1]["established"]==1991
 
 def test_local_from_project_ipsl():
+    from esgvoc.core.service import current_state
+    uri_base = current_state.projects["cmip6plus"].local_path
+    assert(uri_base is not None)
 
-    uri =  ".cache/repos/CMIP6Plus_CVs/institution_id/ipsl.json"
+    uri = uri_base + "/institution_id/ipsl.json"
     merger = DataMerger(data= JsonLdResource(uri = uri), allowed_base_uris={"https://espri-mod.github.io/WCRP-universe/"})
     jsonlist = merger.merge_linked_json()
-    print(jsonlist)
     assert jsonlist[-1]["established"]==1998 # this is a overcharged value 'from 1991 in ipsl definition in the universe to 1996 in ipsl in cmip6plus_cvs 
     assert jsonlist[-1]["myprop"]=="42" # a new property definition in the project cv
 

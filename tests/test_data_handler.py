@@ -28,9 +28,9 @@ def test_local_path():
 # Integration test 
 
 def test_local_project_all_term():
-    repos_dir = Path(".cache/repos/CMIP6Plus_CVs") 
+    from esgvoc.core.service import current_state
+    repos_dir = Path(current_state.projects["cmip6plus"].local_path) 
     for dir in repos_dir.iterdir():
-        
         if dir.is_dir() and dir /"000_context.jsonld" in list(dir.iterdir()):
              for term_uri in dir.iterdir():
                 if "000_context" not in term_uri.stem:
@@ -39,7 +39,9 @@ def test_local_project_all_term():
 
  
 def test_local_universe_all_term():
-    repos_dir = Path(".cache/repos/WCRP-universe") 
+    from esgvoc.core.service import current_state
+    repos_dir = Path(current_state.universe.local_path) 
+
     for dir in repos_dir.iterdir():
         
         if dir.is_dir() and dir /"000_context.jsonld" in list(dir.iterdir()):

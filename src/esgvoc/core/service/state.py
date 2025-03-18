@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 from esgvoc.core.repo_fetcher import RepoFetcher
-from esgvoc.core.service.settings import UniverseSettings, ProjectSettings, ServiceSettings
+from esgvoc.core.service.configuration.setting import UniverseSettings, ProjectSettings, ServiceSettings
 from esgvoc.core.db.connection import DBConnection
 
 from rich.table import Table
@@ -13,27 +13,38 @@ from sqlmodel import select
 from esgvoc.core.db.models.universe import Universe
 from esgvoc.core.db.models.project import Project
 
+
 logger = logging.getLogger(__name__)
 
 class BaseState:
     def __init__(self, github_repo: str, branch: str = "main", local_path: Optional[str] = None, db_path: Optional[str] = None):
-    
-        self.github_repo = github_repo
-        self.branch = branch
-        self.github_access = True # False if we dont have internet and some other cases 
-        self.github_version = None
         
-        self.local_path = local_path
-        self.local_access = True # False if we dont have cloned the remote repo yet
-        self.local_version = None
+        from esgvoc.core.service import config_manager
+        self.base_dir = config_manager.data_config_dir # needed for repofetcher 
         
-        self.db_path = db_path
-        self.db_access = True  # False if we cant access the db for some reason
-        self.db_version = None
+        self.github_repo : str = github_repo
+        self.branch : str = branch
+        self.github_access : bool = True # False if we dont have internet and some other cases 
+        self.github_version : str | None = None
         
-        self.rf = RepoFetcher()
+        self.local_path : str | None = self._get_absolute_path(str(self.base_dir),local_path)
+        self.local_access : bool = True # False if we dont have cloned the remote repo yet
+        self.local_version : str | None = None
+        
+        self.db_path : str | None = self._get_absolute_path(str(self.base_dir), db_path)
+        self.db_access : bool = True  # False if we cant access the db for some reason
+        self.db_version : str | None = None
+        
+        self.rf = RepoFetcher(local_path=str(self.base_dir))
         self.db_connection:DBConnection|None = None
-        self.db_sqlmodel = None
+        self.db_sqlmodel :Universe | Project| None = None
+
+    def _get_absolute_path(self,base_dir:str,path:str|None)->str|None:
+        if base_dir !="" and path is not None:
+            return base_dir + "/"+ path
+        if base_dir == "":
+            return path
+
     
     def fetch_version_local(self):
          if self.local_path:
@@ -70,7 +81,7 @@ class BaseState:
                 self.db_access = False
             else:
                 try:
-                    self.db_connection =DBConnection(db_file_path= Path(self.db_path)) 
+                    self.db_connection = DBConnection(db_file_path= Path(self.db_path)) 
                     with self.db_connection.create_session() as session:
                         self.db_version = session.exec(select(self.db_sqlmodel.git_hash)).one()
                         self.db_access = True
@@ -96,18 +107,17 @@ class BaseState:
             "github" : self.github_version if self.github_version else None,
             "local": self.local_version if self.local_version else None,
             "db" : self.db_version if self.db_version else None,
-            "github_local_sync": self.github_version == self.local_version if self.github_access and self.github_version and self.local_version else None,
-            "local_db_sync": self.local_version == self.db_version if self.local_access and self.local_version else None,
-
-            "github_db_sync": self.github_version == self.db_version if self.github_access and self.github_version else None
+            "github_local_sync": self.github_version == self.local_version if self.github_access and self.github_version and self.local_version else False,
+            "local_db_sync": self.local_version == self.db_version if self.local_access and self.local_version else False,
+            "github_db_sync": self.github_version == self.db_version if self.github_access and self.github_version else False
         }
 
     def clone_remote(self):
         owner, repo = self.github_repo.lstrip("https://github.com/").split("/")
-        #TODO add destination "local_path" in clone_repo 
-        self.rf.clone_repository(owner, repo, self.branch)
+        #TODO add destination "local_path" in clone_repo, done in a wierd way Improve that:  
+        self.rf.clone_repository(owner, repo, self.branch, self.local_path)
         self.fetch_version_local()
-
+        
     
     def build_db(self):
         from esgvoc.core.db.project_ingestion import ingest_project
@@ -125,25 +135,25 @@ class BaseState:
             if self.db_sqlmodel == Universe: # Ugly 
                 print("Building Universe DB from ",self.local_path)
                 universe_create_db(Path(self.db_path))
-                ingest_metadata_universe(DBConnection(Path(self.db_path)),self.local_version)
+                self.db_connection = DBConnection(db_file_path= Path(self.db_path)) 
+
+                ingest_metadata_universe(self.db_connection,self.local_version)
                 print("Filling Universe DB")
-                ingest_universe(Path(self.local_path), Path(self.db_path))
+                if self.local_path:
+                    ingest_universe(Path(self.local_path), Path(self.db_path))
 
             elif self.db_sqlmodel == Project:
                 print("Building Project DB from ", self.local_path)
                 project_create_db(Path(self.db_path))
                 print("Filling project DB")
-                ingest_project(Path(self.local_path),Path(self.db_path),self.local_version)
+                if self.local_path and self.local_version:
+                    ingest_project(Path(self.local_path),Path(self.db_path),self.local_version)
         self.fetch_version_db()
 
 
 
-
-        
-
     def sync(self):
         summary = self.check_sync_status()
-
         if self.github_access and summary["github_db_sync"] is None and summary["local_db_sync"]is None and summary["github_local_sync"] is None:
             self.clone_remote()
             self.build_db()
@@ -152,7 +162,7 @@ class BaseState:
             if not summary["local_db_sync"] and summary["local_db_sync"] is not None:
                 self.clone_remote()
                 self.build_db()
-            elif not summary["github_local_sync"] and summary["github_local_sync"] is not None:
+            elif not summary["github_local_sync"] :
                 self.clone_remote()
                 self.build_db()
             else: # can be simply build in root and clone if neccessary
@@ -198,13 +208,16 @@ class StateService:
             proj_state.fetch_versions()
 
     def synchronize_all(self):
+        print("sync universe")
         self.universe.sync()
+        print("sync projects")
         for project in self.projects.values():
             project.sync()
+
     def table(self):
         table = Table(show_header=False, show_lines=True)
         table.add_row("","Remote github repo","Local repository","Cache Database")
-        table.add_row("Universe path",self.universe.github_repo,self.universe.local_path,self.universe.db_path)
+        table.add_row("Universe path",self.universe.github_repo,self.universe.local_path,self.universe.db_path) 
         table.add_row("Version",self.universe.github_version,self.universe.local_version,self.universe.db_version)
         for proj_name,proj in self.projects.items():
 
