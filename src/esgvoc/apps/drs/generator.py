@@ -1,19 +1,24 @@
 from typing import Any, Iterable, Mapping, cast
 
 import esgvoc.api.projects as projects
-from esgvoc.api.project_specs import (DrsCollection, DrsConstant, DrsPartKind,
-                                      DrsSpecification, DrsType)
-from esgvoc.apps.drs.report import (AssignedTerm, ConflictingCollections,
-                                    DrsGenerationReport, GenerationError,
-                                    GenerationIssue, GenerationWarning,
-                                    InvalidTerm, MissingTerm,
-                                    TooManyTermCollection)
+from esgvoc.api.project_specs import DrsCollection, DrsConstant, DrsPartKind, DrsSpecification, DrsType
+from esgvoc.apps.drs.report import (
+    AssignedTerm,
+    ConflictingCollections,
+    DrsGenerationReport,
+    GenerationError,
+    GenerationIssue,
+    GenerationWarning,
+    InvalidTerm,
+    MissingTerm,
+    TooManyTermCollection,
+)
 from esgvoc.apps.drs.validator import DrsApplication
 
 
 def _get_first_item(items: set[Any]) -> Any:
     result = None
-    for result in items:
+    for result in items:  # noqa: B007
         break
     return result
 

@@ -3,16 +3,32 @@ from typing import cast
 import esgvoc.api.projects as projects
 import esgvoc.apps.drs.constants as constants
 from esgvoc.api import APIException
-from esgvoc.api.project_specs import (DrsCollection, DrsConstant, DrsPart,
-                                      DrsPartKind, DrsSpecification, DrsType,
-                                      ProjectSpecs)
-from esgvoc.apps.drs.report import (BlankTerm, ComplianceIssue, DrsIssue,
-                                    DrsValidationReport, ExtraChar,
-                                    ExtraSeparator, ExtraTerm,
-                                    FileNameExtensionIssue, InvalidTerm,
-                                    MissingTerm, ParsingIssue, Space,
-                                    Unparsable, ValidationError,
-                                    ValidationWarning)
+from esgvoc.api.project_specs import (
+    DrsCollection,
+    DrsConstant,
+    DrsPart,
+    DrsPartKind,
+    DrsSpecification,
+    DrsType,
+    ProjectSpecs,
+)
+from esgvoc.apps.drs.report import (
+    BlankTerm,
+    ComplianceIssue,
+    DrsIssue,
+    DrsValidationReport,
+    ExtraChar,
+    ExtraSeparator,
+    ExtraTerm,
+    FileNameExtensionIssue,
+    InvalidTerm,
+    MissingTerm,
+    ParsingIssue,
+    Space,
+    Unparsable,
+    ValidationError,
+    ValidationWarning,
+)
 
 
 class DrsApplication:

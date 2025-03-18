@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import (Annotated, Any, ClassVar, Iterable, Literal, Mapping,
-                    Protocol)
+from typing import Annotated, Any, ClassVar, Iterable, Literal, Mapping, Protocol
 
 from pydantic import BaseModel, Field, computed_field
 
