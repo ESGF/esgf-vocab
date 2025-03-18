@@ -334,7 +334,8 @@ def get_data_descriptor_in_universe(data_descriptor_id: str) -> tuple[str, dict]
 def R_find_data_descriptors_in_universe(expression: str, session: Session,
                                         only_id: bool = False) -> Sequence[UDataDescriptor]:
     # TODO: replace the following instructions by this, when specs will ba available in UDataDescriptor.
-    matching_condition = generate_matching_condition(UDataDescriptorFTS5, True)
+    # matching_condition = generate_matching_condition(UDataDescriptorFTS5, only_id)
+    matching_condition = col(UDataDescriptorFTS5.id).match(expression)
     tmp_statement = select(UDataDescriptorFTS5).where(matching_condition)
     statement = select(UDataDescriptor).from_statement(tmp_statement.order_by(text('rank')))
     return execute_match_statement(expression, statement, session)
