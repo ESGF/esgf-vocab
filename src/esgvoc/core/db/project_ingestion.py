@@ -74,10 +74,11 @@ def ingest_collection(collection_dir_path: Path,
         _LOGGER.debug(f"found term path : {term_file_path}")
         if term_file_path.is_file() and term_file_path.suffix == ".json":
             try:
+                locally_avail = {"https://espri-mod.github.io/mip-cmor-tables":
+                                 service.service_settings.universe.local_path}
                 json_specs = DataMerger(data=JsonLdResource(uri=str(term_file_path)),
                                         # locally_available={"https://espri-mod.github.io/mip-cmor-tables":".cache/repos/WCRP-universe"}).merge_linked_json()[-1]
-                                        locally_available={"https://espri-mod.github.io/mip-cmor-tables": service.service_settings.universe.local_path}).merge_linked_json()[-1]
-
+                                        locally_available=locally_avail).merge_linked_json()[-1]
                 term_kind = infer_term_kind(json_specs)
                 term_id = json_specs["id"]
 
@@ -118,8 +119,8 @@ def ingest_project(project_dir_path: Path,
         raise RuntimeError(msg) from e
 
     with project_connection.create_session() as project_db_session:
+        project_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.PROJECT_SPECS_FILENAME)
         try:
-            project_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.PROJECT_SPECS_FILENAME)
             project_json_specs = read_json_file(project_specs_file_path)
             project_id = project_json_specs[esgvoc.core.constants.PROJECT_ID_JSON_KEY]
         except Exception as e:
@@ -148,7 +149,7 @@ def ingest_project(project_dir_path: Path,
         # Read: https://sqlite.org/fts5.html
         try:
             sql_query = 'INSERT INTO pterms_fts5(pk, id, specs, kind, collection_pk) ' + \
-                        'SELECT pk, id, specs, kind, collection_pk FROM pterms;'
+                        'SELECT pk, id, specs, kind, collection_pk FROM pterms;'  # noqa: S608
             project_db_session.exec(text(sql_query))  # type: ignore
         except Exception as e:
             msg = f'Unable to insert rows into pterms_fts5 table for {project_db_file_path}. Abort.'
@@ -156,8 +157,9 @@ def ingest_project(project_dir_path: Path,
             raise RuntimeError(msg) from e
         project_db_session.commit()
         try:
-            sql_query = 'INSERT INTO pcollections_fts5(pk, id, data_descriptor_id, context, project_pk, term_kind) ' + \
-                        'SELECT pk, id, data_descriptor_id, context, project_pk, term_kind FROM collections;'
+            sql_query = 'INSERT INTO pcollections_fts5(pk, id, data_descriptor_id, context, ' + \
+                         'project_pk, term_kind) SELECT pk, id, data_descriptor_id, context, ' + \
+                         'project_pk, term_kind FROM collections;'  # noqa: S608
             project_db_session.exec(text(sql_query))  # type: ignore
         except Exception as e:
             msg = f'Unable to insert rows into pcollections_fts5 table for {project_db_file_path}. Abort.'
