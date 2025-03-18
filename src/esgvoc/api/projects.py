@@ -8,20 +8,32 @@ from sqlmodel import Session, and_, col, select
 import esgvoc.api.universe as universe
 import esgvoc.core.constants as constants
 import esgvoc.core.service as service
-from esgvoc.api._utils import (APIException, Item, execute_match_statement,
-                               generate_matching_condition,
-                               get_universe_session, instantiate_pydantic_term,
-                               instantiate_pydantic_terms)
+from esgvoc.api._utils import (
+    APIException,
+    Item,
+    execute_match_statement,
+    generate_matching_condition,
+    get_universe_session,
+    instantiate_pydantic_term,
+    instantiate_pydantic_terms,
+)
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import ProjectSpecs
-from esgvoc.api.report import (ProjectTermError, UniverseTermError,
-                               ValidationReport)
-from esgvoc.api.search import (MatchingTerm, SearchSettings,
-                               _create_str_comparison_expression)
+from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
+from esgvoc.api.search import (
+    MatchingTerm,
+    SearchSettings,
+    _create_str_comparison_expression,
+)
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
-from esgvoc.core.db.models.project import (Collection, PCollectionFTS5,
-                                           Project, PTerm, PTermFTS5)
+from esgvoc.core.db.models.project import (
+    Collection,
+    PCollectionFTS5,
+    Project,
+    PTerm,
+    PTermFTS5,
+)
 from esgvoc.core.db.models.universe import UTerm
 
 # [OPTIMIZATION]
@@ -486,7 +498,7 @@ def find_terms_in_collection(project_id: str,
     """
     Finds one or more terms, based on the specified search settings, in the given collection of a project.
     This function performs an exact match on the `project_id` and `collection_id`,
-    and does **not** search for similar or related projects and collections.
+    and does not search for similar or related projects and collections.
     The given `term_id` is searched according to the search type specified in the parameter `settings`,
     which allows a flexible matching (e.g., `LIKE` may return multiple results).
     If the parameter `settings` is `None`, this function performs an exact match on the `term_id`.
@@ -543,7 +555,7 @@ def find_terms_from_data_descriptor_in_project(project_id: str,
     Finds one or more terms in the given project which are instances of the given data descriptor
     in the universe, based on the specified search settings, in the given collection of a project.
     This function performs an exact match on the `project_id` and `data_descriptor_id`,
-    and does **not** search for similar or related projects and data descriptors.
+    and does not search for similar or related projects and data descriptors.
     The given `term_id` is searched according to the search type specified in the parameter `settings`,
     which allows a flexible matching (e.g., `LIKE` may return multiple results).
     If the parameter `settings` is `None`, this function performs an exact match on the `term_id`.
@@ -591,7 +603,7 @@ def find_terms_from_data_descriptor_in_all_projects(data_descriptor_id: str,
     Finds one or more terms in all projects which are instances of the given data descriptor
     in the universe, based on the specified search settings, in the given collection of a project.
     This function performs an exact match on the `data_descriptor_id`,
-    and does **not** search for similar or related data descriptors.
+    and does not search for similar or related data descriptors.
     The given `term_id` is searched according to the search type specified in the parameter `settings`,
     which allows a flexible matching (e.g., `LIKE` may return multiple results).
     If the parameter `settings` is `None`, this function performs an exact match on the `term_id`.
@@ -669,7 +681,7 @@ def find_terms_in_project(project_id: str,
     """
     Finds one or more terms, based on the specified search settings, in a project.
     This function performs an exact match on the `project_id` and
-    does **not** search for similar or related projects.
+    does not search for similar or related projects.
     The given `term_id` is searched according to the search type specified in the parameter `settings`,
     which allows a flexible matching (e.g., `LIKE` may return multiple results).
     If the parameter `settings` is `None`, this function performs an exact match on the `term_id`.
@@ -702,7 +714,7 @@ def get_all_terms_in_collection(project_id: str,
     """
     Gets all terms of the given collection of a project.
     This function performs an exact match on the `project_id` and `collection_id`,
-    and does **not** search for similar or related projects and collections.
+    and does not search for similar or related projects and collections.
     If any of the provided ids (`project_id` or `collection_id`) is not found, the function
     returns an empty list.
 
@@ -711,7 +723,7 @@ def get_all_terms_in_collection(project_id: str,
     :param collection_id: A collection id
     :type collection_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned.
+    fields of the terms are returned. If empty, selects the id and type fields.
     :type selected_term_fields: Iterable[str] | None
     :returns: a list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
@@ -748,7 +760,7 @@ def find_collections_in_project(project_id: str,
     """
     Finds one or more collections of the given project.
     This function performs an exact match on the `project_id` and
-    does **not** search for similar or related projects.
+    does not search for similar or related projects.
     The given `collection_id` is searched according to the search type specified in
     the parameter `settings`,
     which allows a flexible matching (e.g., `LIKE` may return multiple results).
@@ -791,7 +803,7 @@ def get_all_collections_in_project(project_id: str) -> list[str]:
     """
     Gets all collections of the given project.
     This function performs an exact match on the `project_id` and
-    does **not** search for similar or related projects.
+    does not search for similar or related projects.
     If the provided `project_id` is not found, the function returns an empty list.
 
     :param project_id: A project id
@@ -820,14 +832,14 @@ def get_all_terms_in_project(project_id: str,
     """
     Gets all terms of the given project.
     This function performs an exact match on the `project_id` and
-    does **not** search for similar or related projects.
+    does not search for similar or related projects.
     Terms are unique within a collection but may have some synonyms in a project.
     If the provided `project_id` is not found, the function returns an empty list.
 
     :param project_id: A project id
     :type project_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned.
+    fields of the terms are returned. If empty, selects the id and type fields.
     :type selected_term_fields: Iterable[str] | None
     :returns: A list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
@@ -848,7 +860,7 @@ def get_all_terms_in_all_projects(selected_term_fields: Iterable[str] | None = N
     Gets all terms of all projects.
 
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned.
+    fields of the terms are returned. If empty, selects the id and type fields.
     :type selected_term_fields: Iterable[str] | None
     :returns: A list of tuple project_id and term instances of that project.
     :rtype: list[tuple[str, list[DataDescriptor]]]
@@ -865,7 +877,7 @@ def find_project(project_id: str) -> ProjectSpecs | None:
     """
     Finds a project and returns its specifications.
     This function performs an exact match on the `project_id` and
-    does **not** search for similar or related projects.
+    does not search for similar or related projects.
     If the provided `project_id` is not found, the function returns `None`.
 
     :param project_id: A project id to be found
@@ -906,7 +918,23 @@ def _get_term_in_project(term_id: str, session: Session) -> PTerm | None:
 def get_term_in_project(project_id: str, term_id: str,
                         selected_term_fields: Iterable[str] | None = None) -> DataDescriptor | None:
     """
-    TODO: docstring.
+    Returns the first occurrence of the terms, in the given project, whose id corresponds exactly to
+    the given term id.
+    Terms are unique within a collection but may have some synonyms in a project.
+    This function performs an exact match on the `project_id` and `term_id`, and does not search
+    for similar or related projects and terms.
+    If any of the provided ids (`project_id` or `term_id`) is not found,
+    the function returns `None`.
+
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :param term_id: The id of a term to be found.
+    :type term_id: str
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned. If empty, selects the id and type fields.
+    :type selected_term_fields: Iterable[str] | None
+    :returns: A term instance. Returns `None` if no match is found.
+    :rtype: DataDescriptor | None
     """
     result: DataDescriptor | None = None
     if connection := _get_project_connection(project_id):
@@ -928,7 +956,24 @@ def _get_term_in_collection(collection_id: str, term_id: str, session: Session) 
 def get_term_in_collection(project_id: str, collection_id: str, term_id: str,
                            selected_term_fields: Iterable[str] | None = None) -> DataDescriptor | None:
     """
-    TODO: docstring.
+    Returns the term, in the given project and collection,
+    whose id corresponds exactly to the given term id.
+    This function performs an exact match on the `project_id`, `collection_id` and `term_id`,
+    and does not search for similar or related projects, collections and terms.
+    If any of the provided ids (`project_id`, `collection_id` or `term_id`) is not found,
+    the function returns `None`.
+
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :param collection_id: The id of the given collection.
+    :type collection_id: str
+    :param term_id: The id of a term to be found.
+    :type term_id: str
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned. If empty, selects the id and type fields.
+    :type selected_term_fields: Iterable[str] | None
+    :returns: A term instance. Returns `None` if no match is found.
+    :rtype: DataDescriptor | None
     """
     result: DataDescriptor | None = None
     if connection := _get_project_connection(project_id):
@@ -948,7 +993,19 @@ def _get_collection_in_project(collection_id: str, session: Session) -> Collecti
 
 def get_collection_in_project(project_id: str, collection_id: str) -> tuple[str, dict] | None:
     """
-    TODO: docstring.
+    Returns the collection, in the given project, whose id corresponds exactly to
+    the given collection id.
+    This function performs an exact match on the `project_id` and `collection_id`, and does not search
+    for similar or related projects and collections.
+    If any of the provided ids (`project_id` or `collection_id`) is not found,
+    the function returns `None`.
+
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :param collection_id: The id of a collection to be found.
+    :type collection_id: str
+    :returns: A collection id and context. Returns `None` if no match is found.
+    :rtype: tuple[str, dict] | None
     """
     result: tuple[str, dict] | None = None
     if connection := _get_project_connection(project_id):
@@ -963,7 +1020,7 @@ def get_project(project_id: str) -> ProjectSpecs | None:
     """
     Get a project and returns its specifications.
     This function performs an exact match on the `project_id` and
-    does **not** search for similar or related projects.
+    does not search for similar or related projects.
     If the provided `project_id` is not found, the function returns `None`.
 
     :param project_id: A project id to be found
@@ -995,7 +1052,19 @@ def get_collection_from_data_descriptor_in_project(project_id: str,
                                                    data_descriptor_id: str) \
                                                     -> tuple[str, dict] | None:
     """
-    TODO: docstring.
+    Returns the collection, in the given project, that corresponds to the given data descriptor
+    in the universe.
+    This function performs an exact match on the `project_id` and `data_descriptor_id`,
+    and does not search for similar or related projects and data descriptors.
+    If any of the provided ids (`project_id` or `data_descriptor_id`) is not found, or if
+    there is no collection corresponding to the given data descriptor, the function returns `None`.
+
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :param data_descriptor_id: The id of the given data descriptor.
+    :type data_descriptor_id: str
+    :returns: A collection id and context. Returns `None` if no matches are found.
+    :rtype: tuple[str, dict] | None
     """
     result: tuple[str, dict] | None = None
     if connection := _get_project_connection(project_id):
@@ -1010,7 +1079,18 @@ def get_collection_from_data_descriptor_in_project(project_id: str,
 def get_collection_from_data_descriptor_in_all_projects(data_descriptor_id: str) \
                                                                      -> list[tuple[str, str, dict]]:
     """
-    TODO: docstring.
+    Returns the collections, in all projects, that correspond to the given data descriptor
+    in the universe.
+    This function performs an exact match on `data_descriptor_id`,
+    and does not search for similar or related data descriptors.
+    If the provided `data_descriptor_id` is not found, or if
+    there is no collection corresponding to the given data descriptor, the function returns
+    an empty list.
+
+    :param data_descriptor_id: The id of the given data descriptor.
+    :type data_descriptor_id: str
+    :returns: A list of collection ids and contexts. Returns an empty list if no matches are found.
+    :rtype: list[tuple[str, str, dict]]
     """
     result = list()
     project_ids = get_all_projects()
@@ -1023,7 +1103,7 @@ def get_collection_from_data_descriptor_in_all_projects(data_descriptor_id: str)
 
 
 def R_find_collections_in_project(expression: str, session: Session,
-                                 only_id: bool = False) -> Sequence[Collection]:
+                                  only_id: bool = False) -> Sequence[Collection]:
     # TODO: replace the following instructions by this, when specs will ba available in Collection.
     # matching_condition = generate_matching_condition(CollectionFTS, only_id)
     matching_condition = col(PCollectionFTS5.id).match(expression)
@@ -1033,11 +1113,35 @@ def R_find_collections_in_project(expression: str, session: Session,
 
 
 def Rfind_collections_in_project(expression: str, project_id: str,
-                                only_id: bool = False) -> list[tuple[str, dict]]:
+                                 only_id: bool = False) -> list[tuple[str, dict]]:
     """
-    TODO: docstring.
+    Find collections in the given project based on a full text search defined by the given `expression`.
+    The `expression` comes from the powerful
+    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
+    and corresponds to the expression of the `MATCH` operator.
+    It can be composed of one or multiple keywords combined with boolean
+    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
+    with the wildcard `*`.
+    The function returns a list of collection ids and contexts, sorted according to the
+    bm25 ranking metric (list index `0` has the highest rank).
+    This function performs an exact match on the `project_id`,
+    and does not search for similar or related projects.
+    If the provided `expression` does not hit any collection or the given `project_id` does not
+    match exactly to an id of a project, the function returns an empty list.
+    The function searches for the `expression` in the collection specifications.
+    However, if `only_id` is `True` (default is `False`), the search is restricted to the id of the
+    collections. **At the moment, `only_id` is set to `True` as the collections
+    haven't got any description.**
 
-    only_id alway True at the moment.
+    :param expression: The full text search expression.
+    :type expression: str
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :param only_id: Performs the search only on ids, otherwise on all the specifications.
+    :type only_id: bool
+    :returns: A list of collection ids and contexts. Returns an empty list if no matches are found.
+    :rtype: list[tuple[str, dict]]
+    :raises APIException: If the `expression` cannot be interpreted.
     """
     result: list[tuple[str, dict]] = list()
     if connection := _get_project_connection(project_id):
@@ -1049,7 +1153,7 @@ def Rfind_collections_in_project(expression: str, project_id: str,
 
 
 def R_find_terms_in_collection(expression: str, collection_id: str, session: Session,
-                              only_id: bool = False) -> Sequence[PTerm]:
+                               only_id: bool = False) -> Sequence[PTerm]:
     matching_condition = generate_matching_condition(PTermFTS5, expression, only_id)
     where_condition = Collection.id == collection_id, matching_condition
     tmp_statement = select(PTermFTS5).join(Collection).where(*where_condition)
@@ -1058,7 +1162,7 @@ def R_find_terms_in_collection(expression: str, collection_id: str, session: Ses
 
 
 def R_find_terms_in_project(expression: str, session: Session,
-                           only_id: bool = False) -> Sequence[PTerm]:
+                            only_id: bool = False) -> Sequence[PTerm]:
     matching_condition = generate_matching_condition(PTermFTS5, expression, only_id)
     tmp_statement = select(PTermFTS5).where(matching_condition)
     statement = select(PTerm).from_statement(tmp_statement.order_by(text('rank')))
@@ -1066,9 +1170,39 @@ def R_find_terms_in_project(expression: str, session: Session,
 
 
 def Rfind_terms_in_collection(expression: str, project_id: str, collection_id: str, only_id: bool = False,
-                             selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
+                              selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
     """
-    TODO: docstring.
+    Find terms in the given project and collection based on a full text search defined by the given
+    `expression`. The `expression` comes from the powerful
+    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
+    and corresponds to the expression of the `MATCH` operator.
+    It can be composed of one or multiple keywords combined with boolean
+    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
+    with the wildcard `*`.
+    The function returns a list of term instances, sorted according to the
+    bm25 ranking metric (list index `0` has the highest rank).
+    This function performs an exact match on the `project_id` and `collection_id`,
+    and does not search for similar or related projects and collections.
+    If the provided `expression` does not hit any term or if any of the provided ids
+    (`project_id` or `collection_id`) is not found, the function returns an empty list.
+    The function searches for the `expression` in the term specifications.
+    However, if `only_id` is `True` (default is `False`), the search is restricted to the id of the
+    terms.
+
+    :param expression: The full text search expression.
+    :type expression: str
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :param collection_id: The id of the given collection.
+    :type collection_id: str
+    :param only_id: Performs the search only on ids, otherwise on all the specifications.
+    :type only_id: bool
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned. If empty, selects the id and type fields.
+    :type selected_term_fields: Iterable[str] | None
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
+    :raises APIException: If the `expression` cannot be interpreted.
     """
     result: list[DataDescriptor] = list()
     if connection := _get_project_connection(project_id):
@@ -1079,9 +1213,37 @@ def Rfind_terms_in_collection(expression: str, project_id: str, collection_id: s
 
 
 def Rfind_terms_in_project(expression: str, project_id: str, only_id: bool = False,
-                          selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
+                           selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
     """
-    TODO: docstring.
+    Find terms in the given project on a full text search defined by the given
+    `expression`. The `expression` comes from the powerful
+    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
+    and corresponds to the expression of the `MATCH` operator.
+    It can be composed of one or multiple keywords combined with boolean
+    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
+    with the wildcard `*`.
+    The function returns a list of term instances, sorted according to the
+    bm25 ranking metric (list index `0` has the highest rank).
+    This function performs an exact match on the `project_id`,
+    and does not search for similar or related projects.
+    If the provided `expression` does not hit any term or if any of the provided `project_id` is
+    not found, the function returns an empty list.
+    The function searches for the `expression` in the term specifications.
+    However, if `only_id` is `True` (default is `False`), the search is restricted to the id of the
+    terms.
+
+    :param expression: The full text search expression.
+    :type expression: str
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :param only_id: Performs the search only on ids, otherwise on all the specifications.
+    :type only_id: bool
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned. If empty, selects the id and type fields.
+    :type selected_term_fields: Iterable[str] | None
+    :returns: A list of term instances. Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor]
+    :raises APIException: If the `expression` cannot be interpreted.
     """
     result: list[DataDescriptor] = list()
     if connection := _get_project_connection(project_id):
@@ -1092,10 +1254,33 @@ def Rfind_terms_in_project(expression: str, project_id: str, only_id: bool = Fal
 
 
 def Rfind_terms_in_all_projects(expression: str, only_id: bool = False,
-                               selected_term_fields: Iterable[str] | None = None) \
+                                selected_term_fields: Iterable[str] | None = None) \
                                                                 -> list[tuple[str, list[DataDescriptor]]]:
     """
-    TODO: docstring.
+    Find terms in the all projects on a full text search defined by the given
+    `expression`. The `expression` comes from the powerful
+    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
+    and corresponds to the expression of the `MATCH` operator.
+    It can be composed of one or multiple keywords combined with boolean
+    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
+    with the wildcard `*`.
+    The function returns a list of project ids and term instances, sorted according to the
+    bm25 ranking metric (list index `0` has the highest rank).
+    If the provided `expression` does not hit any term, the function returns an empty list.
+    The function searches for the `expression` in the term specifications.
+    However, if `only_id` is `True` (default is `False`), the search is restricted to the id of the
+    terms.
+
+    :param expression: The full text search expression.
+    :type expression: str
+    :param only_id: Performs the search only on ids, otherwise on all the specifications.
+    :type only_id: bool
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned. If empty, selects the id and type fields.
+    :type selected_term_fields: Iterable[str] | None
+    :returns: A list of project ids and term instances. Returns an empty list if no matches are found.
+    :rtype: list[tuple[str, list[DataDescriptor]]]
+    :raises APIException: If the `expression` cannot be interpreted.
     """
     result: list[tuple[str, list[DataDescriptor]]] = list()
     project_ids = get_all_projects()
@@ -1108,8 +1293,31 @@ def Rfind_terms_in_all_projects(expression: str, only_id: bool = False,
 
 def find_items_in_project(expression: str, project_id: str, only_id: bool = False) -> list[Item]:
     """
-    TODO: docstring.
-    order by rank: index 0 in list the higher ranked.
+    Find items, at the moment terms and collections, in the given project based on a full-text
+    search defined by the given `expression`. The `expression` comes from the powerful
+    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
+    and corresponds to the expression of the `MATCH` operator.
+    It can be composed of one or multiple keywords combined with boolean
+    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
+    with the wildcard `*`.
+    The function returns a list of item instances sorted according to the
+    bm25 ranking metric (list index `0` has the highest rank).
+    This function performs an exact match on the `project_id`,
+    and does not search for similar or related projects.
+    If the provided `expression` does not hit any item, or the provided `project_id` is not found,
+    the function returns an empty list.
+    The function searches for the `expression` in the term and collection specifications.
+    However, if `only_id` is `True` (default is `False`), the search is restricted to the id of the
+    terms and collections. **At the moment, `only_id` is set to `True` for the collections because
+    they haven't got any description.**
+
+    :param expression: The full text search expression.
+    :type expression: str
+    :param only_id: Performs the search only on ids, otherwise on all the specifications.
+    :type only_id: bool
+    :returns: A list of item instances. Returns an empty list if no matches are found.
+    :rtype: list[Item]
+    :raises APIException: If the `expression` cannot be interpreted.
     """
     result = list()
     if connection := _get_project_connection(project_id):
@@ -1141,8 +1349,8 @@ def find_items_in_project(expression: str, project_id: str, only_id: bool = Fals
                 tmp_result.extend(terms_found)
                 tmp_result = sorted(tmp_result, key=lambda r: r[3], reverse=False)
                 result = [Item(id=r[0], kind=r[1], parent_id=r[2]) for r in tmp_result]
-            except OperationalError:
-                raise APIException(f"unable to interpret expression '{expression}'")
+            except OperationalError as e:
+                raise APIException(f"unable to interpret expression '{expression}'") from e
     return result
 
 
