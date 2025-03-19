@@ -367,10 +367,10 @@ def Rfind_data_descriptors_in_universe(expression: str,
     :type expression: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
-    :param limit: Returns the specified number of items found. Returns all items found the if \
+    :param limit: Limit the number of returned items found. Returns all items found the if \
     `limit` is either `None`, zero or negative.
     :type limit: int | None
-    :param offset: Skips the first specified number of items found. Ignored if `offset` is \
+    :param offset: Skips `offset` number of items found. Ignored if `offset` is \
     either `None`, zero or negative.
     :type offset: int | None
     :returns: A list of data descriptor ids and contexts. Returns an empty list if no matches are found.
@@ -420,10 +420,10 @@ def Rfind_terms_in_universe(expression: str,
     :type expression: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
-    :param limit: Returns the specified number of items found. Returns all items found the if \
+    :param limit: Limit the number of returned items found. Returns all items found the if \
     `limit` is either `None`, zero or negative.
     :type limit: int | None
-    :param offset: Skips the first specified number of items found. Ignored if `offset` is \
+    :param offset: Skips `offset` number of items found. Ignored if `offset` is \
     either `None`, zero or negative.
     :type offset: int | None
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
@@ -480,10 +480,10 @@ def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
     :type expression: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
-    :param limit: Returns the specified number of items found. Returns all items found the if \
+    :param limit: Limit the number of returned items found. Returns all items found the if \
     `limit` is either `None`, zero or negative.
     :type limit: int | None
-    :param offset: Skips the first specified number of items found. Ignored if `offset` is \
+    :param offset: Skips `offset` number of items found. Ignored if `offset` is \
     either `None`, zero or negative.
     :type offset: int | None
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
@@ -526,10 +526,10 @@ def find_items_in_universe(expression: str,
     :type expression: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
-    :param limit: Returns the specified number of items found. Returns all items found the if \
+    :param limit: Limit the number of returned items found. Returns all items found the if \
     `limit` is either `None`, zero or negative.
     :type limit: int | None
-    :param offset: Skips the first specified number of items found. Ignored if `offset` is \
+    :param offset: Skips `offset` number of items found. Ignored if `offset` is \
     either `None`, zero or negative.
     :type offset: int | None
     :returns: A list of item instances. Returns an empty list if no matches are found.
