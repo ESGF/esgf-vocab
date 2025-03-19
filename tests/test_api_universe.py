@@ -10,8 +10,10 @@ _SOME_TERM_IDS = ['ipsl', 'observations', 'airmass']
 _SOME_DD_TERM_IDS = [(_SOME_DATA_DESCRIPTOR_IDS[0], _SOME_TERM_IDS[0]),
                      (_SOME_DATA_DESCRIPTOR_IDS[1], _SOME_TERM_IDS[1]),
                      (_SOME_DATA_DESCRIPTOR_IDS[2], _SOME_TERM_IDS[2])]
-_SOME_ITEM_IDS = list(zip(_SOME_DATA_DESCRIPTOR_IDS, [ItemKind.DATA_DESCRIPTOR for _ in _SOME_DATA_DESCRIPTOR_IDS])) + \
-                 list(zip(_SOME_TERM_IDS, [ItemKind.TERM for _ in _SOME_TERM_IDS]))
+_SOME_ITEM_IDS = list(zip(_SOME_DATA_DESCRIPTOR_IDS,
+                          [ItemKind.DATA_DESCRIPTOR for _ in _SOME_DATA_DESCRIPTOR_IDS],
+                          strict=False)) + \
+                 list(zip(_SOME_TERM_IDS, [ItemKind.TERM for _ in _SOME_TERM_IDS], strict=False))
 
 
 def _provide_item_ids() -> Generator:
