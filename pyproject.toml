@@ -81,7 +81,8 @@ log_cli_level = "ERROR"
 log_cli_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 
 [tool.mypy]
-exclude = ['tests']
+exclude = ['^tmp.*\.py']
+follow_untyped_imports = true
 
 [tool.ruff]
 line-length = 120
