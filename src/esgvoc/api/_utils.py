@@ -18,8 +18,6 @@ from esgvoc.core.db.models.universe import UDataDescriptorFTS5, UTerm, UTermFTS5
 
 UNIVERSE_DB_CONNECTION = service.state_service.universe.db_connection
 
-DEFAULT_SEARCH_LIMIT: int = 10
-
 class APIException(Exception): ... # noqa
 
 

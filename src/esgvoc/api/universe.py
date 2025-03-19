@@ -4,7 +4,6 @@ from sqlalchemy import text
 from sqlmodel import Session, col, select
 
 from esgvoc.api._utils import (
-    DEFAULT_SEARCH_LIMIT,
     Item,
     execute_find_item_statements,
     execute_match_statement,
@@ -332,9 +331,10 @@ def get_data_descriptor_in_universe(data_descriptor_id: str) -> tuple[str, dict]
     return result
 
 
-def R_find_data_descriptors_in_universe(expression: str, session: Session,
+def R_find_data_descriptors_in_universe(expression: str,
+                                        session: Session,
                                         only_id: bool = False,
-                                        limit: int | None = DEFAULT_SEARCH_LIMIT,
+                                        limit: int | None = None,
                                         offset: int | None = None) -> Sequence[UDataDescriptor]:
     matching_condition = generate_matching_condition(UDataDescriptorFTS5, expression, only_id)
     tmp_statement = select(UDataDescriptorFTS5).where(matching_condition)
@@ -345,7 +345,7 @@ def R_find_data_descriptors_in_universe(expression: str, session: Session,
 
 def Rfind_data_descriptors_in_universe(expression: str,
                                        only_id: bool = False,
-                                       limit: int | None = DEFAULT_SEARCH_LIMIT,
+                                       limit: int | None = None,
                                        offset: int | None = None) -> list[tuple[str, dict]]:
     """
     Find data descriptors in the universe based on a full text search defined by the given `expression`.
@@ -387,8 +387,9 @@ def Rfind_data_descriptors_in_universe(expression: str,
     return result
 
 
-def R_find_terms_in_universe(expression: str, session: Session, only_id: bool = False,
-                             limit: int | None = DEFAULT_SEARCH_LIMIT,
+def R_find_terms_in_universe(expression: str, session: Session,
+                             only_id: bool = False,
+                             limit: int | None = None,
                              offset: int | None = None) -> Sequence[UTerm]:
     matching_condition = generate_matching_condition(UTermFTS5, expression, only_id)
     tmp_statement = select(UTermFTS5).where(matching_condition)
@@ -396,8 +397,9 @@ def R_find_terms_in_universe(expression: str, session: Session, only_id: bool = 
     return execute_match_statement(expression, statement, session)
 
 
-def Rfind_terms_in_universe(expression: str, only_id: bool = False,
-                            limit: int | None = DEFAULT_SEARCH_LIMIT,
+def Rfind_terms_in_universe(expression: str,
+                            only_id: bool = False,
+                            limit: int | None = None,
                             offset: int | None = None,
                             selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
     """
@@ -439,9 +441,10 @@ def Rfind_terms_in_universe(expression: str, only_id: bool = False,
     return result
 
 
-def R_find_terms_in_data_descriptor(expression: str, data_descriptor_id: str, session: Session,
+def R_find_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
+                                    session: Session,
                                     only_id: bool = False,
-                                    limit: int | None = DEFAULT_SEARCH_LIMIT,
+                                    limit: int | None = None,
                                     offset: int | None = None) -> Sequence[UTerm]:
     matching_condition = generate_matching_condition(UTermFTS5, expression, only_id)
     where_condition = UDataDescriptor.id == data_descriptor_id, matching_condition
@@ -450,8 +453,9 @@ def R_find_terms_in_data_descriptor(expression: str, data_descriptor_id: str, se
     return execute_match_statement(expression, statement, session)
 
 
-def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, only_id: bool = False,
-                                   limit: int | None = DEFAULT_SEARCH_LIMIT,
+def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
+                                   only_id: bool = False,
+                                   limit: int | None = None,
                                    offset: int | None = None,
                                    selected_term_fields: Iterable[str] | None = None) \
                                                                             -> list[DataDescriptor]:
@@ -498,8 +502,9 @@ def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, onl
     return result
 
 
-def find_items_in_universe(expression: str, only_id: bool = False,
-                           limit: int | None = DEFAULT_SEARCH_LIMIT,
+def find_items_in_universe(expression: str,
+                           only_id: bool = False,
+                           limit: int | None = None,
                            offset: int | None = None) -> list[Item]:
     """
     Find items, at the moment terms and data descriptors, in the universe based on a full-text
