@@ -2,15 +2,24 @@ from typing import Any, Callable, Generator, cast
 
 import pytest
 
-from esgvoc.apps.drs.report import (BlankTerm, DrsIssue, ExtraChar,
-                                    ExtraSeparator, ExtraTerm,
-                                    FileNameExtensionIssue, InvalidTerm,
-                                    MissingTerm, ParsingIssue, Space,
-                                    TermIssue, Unparsable)
+from esgvoc.apps.drs.report import (
+    BlankTerm,
+    DrsIssue,
+    ExtraChar,
+    ExtraSeparator,
+    ExtraTerm,
+    FileNameExtensionIssue,
+    InvalidTerm,
+    MissingTerm,
+    ParsingIssue,
+    Space,
+    TermIssue,
+    Unparsable,
+)
 from esgvoc.apps.drs.validator import DrsValidator
 
 
-def _check_issue(issue: DrsIssue, expected_result: tuple[type, Any]):
+def _check_issue(issue: DrsIssue, expected_result: tuple[Any, ...]) -> None:
     assert isinstance(issue, expected_result[0])
     if issubclass(type(issue), ParsingIssue):
         assert cast(ExtraSeparator, issue).column == expected_result[1]
@@ -21,7 +30,7 @@ def _check_issue(issue: DrsIssue, expected_result: tuple[type, Any]):
 
         if isinstance(issue, InvalidTerm):
             assert issue.collection_id_or_constant_value == expected_result[3]
-        else:
+        elif isinstance(issue, ExtraTerm):
             if issue.collection_id:
                 assert issue.collection_id == expected_result[3]
             else:
@@ -31,7 +40,7 @@ def _check_issue(issue: DrsIssue, expected_result: tuple[type, Any]):
         assert str(issue.collection_id) == expected_result[1]
         assert issue.collection_position == expected_result[2]
     elif issubclass(type(issue), FileNameExtensionIssue):
-        pass # Nothing to do.
+        pass  # Nothing to do.
     else:
         raise TypeError(f"unsupported type {expected_result[0]}")
 
@@ -39,7 +48,7 @@ def _check_issue(issue: DrsIssue, expected_result: tuple[type, Any]):
 def _check_expression(expression: str,
                       errors: list[tuple],
                       warnings: list[tuple],
-                      validating_method: Callable):
+                      validating_method: Callable) -> None:
     report = validating_method(expression)
     assert report.nb_errors == len(errors)
     assert report.nb_warnings == len(warnings)
@@ -52,13 +61,19 @@ def _check_expression(expression: str,
 _SOME_DIRECTORY_EXPRESSIONS = [
     ("cmip6plus", "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923")
 ]
+
+
 def _provide_directory_expressions() -> Generator:
     for dir_expression in _SOME_DIRECTORY_EXPRESSIONS:
         yield dir_expression
+
+
 @pytest.fixture(params=_provide_directory_expressions())
 def directory_expression(request) -> tuple[str, str]:
     return request.param
-def test_directory_validation(directory_expression):
+
+
+def test_directory_validation(directory_expression) -> None:
     project_id, expression = directory_expression
     validator = DrsValidator(project_id)
     report = validator.validate_directory(expression)
@@ -68,13 +83,19 @@ def test_directory_validation(directory_expression):
 _SOME_FILE_NAME_EXPRESSIONS = [
     ("cmip6plus", "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212.nc")
 ]
+
+
 def _provide_file_name_expressions() -> Generator:
     for drs_expression in _SOME_FILE_NAME_EXPRESSIONS:
         yield drs_expression
+
+
 @pytest.fixture(params=_provide_file_name_expressions())
 def file_name_expression(request) -> tuple[str, str]:
     return request.param
-def test_file_name_validation(file_name_expression):
+
+
+def test_file_name_validation(file_name_expression) -> None:
     project_id, expression = file_name_expression
     validator = DrsValidator(project_id)
     report = validator.validate_file_name(expression)
@@ -84,20 +105,26 @@ def test_file_name_validation(file_name_expression):
 _SOME_DATASET_ID_EXPRESSIONS = [
     ("cmip6plus", "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn")
 ]
+
+
 def _provide_dataset_id_expressions() -> Generator:
     for drs_expression in _SOME_DATASET_ID_EXPRESSIONS:
         yield drs_expression
+
+
 @pytest.fixture(params=_provide_dataset_id_expressions())
 def dataset_id_expression(request) -> tuple[str, str]:
     return request.param
-def test_dataset_id_validation(dataset_id_expression):
+
+
+def test_dataset_id_validation(dataset_id_expression) -> None:
     project_id, expression = dataset_id_expression
     validator = DrsValidator(project_id)
     report = validator.validate_dataset_id(expression)
     assert report and report.nb_warnings == 0
 
 
-_SOME_DIRECTORY_EXPRESSION_TYPO_WARNINGS = [
+_SOME_DIRECTORY_EXPRESSION_TYPO_WARNINGS: list[tuple[str, tuple[str, list, list]]] = [
     (
         "cmip6plus",
         (
@@ -134,13 +161,19 @@ _SOME_DIRECTORY_EXPRESSION_TYPO_WARNINGS = [
         )
     )
 ]
+
+
 def _provide_directory_expression_typo_warnings() -> Generator:
     for drs_expression in _SOME_DIRECTORY_EXPRESSION_TYPO_WARNINGS:
         yield drs_expression
+
+
 @pytest.fixture(params=_provide_directory_expression_typo_warnings())
 def directory_expression_typo_warning(request) -> tuple[str, tuple[str, list, list]]:
     return request.param
-def test_directory_expression_typo_warning(directory_expression_typo_warning):
+
+
+def test_directory_expression_typo_warning(directory_expression_typo_warning) -> None:
     project_id, expression_and_expected = directory_expression_typo_warning
     expression, errors, warnings = expression_and_expected
     validator = DrsValidator(project_id)
@@ -176,20 +209,26 @@ _SOME_DIRECTORY_EXPRESSIONS_TYPO_ERRORS = [
         )
     )
 ]
+
+
 def _provide_directory_expression_typo_errors() -> Generator:
     for drs_expression in _SOME_DIRECTORY_EXPRESSIONS_TYPO_ERRORS:
         yield drs_expression
+
+
 @pytest.fixture(params=_provide_directory_expression_typo_errors())
 def directory_expression_typo_error(request) -> tuple[str, tuple[str, list, list]]:
     return request.param
-def test_directory_expression_typo_error(directory_expression_typo_error):
+
+
+def test_directory_expression_typo_error(directory_expression_typo_error) -> None:
     project_id, expression_and_expected = directory_expression_typo_error
     expression, errors, warnings = expression_and_expected
     validator = DrsValidator(project_id)
     _check_expression(expression, errors, warnings, validator.validate_directory)
 
 
-_SOME_FILE_NAME_EXPRESSION_WARNINGS = [
+_SOME_FILE_NAME_EXPRESSION_WARNINGS: list[tuple[str, tuple[str, list, list]]] = [
     (
         "cmip6plus",
         (
@@ -199,20 +238,26 @@ _SOME_FILE_NAME_EXPRESSION_WARNINGS = [
         )
     )
 ]
+
+
 def _provide_filename_expression_warnings() -> Generator:
     for drs_expression in _SOME_FILE_NAME_EXPRESSION_WARNINGS:
         yield drs_expression
+
+
 @pytest.fixture(params=_provide_filename_expression_warnings())
 def filename_expression_warning(request) -> tuple[str, tuple[str, list, list]]:
     return request.param
-def test_filename_expression_warning(filename_expression_warning):
+
+
+def test_filename_expression_warning(filename_expression_warning) -> None:
     project_id, expression_and_expected = filename_expression_warning
     expression, errors, warnings = expression_and_expected
     validator = DrsValidator(project_id)
     _check_expression(expression, errors, warnings, validator.validate_file_name)
 
 
-_SOME_FILE_NAME_EXTENSION_ERRORS = [
+_SOME_FILE_NAME_EXTENSION_ERRORS: list[tuple[str, tuple[str, list, list]]] = [
     (
         "cmip6plus",
         (
@@ -246,20 +291,26 @@ _SOME_FILE_NAME_EXTENSION_ERRORS = [
         )
     )
 ]
+
+
 def _provide_filename_extension_errors() -> Generator:
     for drs_expression in _SOME_FILE_NAME_EXTENSION_ERRORS:
         yield drs_expression
+
+
 @pytest.fixture(params=_provide_filename_extension_errors())
 def filename_extension_error(request) -> tuple[str, tuple[str]]:
     return request.param
-def test_filename_extension_error(filename_extension_error):
+
+
+def test_filename_extension_error(filename_extension_error) -> None:
     project_id, expression_and_expected = filename_extension_error
     expression, errors, warnings = expression_and_expected
     validator = DrsValidator(project_id)
     _check_expression(expression, errors, warnings, validator.validate_file_name)
 
 
-_SOME_FILE_NAME_EXPRESSION_EXTRA_TOKEN_ERRORS = [
+_SOME_FILE_NAME_EXPRESSION_EXTRA_TOKEN_ERRORS: list[tuple[str, tuple[str, list, list]]] = [
     (
         "cmip6plus",
         (
@@ -285,20 +336,26 @@ _SOME_FILE_NAME_EXPRESSION_EXTRA_TOKEN_ERRORS = [
         )
     )
 ]
+
+
 def _provide_filename_expression_extra_token_errors() -> Generator:
     for drs_expression in _SOME_FILE_NAME_EXPRESSION_EXTRA_TOKEN_ERRORS:
         yield drs_expression
+
+
 @pytest.fixture(params=_provide_filename_expression_extra_token_errors())
 def filename_expression_extra_token_error(request) -> tuple[str, tuple]:
     return request.param
-def test_filename_expression_extra_token_error(filename_expression_extra_token_error):
+
+
+def test_filename_expression_extra_token_error(filename_expression_extra_token_error) -> None:
     project_id, expression_and_expected = filename_expression_extra_token_error
     expression, errors, warnings = expression_and_expected
     validator = DrsValidator(project_id)
     _check_expression(expression, errors, warnings, validator.validate_file_name)
 
 
-_SOME_DATASET_ID_EXPRESSION_TYPO_WARNINGS = [
+_SOME_DATASET_ID_EXPRESSION_TYPO_WARNINGS: list[tuple[str, tuple[str, list, list]]] = [
     (
         "cmip6plus",
         (
@@ -332,20 +389,26 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_WARNINGS = [
         )
     ),
 ]
+
+
 def _provide_dataset_id_expression_typo_warnings() -> Generator:
     for drs_expression in _SOME_DATASET_ID_EXPRESSION_TYPO_WARNINGS:
         yield drs_expression
+
+
 @pytest.fixture(params=_provide_dataset_id_expression_typo_warnings())
 def dataset_id_expression_typo_warning(request) -> tuple[str, tuple]:
     return request.param
-def test_dataset_id_expression_typo_warning(dataset_id_expression_typo_warning):
+
+
+def test_dataset_id_expression_typo_warning(dataset_id_expression_typo_warning) -> None:
     project_id, expression_and_expected = dataset_id_expression_typo_warning
     expression, errors, warnings = expression_and_expected
     validator = DrsValidator(project_id)
     _check_expression(expression, errors, warnings, validator.validate_dataset_id)
 
 
-_SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
+_SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS: list[tuple[str, tuple[str, list, list]]] = [
     (
         "cmip6plus",
         (
@@ -515,21 +578,26 @@ _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS = [
         )
     ),
 ]
+
+
 def _provide_dataset_id_expression_typo_errors() -> Generator:
     for drs_expression in _SOME_DATASET_ID_EXPRESSION_TYPO_ERRORS:
         yield drs_expression
+
+
 @pytest.fixture(params=_provide_dataset_id_expression_typo_errors())
 def dataset_id_expression_typo_error(request) -> tuple[str, tuple]:
     return request.param
-def test_dataset_id_expression_typo_error(dataset_id_expression_typo_error):
+
+
+def test_dataset_id_expression_typo_error(dataset_id_expression_typo_error) -> None:
     project_id, expression_and_expected = dataset_id_expression_typo_error
     expression, errors, warnings = expression_and_expected
     validator = DrsValidator(project_id)
     _check_expression(expression, errors, warnings, validator.validate_dataset_id)
 
 
-
-_SOME_DATASET_ID_EXPRESSION_TOKEN_ERRORS = [
+_SOME_DATASET_ID_EXPRESSION_TOKEN_ERRORS: list[tuple[str, tuple[str, list, list]]] = [
     (
         "cmip6plus",
         (
@@ -569,20 +637,26 @@ _SOME_DATASET_ID_EXPRESSION_TOKEN_ERRORS = [
         )
     )
 ]
+
+
 def _provide_dataset_id_expression_token_errors() -> Generator:
     for drs_expression in _SOME_DATASET_ID_EXPRESSION_TOKEN_ERRORS:
         yield drs_expression
+
+
 @pytest.fixture(params=_provide_dataset_id_expression_token_errors())
 def dataset_id_expression_token_error(request) -> tuple[str, tuple]:
     return request.param
-def test_dataset_id_expression_token_error(dataset_id_expression_token_error):
+
+
+def test_dataset_id_expression_token_error(dataset_id_expression_token_error) -> None:
     project_id, expression_and_expected = dataset_id_expression_token_error
     expression, errors, warnings = expression_and_expected
     validator = DrsValidator(project_id)
     _check_expression(expression, errors, warnings, validator.validate_dataset_id)
 
 
-_SOME_DATASET_ID_EXPRESSION_ERRORS = [
+_SOME_DATASET_ID_EXPRESSION_ERRORS: list[tuple[str, tuple[str, list, list]]] = [
     (
         "cmip6plus",
         (
@@ -611,13 +685,19 @@ _SOME_DATASET_ID_EXPRESSION_ERRORS = [
         )
     ),
 ]
+
+
 def _provide_dataset_id_expression_errors() -> Generator:
     for drs_expression in _SOME_DATASET_ID_EXPRESSION_ERRORS:
         yield drs_expression
+
+
 @pytest.fixture(params=_provide_dataset_id_expression_errors())
 def dataset_id_expression_error(request) -> tuple[str, tuple]:
     return request.param
-def test_dataset_id_expression_error(dataset_id_expression_error):
+
+
+def test_dataset_id_expression_error(dataset_id_expression_error) -> None:
     project_id, expression_and_expected = dataset_id_expression_error
     expression, errors, warnings = expression_and_expected
     validator = DrsValidator(project_id)
