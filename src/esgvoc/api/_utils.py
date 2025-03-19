@@ -1,10 +1,11 @@
 from enum import Enum
-from typing import Iterable, MutableSequence, Sequence
+from typing import Any, Iterable, MutableSequence, Sequence
 
 import sqlalchemy as sa
 from pydantic import BaseModel
 from sqlalchemy import ColumnElement
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.sql.expression import Select
 from sqlalchemy.sql.selectable import ExecutableReturnsRows
 from sqlmodel import Column, Field, Session, col
 
@@ -12,11 +13,12 @@ import esgvoc.core.constants as api_settings
 import esgvoc.core.service as service
 from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
-from esgvoc.core.db.models.project import PTerm, PTermFTS5
-from esgvoc.core.db.models.universe import UTerm, UTermFTS5
+from esgvoc.core.db.models.project import PCollectionFTS5, PTerm, PTermFTS5
+from esgvoc.core.db.models.universe import UDataDescriptorFTS5, UTerm, UTermFTS5
 
 UNIVERSE_DB_CONNECTION = service.state_service.universe.db_connection
 
+DEFAULT_SEARCH_LIMIT: int = 10
 
 class APIException(Exception): ... # noqa
 
@@ -78,13 +80,29 @@ def instantiate_pydantic_terms(db_terms: Iterable[UTerm | PTerm],
         list_to_populate.append(term)
 
 
-def generate_matching_condition(cls: type[UTermFTS5] | type[PTermFTS5],
-                                expression: str, only_id: bool) -> ColumnElement[bool]:
-    if only_id:
-        result = col(cls.id).match(expression)
+def generate_matching_condition(cls: type[UTermFTS5] | type[UDataDescriptorFTS5] |
+                                type[PTermFTS5] | type[PCollectionFTS5],
+                                expression: str,
+                                only_id: bool) -> ColumnElement[bool]:
+    # TODO: fix this when specs will ba available in collections and Data descriptors.
+    t = type(cls)
+    if t == PTermFTS5 or t == UTermFTS5:
+        if only_id:
+            result = col(cls.id).match(expression)
+        else:
+            result = col(cls.specs).match(expression)  # type: ignore
     else:
-        result = col(cls.specs).match(expression)
+        result = col(cls.id).match(expression)
     return result
+
+
+def handle_rank_limit_offset(statement: Select, limit: int | None, offset: int | None) -> Select:
+    statement = statement.order_by(sa.text('rank'))
+    if limit and limit > 0:  # False if == 0 and is None ; True if != 0 and is not None.
+        statement = statement.limit(limit)
+    if offset and offset > 0:  # False if == 0 and is None ; True if != 0 and is not None.
+        statement = statement.offset(offset)
+    return statement
 
 
 def execute_match_statement(expression: str, statement: ExecutableReturnsRows, session: Session) \
@@ -96,3 +114,35 @@ def execute_match_statement(expression: str, statement: ExecutableReturnsRows, s
         return results
     except OperationalError as e:
         raise APIException(f"unable to interpret expression '{expression}'") from e
+
+
+def execute_find_item_statements(session: Session,
+                                 expression: str,
+                                 first_statement: Select,
+                                 second_statement: Select,
+                                 limit: int | None,
+                                 offset: int | None) -> list[Item]:
+    try:
+        # Items found are kind of tuple with an object, a kindness, a parent id and a rank.
+        first_statement_found = session.exec(first_statement).all()  # type: ignore
+        second_statement_found = session.exec(second_statement).all()  # type: ignore
+        tmp_result: list[Any] = list()
+        tmp_result.extend(first_statement_found)
+        tmp_result.extend(second_statement_found)
+        # According to https://sqlite.org/fts5.html#the_bm25_function,
+        # "the better matches are assigned numerically lower scores."
+        # Sort on the rank column (index 3).
+        sorted_tmp_result = sorted(tmp_result, key=lambda r: r[3], reverse=False)
+        if offset and offset > 0:  # False if == 0 and is None ; True if != 0 and is not None.
+            start = offset
+        else:
+            start = 0
+        if limit and limit > 0:  # False if == 0 and is None ; True if != 0 and is not None.
+            stop = start + limit
+            framed_tmp_result = sorted_tmp_result[start: stop]  # is OK if stop > len of the list.
+        else:
+            framed_tmp_result = sorted_tmp_result[start:]
+        result = [Item(id=r[0], kind=r[1], parent_id=r[2]) for r in framed_tmp_result]
+    except OperationalError as e:
+        raise APIException(f"unable to interpret expression '{expression}'") from e
+    return result

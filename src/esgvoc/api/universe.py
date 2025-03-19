@@ -1,15 +1,16 @@
-from typing import Any, Iterable, Sequence
+from typing import Iterable, Sequence
 
 from sqlalchemy import text
-from sqlalchemy.exc import OperationalError
 from sqlmodel import Session, col, select
 
 from esgvoc.api._utils import (
-    APIException,
+    DEFAULT_SEARCH_LIMIT,
     Item,
+    execute_find_item_statements,
     execute_match_statement,
     generate_matching_condition,
     get_universe_session,
+    handle_rank_limit_offset,
     instantiate_pydantic_term,
     instantiate_pydantic_terms,
 )
@@ -332,17 +333,20 @@ def get_data_descriptor_in_universe(data_descriptor_id: str) -> tuple[str, dict]
 
 
 def R_find_data_descriptors_in_universe(expression: str, session: Session,
-                                        only_id: bool = False) -> Sequence[UDataDescriptor]:
-    # TODO: replace the following instructions by this, when specs will ba available in UDataDescriptor.
-    # matching_condition = generate_matching_condition(UDataDescriptorFTS5, only_id)
-    matching_condition = col(UDataDescriptorFTS5.id).match(expression)
+                                        only_id: bool = False,
+                                        limit: int | None = DEFAULT_SEARCH_LIMIT,
+                                        offset: int | None = None) -> Sequence[UDataDescriptor]:
+    matching_condition = generate_matching_condition(UDataDescriptorFTS5, expression, only_id)
     tmp_statement = select(UDataDescriptorFTS5).where(matching_condition)
-    statement = select(UDataDescriptor).from_statement(tmp_statement.order_by(text('rank')))
+    statement = select(UDataDescriptor).from_statement(handle_rank_limit_offset(tmp_statement,
+                                                                                limit, offset))
     return execute_match_statement(expression, statement, session)
 
 
 def Rfind_data_descriptors_in_universe(expression: str,
-                                       only_id: bool = False) -> list[tuple[str, dict]]:
+                                       only_id: bool = False,
+                                       limit: int | None = DEFAULT_SEARCH_LIMIT,
+                                       offset: int | None = None) -> list[tuple[str, dict]]:
     """
     Find data descriptors in the universe based on a full text search defined by the given `expression`.
     The `expression` comes from the powerful
@@ -363,27 +367,38 @@ def Rfind_data_descriptors_in_universe(expression: str,
     :type expression: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
+    :param limit: Returns the specified number of items found. Returns all items found the if \
+    `limit` is either `None`, zero or negative.
+    :type limit: int | None
+    :param offset: Skips the first specified number of items found. Ignored if `offset` is \
+    either `None`, zero or negative.
+    :type offset: int | None
     :returns: A list of data descriptor ids and contexts. Returns an empty list if no matches are found.
     :rtype: list[tuple[str, dict]]
     :raises APIException: If the `expression` cannot be interpreted.
     """
     result: list[tuple[str, dict]] = list()
     with get_universe_session() as session:
-        data_descriptors_found = R_find_data_descriptors_in_universe(expression, session, only_id)
+        data_descriptors_found = R_find_data_descriptors_in_universe(expression, session, only_id,
+                                                                     limit, offset)
         if data_descriptors_found:
             for data_descriptor_found in data_descriptors_found:
                 result.append((data_descriptor_found.id, data_descriptor_found.context))
     return result
 
 
-def R_find_terms_in_universe(expression: str, session: Session, only_id: bool = False) -> Sequence[UTerm]:
+def R_find_terms_in_universe(expression: str, session: Session, only_id: bool = False,
+                             limit: int | None = DEFAULT_SEARCH_LIMIT,
+                             offset: int | None = None) -> Sequence[UTerm]:
     matching_condition = generate_matching_condition(UTermFTS5, expression, only_id)
     tmp_statement = select(UTermFTS5).where(matching_condition)
-    statement = select(UTerm).from_statement(tmp_statement.order_by(text('rank')))
+    statement = select(UTerm).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
     return execute_match_statement(expression, statement, session)
 
 
 def Rfind_terms_in_universe(expression: str, only_id: bool = False,
+                            limit: int | None = DEFAULT_SEARCH_LIMIT,
+                            offset: int | None = None,
                             selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
     """
     Find terms in the universe based on a full-text search defined by the given `expression`.
@@ -403,6 +418,12 @@ def Rfind_terms_in_universe(expression: str, only_id: bool = False,
     :type expression: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
+    :param limit: Returns the specified number of items found. Returns all items found the if \
+    `limit` is either `None`, zero or negative.
+    :type limit: int | None
+    :param offset: Skips the first specified number of items found. Ignored if `offset` is \
+    either `None`, zero or negative.
+    :type offset: int | None
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
     fields of the terms are returned. If empty, selects the id and type fields.
     :type selected_term_fields: Iterable[str] | None
@@ -412,22 +433,26 @@ def Rfind_terms_in_universe(expression: str, only_id: bool = False,
     """
     result: list[DataDescriptor] = list()
     with get_universe_session() as session:
-        uterms_found = R_find_terms_in_universe(expression, session, only_id)
+        uterms_found = R_find_terms_in_universe(expression, session, only_id, limit, offset)
         if uterms_found:
             instantiate_pydantic_terms(uterms_found, result, selected_term_fields)
     return result
 
 
 def R_find_terms_in_data_descriptor(expression: str, data_descriptor_id: str, session: Session,
-                                    only_id: bool = False) -> Sequence[UTerm]:
+                                    only_id: bool = False,
+                                    limit: int | None = DEFAULT_SEARCH_LIMIT,
+                                    offset: int | None = None) -> Sequence[UTerm]:
     matching_condition = generate_matching_condition(UTermFTS5, expression, only_id)
     where_condition = UDataDescriptor.id == data_descriptor_id, matching_condition
     tmp_statement = select(UTermFTS5).join(UDataDescriptor).where(*where_condition)
-    statement = select(UTerm).from_statement(tmp_statement.order_by(text('rank')))
+    statement = select(UTerm).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
     return execute_match_statement(expression, statement, session)
 
 
 def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, only_id: bool = False,
+                                   limit: int | None = DEFAULT_SEARCH_LIMIT,
+                                   offset: int | None = None,
                                    selected_term_fields: Iterable[str] | None = None) \
                                                                             -> list[DataDescriptor]:
     """
@@ -451,6 +476,12 @@ def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, onl
     :type expression: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
+    :param limit: Returns the specified number of items found. Returns all items found the if \
+    `limit` is either `None`, zero or negative.
+    :type limit: int | None
+    :param offset: Skips the first specified number of items found. Ignored if `offset` is \
+    either `None`, zero or negative.
+    :type offset: int | None
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
     fields of the terms are returned. If empty, selects the id and type fields.
     :type selected_term_fields: Iterable[str] | None
@@ -461,13 +492,15 @@ def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str, onl
     result: list[DataDescriptor] = list()
     with get_universe_session() as session:
         uterms_found = R_find_terms_in_data_descriptor(expression, data_descriptor_id,
-                                                       session, only_id)
+                                                       session, only_id, limit, offset)
         if uterms_found:
             instantiate_pydantic_terms(uterms_found, result, selected_term_fields)
     return result
 
 
-def find_items_in_universe(expression: str, only_id: bool = False) -> list[Item]:
+def find_items_in_universe(expression: str, only_id: bool = False,
+                           limit: int | None = DEFAULT_SEARCH_LIMIT,
+                           offset: int | None = None) -> list[Item]:
     """
     Find items, at the moment terms and data descriptors, in the universe based on a full-text
     search defined by the given `expression`. The `expression` comes from the powerful
@@ -488,10 +521,17 @@ def find_items_in_universe(expression: str, only_id: bool = False) -> list[Item]
     :type expression: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
+    :param limit: Returns the specified number of items found. Returns all items found the if \
+    `limit` is either `None`, zero or negative.
+    :type limit: int | None
+    :param offset: Skips the first specified number of items found. Ignored if `offset` is \
+    either `None`, zero or negative.
+    :type offset: int | None
     :returns: A list of item instances. Returns an empty list if no matches are found.
     :rtype: list[Item]
     :raises APIException: If the `expression` cannot be interpreted.
     """
+    # TODO: execute union query when it will be possible to compute parent of terms and data descriptors.
     result = list()
     with get_universe_session() as session:
         if only_id:
@@ -511,19 +551,12 @@ def find_items_in_universe(expression: str, only_id: bool = False) -> list[Item]
                                 UDataDescriptor.id,
                                 text('rank')).join(UDataDescriptor) \
                                              .where(term_where_condition)
-        try:
-            # Items found are kind of tuple with an object, a kindness, a parent id and a rank.
-            dds_found = session.exec(dd_statement).all()
-            terms_found = session.exec(term_statement).all()
-            tmp_result: list[Any] = list()
-            tmp_result.extend(dds_found)
-            tmp_result.extend(terms_found)
-            tmp_result = sorted(tmp_result, key=lambda r: r[3], reverse=False)
-            result = [Item(id=r[0], kind=r[1], parent_id=r[2]) for r in tmp_result]
-        except OperationalError as e:
-            raise APIException(f"unable to interpret expression '{expression}'") from e
-    return result
+        result = execute_find_item_statements(session, expression, dd_statement,
+                                              term_statement, limit, offset)
+        return result
 
 
 if __name__ == "__main__":
-    find_items_in_universe('ipsl', True)
+    results = Rfind_terms_in_universe('v*', limit=None, offset=0)
+    for result in results:
+        print(result.id)
