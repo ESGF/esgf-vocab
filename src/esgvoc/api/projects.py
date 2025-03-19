@@ -1,8 +1,7 @@
 import re
-from typing import Any, Iterable, Sequence
+from typing import Iterable, Sequence
 
 from sqlalchemy import text
-from sqlalchemy.exc import OperationalError
 from sqlmodel import Session, and_, col, select
 
 import esgvoc.api.universe as universe
@@ -11,9 +10,11 @@ import esgvoc.core.service as service
 from esgvoc.api._utils import (
     APIException,
     Item,
+    execute_find_item_statements,
     execute_match_statement,
     generate_matching_condition,
     get_universe_session,
+    handle_rank_limit_offset,
     instantiate_pydantic_term,
     instantiate_pydantic_terms,
 )
@@ -1102,18 +1103,21 @@ def get_collection_from_data_descriptor_in_all_projects(data_descriptor_id: str)
     return result
 
 
-def R_find_collections_in_project(expression: str, session: Session,
-                                  only_id: bool = False) -> Sequence[Collection]:
-    # TODO: replace the following instructions by this, when specs will ba available in Collection.
-    # matching_condition = generate_matching_condition(CollectionFTS, only_id)
-    matching_condition = col(PCollectionFTS5.id).match(expression)
+def R_find_collections_in_project(expression: str,
+                                  session: Session,
+                                  only_id: bool = False,
+                                  limit: int | None = None,
+                                  offset: int | None = None) -> Sequence[Collection]:
+    matching_condition = generate_matching_condition(PCollectionFTS5, expression, only_id)
     tmp_statement = select(PCollectionFTS5).where(matching_condition)
-    statement = select(Collection).from_statement(tmp_statement.order_by(text('rank')))
+    statement = select(Collection).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
     return execute_match_statement(expression, statement, session)
 
 
 def Rfind_collections_in_project(expression: str, project_id: str,
-                                 only_id: bool = False) -> list[tuple[str, dict]]:
+                                 only_id: bool = False,
+                                 limit: int | None = None,
+                                 offset: int | None = None) -> list[tuple[str, dict]]:
     """
     Find collections in the given project based on a full text search defined by the given `expression`.
     The `expression` comes from the powerful
@@ -1139,6 +1143,12 @@ def Rfind_collections_in_project(expression: str, project_id: str,
     :type project_id: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
+    :param limit: Returns the specified number of items found. Returns all items found the if \
+    `limit` is either `None`, zero or negative.
+    :type limit: int | None
+    :param offset: Skips the first specified number of items found. Ignored if `offset` is \
+    either `None`, zero or negative.
+    :type offset: int | None
     :returns: A list of collection ids and contexts. Returns an empty list if no matches are found.
     :rtype: list[tuple[str, dict]]
     :raises APIException: If the `expression` cannot be interpreted.
@@ -1146,31 +1156,44 @@ def Rfind_collections_in_project(expression: str, project_id: str,
     result: list[tuple[str, dict]] = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
-            collections_found = R_find_collections_in_project(expression, session, only_id)
+            collections_found = R_find_collections_in_project(expression, session, only_id,
+                                                              limit, offset)
             for collection in collections_found:
                 result.append((collection.id, collection.context))
     return result
 
 
-def R_find_terms_in_collection(expression: str, collection_id: str, session: Session,
-                               only_id: bool = False) -> Sequence[PTerm]:
+def R_find_terms_in_collection(expression: str,
+                               collection_id: str,
+                               session: Session,
+                               only_id: bool = False,
+                               limit: int | None = None,
+                               offset: int | None = None) -> Sequence[PTerm]:
     matching_condition = generate_matching_condition(PTermFTS5, expression, only_id)
     where_condition = Collection.id == collection_id, matching_condition
     tmp_statement = select(PTermFTS5).join(Collection).where(*where_condition)
-    statement = select(PTerm).from_statement(tmp_statement.order_by(text('rank')))
+    statement = select(PTerm).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
     return execute_match_statement(expression, statement, session)
 
 
-def R_find_terms_in_project(expression: str, session: Session,
-                            only_id: bool = False) -> Sequence[PTerm]:
+def R_find_terms_in_project(expression: str,
+                            session: Session,
+                            only_id: bool = False,
+                            limit: int | None = None,
+                            offset: int | None = None) -> Sequence[PTerm]:
     matching_condition = generate_matching_condition(PTermFTS5, expression, only_id)
     tmp_statement = select(PTermFTS5).where(matching_condition)
-    statement = select(PTerm).from_statement(tmp_statement.order_by(text('rank')))
+    statement = select(PTerm).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
     return execute_match_statement(expression, statement, session)
 
 
-def Rfind_terms_in_collection(expression: str, project_id: str, collection_id: str, only_id: bool = False,
-                              selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
+def Rfind_terms_in_collection(expression: str, project_id: str,
+                              collection_id: str,
+                              only_id: bool = False,
+                              limit: int | None = None,
+                              offset: int | None = None,
+                              selected_term_fields: Iterable[str] | None = None) \
+                                                                          -> list[DataDescriptor]:
     """
     Find terms in the given project and collection based on a full text search defined by the given
     `expression`. The `expression` comes from the powerful
@@ -1197,6 +1220,12 @@ def Rfind_terms_in_collection(expression: str, project_id: str, collection_id: s
     :type collection_id: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
+    :param limit: Returns the specified number of items found. Returns all items found the if \
+    `limit` is either `None`, zero or negative.
+    :type limit: int | None
+    :param offset: Skips the first specified number of items found. Ignored if `offset` is \
+    either `None`, zero or negative.
+    :type offset: int | None
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
     fields of the terms are returned. If empty, selects the id and type fields.
     :type selected_term_fields: Iterable[str] | None
@@ -1207,13 +1236,19 @@ def Rfind_terms_in_collection(expression: str, project_id: str, collection_id: s
     result: list[DataDescriptor] = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
-            pterms_found = R_find_terms_in_collection(expression, collection_id, session, only_id)
+            pterms_found = R_find_terms_in_collection(expression, collection_id, session,
+                                                      only_id, limit, offset)
             instantiate_pydantic_terms(pterms_found, result, selected_term_fields)
     return result
 
 
-def Rfind_terms_in_project(expression: str, project_id: str, only_id: bool = False,
-                           selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
+def Rfind_terms_in_project(expression: str,
+                           project_id: str,
+                           only_id: bool = False,
+                           limit: int | None = None,
+                           offset: int | None = None,
+                           selected_term_fields: Iterable[str] | None = None) \
+                                                                          -> list[DataDescriptor]:
     """
     Find terms in the given project on a full text search defined by the given
     `expression`. The `expression` comes from the powerful
@@ -1238,6 +1273,12 @@ def Rfind_terms_in_project(expression: str, project_id: str, only_id: bool = Fal
     :type project_id: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
+    :param limit: Returns the specified number of items found. Returns all items found the if \
+    `limit` is either `None`, zero or negative.
+    :type limit: int | None
+    :param offset: Skips the first specified number of items found. Ignored if `offset` is \
+    either `None`, zero or negative.
+    :type offset: int | None
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
     fields of the terms are returned. If empty, selects the id and type fields.
     :type selected_term_fields: Iterable[str] | None
@@ -1248,14 +1289,17 @@ def Rfind_terms_in_project(expression: str, project_id: str, only_id: bool = Fal
     result: list[DataDescriptor] = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
-            pterms_found = R_find_terms_in_project(expression, session, only_id)
+            pterms_found = R_find_terms_in_project(expression, session, only_id, limit, offset)
             instantiate_pydantic_terms(pterms_found, result, selected_term_fields)
     return result
 
 
-def Rfind_terms_in_all_projects(expression: str, only_id: bool = False,
+def Rfind_terms_in_all_projects(expression: str,
+                                only_id: bool = False,
+                                limit: int | None = None,
+                                offset: int | None = None,
                                 selected_term_fields: Iterable[str] | None = None) \
-                                                                -> list[tuple[str, list[DataDescriptor]]]:
+                                                        -> list[tuple[str, list[DataDescriptor]]]:
     """
     Find terms in the all projects on a full text search defined by the given
     `expression`. The `expression` comes from the powerful
@@ -1275,6 +1319,12 @@ def Rfind_terms_in_all_projects(expression: str, only_id: bool = False,
     :type expression: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
+    :param limit: Returns the specified number of items found. Returns all items found the if \
+    `limit` is either `None`, zero or negative.
+    :type limit: int | None
+    :param offset: Skips the first specified number of items found. Ignored if `offset` is \
+    either `None`, zero or negative.
+    :type offset: int | None
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
     fields of the terms are returned. If empty, selects the id and type fields.
     :type selected_term_fields: Iterable[str] | None
@@ -1285,13 +1335,18 @@ def Rfind_terms_in_all_projects(expression: str, only_id: bool = False,
     result: list[tuple[str, list[DataDescriptor]]] = list()
     project_ids = get_all_projects()
     for project_id in project_ids:
-        terms_found = Rfind_terms_in_project(expression, project_id, only_id, selected_term_fields)
+        terms_found = Rfind_terms_in_project(expression, project_id, only_id,
+                                             limit, offset, selected_term_fields)
         if terms_found:
             result.append((project_id, terms_found))
     return result
 
 
-def find_items_in_project(expression: str, project_id: str, only_id: bool = False) -> list[Item]:
+def find_items_in_project(expression: str,
+                          project_id: str,
+                          only_id: bool = False,
+                          limit: int | None = None,
+                          offset: int | None = None) -> list[Item]:
     """
     Find items, at the moment terms and collections, in the given project based on a full-text
     search defined by the given `expression`. The `expression` comes from the powerful
@@ -1315,10 +1370,17 @@ def find_items_in_project(expression: str, project_id: str, only_id: bool = Fals
     :type expression: str
     :param only_id: Performs the search only on ids, otherwise on all the specifications.
     :type only_id: bool
+    :param limit: Returns the specified number of items found. Returns all items found the if \
+    `limit` is either `None`, zero or negative.
+    :type limit: int | None
+    :param offset: Skips the first specified number of items found. Ignored if `offset` is \
+    either `None`, zero or negative.
+    :type offset: int | None
     :returns: A list of item instances. Returns an empty list if no matches are found.
     :rtype: list[Item]
     :raises APIException: If the `expression` cannot be interpreted.
     """
+    # TODO: execute union query when it will be possible to compute parent of terms and collections.
     result = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
@@ -1328,7 +1390,6 @@ def find_items_in_project(expression: str, project_id: str, only_id: bool = Fals
             else:
                 collection_column = col(PCollectionFTS5.id)  # TODO: use specs when implemented!
                 term_column = col(PTermFTS5.specs)  # type: ignore
-
             collection_where_condition = collection_column.match(expression)
             collection_statement = select(PCollectionFTS5.id,
                                           text("'collection' AS TYPE"),
@@ -1340,17 +1401,8 @@ def find_items_in_project(expression: str, project_id: str, only_id: bool = Fals
                                     Collection.id,
                                     text('rank')).join(Collection) \
                                                  .where(term_where_condition)
-            try:
-                # Items found are kind of tuple with an object, a kindness, a parent id and a rank.
-                collections_found = session.exec(collection_statement).all()
-                terms_found = session.exec(term_statement).all()
-                tmp_result: list[Any] = list()
-                tmp_result.extend(collections_found)
-                tmp_result.extend(terms_found)
-                tmp_result = sorted(tmp_result, key=lambda r: r[3], reverse=False)
-                result = [Item(id=r[0], kind=r[1], parent_id=r[2]) for r in tmp_result]
-            except OperationalError as e:
-                raise APIException(f"unable to interpret expression '{expression}'") from e
+            result = execute_find_item_statements(session, expression, collection_statement,
+                                                  term_statement, limit, offset)
     return result
 
 
