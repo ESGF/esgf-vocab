@@ -21,8 +21,8 @@ _SOME_PROJ_COL_TERM_IDS = [(_SOME_PROJECT_IDS[0], _SOME_COLLECTION_IDS[0], _SOME
                            (_SOME_PROJECT_IDS[1], _SOME_COLLECTION_IDS[0], _SOME_TERM_IDS[0]),
                            (_SOME_PROJECT_IDS[1], _SOME_COLLECTION_IDS[1], _SOME_TERM_IDS[1]),
                            (_SOME_PROJECT_IDS[1], _SOME_COLLECTION_IDS[2], _SOME_TERM_IDS[2])]
-_SOME_ITEM_IDS = list(zip(_SOME_COLLECTION_IDS, [ItemKind.COLLECTION for _ in _SOME_COLLECTION_IDS])) + \
-                 list(zip(_SOME_TERM_IDS, [ItemKind.TERM for _ in _SOME_TERM_IDS]))
+_SOME_ITEM_IDS = list(zip(_SOME_COLLECTION_IDS, [ItemKind.COLLECTION for _ in _SOME_COLLECTION_IDS], strict=False)) + \
+                 list(zip(_SOME_TERM_IDS, [ItemKind.TERM for _ in _SOME_TERM_IDS], strict=False))
 
 
 def _provide_proj_dd_col_ids() -> Generator:
@@ -121,13 +121,14 @@ def test_get_all_terms_in_collection(project_id, collection_id) -> None:
 
 
 def test_valid_term() -> None:
-    validation_requests = [
-    (0, ('IPSL', 'cmip6plus', 'institution_id', 'ipsl')),
-    (0, ('r1i1p1f1', 'cmip6plus', 'member_id', 'ripf')),
-    (1, ('IPL', 'cmip6plus', 'institution_id', 'ipsl')),
-    (1, ('r1i1p1f111', 'cmip6plus', 'member_id', 'ripf')),
-    (0, ('20241206-20241207', 'cmip6plus', 'time_range', 'daily')),
-    (2, ('0241206-0241207', 'cmip6plus', 'time_range', 'daily'))]
+    validation_requests = \
+        [
+         (0, ('IPSL', 'cmip6plus', 'institution_id', 'ipsl')),
+         (0, ('r1i1p1f1', 'cmip6plus', 'member_id', 'ripf')),
+         (1, ('IPL', 'cmip6plus', 'institution_id', 'ipsl')),
+         (1, ('r1i1p1f111', 'cmip6plus', 'member_id', 'ripf')),
+         (0, ('20241206-20241207', 'cmip6plus', 'time_range', 'daily')),
+         (2, ('0241206-0241207', 'cmip6plus', 'time_range', 'daily'))]
     for validation_request in validation_requests:
         nb_errors, parameters = validation_request
         vr = projects.valid_term(*parameters)
@@ -135,13 +136,14 @@ def test_valid_term() -> None:
 
 
 def test_valid_term_in_collection() -> None:
-    validation_requests = [
-    (1, ('IPSL', 'cmip6plus', 'institution_id'), 'ipsl'),
-    (1, ('r1i1p1f1', 'cmip6plus', 'member_id'), 'ripf'),
-    (0, ('IPL', 'cmip6plus', 'institution_id'), None),
-    (0, ('r1i1p1f11', 'cmip6plus', 'member_id'), None),
-    (1, ('20241206-20241207', 'cmip6plus', 'time_range'), 'daily'),
-    (0, ('0241206-0241207', 'cmip6plus', 'time_range'), None)]
+    validation_requests = \
+        [
+         (1, ('IPSL', 'cmip6plus', 'institution_id'), 'ipsl'),
+         (1, ('r1i1p1f1', 'cmip6plus', 'member_id'), 'ripf'),
+         (0, ('IPL', 'cmip6plus', 'institution_id'), None),
+         (0, ('r1i1p1f11', 'cmip6plus', 'member_id'), None),
+         (1, ('20241206-20241207', 'cmip6plus', 'time_range'), 'daily'),
+         (0, ('0241206-0241207', 'cmip6plus', 'time_range'), None)]
     for validation_request in validation_requests:
         nb_matching_terms, parameters, term_id = validation_request
         matching_terms = projects.valid_term_in_collection(*parameters)
@@ -151,13 +153,14 @@ def test_valid_term_in_collection() -> None:
 
 
 def test_valid_term_in_project() -> None:
-    validation_requests = [
-    (1, ('IPSL', 'cmip6plus'), 'ipsl'),
-    (1, ('r1i1p1f1', 'cmip6plus'), 'ripf'),
-    (0, ('IPL', 'cmip6plus'), None),
-    (0, ('r1i1p1f11', 'cmip6plus'), None),
-    (1, ('20241206-20241207', 'cmip6plus'), 'daily'),
-    (0, ('0241206-0241207', 'cmip6plus'), None)]
+    validation_requests = \
+        [
+         (1, ('IPSL', 'cmip6plus'), 'ipsl'),
+         (1, ('r1i1p1f1', 'cmip6plus'), 'ripf'),
+         (0, ('IPL', 'cmip6plus'), None),
+         (0, ('r1i1p1f11', 'cmip6plus'), None),
+         (1, ('20241206-20241207', 'cmip6plus'), 'daily'),
+         (0, ('0241206-0241207', 'cmip6plus'), None)]
     for validation_request in validation_requests:
         nb_matching_terms, parameters, term_id = validation_request
         matching_terms = projects.valid_term_in_project(*parameters)
@@ -204,7 +207,9 @@ def test_get_collection_from_data_descriptor_in_all_projects(data_descriptor_id)
 
 
 def test_find_collections_in_project(proj_dd_col_id) -> None:
-    collections_found = projects.Rfind_collections_in_project(proj_dd_col_id[2], proj_dd_col_id[0])
+    collections_found = projects.Rfind_collections_in_project(proj_dd_col_id[2],
+                                                              proj_dd_col_id[0],
+                                                              limit=10)
     has_been_found = False
     for collection_found in collections_found:
         if collection_found[0] == proj_dd_col_id[2]:
@@ -217,6 +222,7 @@ def test_find_terms_in_collection(proj_col_term_id) -> None:
     terms_found = projects.Rfind_terms_in_collection(proj_col_term_id[2],
                                                      proj_col_term_id[0],
                                                      proj_col_term_id[1],
+                                                     limit=10,
                                                      selected_term_fields=[])
     has_been_found = False
     for term_found in terms_found:
@@ -239,13 +245,13 @@ def test_find_terms_in_project(proj_col_term_id) -> None:
 
 
 def test_find_terms_in_all_projects(term_id) -> None:
-    terms_found = projects.Rfind_terms_in_all_projects(term_id)
+    terms_found = projects.Rfind_terms_in_all_projects(term_id, limit=10, offset=1)
     for term_found in terms_found:
         assert len(term_found[1]) >= 1
 
 
 def test_find_items_in_project(project_id, item_id) -> None:
-    items_found = projects.find_items_in_project(item_id[0], project_id)
+    items_found = projects.find_items_in_project(item_id[0], project_id, limit=10)
     has_been_found = False
     for item_found in items_found:
         if item_found.id == item_id[0]:
