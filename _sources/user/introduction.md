@@ -1,7 +1,7 @@
 
 # Introduction 
 
-`ESGVOC` is a Python library designed to streamline and improve the management of controlled vocabularies (CV) used by the Earth System Grid Federation (ESGF) and related projects. By harmonizing data sources and providing both a Python API and a CLI for easy access, `ESGVOC` resolves common issues like inconsistencies, errors, and inefficiencies associated with managing controlled vocabularies.
+`ESGVOC` is a Python library designed to streamline the management of controlled vocabularies (CV) used by the climate modelling community publishing datasets related to WCRP-ESMO (https://www.wcrp-esmo.org) activities on the ESGF (https://esgf.llnl.gov). By harmonizing vocabulary terms and providing both a Python API and a CLI for easy access, `ESGVOC` resolves common issues like inconsistencies, errors, and inefficiencies associated with managing controlled vocabularies.
 
 ## Why ESGVOC?
 
@@ -14,10 +14,10 @@ Previously, controlled vocabularies were stored in multiple locations and format
 
 `ESGVOC` improves controlled vocabulary management through two main ideas:
 
-1. **Harmonization through a unified source**  
+1. **Harmonization terms through a unified CV source**  
    A single, centralized repository — referred to as the "Universe CV" — hosts all controlled vocabularies. Specialized vocabularies for specific projects reference the Universe CV via streamlined lists of IDs. This ensures consistency and eliminates duplication.
 
-2. **Controlled Vocabulary (CV) library**  
+2. **Providing both pythin api and a CLI**  
    `ESGVOC` provides a dedicated service for interacting with controlled vocabularies. It enables developers, administrators, and software systems to access vocabularies seamlessly via:
    - A Python API for programmatic interaction.
    - A CLI powered by [Typer](https://typer.tiangolo.com/) for command-line use.
@@ -47,7 +47,22 @@ pip install esgvoc
 
 ## Fetching vocabulary data
 
-Once installed, you can fetch controlled vocabulary data using the following command:
+Once installed esgvoc need to clone the following WCRP CV repositories and cache them into an SQLite database:  
+
+
+`ESGVOC` primarily uses the following repositories for controlled vocabulary data:
+
+- **Universe CV**: [GitHub Repository](https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc)
+- **CMIP6 CVs**: [GitHub Repository](https://github.com/WCRP-CMIP/CMIP6_CVs/tree/esgvoc)
+- **CMIP6Plus CVs**: [GitHub Repository](https://github.com/WCRP-CMIP/CMIP6Plus_CVs/tree/esgvoc)
+
+
+```{eval-rst}
+.. warning::
+   To be accurate, ESGVOC uses the specific branch "esgvoc" in those repositories.
+```
+
+those are configured by default !
 
 ```bash
 esgvoc install
@@ -61,18 +76,6 @@ This command performs the following actions:
 If there is no internet access, it is still possible to use the library: copy the repositories into `.cache/repos` and then issue `esgvoc install`. The library will check the `.cache/repos` directory for existing repositories.
 
 ## Official controlled vocabulary repositories
-
-`ESGVOC` primarily uses the following repositories for controlled vocabulary data:
-
-- **Universe CV**: [GitHub Repository](https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc)
-- **CMIP6 CVs**: [GitHub Repository](https://github.com/WCRP-CMIP/CMIP6_CVs/tree/esgvoc)
-- **CMIP6Plus CVs**: [GitHub Repository](https://github.com/WCRP-CMIP/CMIP6Plus_CVs/tree/esgvoc)
-
-
-```{eval-rst}
-.. note::
-   To be accurate, ESGVOC uses the specific branch "esgvoc" in those repositories.
-```
 
 ### Flexibility for other repositories
 While designed for these repositories, `ESGVOC` can use other repositories if they are structured correctly.

@@ -16,32 +16,29 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
@@ -57,7 +54,6 @@
     <link rel="prev" title="Get" href="get.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -73,8 +69,19 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -82,6 +89,7 @@
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -89,8 +97,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -106,8 +114,7 @@
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -137,11 +144,15 @@
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Welcome</span></p>
@@ -170,6 +181,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/projects.html">Projects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/project_specs.html">Project specs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/drs.html">DRS applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/data_descriptors.html">Data descriptors</a></li>
 </ul>
 
     </div>
@@ -178,14 +190,9 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -329,16 +336,24 @@
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -362,10 +377,10 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-term-id">Knowing the term id :</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-only-the-collection-id">Knowing the only the collection id :</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-only-the-project-id">Knowing the only the project id :</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-it-in-all-known-projects">Find it in all Known Projects</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-term-id">Knowing the term id:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-only-the-collection-id">Knowing the only the collection id:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-only-the-project-id">Knowing the only the project id:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-it-in-all-known-projects">Find it in all known projects</a></li>
 </ul>
             </nav>
         </div>
@@ -379,9 +394,9 @@
                   
   <section id="valid">
 <h1>Valid<a class="headerlink" href="#valid" title="Link to this heading">#</a></h1>
-<p>the command valid check if a string input correspond to a term drs_name attribute or not. This feature can be use in CLI and API.</p>
+<p>The command valid check if a string input correspond to a term drs_name attribute or not. This feature can be use in CLI and API.</p>
 <section id="knowing-the-term-id">
-<h2>Knowing the term id :<a class="headerlink" href="#knowing-the-term-id" title="Link to this heading">#</a></h2>
+<h2>Knowing the term id:<a class="headerlink" href="#knowing-the-term-id" title="Link to this heading">#</a></h2>
 <div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-0-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-0-QVBJIGFzIHB5dGhvbiBsaWI=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-0-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" class="sphinx-tabs-panel group-tab" id="panel-0-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>cmip6:institution_id:ipsl
 </pre></div>
@@ -399,12 +414,12 @@
 <img alt="../_images/API_Valid_Term.png" src="../_images/API_Valid_Term.png" />
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>the API return a ValidationReport Object. The __str__ dunder function reports errors if any. The __bool__ dunder funciton permits to use result in if statement.</p>
+<p>The API returns a DrsValidationReport Object. The __str__ dunder function reports errors if any. The __bool__ dunder function permits to use result in if statement.</p>
 </div>
 </div></div>
 </section>
 <section id="knowing-the-only-the-collection-id">
-<h2>Knowing the only the collection id :<a class="headerlink" href="#knowing-the-only-the-collection-id" title="Link to this heading">#</a></h2>
+<h2>Knowing the only the collection id:<a class="headerlink" href="#knowing-the-only-the-collection-id" title="Link to this heading">#</a></h2>
 <div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-1-QVBJIGFzIHB5dGhvbiBsaWI=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-1-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" class="sphinx-tabs-panel group-tab" id="panel-1-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>cmip6:institution_id:
 </pre></div>
@@ -412,7 +427,7 @@
 <img alt="../_images/CLI_Valid_collection.png" src="../_images/CLI_Valid_collection.png" />
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>this command look for the drs_name in every term in the specified collection.</p>
+<p>This command looks for the drs_name in every term in the specified collection.</p>
 </div>
 </div><div aria-labelledby="tab-1-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
 
@@ -422,12 +437,12 @@
 <img alt="../_images/API_Valid_collection.png" src="../_images/API_Valid_collection.png" />
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>the function <cite>ev.valid_term_collection</cite> return a list of MatchingTerm.</p>
+<p>The function <cite>ev.valid_term_collection</cite> returns a list of MatchingTerm.</p>
 </div>
 </div></div>
 </section>
 <section id="knowing-the-only-the-project-id">
-<h2>Knowing the only the project id :<a class="headerlink" href="#knowing-the-only-the-project-id" title="Link to this heading">#</a></h2>
+<h2>Knowing the only the project id:<a class="headerlink" href="#knowing-the-only-the-project-id" title="Link to this heading">#</a></h2>
 <div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-2-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-2-QVBJIGFzIHB5dGhvbiBsaWI=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-2-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-2-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" class="sphinx-tabs-panel group-tab" id="panel-2-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>cmip6::
 </pre></div>
@@ -435,7 +450,7 @@
 <img alt="../_images/CLI_Valid_project.png" src="../_images/CLI_Valid_project.png" />
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>this command look for the drs_name in every term in the specified project. therefore, it could be pretty long compared to the above functions.</p>
+<p>This command looks for the drs_name in every term in the specified project. Therefore, it could be pretty long compared to the above functions.</p>
 </div>
 </div><div aria-labelledby="tab-2-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-2-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
 
@@ -445,12 +460,12 @@
 <img alt="../_images/API_Valid_project.png" src="../_images/API_Valid_project.png" />
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>the function <cite>ev.valid_term_project</cite> return a list of MatchingTerm.</p>
+<p>The function <cite>ev.valid_term_project</cite> returns a list of MatchingTerm.</p>
 </div>
 </div></div>
 </section>
 <section id="find-it-in-all-known-projects">
-<h2>Find it in all Known Projects<a class="headerlink" href="#find-it-in-all-known-projects" title="Link to this heading">#</a></h2>
+<h2>Find it in all known projects<a class="headerlink" href="#find-it-in-all-known-projects" title="Link to this heading">#</a></h2>
 <div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-3-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-3-QVBJIGFzIHB5dGhvbiBsaWI=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-3-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-3-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" class="sphinx-tabs-panel group-tab" id="panel-3-Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" name="Q29tbWFuZCBsaW5lIGludGVyZmFjZQ==" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>::
 </pre></div>
@@ -458,7 +473,7 @@
 <img alt="../_images/CLI_Valid_all_project.png" src="../_images/CLI_Valid_all_project.png" />
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>this command look for the drs_name in every project. therefore, it could be pretty long compared to the above functions.</p>
+<p>This command looks for the drs_name in every project. Therefore, it could be pretty long compared to the above functions.</p>
 </div>
 </div><div aria-labelledby="tab-3-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-3-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
 
@@ -468,7 +483,7 @@
 <img alt="../_images/API_Valid_all_project.png" src="../_images/API_Valid_all_project.png" />
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>the function <cite>ev.valid_term_in_all_projects</cite> return a list of MatchingTerm.</p>
+<p>The function <cite>ev.valid_term_in_all_projects</cite> returns a list of MatchingTerm.</p>
 </div>
 </div></div>
 </section>
@@ -510,8 +525,7 @@
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -520,10 +534,10 @@
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-term-id">Knowing the term id :</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-only-the-collection-id">Knowing the only the collection id :</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-only-the-project-id">Knowing the only the project id :</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-it-in-all-known-projects">Find it in all Known Projects</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-term-id">Knowing the term id:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-only-the-collection-id">Knowing the only the collection id:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowing-the-only-the-project-id">Knowing the only the project id:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-it-in-all-known-projects">Find it in all known projects</a></li>
 </ul>
   </nav></div>
 
@@ -572,8 +586,8 @@ By S. Gardoll, G. Levavasseur, L. Troussellier.
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>
