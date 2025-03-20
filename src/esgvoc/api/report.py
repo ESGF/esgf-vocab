@@ -18,13 +18,7 @@ class ValidationErrorVisitor(Protocol):
     def visit_project_term_error(self, error: "ProjectTermError") -> Any:
         """Visit a project term error."""
         pass
-    
-    def visit_universe_composite_part_term_error(self, error: "UniverseCompositePartTermError") -> Any:
-        """Visit a composite part term error."""
-        pass
-    def visit_porject_composite_part_term_error(self, error: "ProjectCompositePartTermError") -> Any:
-        """Visit a composite part term error."""
-        pass
+
 
 class ValidationError(BaseModel, ABC):
     """
@@ -52,7 +46,6 @@ class ValidationError(BaseModel, ABC):
         :rtype: Any
         """
         pass
-
 
 class UniverseTermError(ValidationError):
     """
