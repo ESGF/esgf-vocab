@@ -18,6 +18,7 @@ dependencies = [
     "requests>=2.32.3",
     "toml>=0.10.2",
     "typer>=0.15.0",
+    "platformdirs>=4.3.6",
 ]
 readme = "README.md"
 requires-python = ">= 3.12, <3.13"
@@ -45,7 +46,6 @@ dev-dependencies = [
     "sphinx-copybutton>=0.5.2",
     "pre-commit>=4.1.0",
     "hatch>=1.14.0", # Required for version updating through rye.
-    "platformdirs>=4.3.6",
 ]
 [tool.rye.scripts]
 ev = { cmd = "python src/esgvoc/cli/main.py" }
