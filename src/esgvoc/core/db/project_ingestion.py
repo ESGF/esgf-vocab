@@ -76,7 +76,7 @@ def ingest_collection(collection_dir_path: Path,
             try:
                 json_specs = DataMerger(data=JsonLdResource(uri =str(term_file_path)),
                                         # locally_available={"https://espri-mod.github.io/mip-cmor-tables":".cache/repos/WCRP-universe"}).merge_linked_json()[-1]
-                                        locally_available={"https://espri-mod.github.io/mip-cmor-tables":service.service_settings.universe.local_path}).merge_linked_json()[-1]
+                                        locally_available={"https://espri-mod.github.io/mip-cmor-tables":service.current_state.universe.local_path}).merge_linked_json()[-1]
 
                 term_kind = infer_term_kind(json_specs)
                 term_id = json_specs["id"]
