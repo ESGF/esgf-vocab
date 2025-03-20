@@ -11,7 +11,7 @@ from esgvoc.api._utils import (APIException, get_universe_session,
                                instantiate_pydantic_terms)
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import ProjectSpecs
-from esgvoc.api.report import (ProjectCompositePartTermError, ProjectTermError, UniverseCompositePartTermError, UniverseTermError,
+from esgvoc.api.report import (ProjectTermError, UniverseTermError,
                                ValidationReport)
 from esgvoc.api.search import (MatchingTerm, SearchSettings,
                                _create_str_comparison_expression)
@@ -84,19 +84,19 @@ def _valid_value_composite_term_with_separator(value: str,
         if len(splits) == len(parts):
             for index in range(0, len(splits)):
                 given_value = splits[index]
-                if constants.TERM_ID_JSON_KEY not in parts[index].keys():
+                if "id" not in parts[index].keys():
                     terms= universe.get_all_terms_in_data_descriptor(parts[index]["type"],None)
-                    parts[index][constants.TERM_ID_JSON_KEY] = [term.id for term in terms]
+                    parts[index]["id"] = [term.id for term in terms]
                    
 
-                if type(parts[index][constants.TERM_ID_JSON_KEY]) is str:
-                    parts[index][constants.TERM_ID_JSON_KEY]=[parts[index][constants.TERM_ID_JSON_KEY]]
+                if type(parts[index]["id"]) is str:
+                    parts[index]["id"]=[parts[index]["id"]]
 
                 errors_list = list()
-                for id in parts[index][constants.TERM_ID_JSON_KEY]:
+                for id in parts[index]["id"]:
                     
                     part_parts = dict(parts[index])
-                    part_parts[constants.TERM_ID_JSON_KEY]=id
+                    part_parts["id"]=id
                     #print(part_parts)
 
                     resolved_term = _resolve_term(part_parts,
@@ -110,12 +110,12 @@ def _valid_value_composite_term_with_separator(value: str,
                         errors_list = errors
                         break
                     else:
-                        errors_list.extend(_create_composite_part_term_error(value,term,parts[index])) 
+                        errors_list.extend(errors) 
                     #print(errors)
                     
                 else:
                     #result.extend(errors_list)
-                    result.append(_create_composite_part_term_error(value,term,parts[index]))
+                    result.append(_create_term_error(value, term))
         else:
             result.append(_create_term_error(value, term))
     else:
@@ -192,12 +192,6 @@ def _valid_value_for_composite_term(value: str,
         result = _valid_value_composite_term_separator_less(value, term, universe_session,
                                                             project_session)
     return result
-
-def _create_composite_part_term_error(value:str, term:UTerm|PTerm, part:dict) -> UniverseCompositePartTermError|ProjectCompositePartTermError:
-    if isinstance(term, UTerm):
-        return UniverseCompositePartTermError(value=value, term=term.specs, term_kind=term.kind, data_descriptor_id=term.data_descriptor.id, part=part)
-    else:
-        return ProjectCompositePartTermError(value=value, term=term.specs, term_kind=term.kind, collection_id=term.collection.id, part=part)
 
 
 def _create_term_error(value: str, term: UTerm|PTerm) -> UniverseTermError|ProjectTermError:

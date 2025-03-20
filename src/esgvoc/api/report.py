@@ -67,29 +67,6 @@ class UniverseTermError(ValidationError):
         return self.__str__()
 
 
-class UniverseCompositePartTermError(UniverseTermError):
-    """
-    A validation error on a from composite part term from the universe.
-    """
-
-    part: dict
-    """The data descriptor that the term belongs."""
-
-    def accept(self, visitor: ValidationErrorVisitor) -> Any:
-        return visitor.visit_universe_term_error(self)
-
-    def __str__(self) -> str:
-        term_id = self.term[api_settings.TERM_ID_JSON_KEY]
-        result = f"The part {self.part} from {term_id} from the data descriptor {self.data_descriptor_id} "+\
-                 f"does not validate the given value '{self.value}'"
-        return result
-    def __repr__(self) -> str:
-        return self.__str__()
-
-
-
-
-
 class ProjectTermError(ValidationError):
     """
     A validation error on a term from a project.
@@ -108,27 +85,6 @@ class ProjectTermError(ValidationError):
         return result
     def __repr__(self) -> str:
         return self.__str__()
-
-
-class ProjectCompositePartTermError(ProjectTermError):
-    """
-    A validation error on a from composite part term from the project.
-    """
-
-    part: dict
-    """The term part."""
-
-    def accept(self, visitor: ValidationErrorVisitor) -> Any:
-        return visitor.visit_project_term_error(self)
-
-    def __str__(self) -> str:
-        term_id = self.term[api_settings.TERM_ID_JSON_KEY]
-        result = f"The part {self.part} from {term_id} from the collection {self.collection_id} "+\
-                 f"does not validate the given value '{self.value}'"
-        return result
-    def __repr__(self) -> str:
-        return self.__str__()
-
 
 
 class ValidationReport(BaseModel):
