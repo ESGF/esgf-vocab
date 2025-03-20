@@ -99,7 +99,7 @@ def ingest_data_descriptor(data_descriptor_path: Path,
             if term_file_path.is_file() and term_file_path.suffix == ".json":
                 try:
                     locally_available = {"https://espri-mod.github.io/mip-cmor-tables":
-                                         service.service_settings.universe.local_path}
+                                         service.current_state.universe.local_path}
                     json_specs = DataMerger(data=JsonLdResource(uri=str(term_file_path)),
                                             locally_available=locally_available).merge_linked_json()[-1]
                     term_kind = infer_term_kind(json_specs)

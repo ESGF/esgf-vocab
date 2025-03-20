@@ -20,17 +20,17 @@ def status():
     i.e summary of version of usable ressources (between remote/cached)  
     
     """
-
-    service.state_service.get_state_summary()
+    assert(service.current_state is not None)
+    service.current_state.get_state_summary()
     #display(service.state_service.table())
 
 
     table = Table(show_header=False, show_lines=True)
 
     table.add_row("","Remote github repo","Local repository","Cache Database", style = "bright_green")
-    table.add_row("Universe path",service.state_service.universe.github_repo,service.state_service.universe.local_path,service.state_service.universe.db_path, style = "white")
-    table.add_row("Version",service.state_service.universe.github_version,service.state_service.universe.local_version,service.state_service.universe.db_version, style="bright_blue")
-    for proj_name,proj in service.state_service.projects.items():
+    table.add_row("Universe path",service.current_state.universe.github_repo,service.current_state.universe.local_path,service.current_state.universe.db_path, style = "white")
+    table.add_row("Version",service.current_state.universe.github_version,service.current_state.universe.local_version,service.current_state.universe.db_version, style="bright_blue")
+    for proj_name,proj in service.current_state.projects.items():
         table.add_row(f"{proj_name} path",proj.github_repo,proj.local_path,proj.db_path, style="white")
         table.add_row("Version",proj.github_version,proj.local_version,proj.db_version,style ="bright_blue")
     display(table)

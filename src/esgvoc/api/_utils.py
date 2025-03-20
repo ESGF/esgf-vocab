@@ -16,7 +16,6 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDesc
 from esgvoc.core.db.models.project import PCollectionFTS5, PTerm, PTermFTS5
 from esgvoc.core.db.models.universe import UDataDescriptorFTS5, UTerm, UTermFTS5
 
-UNIVERSE_DB_CONNECTION = service.state_service.universe.db_connection
 
 class APIException(Exception): ... # noqa
 
@@ -49,6 +48,7 @@ def get_pydantic_class(data_descriptor_id_or_term_type: str) -> type[DataDescrip
 
 def get_universe_session() -> Session:
 
+    UNIVERSE_DB_CONNECTION = service.current_state.universe.db_connection
     if UNIVERSE_DB_CONNECTION:
         return UNIVERSE_DB_CONNECTION.create_session()
     else:

@@ -43,8 +43,8 @@ _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE: dict[str, list[UniverseTermError | Projec
 
 
 def _get_project_connection(project_id: str) -> DBConnection | None:
-    if project_id in service.state_service.projects:
-        return service.state_service.projects[project_id].db_connection
+    if project_id in service.current_state.projects:
+        return service.current_state.projects[project_id].db_connection
     else:
         return None
 
@@ -906,7 +906,7 @@ def get_all_projects() -> list[str]:
     :returns: A list of project ids.
     :rtype: list[str]
     """
-    return list(service.state_service.projects.keys())
+    return list(service.current_state.projects.keys())
 
 
 def _get_term_in_project(term_id: str, session: Session) -> PTerm | None:

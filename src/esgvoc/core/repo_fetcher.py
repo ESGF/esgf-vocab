@@ -153,7 +153,7 @@ class RepoFetcher:
         files = [item['name'] for item in contents if item['type'] == 'file']
         return files
     
-    def clone_repository(self, owner: str, repo: str, branch: Optional[str] = None):
+    def clone_repository(self, owner: str, repo: str, branch: Optional[str] = None, local_path: str|None = None):
         """
         Clone a GitHub repository to a target directory.
         :param owner: Repository owner
@@ -162,15 +162,16 @@ class RepoFetcher:
         :param branch: (Optional) The branch to clone. Clones the default branch if None.
         """
         repo_url = f"https://github.com/{owner}/{repo}.git"
+        destination = local_path if local_path else f"{self.repo_dir}/{repo}" 
 
-        command = ["git", "clone", repo_url, f"{self.repo_dir}/{repo}"]
+        command = ["git", "clone", repo_url, destination]
         if branch:
             command.extend(["--branch", branch])
         with redirect_stdout_to_log():
 
             try:
                 subprocess.run(command, check=True)
-                _LOGGER.debug(f"Repository cloned successfully into {self.repo_dir}/{repo}")
+                _LOGGER.debug(f"Repository cloned successfully into {destination}")
             except subprocess.CalledProcessError:
                 try:
                     current_work_dir = os.getcwd()
