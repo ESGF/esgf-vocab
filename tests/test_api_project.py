@@ -219,11 +219,11 @@ def test_find_collections_in_project(proj_dd_col_id) -> None:
 
 
 def test_find_terms_in_collection(proj_col_term_id) -> None:
-    terms_found = projects.Rfind_terms_in_collection(proj_col_term_id[2],
-                                                     proj_col_term_id[0],
-                                                     proj_col_term_id[1],
-                                                     limit=10,
-                                                     selected_term_fields=[])
+    terms_found = projects.find_terms_in_collection(proj_col_term_id[2],
+                                                    proj_col_term_id[0],
+                                                    proj_col_term_id[1],
+                                                    limit=10,
+                                                    selected_term_fields=[])
     has_been_found = False
     for term_found in terms_found:
         if term_found.id == proj_col_term_id[2]:

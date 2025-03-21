@@ -21,11 +21,7 @@ from esgvoc.api._utils import (
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
-from esgvoc.api.search import (
-    MatchingTerm,
-    SearchSettings,
-    _create_str_comparison_expression,
-)
+from esgvoc.api.search import MatchingTerm
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import (
@@ -70,12 +66,11 @@ def _resolve_term(composite_term_part: dict,
     if uterms:
         return uterms[0]
     else:
-        pterms = _find_terms_in_collection(collection_id=term_type,
-                                           term_id=term_id,
-                                           session=project_session,
-                                           settings=None)
-    if pterms:
-        return pterms[0]
+        pterm = _get_term_in_collection(collection_id=term_type,
+                                        term_id=term_id,
+                                        session=project_session)
+    if pterm:
+        return pterm
     else:
         msg = f'unable to find the term {term_id} in {term_type}'
         raise RuntimeError(msg)
@@ -271,12 +266,10 @@ def _valid_value_against_given_term(value: str,
     if key in _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE:
         result = _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE[key]
     else:
-        terms = _find_terms_in_collection(collection_id,
-                                          term_id,
-                                          project_session,
-                                          None)
-        if terms:
-            term = terms[0]
+        term = _get_term_in_collection(collection_id,
+                                       term_id,
+                                       project_session)
+        if term:
             result = _valid_value(value, term, universe_session, project_session)
         else:
             raise APIException(f'unable to find term {term_id} ' +
@@ -470,61 +463,6 @@ def valid_term_in_all_projects(value: str) -> list[MatchingTerm]:
             with _get_project_session_with_exception(project_id) as project_session:
                 result.extend(_valid_term_in_project(value, project_id,
                                                      universe_session, project_session))
-    return result
-
-
-def _find_terms_in_collection(collection_id: str,
-                              term_id: str,
-                              session: Session,
-                              settings: SearchSettings | None = None) -> Sequence[PTerm]:
-    # Settings only apply on the term_id comparison.
-    where_expression = _create_str_comparison_expression(field=PTerm.id,
-                                                         value=term_id,
-                                                         settings=settings)
-    statement = select(PTerm).join(Collection).where(Collection.id == collection_id,
-                                                     where_expression)
-    results = session.exec(statement)
-    result = results.all()
-    return result
-
-
-def find_terms_in_collection(project_id: str,
-                             collection_id: str,
-                             term_id: str,
-                             settings: SearchSettings | None = None) \
-                                -> list[DataDescriptor]:
-    """
-    Finds one or more terms, based on the specified search settings, in the given collection of a project.
-    This function performs an exact match on the `project_id` and `collection_id`,
-    and does not search for similar or related projects and collections.
-    The given `term_id` is searched according to the search type specified in the parameter `settings`,
-    which allows a flexible matching (e.g., `LIKE` may return multiple results).
-    If the parameter `settings` is `None`, this function performs an exact match on the `term_id`.
-    If any of the provided ids (`project_id`, `collection_id` or `term_id`) is not found,
-    the function returns an empty list.
-
-    Behavior based on search type:
-        - `EXACT` and absence of `settings`: returns zero or one term instance in the list.
-        - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
-          term instances in the list.
-
-    :param project_id: A project id
-    :type project_id: str
-    :param collection_id: A collection
-    :type collection_id: str
-    :param term_id: A term id to be found
-    :type term_id: str
-    :param settings: The search settings
-    :type settings: SearchSettings | None
-    :returns: A list of term instances. Returns an empty list if no matches are found.
-    :rtype: list[DataDescriptor]
-    """
-    result: list[DataDescriptor] = list()
-    if connection := _get_project_connection(project_id):
-        with connection.create_session() as session:
-            terms = _find_terms_in_collection(collection_id, term_id, session, settings)
-            instantiate_pydantic_terms(terms, result,
-                                       settings.selected_term_fields if settings else None)
     return result
 
 
@@ -902,12 +840,12 @@ def find_collections_in_project(expression: str, project_id: str,
     return result
 
 
-def R_find_terms_in_collection(expression: str,
-                               collection_id: str,
-                               session: Session,
-                               only_id: bool = False,
-                               limit: int | None = None,
-                               offset: int | None = None) -> Sequence[PTerm]:
+def _find_terms_in_collection(expression: str,
+                              collection_id: str,
+                              session: Session,
+                              only_id: bool = False,
+                              limit: int | None = None,
+                              offset: int | None = None) -> Sequence[PTerm]:
     matching_condition = generate_matching_condition(PTermFTS5, expression, only_id)
     where_condition = Collection.id == collection_id, matching_condition
     tmp_statement = select(PTermFTS5).join(Collection).where(*where_condition)
@@ -926,12 +864,12 @@ def _find_terms_in_project(expression: str,
     return execute_match_statement(expression, statement, session)
 
 
-def Rfind_terms_in_collection(expression: str, project_id: str,
-                              collection_id: str,
-                              only_id: bool = False,
-                              limit: int | None = None,
-                              offset: int | None = None,
-                              selected_term_fields: Iterable[str] | None = None) \
+def find_terms_in_collection(expression: str, project_id: str,
+                             collection_id: str,
+                             only_id: bool = False,
+                             limit: int | None = None,
+                             offset: int | None = None,
+                             selected_term_fields: Iterable[str] | None = None) \
                                                                           -> list[DataDescriptor]:
     """
     Find terms in the given project and collection based on a full text search defined by the given
@@ -975,8 +913,8 @@ def Rfind_terms_in_collection(expression: str, project_id: str,
     result: list[DataDescriptor] = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
-            pterms_found = R_find_terms_in_collection(expression, collection_id, session,
-                                                      only_id, limit, offset)
+            pterms_found = _find_terms_in_collection(expression, collection_id, session,
+                                                     only_id, limit, offset)
             instantiate_pydantic_terms(pterms_found, result, selected_term_fields)
     return result
 
