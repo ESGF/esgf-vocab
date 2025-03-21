@@ -21,8 +21,15 @@ _SOME_PROJ_COL_TERM_IDS = [(_SOME_PROJECT_IDS[0], _SOME_COLLECTION_IDS[0], _SOME
                            (_SOME_PROJECT_IDS[1], _SOME_COLLECTION_IDS[0], _SOME_TERM_IDS[0]),
                            (_SOME_PROJECT_IDS[1], _SOME_COLLECTION_IDS[1], _SOME_TERM_IDS[1]),
                            (_SOME_PROJECT_IDS[1], _SOME_COLLECTION_IDS[2], _SOME_TERM_IDS[2])]
-_SOME_ITEM_IDS = list(zip(_SOME_COLLECTION_IDS, [ItemKind.COLLECTION for _ in _SOME_COLLECTION_IDS], strict=False)) + \
-                 list(zip(_SOME_TERM_IDS, [ItemKind.TERM for _ in _SOME_TERM_IDS], strict=False))
+_SOME_EXPRESSIONS = [('ipsl', 'cmip6plus', 'institution_id', 'ipsl', ItemKind.TERM),
+                     ('airmass', 'cmip6plus', 'variable_id', 'airmass', ItemKind.TERM),
+                     ('cnes', 'cmip6plus', 'institution_id', 'cnes', ItemKind.TERM),
+                     ('mir*', 'cmip6plus', 'source_id', 'miroc6', ItemKind.TERM),
+                     ('pArIs NOT CNES', 'cmip6plus', 'institution_id', 'ipsl', ItemKind.TERM)]
+_SOME_ITEM_IDS = _SOME_EXPRESSIONS + \
+                 [('institution_id', 'cmip6plus', 'cmip6plus', 'institution_id', ItemKind.COLLECTION),
+                  ('tab*_id', 'cmip6plus', 'cmip6plus', 'table_id', ItemKind.COLLECTION),
+                  ('var* NOT ver*', 'cmip6plus', 'cmip6plus', 'variable_id', ItemKind.COLLECTION)]
 
 
 def _provide_proj_dd_col_ids() -> Generator:
@@ -42,6 +49,16 @@ def _provide_item_ids() -> Generator:
 
 @pytest.fixture(params=_provide_item_ids())
 def item_id(request) -> str:
+    return request.param
+
+
+def _provide_expressions() -> Generator:
+    for expr in _SOME_EXPRESSIONS:
+        yield expr
+
+
+@pytest.fixture(params=_provide_expressions())
+def expression(request) -> tuple[str, str]:
     return request.param
 
 
@@ -218,27 +235,27 @@ def test_find_collections_in_project(proj_dd_col_id) -> None:
     assert has_been_found
 
 
-def test_find_terms_in_collection(proj_col_term_id) -> None:
-    terms_found = projects.find_terms_in_collection(proj_col_term_id[2],
-                                                    proj_col_term_id[0],
-                                                    proj_col_term_id[1],
+def test_find_terms_in_collection(expression) -> None:
+    terms_found = projects.find_terms_in_collection(expression[0],
+                                                    expression[1],
+                                                    expression[2],
                                                     limit=10,
                                                     selected_term_fields=[])
     has_been_found = False
     for term_found in terms_found:
-        if term_found.id == proj_col_term_id[2]:
+        if term_found.id == expression[3]:
             has_been_found = True
             break
     assert has_been_found
 
 
-def test_find_terms_in_project(proj_col_term_id) -> None:
-    terms_found = projects.find_terms_in_project(proj_col_term_id[2],
-                                                 proj_col_term_id[0],
+def test_find_terms_in_project(expression) -> None:
+    terms_found = projects.find_terms_in_project(expression[0],
+                                                 expression[1],
                                                  selected_term_fields=[])
     has_been_found = False
     for term_found in terms_found:
-        if term_found.id == proj_col_term_id[2]:
+        if term_found.id == expression[3]:
             has_been_found = True
             break
     assert has_been_found
@@ -250,12 +267,13 @@ def test_find_terms_in_all_projects(term_id) -> None:
         assert len(term_found[1]) >= 1
 
 
-def test_find_items_in_project(project_id, item_id) -> None:
-    items_found = projects.find_items_in_project(item_id[0], project_id, limit=10)
+def test_find_items_in_project(item_id) -> None:
+    items_found = projects.find_items_in_project(item_id[0], item_id[1])
     has_been_found = False
     for item_found in items_found:
-        if item_found.id == item_id[0]:
-            assert item_found.kind == item_id[1]
+        if item_found.id == item_id[3]:
+            assert item_found.parent_id == item_id[2]
+            assert item_found.kind == item_id[4]
             has_been_found = True
             break
     assert has_been_found
