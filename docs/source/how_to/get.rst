@@ -27,8 +27,8 @@ One term
 
          import esgvoc.api as ev
 
-         ev.find_terms_in_data_descriptor(data_descriptor_id="institution", term_id="ipsl")
-         ev.find_terms_in_universe(term_id="ipsl") # same result but slower (still fast)
+         ev.get_term_in_data_descriptor(data_descriptor_id="institution", term_id="ipsl")
+         ev.get_term_in_universe(term_id="ipsl") # same result but slower but still fast
       .. image:: ../_static/Jup_one_term.png
 
 
@@ -98,9 +98,9 @@ A term from a CV
 
                 import esgvoc.api as ev
 
-                ev.find_terms_in_universe("ipsl")
-                ev.find_terms_in_project("cmip6","ipsl")
-                ev.find_terms_in_project("cmip6plus","ipsl")
+                ev.get_term_in_universe("ipsl")
+                ev.get_term_in_project("cmip6", "ipsl")
+                ev.get_term_in_project("cmip6plus", "ipsl")
 
         .. image:: ../_static/Jup_one_term_from_one_CV.png
 
