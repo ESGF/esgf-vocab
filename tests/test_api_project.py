@@ -300,3 +300,30 @@ def test_find_items_in_project(item_id) -> None:
             has_been_found = True
             break
     assert has_been_found
+
+
+def test_only_id_limit_and_offset_find_terms(expression):
+    terms_found = projects.find_terms_in_project(expression[0],
+                                                 expression[1],
+                                                 only_id=True,
+                                                 limit=10,
+                                                 offset=5,
+                                                 selected_term_fields=[])
+    has_been_found = False
+    for term_found in terms_found:
+        if term_found.id == expression[3]:
+            has_been_found = True
+            break
+    assert not has_been_found
+
+
+def test_only_id_limit_and_offset_find_items(item_id):
+    items_found = projects.find_items_in_project(item_id[0], item_id[1], limit=10, offset=5)
+    has_been_found = False
+    for item_found in items_found:
+        if item_found.id == item_id[3]:
+            assert item_found.parent_id == item_id[2]
+            assert item_found.kind == item_id[4]
+            has_been_found = True
+            break
+    assert not has_been_found
