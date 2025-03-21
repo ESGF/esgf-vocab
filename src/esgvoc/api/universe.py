@@ -421,9 +421,3 @@ def find_items_in_universe(expression: str,
         result = execute_find_item_statements(session, expression, dd_statement,
                                               term_statement, limit, offset)
         return result
-
-
-if __name__ == "__main__":
-    results = find_terms_in_universe('v*', limit=None, offset=0)
-    for result in results:
-        print(result.id)

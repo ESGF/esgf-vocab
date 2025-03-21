@@ -408,22 +408,3 @@ class DrsGenerator(DrsApplication):
             for conflicting_collection_ids in conflicting_collection_ids_list:
                 if collection_id_to_be_removed in conflicting_collection_ids:
                     conflicting_collection_ids.remove(collection_id_to_be_removed)
-
-
-if __name__ == "__main__":
-    project_id = 'cmip6plus'
-    generator = DrsGenerator(project_id)
-    mapping = \
-    { # noqa E127
-        'member_id': 'r2i2p1f2',
-        'activity_id': 'CMIP',
-        'source_id': 'MIROC6',
-        'mip_era': 'CMIP6Plus',
-        'experiment_id': 'amip',
-        'variable_id': 'od550aer',
-        'table_id': 'ACmon',
-        'grid_label': 'gn',
-        'institution_id': 'IPSL',
-    }
-    report = generator.generate_file_name_from_mapping(mapping)
-    print(report.warnings)

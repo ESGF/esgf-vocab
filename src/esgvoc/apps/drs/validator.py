@@ -318,27 +318,3 @@ class DrsValidator(DrsApplication):
                 errors.append(issue)
                 part_index += 1
         return self._create_report(specs.type, drs_expression, errors, warnings)
-
-
-if __name__ == "__main__":
-    project_id = 'cmip6plus'
-    validator = DrsValidator(project_id)
-    drs_expressions = [".CMIP6Plus.CMIP.IPSL.  .MIROC6.amip..r2i2p1f2.ACmon.od550aer. ..gn",]
-    import time
-    for drs_expression in drs_expressions:
-        start_time = time.perf_counter_ns()
-        report = validator.validate_dataset_id(drs_expression)
-        stop_time = time.perf_counter_ns()
-        print(f'elapsed time: {(stop_time-start_time)/1000000} ms')
-        if report.nb_errors > 0:
-            print(f'error(s): {report.nb_errors}')
-            for error in report.errors:
-                print(error)
-        else:
-            print('error(s): 0')
-        if report.nb_warnings > 0:
-            print(f'warning(s): {report.nb_warnings}')
-            for warning in report.warnings:
-                print(warning)
-        else:
-            print('warning(s): 0')

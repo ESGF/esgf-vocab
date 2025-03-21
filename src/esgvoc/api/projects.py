@@ -1080,8 +1080,3 @@ def find_items_in_project(expression: str,
             result = execute_find_item_statements(session, expression, collection_statement,
                                                   term_statement, limit, offset)
     return result
-
-
-if __name__ == "__main__":
-    project_id = 'cmip6plus'
-    print(find_items_in_project('institution', project_id, False)[0])
