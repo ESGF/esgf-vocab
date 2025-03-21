@@ -207,9 +207,9 @@ def test_get_collection_from_data_descriptor_in_all_projects(data_descriptor_id)
 
 
 def test_find_collections_in_project(proj_dd_col_id) -> None:
-    collections_found = projects.Rfind_collections_in_project(proj_dd_col_id[2],
-                                                              proj_dd_col_id[0],
-                                                              limit=10)
+    collections_found = projects.find_collections_in_project(proj_dd_col_id[2],
+                                                             proj_dd_col_id[0],
+                                                             limit=10)
     has_been_found = False
     for collection_found in collections_found:
         if collection_found[0] == proj_dd_col_id[2]:
