@@ -528,75 +528,6 @@ def find_terms_in_collection(project_id: str,
     return result
 
 
-def _find_terms_in_project(term_id: str,
-                           session: Session,
-                           settings: SearchSettings | None) -> Sequence[PTerm]:
-    where_expression = _create_str_comparison_expression(field=PTerm.id,
-                                                         value=term_id,
-                                                         settings=settings)
-    statement = select(PTerm).where(where_expression)
-    results = session.exec(statement).all()
-    return results
-
-
-def find_terms_in_all_projects(term_id: str,
-                               settings: SearchSettings | None = None) \
-                                  -> list[DataDescriptor]:
-    """
-    Finds one or more terms, based on the specified search settings, in all projects.
-    The given `term_id` is searched according to the search type specified in the parameter `settings`,
-    which allows a flexible matching (e.g., `LIKE` may return multiple results).
-    If the parameter `settings` is `None`, this function performs an exact match on the `term_id`.
-    Terms are unique within a collection but may have some synonyms within a project.
-    If the provided `term_id` is not found, the function returns an empty list.
-
-    :param term_id: A term id to be found
-    :type term_id: str
-    :param settings: The search settings
-    :type settings: SearchSettings | None
-    :returns: A list of term instances. Returns an empty list if no matches are found.
-    :rtype: list[DataDescriptor]
-    """
-    project_ids = get_all_projects()
-    result = list()
-    for project_id in project_ids:
-        result.extend(find_terms_in_project(project_id, term_id, settings))
-    return result
-
-
-def find_terms_in_project(project_id: str,
-                          term_id: str,
-                          settings: SearchSettings | None = None) \
-                            -> list[DataDescriptor]:
-    """
-    Finds one or more terms, based on the specified search settings, in a project.
-    This function performs an exact match on the `project_id` and
-    does not search for similar or related projects.
-    The given `term_id` is searched according to the search type specified in the parameter `settings`,
-    which allows a flexible matching (e.g., `LIKE` may return multiple results).
-    If the parameter `settings` is `None`, this function performs an exact match on the `term_id`.
-    Terms are unique within a collection but may have some synonyms within a project.
-    If any of the provided ids (`project_id` or `term_id`) is not found, the function returns
-    an empty list.
-
-    :param project_id: A project id
-    :type project_id: str
-    :param term_id: A term id to be found
-    :type term_id: str
-    :param settings: The search settings
-    :type settings: SearchSettings | None
-    :returns: A list of term instances. Returns an empty list if no matches are found.
-    :rtype: list[DataDescriptor]
-    """
-    result: list[DataDescriptor] = list()
-    if connection := _get_project_connection(project_id):
-        with connection.create_session() as session:
-            terms = _find_terms_in_project(term_id, session, settings)
-            instantiate_pydantic_terms(terms, result,
-                                       settings.selected_term_fields if settings else None)
-    return result
-
-
 def get_all_terms_in_collection(project_id: str,
                                 collection_id: str,
                                 selected_term_fields: Iterable[str] | None = None)\
@@ -984,11 +915,11 @@ def R_find_terms_in_collection(expression: str,
     return execute_match_statement(expression, statement, session)
 
 
-def R_find_terms_in_project(expression: str,
-                            session: Session,
-                            only_id: bool = False,
-                            limit: int | None = None,
-                            offset: int | None = None) -> Sequence[PTerm]:
+def _find_terms_in_project(expression: str,
+                           session: Session,
+                           only_id: bool = False,
+                           limit: int | None = None,
+                           offset: int | None = None) -> Sequence[PTerm]:
     matching_condition = generate_matching_condition(PTermFTS5, expression, only_id)
     tmp_statement = select(PTermFTS5).where(matching_condition)
     statement = select(PTerm).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
@@ -1050,12 +981,12 @@ def Rfind_terms_in_collection(expression: str, project_id: str,
     return result
 
 
-def Rfind_terms_in_project(expression: str,
-                           project_id: str,
-                           only_id: bool = False,
-                           limit: int | None = None,
-                           offset: int | None = None,
-                           selected_term_fields: Iterable[str] | None = None) \
+def find_terms_in_project(expression: str,
+                          project_id: str,
+                          only_id: bool = False,
+                          limit: int | None = None,
+                          offset: int | None = None,
+                          selected_term_fields: Iterable[str] | None = None) \
                                                                           -> list[DataDescriptor]:
     """
     Find terms in the given project on a full text search defined by the given
@@ -1097,16 +1028,16 @@ def Rfind_terms_in_project(expression: str,
     result: list[DataDescriptor] = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
-            pterms_found = R_find_terms_in_project(expression, session, only_id, limit, offset)
+            pterms_found = _find_terms_in_project(expression, session, only_id, limit, offset)
             instantiate_pydantic_terms(pterms_found, result, selected_term_fields)
     return result
 
 
-def Rfind_terms_in_all_projects(expression: str,
-                                only_id: bool = False,
-                                limit: int | None = None,
-                                offset: int | None = None,
-                                selected_term_fields: Iterable[str] | None = None) \
+def find_terms_in_all_projects(expression: str,
+                               only_id: bool = False,
+                               limit: int | None = None,
+                               offset: int | None = None,
+                               selected_term_fields: Iterable[str] | None = None) \
                                                         -> list[tuple[str, list[DataDescriptor]]]:
     """
     Find terms in the all projects on a full text search defined by the given
@@ -1143,8 +1074,8 @@ def Rfind_terms_in_all_projects(expression: str,
     result: list[tuple[str, list[DataDescriptor]]] = list()
     project_ids = get_all_projects()
     for project_id in project_ids:
-        terms_found = Rfind_terms_in_project(expression, project_id, only_id,
-                                             limit, offset, selected_term_fields)
+        terms_found = find_terms_in_project(expression, project_id, only_id,
+                                            limit, offset, selected_term_fields)
         if terms_found:
             result.append((project_id, terms_found))
     return result
