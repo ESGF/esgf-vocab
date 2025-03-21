@@ -815,31 +815,6 @@ def get_all_terms_in_all_projects(selected_term_fields: Iterable[str] | None = N
     return result
 
 
-def find_project(project_id: str) -> ProjectSpecs | None:
-    """
-    Finds a project and returns its specifications.
-    This function performs an exact match on the `project_id` and
-    does not search for similar or related projects.
-    If the provided `project_id` is not found, the function returns `None`.
-
-    :param project_id: A project id to be found
-    :type project_id: str
-    :returns: The specs of the project found. Returns `None` if no matches are found.
-    :rtype: ProjectSpecs | None
-    """
-    result: ProjectSpecs | None = None
-    if connection := _get_project_connection(project_id):
-        with connection.create_session() as session:
-            project = session.get(Project, constants.SQLITE_FIRST_PK)
-            try:
-                # Project can't be missing if session exists.
-                result = ProjectSpecs(**project.specs)  # type: ignore
-            except Exception as e:
-                msg = f'Unable to read specs in project {project_id}'
-                raise RuntimeError(msg) from e
-    return result
-
-
 def get_all_projects() -> list[str]:
     """
     Gets all projects.

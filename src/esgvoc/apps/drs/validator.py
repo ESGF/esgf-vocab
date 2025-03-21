@@ -41,7 +41,7 @@ class DrsApplication:
         """The project id."""
         self.pedantic: bool = pedantic
         """Same as the option of GCC: turn warnings into errors. Default False."""
-        project_specs: ProjectSpecs | None = projects.find_project(project_id)
+        project_specs: ProjectSpecs | None = projects.get_project(project_id)
         if not project_specs:
             raise APIException(f'unable to find project {project_id}')
         for specs in project_specs.drs_specs:
