@@ -7,13 +7,13 @@ from sqlmodel import Session, and_, col, select
 import esgvoc.api.universe as universe
 import esgvoc.core.constants as constants
 import esgvoc.core.service as service
-from esgvoc.api import MatchingTerm
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
 from esgvoc.api.search import (
     APIException,
     Item,
+    MatchingTerm,
     execute_find_item_statements,
     execute_match_statement,
     generate_matching_condition,
