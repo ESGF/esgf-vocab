@@ -7,6 +7,7 @@ from sqlmodel import Session, and_, col, select
 import esgvoc.api.universe as universe
 import esgvoc.core.constants as constants
 import esgvoc.core.service as service
+from esgvoc.api import MatchingTerm
 from esgvoc.api._utils import (
     APIException,
     Item,
@@ -21,7 +22,6 @@ from esgvoc.api._utils import (
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
-from esgvoc.api.search import MatchingTerm
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import (

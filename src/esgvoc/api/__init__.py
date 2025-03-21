@@ -1,4 +1,4 @@
-from esgvoc.api._utils import APIException
+from esgvoc.api._utils import APIException, MatchingTerm
 from esgvoc.api.project_specs import (
                                       DrsCollection,
                                       DrsConstant,
@@ -37,7 +37,6 @@ from esgvoc.api.report import (
                                       ValidationErrorVisitor,
                                       ValidationReport,
 )
-from esgvoc.api.search import MatchingTerm
 from esgvoc.api.universe import (
                                       find_data_descriptors_in_universe,
                                       find_items_in_universe,
