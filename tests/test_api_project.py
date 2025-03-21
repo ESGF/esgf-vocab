@@ -200,6 +200,14 @@ def test_valid_term_in_project(val_query) -> None:
         assert matching_terms[0].term_id == term_id
 
 
+def test_valid_term_in_all_projects(val_query) -> None:
+    nb_matching_terms, parameters, term_id = val_query
+    matching_terms = projects.valid_term_in_all_projects(*parameters[0:1])
+    assert len(matching_terms) == nb_matching_terms * len(_SOME_PROJECT_IDS)
+    if nb_matching_terms == 1:
+        assert matching_terms[0].term_id == term_id
+
+
 def test_get_project(project_id) -> None:
     project = projects.get_project(project_id)
     assert project
