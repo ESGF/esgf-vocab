@@ -170,7 +170,7 @@ def test_valid_term_in_project() -> None:
 
 
 def test_get_project(project_id) -> None:
-    project = projects.find_project(project_id)
+    project = projects.get_project(project_id)
     assert project
     assert project.project_id == project_id
 

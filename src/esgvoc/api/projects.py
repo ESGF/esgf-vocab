@@ -340,11 +340,8 @@ def _valid_term_in_collection(value: str,
     else:
         value = _check_value(value)
         result = list()
-        collections = _find_collections_in_project(collection_id,
-                                                   project_session,
-                                                   None)
-        if collections:
-            collection = collections[0]
+        collection = _get_collection_in_project(collection_id, project_session)
+        if collection:
             match collection.term_kind:
                 case TermKind.PLAIN:
                     term_id_found = _search_plain_term_and_valid_value(value, collection_id,
@@ -732,65 +729,9 @@ def get_all_terms_in_collection(project_id: str,
     result = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
-            collections = _find_collections_in_project(collection_id,
-                                                       session,
-                                                       None)
-            if collections:
-                collection = collections[0]
+            collection = _get_collection_in_project(collection_id, session)
+            if collection:
                 result = _get_all_terms_in_collection(collection, selected_term_fields)
-    return result
-
-
-def _find_collections_in_project(collection_id: str,
-                                 session: Session,
-                                 settings: SearchSettings | None) \
-                                    -> Sequence[Collection]:
-    where_exp = _create_str_comparison_expression(field=Collection.id,
-                                                  value=collection_id,
-                                                  settings=settings)
-    statement = select(Collection).where(where_exp)
-    results = session.exec(statement)
-    result = results.all()
-    return result
-
-
-def find_collections_in_project(project_id: str,
-                                collection_id: str,
-                                settings: SearchSettings | None = None) \
-                                    -> list[dict]:
-    """
-    Finds one or more collections of the given project.
-    This function performs an exact match on the `project_id` and
-    does not search for similar or related projects.
-    The given `collection_id` is searched according to the search type specified in
-    the parameter `settings`,
-    which allows a flexible matching (e.g., `LIKE` may return multiple results).
-    If the parameter `settings` is `None`, this function performs an exact match on the `collection_id`.
-    If any of the provided ids (`project_id` or `collection_id`) is not found, the function returns
-    an empty list.
-
-    Behavior based on search type:
-        - `EXACT` and absence of `settings`: returns zero or one collection context in the list.
-        - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
-          collection contexts in the list.
-
-    :param project_id: A project id
-    :type project_id: str
-    :param collection_id: A collection id to be found
-    :type collection_id: str
-    :param settings: The search settings
-    :type settings: SearchSettings | None
-    :returns: A list of collection contexts. Returns an empty list if no matches are found.
-    :rtype: list[dict]
-    """
-    result = list()
-    if connection := _get_project_connection(project_id):
-        with connection.create_session() as session:
-            collections = _find_collections_in_project(collection_id,
-                                                       session,
-                                                       settings)
-            for collection in collections:
-                result.append(collection.context)
     return result
 
 
