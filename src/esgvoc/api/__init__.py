@@ -37,7 +37,7 @@ from esgvoc.api.report import (
                                       ValidationErrorVisitor,
                                       ValidationReport,
 )
-from esgvoc.api.search import MatchingTerm, SearchSettings, SearchType
+from esgvoc.api.search import MatchingTerm
 from esgvoc.api.universe import (
                                       find_data_descriptors_in_universe,
                                       find_items_in_universe,
@@ -88,8 +88,6 @@ __all__ = [
            "MatchingTerm",
            "ProjectSpecs",
            "ProjectTermError",
-           "SearchSettings",
-           "SearchType",
            "UniverseTermError",
            "valid_term",
            "valid_term_in_all_projects",
