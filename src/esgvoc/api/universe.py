@@ -14,45 +14,7 @@ from esgvoc.api._utils import (
     instantiate_pydantic_terms,
 )
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
-from esgvoc.api.search import SearchSettings, _create_str_comparison_expression
 from esgvoc.core.db.models.universe import UDataDescriptor, UDataDescriptorFTS5, UTerm, UTermFTS5
-
-
-def _find_terms_in_universe(term_id: str,
-                            session: Session,
-                            settings: SearchSettings | None) -> Sequence[UTerm]:
-    where_expression = _create_str_comparison_expression(field=UTerm.id,
-                                                         value=term_id,
-                                                         settings=settings)
-    statement = select(UTerm).where(where_expression)
-    results = session.exec(statement).all()
-    return results
-
-
-def find_terms_in_universe(term_id: str,
-                           settings: SearchSettings | None = None) \
-                              -> list[DataDescriptor]:
-    """
-    Finds one or more terms of the universe.
-    The given `term_id` is searched according to the search type specified in
-    the parameter `settings`,
-    which allows a flexible matching (e.g., `LIKE` may return multiple results).
-    If the parameter `settings` is `None`, this function performs an exact match on the `term_id`.
-    Terms are unique within a data descriptor but may have some synonyms in the universe.
-    If the provided `term_id` is not found, the function returns an empty list.
-
-    :param term_id: A term id to be found
-    :type term_id: str
-    :param settings: The search settings
-    :type settings: SearchSettings | None
-    :returns: A list of term instances. Returns an empty list if no matches are found.
-    :rtype: list[DataDescriptor]
-    """
-    result: list[DataDescriptor] = list()
-    with get_universe_session() as session:
-        terms = _find_terms_in_universe(term_id, session, settings)
-        instantiate_pydantic_terms(terms, result, settings.selected_term_fields if settings else None)
-    return result
 
 
 def _get_all_terms_in_data_descriptor(data_descriptor: UDataDescriptor,
@@ -287,21 +249,21 @@ def find_data_descriptors_in_universe(expression: str,
     return result
 
 
-def R_find_terms_in_universe(expression: str, session: Session,
-                             only_id: bool = False,
-                             limit: int | None = None,
-                             offset: int | None = None) -> Sequence[UTerm]:
+def _find_terms_in_universe(expression: str, session: Session,
+                            only_id: bool = False,
+                            limit: int | None = None,
+                            offset: int | None = None) -> Sequence[UTerm]:
     matching_condition = generate_matching_condition(UTermFTS5, expression, only_id)
     tmp_statement = select(UTermFTS5).where(matching_condition)
     statement = select(UTerm).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
     return execute_match_statement(expression, statement, session)
 
 
-def Rfind_terms_in_universe(expression: str,
-                            only_id: bool = False,
-                            limit: int | None = None,
-                            offset: int | None = None,
-                            selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
+def find_terms_in_universe(expression: str,
+                           only_id: bool = False,
+                           limit: int | None = None,
+                           offset: int | None = None,
+                           selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
     """
     Find terms in the universe based on a full-text search defined by the given `expression`.
     The `expression` comes from the powerful
@@ -335,7 +297,7 @@ def Rfind_terms_in_universe(expression: str,
     """
     result: list[DataDescriptor] = list()
     with get_universe_session() as session:
-        uterms_found = R_find_terms_in_universe(expression, session, only_id, limit, offset)
+        uterms_found = _find_terms_in_universe(expression, session, only_id, limit, offset)
         if uterms_found:
             instantiate_pydantic_terms(uterms_found, result, selected_term_fields)
     return result
@@ -462,6 +424,6 @@ def find_items_in_universe(expression: str,
 
 
 if __name__ == "__main__":
-    results = Rfind_terms_in_universe('v*', limit=None, offset=0)
+    results = find_terms_in_universe('v*', limit=None, offset=0)
     for result in results:
         print(result.id)
