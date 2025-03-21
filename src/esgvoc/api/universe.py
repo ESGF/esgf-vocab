@@ -18,57 +18,6 @@ from esgvoc.api.search import SearchSettings, _create_str_comparison_expression
 from esgvoc.core.db.models.universe import UDataDescriptor, UDataDescriptorFTS5, UTerm, UTermFTS5
 
 
-def _find_terms_in_data_descriptor(data_descriptor_id: str,
-                                   term_id: str,
-                                   session: Session,
-                                   settings: SearchSettings | None) -> Sequence[UTerm]:
-    """Settings only apply on the term_id comparison."""
-    where_expression = _create_str_comparison_expression(field=UTerm.id,
-                                                         value=term_id,
-                                                         settings=settings)
-    statement = select(UTerm).join(UDataDescriptor).where(UDataDescriptor.id == data_descriptor_id,
-                                                          where_expression)
-    results = session.exec(statement)
-    result = results.all()
-    return result
-
-
-def find_terms_in_data_descriptor(data_descriptor_id: str,
-                                  term_id: str,
-                                  settings: SearchSettings | None = None) \
-                                     -> list[DataDescriptor]:
-    """
-    Finds one or more terms in the given data descriptor based on the specified search settings.
-    This function performs an exact match on the `data_descriptor_id` and
-    does not search for similar or related descriptors.
-    The given `term_id` is searched according to the search type specified in
-    the parameter `settings`,
-    which allows a flexible matching (e.g., `LIKE` may return multiple results).
-    If the parameter `settings` is `None`, this function performs an exact match on the `term_id`.
-    If any of the provided ids (`data_descriptor_id` or `term_id`) is not found, the function
-    returns an empty list.
-
-    Behavior based on search type:
-        - `EXACT` and absence of `settings`: returns zero or one term instance in the list.
-        - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more term \
-          instances in the list.
-
-    :param data_descriptor_id: A data descriptor id
-    :type data_descriptor_id: str
-    :param term_id: A term id to be found
-    :type term_id: str
-    :param settings: The search settings
-    :type settings: SearchSettings | None
-    :returns: A list of term instances. Returns an empty list if no matches are found.
-    :rtype: list[DataDescriptor]
-    """
-    result: list[DataDescriptor] = list()
-    with get_universe_session() as session:
-        terms = _find_terms_in_data_descriptor(data_descriptor_id, term_id, session, settings)
-        instantiate_pydantic_terms(terms, result, settings.selected_term_fields if settings else None)
-    return result
-
-
 def _find_terms_in_universe(term_id: str,
                             session: Session,
                             settings: SearchSettings | None) -> Sequence[UTerm]:
@@ -392,11 +341,11 @@ def Rfind_terms_in_universe(expression: str,
     return result
 
 
-def R_find_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
-                                    session: Session,
-                                    only_id: bool = False,
-                                    limit: int | None = None,
-                                    offset: int | None = None) -> Sequence[UTerm]:
+def _find_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
+                                   session: Session,
+                                   only_id: bool = False,
+                                   limit: int | None = None,
+                                   offset: int | None = None) -> Sequence[UTerm]:
     matching_condition = generate_matching_condition(UTermFTS5, expression, only_id)
     where_condition = UDataDescriptor.id == data_descriptor_id, matching_condition
     tmp_statement = select(UTermFTS5).join(UDataDescriptor).where(*where_condition)
@@ -404,11 +353,11 @@ def R_find_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
     return execute_match_statement(expression, statement, session)
 
 
-def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
-                                   only_id: bool = False,
-                                   limit: int | None = None,
-                                   offset: int | None = None,
-                                   selected_term_fields: Iterable[str] | None = None) \
+def find_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
+                                  only_id: bool = False,
+                                  limit: int | None = None,
+                                  offset: int | None = None,
+                                  selected_term_fields: Iterable[str] | None = None) \
                                                                             -> list[DataDescriptor]:
     """
     Find terms in the given data descriptor based on a full-text search defined by the given `expression`.
@@ -446,8 +395,8 @@ def Rfind_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
     """
     result: list[DataDescriptor] = list()
     with get_universe_session() as session:
-        uterms_found = R_find_terms_in_data_descriptor(expression, data_descriptor_id,
-                                                       session, only_id, limit, offset)
+        uterms_found = _find_terms_in_data_descriptor(expression, data_descriptor_id,
+                                                      session, only_id, limit, offset)
         if uterms_found:
             instantiate_pydantic_terms(uterms_found, result, selected_term_fields)
     return result

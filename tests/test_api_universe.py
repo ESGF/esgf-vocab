@@ -110,7 +110,7 @@ def test_find_terms_in_universe(term_id) -> None:
 
 
 def test_find_terms_in_data_descriptor(dd_term_ids) -> None:
-    terms_found = universe.Rfind_terms_in_data_descriptor(dd_term_ids[1], dd_term_ids[0], selected_term_fields=[])
+    terms_found = universe.find_terms_in_data_descriptor(dd_term_ids[1], dd_term_ids[0], selected_term_fields=[])
     has_been_found = False
     for term_found in terms_found:
         if term_found.id == dd_term_ids[1]:
