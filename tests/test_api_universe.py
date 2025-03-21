@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 import esgvoc.api.universe as universe
-from esgvoc.api._utils import ItemKind
+from esgvoc.api.search import ItemKind
 
 _SOME_DATA_DESCRIPTOR_IDS = ['institution', 'product', 'variable']
 _SOME_TERM_IDS = ['ipsl', 'observations', 'airmass']

@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 import esgvoc.api.projects as projects
-from esgvoc.api._utils import ItemKind
+from esgvoc.api.search import ItemKind
 
 _SOME_PROJECT_IDS = ['cmip6plus', 'cmip6']
 _SOME_COLLECTION_IDS = ['institution_id', 'time_range', 'source_id']

@@ -3,7 +3,8 @@ from typing import Iterable, Sequence
 from sqlalchemy import text
 from sqlmodel import Session, col, select
 
-from esgvoc.api._utils import (
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+from esgvoc.api.search import (
     Item,
     execute_find_item_statements,
     execute_match_statement,
@@ -13,7 +14,6 @@ from esgvoc.api._utils import (
     instantiate_pydantic_term,
     instantiate_pydantic_terms,
 )
-from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.core.db.models.universe import UDataDescriptor, UDataDescriptorFTS5, UTerm, UTermFTS5
 
 
