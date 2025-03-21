@@ -31,6 +31,46 @@ _SOME_ITEM_IDS = _SOME_EXPRESSIONS + \
                   ('tab*_id', 'cmip6plus', 'cmip6plus', 'table_id', ItemKind.COLLECTION),
                   ('var* NOT ver*', 'cmip6plus', 'cmip6plus', 'variable_id', ItemKind.COLLECTION)]
 
+_SOME_VALIDATION_TERM_QUERIES =  \
+    [
+        (0, ('IPSL', 'cmip6plus', 'institution_id', 'ipsl')),
+        (0, ('r1i1p1f1', 'cmip6plus', 'member_id', 'ripf')),
+        (1, ('IPL', 'cmip6plus', 'institution_id', 'ipsl')),
+        (1, ('r1i1p1f111', 'cmip6plus', 'member_id', 'ripf')),
+        (0, ('20241206-20241207', 'cmip6plus', 'time_range', 'daily')),
+        (2, ('0241206-0241207', 'cmip6plus', 'time_range', 'daily'))
+    ]
+
+_SOME_VALIDATION_QUERIES = \
+    [
+        (1, ('IPSL', 'cmip6plus', 'institution_id'), 'ipsl'),
+        (1, ('r1i1p1f1', 'cmip6plus', 'member_id'), 'ripf'),
+        (0, ('IPL', 'cmip6plus', 'institution_id'), None),
+        (0, ('r1i1p1f11', 'cmip6plus', 'member_id'), None),
+        (1, ('20241206-20241207', 'cmip6plus', 'time_range'), 'daily'),
+        (0, ('0241206-0241207', 'cmip6plus', 'time_range'), None)
+    ]
+
+
+def _provide_val_term_queries() -> Generator:
+    for query in _SOME_VALIDATION_TERM_QUERIES:
+        yield query
+
+
+@pytest.fixture(params=_provide_val_term_queries())
+def val_term_query(request) -> tuple:
+    return request.param
+
+
+def _provide_val_queries() -> Generator:
+    for query in _SOME_VALIDATION_QUERIES:
+        yield query
+
+
+@pytest.fixture(params=_provide_val_queries())
+def val_query(request) -> tuple:
+    return request.param
+
 
 def _provide_proj_dd_col_ids() -> Generator:
     for combo in _SOME_PROJ_DD_COL_IDS:
@@ -132,58 +172,32 @@ def test_get_all_collections_in_project(project_id) -> None:
     assert len(collections) > 0
 
 
-def test_get_all_terms_in_collection(project_id, collection_id) -> None:
-    terms = projects.get_all_terms_in_collection(project_id, collection_id)
+def test_get_all_terms_in_collection(proj_col_term_id) -> None:
+    terms = projects.get_all_terms_in_collection(proj_col_term_id[0],
+                                                 proj_col_term_id[1])
     assert len(terms) > 0
 
 
-def test_valid_term() -> None:
-    validation_requests = \
-        [
-         (0, ('IPSL', 'cmip6plus', 'institution_id', 'ipsl')),
-         (0, ('r1i1p1f1', 'cmip6plus', 'member_id', 'ripf')),
-         (1, ('IPL', 'cmip6plus', 'institution_id', 'ipsl')),
-         (1, ('r1i1p1f111', 'cmip6plus', 'member_id', 'ripf')),
-         (0, ('20241206-20241207', 'cmip6plus', 'time_range', 'daily')),
-         (2, ('0241206-0241207', 'cmip6plus', 'time_range', 'daily'))]
-    for validation_request in validation_requests:
-        nb_errors, parameters = validation_request
-        vr = projects.valid_term(*parameters)
-        assert nb_errors == len(vr), f'not matching number of errors for parameters {parameters}'
+def test_valid_term(val_term_query) -> None:
+    nb_errors, parameters = val_term_query
+    vr = projects.valid_term(*parameters)
+    assert nb_errors == len(vr), f'not matching number of errors for parameters {parameters}'
 
 
-def test_valid_term_in_collection() -> None:
-    validation_requests = \
-        [
-         (1, ('IPSL', 'cmip6plus', 'institution_id'), 'ipsl'),
-         (1, ('r1i1p1f1', 'cmip6plus', 'member_id'), 'ripf'),
-         (0, ('IPL', 'cmip6plus', 'institution_id'), None),
-         (0, ('r1i1p1f11', 'cmip6plus', 'member_id'), None),
-         (1, ('20241206-20241207', 'cmip6plus', 'time_range'), 'daily'),
-         (0, ('0241206-0241207', 'cmip6plus', 'time_range'), None)]
-    for validation_request in validation_requests:
-        nb_matching_terms, parameters, term_id = validation_request
-        matching_terms = projects.valid_term_in_collection(*parameters)
-        assert len(matching_terms) == nb_matching_terms
-        if nb_matching_terms == 1:
-            assert matching_terms[0].term_id == term_id
+def test_valid_term_in_collection(val_query) -> None:
+    nb_matching_terms, parameters, term_id = val_query
+    matching_terms = projects.valid_term_in_collection(*parameters)
+    assert len(matching_terms) == nb_matching_terms
+    if nb_matching_terms == 1:
+        assert matching_terms[0].term_id == term_id
 
 
-def test_valid_term_in_project() -> None:
-    validation_requests = \
-        [
-         (1, ('IPSL', 'cmip6plus'), 'ipsl'),
-         (1, ('r1i1p1f1', 'cmip6plus'), 'ripf'),
-         (0, ('IPL', 'cmip6plus'), None),
-         (0, ('r1i1p1f11', 'cmip6plus'), None),
-         (1, ('20241206-20241207', 'cmip6plus'), 'daily'),
-         (0, ('0241206-0241207', 'cmip6plus'), None)]
-    for validation_request in validation_requests:
-        nb_matching_terms, parameters, term_id = validation_request
-        matching_terms = projects.valid_term_in_project(*parameters)
-        assert len(matching_terms) == nb_matching_terms
-        if nb_matching_terms == 1:
-            assert matching_terms[0].term_id == term_id
+def test_valid_term_in_project(val_query) -> None:
+    nb_matching_terms, parameters, term_id = val_query
+    matching_terms = projects.valid_term_in_project(*parameters[0:2])
+    assert len(matching_terms) == nb_matching_terms
+    if nb_matching_terms == 1:
+        assert matching_terms[0].term_id == term_id
 
 
 def test_get_project(project_id) -> None:
@@ -192,10 +206,11 @@ def test_get_project(project_id) -> None:
     assert project.project_id == project_id
 
 
-def test_get_term_in_project(project_id, term_id) -> None:
-    term_found = projects.get_term_in_project(project_id, term_id, [])
+def test_get_term_in_project(proj_col_term_id) -> None:
+    term_found = projects.get_term_in_project(proj_col_term_id[0],
+                                              proj_col_term_id[2], [])
     assert term_found
-    assert term_found.id == term_id
+    assert term_found.id == proj_col_term_id[2]
 
 
 def test_get_term_in_collection(proj_col_term_id) -> None:
@@ -205,10 +220,10 @@ def test_get_term_in_collection(proj_col_term_id) -> None:
     assert term_found.id == proj_col_term_id[2]
 
 
-def test_get_collection_in_project(project_id, collection_id) -> None:
-    collection_found = projects.get_collection_in_project(project_id, collection_id)
+def test_get_collection_in_project(proj_col_term_id) -> None:
+    collection_found = projects.get_collection_in_project(proj_col_term_id[0], proj_col_term_id[1])
     assert collection_found
-    assert collection_found[0] == collection_id
+    assert collection_found[0] == proj_col_term_id[1]
 
 
 def test_get_collection_from_data_descriptor_in_project(proj_dd_col_id) -> None:
