@@ -282,11 +282,11 @@ def get_data_descriptor_in_universe(data_descriptor_id: str) -> tuple[str, dict]
     return result
 
 
-def R_find_data_descriptors_in_universe(expression: str,
-                                        session: Session,
-                                        only_id: bool = False,
-                                        limit: int | None = None,
-                                        offset: int | None = None) -> Sequence[UDataDescriptor]:
+def _find_data_descriptors_in_universe(expression: str,
+                                       session: Session,
+                                       only_id: bool = False,
+                                       limit: int | None = None,
+                                       offset: int | None = None) -> Sequence[UDataDescriptor]:
     matching_condition = generate_matching_condition(UDataDescriptorFTS5, expression, only_id)
     tmp_statement = select(UDataDescriptorFTS5).where(matching_condition)
     statement = select(UDataDescriptor).from_statement(handle_rank_limit_offset(tmp_statement,
@@ -294,10 +294,10 @@ def R_find_data_descriptors_in_universe(expression: str,
     return execute_match_statement(expression, statement, session)
 
 
-def Rfind_data_descriptors_in_universe(expression: str,
-                                       only_id: bool = False,
-                                       limit: int | None = None,
-                                       offset: int | None = None) -> list[tuple[str, dict]]:
+def find_data_descriptors_in_universe(expression: str,
+                                      only_id: bool = False,
+                                      limit: int | None = None,
+                                      offset: int | None = None) -> list[tuple[str, dict]]:
     """
     Find data descriptors in the universe based on a full text search defined by the given `expression`.
     The `expression` comes from the powerful
@@ -330,8 +330,8 @@ def Rfind_data_descriptors_in_universe(expression: str,
     """
     result: list[tuple[str, dict]] = list()
     with get_universe_session() as session:
-        data_descriptors_found = R_find_data_descriptors_in_universe(expression, session, only_id,
-                                                                     limit, offset)
+        data_descriptors_found = _find_data_descriptors_in_universe(expression, session, only_id,
+                                                                    limit, offset)
         if data_descriptors_found:
             for data_descriptor_found in data_descriptors_found:
                 result.append((data_descriptor_found.id, data_descriptor_found.context))

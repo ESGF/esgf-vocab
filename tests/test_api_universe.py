@@ -90,7 +90,7 @@ def test_get_data_descriptor_in_universe(data_descriptor_id) -> None:
 
 
 def test_find_data_descriptors_in_universe(data_descriptor_id) -> None:
-    data_descriptors_found = universe.Rfind_data_descriptors_in_universe(data_descriptor_id)
+    data_descriptors_found = universe.find_data_descriptors_in_universe(data_descriptor_id)
     has_been_found = False
     for data_descriptor_found in data_descriptors_found:
         if data_descriptor_found[0] == data_descriptor_id:
