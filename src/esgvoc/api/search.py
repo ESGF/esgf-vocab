@@ -83,8 +83,7 @@ def generate_matching_condition(cls: type[UTermFTS5] | type[UDataDescriptorFTS5]
                                 expression: str,
                                 only_id: bool) -> ColumnElement[bool]:
     # TODO: fix this when specs will ba available in collections and Data descriptors.
-    t = type(cls)
-    if t == PTermFTS5 or t == UTermFTS5:
+    if cls is PTermFTS5 or cls is UTermFTS5:
         if only_id:
             result = col(cls.id).match(expression)
         else:
