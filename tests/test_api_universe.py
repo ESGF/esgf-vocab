@@ -7,6 +7,7 @@ from esgvoc.api.search import ItemKind
 
 _SOME_DATA_DESCRIPTOR_IDS = ['institution', 'product', 'variable']
 _SOME_TERM_IDS = ['ipsl', 'observations', 'airmass']
+_SOME_EXPRESSIONS = [('cnes', 'cnes'), ('instit*', 'institution'), ('pArIs NOT CNES', 'ipsl')]
 _SOME_DD_TERM_IDS = [(_SOME_DATA_DESCRIPTOR_IDS[0], _SOME_TERM_IDS[0]),
                      (_SOME_DATA_DESCRIPTOR_IDS[1], _SOME_TERM_IDS[1]),
                      (_SOME_DATA_DESCRIPTOR_IDS[2], _SOME_TERM_IDS[2])]
@@ -23,6 +24,16 @@ def _provide_item_ids() -> Generator:
 
 @pytest.fixture(params=_provide_item_ids())
 def item_id(request) -> str:
+    return request.param
+
+
+def _provide_expressions() -> Generator:
+    for expr in _SOME_EXPRESSIONS:
+        yield expr
+
+
+@pytest.fixture(params=_provide_expressions())
+def expression(request) -> tuple[str, str]:
     return request.param
 
 
@@ -99,11 +110,11 @@ def test_find_data_descriptors_in_universe(data_descriptor_id) -> None:
     assert has_been_found
 
 
-def test_find_terms_in_universe(term_id) -> None:
-    terms_found = universe.find_terms_in_universe(term_id, selected_term_fields=[])
+def test_find_terms_in_universe(expression) -> None:
+    terms_found = universe.find_terms_in_universe(expression[0], selected_term_fields=[])
     has_been_found = False
     for term_found in terms_found:
-        if term_found.id == term_id:
+        if term_found.id == expression[1]:
             has_been_found = True
             break
     assert has_been_found
