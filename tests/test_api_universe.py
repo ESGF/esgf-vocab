@@ -82,7 +82,7 @@ def test_get_all_data_descriptors_in_universe() -> None:
     assert len(data_descriptors) > 0
 
 
-def test_get_terms_in_data_descriptor(data_descriptor_id) -> None:
+def test_get_all_terms_in_data_descriptor(data_descriptor_id) -> None:
     terms = universe.get_all_terms_in_data_descriptor(data_descriptor_id)
     assert len(terms) > 0
 
