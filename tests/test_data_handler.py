@@ -48,7 +48,7 @@ def test_local_universe_all_term():
              for term_uri in dir.iterdir():
                 if "000_context" not in term_uri.stem:
                     term = JsonLdResource(uri=str(term_uri))
-                    print(term.info)
+                    assert term.info
                     
            
     

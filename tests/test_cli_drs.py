@@ -26,7 +26,7 @@ def test_valid_drs(monkeypatch):
         reports = drsvalid(drs_entries = entry, file=None, rm_prefix=None)
         
         for report in reports:
-            print(report)
+            assert report
             assert report.nb_warnings == 0 and report.nb_errors ==0
     
 
