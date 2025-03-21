@@ -3,7 +3,8 @@ from typing import Any
 from esgvoc.api.projects import get_all_collections_in_project, get_all_projects, \
     get_all_terms_in_collection, get_term_in_project, get_term_in_collection
 from esgvoc.api.universe import find_terms_in_data_descriptor, find_terms_in_universe, \
-    get_all_data_descriptors_in_universe, get_all_terms_in_data_descriptor, get_term_in_data_descriptor
+    get_all_data_descriptors_in_universe, get_all_terms_in_data_descriptor, get_term_in_data_descriptor, \
+    get_term_in_universe
 from pydantic import BaseModel
 from requests import logging
 from rich.table import Table
@@ -34,7 +35,7 @@ def handle_universe(data_descriptor_id:str|None,term_id:str|None, options=None):
         # BaseModel|dict[str: BaseModel]|None:
 
     elif term_id:
-        return find_terms_in_universe(term_id,options)
+        return get_term_in_universe(term_id, options)
         # dict[str, BaseModel] | dict[str, dict[str, BaseModel]] | None:
 
 
