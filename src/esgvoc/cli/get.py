@@ -1,7 +1,7 @@
 
 from typing import Any
-from esgvoc.api.projects import find_terms_in_collection, get_all_collections_in_project, get_all_projects, \
-    get_all_terms_in_collection, get_term_in_project
+from esgvoc.api.projects import get_all_collections_in_project, get_all_projects, \
+    get_all_terms_in_collection, get_term_in_project, get_term_in_collection
 from esgvoc.api.universe import find_terms_in_data_descriptor, find_terms_in_universe, get_all_data_descriptors_in_universe, get_all_terms_in_data_descriptor
 from pydantic import BaseModel
 from requests import logging
@@ -49,7 +49,7 @@ def handle_project(project_id:str,collection_id:str|None,term_id:str|None,option
     _LOGGER.debug(f"Handling project {project_id} with Y={collection_id}, Z={term_id}, options = {options}")
     
     if project_id and collection_id and term_id:
-        return find_terms_in_collection(project_id,collection_id,term_id)
+        return get_term_in_collection(project_id, collection_id, term_id, options)
         # BaseModel|dict[str: BaseModel]|None:
 
     elif term_id:
