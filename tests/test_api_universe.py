@@ -7,14 +7,19 @@ from esgvoc.api.search import ItemKind
 
 _SOME_DATA_DESCRIPTOR_IDS = ['institution', 'product', 'variable']
 _SOME_TERM_IDS = ['ipsl', 'observations', 'airmass']
-_SOME_EXPRESSIONS = [('cnes', 'cnes'), ('instit*', 'institution'), ('pArIs NOT CNES', 'ipsl')]
+_SOME_EXPRESSIONS = [('ipsl', 'institution', 'ipsl', ItemKind.TERM),
+                     ('observations', 'product', 'observations', ItemKind.TERM),
+                     ('airmass', 'variable', 'airmass', ItemKind.TERM),
+                     ('cnes', 'institution', 'cnes', ItemKind.TERM),
+                     ('mir*', 'source', 'miroc6', ItemKind.TERM),
+                     ('pArIs NOT CNES', 'institution', 'ipsl', ItemKind.TERM)]
 _SOME_DD_TERM_IDS = [(_SOME_DATA_DESCRIPTOR_IDS[0], _SOME_TERM_IDS[0]),
                      (_SOME_DATA_DESCRIPTOR_IDS[1], _SOME_TERM_IDS[1]),
                      (_SOME_DATA_DESCRIPTOR_IDS[2], _SOME_TERM_IDS[2])]
-_SOME_ITEM_IDS = list(zip(_SOME_DATA_DESCRIPTOR_IDS,
-                          [ItemKind.DATA_DESCRIPTOR for _ in _SOME_DATA_DESCRIPTOR_IDS],
-                          strict=False)) + \
-                 list(zip(_SOME_TERM_IDS, [ItemKind.TERM for _ in _SOME_TERM_IDS], strict=False))
+_SOME_ITEM_IDS = _SOME_EXPRESSIONS + \
+                 [('institution', 'universe', 'institution', ItemKind.DATA_DESCRIPTOR),
+                  ('prod*', 'universe', 'product', ItemKind.DATA_DESCRIPTOR),
+                  ('var* NOT variant*', 'universe', 'variable', ItemKind.DATA_DESCRIPTOR)]
 
 
 def _provide_item_ids() -> Generator:
@@ -114,17 +119,17 @@ def test_find_terms_in_universe(expression) -> None:
     terms_found = universe.find_terms_in_universe(expression[0], selected_term_fields=[])
     has_been_found = False
     for term_found in terms_found:
-        if term_found.id == expression[1]:
+        if term_found.id == expression[2]:
             has_been_found = True
             break
     assert has_been_found
 
 
-def test_find_terms_in_data_descriptor(dd_term_ids) -> None:
-    terms_found = universe.find_terms_in_data_descriptor(dd_term_ids[1], dd_term_ids[0], selected_term_fields=[])
+def test_find_terms_in_data_descriptor(expression) -> None:
+    terms_found = universe.find_terms_in_data_descriptor(expression[0], expression[1], selected_term_fields=[])
     has_been_found = False
     for term_found in terms_found:
-        if term_found.id == dd_term_ids[1]:
+        if term_found.id == expression[2]:
             has_been_found = True
             break
     assert has_been_found
@@ -134,8 +139,9 @@ def test_find_items_in_universe(item_id) -> None:
     items_found = universe.find_items_in_universe(item_id[0])
     has_been_found = False
     for item_found in items_found:
-        if item_found.id == item_id[0]:
-            assert item_found.kind == item_id[1]
+        if item_found.id == item_id[2]:
+            assert item_found.parent_id == item_id[1]
+            assert item_found.kind == item_id[3]
             has_been_found = True
             break
     assert has_been_found
