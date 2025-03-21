@@ -113,18 +113,6 @@ def _get_all_terms_in_data_descriptor(data_descriptor: UDataDescriptor,
     return result
 
 
-def _find_data_descriptors_in_universe(data_descriptor_id: str,
-                                       session: Session,
-                                       settings: SearchSettings | None) -> Sequence[UDataDescriptor]:
-    where_expression = _create_str_comparison_expression(field=UDataDescriptor.id,
-                                                         value=data_descriptor_id,
-                                                         settings=settings)
-    statement = select(UDataDescriptor).where(where_expression)
-    results = session.exec(statement)
-    result = results.all()
-    return result
-
-
 def get_all_terms_in_data_descriptor(data_descriptor_id: str,
                                      selected_term_fields: Iterable[str] | None = None) \
                                                                             -> list[DataDescriptor]:
@@ -143,48 +131,11 @@ def get_all_terms_in_data_descriptor(data_descriptor_id: str,
     :rtype: list[DataDescriptor]
     """
     with get_universe_session() as session:
-        data_descriptors = _find_data_descriptors_in_universe(data_descriptor_id,
-                                                              session,
-                                                              None)
-        if data_descriptors:
-            data_descriptor = data_descriptors[0]
+        data_descriptor = _get_data_descriptor_in_universe(data_descriptor_id, session)
+        if data_descriptor:
             result = _get_all_terms_in_data_descriptor(data_descriptor, selected_term_fields)
         else:
             result = list()
-    return result
-
-
-def find_data_descriptors_in_universe(data_descriptor_id: str,
-                                      settings: SearchSettings | None = None) \
-                                        -> list[dict]:
-    """
-    Finds one or more data descriptor of the universe, based on the specified search settings.
-    The given `data_descriptor_id` is searched according to the search type specified in
-    the parameter `settings`,
-    which allows a flexible matching (e.g., `LIKE` may return multiple results).
-    If the parameter `settings` is `None`, this function performs an exact match on
-    the `data_descriptor_id`.
-    If the provided `data_descriptor_id` is not found, the function returns an empty list.
-
-    Behavior based on search type:
-        - `EXACT` and absence of `settings`: returns zero or one data descriptor context in the list.
-        - `REGEX`, `LIKE`, `STARTS_WITH` and `ENDS_WITH`: returns zero, one or more \
-          data descriptor contexts in the list.
-
-    :param data_descriptor_id: A data descriptor id to be found
-    :type data_descriptor_id: str
-    :param settings: The search settings
-    :type settings: SearchSettings | None
-    :returns: A list of data descriptor contexts. Returns an empty list if no matches are found.
-    :rtype: list[dict]
-    """
-    result = list()
-    with get_universe_session() as session:
-        data_descriptors = _find_data_descriptors_in_universe(data_descriptor_id,
-                                                              session,
-                                                              settings)
-        for data_descriptor in data_descriptors:
-            result.append(data_descriptor.context)
     return result
 
 
