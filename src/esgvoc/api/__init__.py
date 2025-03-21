@@ -11,8 +11,6 @@ from esgvoc.api.project_specs import (
 from esgvoc.api.projects import (
                                       find_collections_in_project,
                                       find_items_in_project,
-                                      find_terms_from_data_descriptor_in_all_projects,
-                                      find_terms_from_data_descriptor_in_project,
                                       find_terms_in_all_projects,
                                       find_terms_in_collection,
                                       find_terms_in_project,
@@ -65,8 +63,6 @@ __all__ = [
            "find_data_descriptors_in_universe",
            "find_items_in_project",
            "find_items_in_universe",
-           "find_terms_from_data_descriptor_in_all_projects",
-           "find_terms_from_data_descriptor_in_project",
            "find_terms_in_all_projects",
            "find_terms_in_collection",
            "find_terms_in_data_descriptor",
