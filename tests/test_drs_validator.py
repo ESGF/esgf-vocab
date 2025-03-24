@@ -722,3 +722,12 @@ def test_pedantic(directory_expression_typo_warning) -> None:
     errors.extend(warnings)
     _check_expression(expression=expression, errors=errors,
                       warnings=[], validating_method=validator.validate_directory)
+
+
+def test_directory_prefix(directory_expression) -> None:
+    prefix = '/hello/world/'
+    project_id, expression = directory_expression
+    expression = prefix + expression
+    validator = DrsValidator(project_id)
+    report = validator.validate_directory(expression, prefix=prefix)
+    assert report and report.nb_warnings == 0
