@@ -194,7 +194,10 @@ class DrsValidator(DrsApplication):
             column = cursor_position+cursor_offset
             if (drs_type == DrsType.DIRECTORY) and (not has_white_term):
                 issue = ExtraSeparator(column=column)
-                warnings.append(issue)
+                if self.pedantic:
+                    errors.append(issue)
+                else:
+                    warnings.append(issue)
             else:
                 issue = ExtraChar(column=column)
                 errors.append(issue)
@@ -204,7 +207,7 @@ class DrsValidator(DrsApplication):
             if not term:
                 column = cursor_position + cursor_offset
                 issue = ExtraSeparator(column=column)
-                if (drs_type != DrsType.DIRECTORY) or self.pedantic or (index == 0):
+                if self.pedantic or drs_type != DrsType.DIRECTORY or index == 0:
                     errors.append(issue)
                 else:
                     warnings.append(issue)
