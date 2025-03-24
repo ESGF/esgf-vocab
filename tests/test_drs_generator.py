@@ -52,8 +52,16 @@ class IssueChecker:
 def _generate_expression_and_check(test: tuple) -> None:
     project_id, method_name, _in, expected_errors, expected_warnings, _out = test
     generator = DrsGenerator(project_id)
+    drs_type = None
+    if '|' in method_name:
+        splits = method_name.split('|')
+        method_name = splits[0]
+        drs_type = splits[1]
     method = getattr(generator, method_name)
-    report: DrsGenerationReport = method(_in)
+    if drs_type:
+        report: DrsGenerationReport = method(_in, drs_type)
+    else:
+        report = method(_in)
     assert _out == report.generated_drs_expression
     assert len(expected_errors) == report.nb_errors
     assert len(expected_warnings) == report.nb_warnings
@@ -227,6 +235,24 @@ _SOME_GENERATIONS = [
     ),
     (
         "cmip6plus",
+        "generate_from_mapping|dataset_id",
+        {
+            'member_id': 'r2i2p1f2',
+            'activity_id': 'CMIP',
+            'source_id': 'MIROC6',
+            'mip_era': 'CMIP6Plus',
+            'experiment_id': 'amip',
+            'variable_id': 'od550aer',
+            'table_id': 'ACmon',
+            'grid_label': 'gn',
+            'institution_id': 'IPSL'
+        },
+        [],
+        [],
+        "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn"
+    ),
+    (
+        "cmip6plus",
         "generate_dataset_id_from_mapping",
         {
             'member_id': 'r2i2p1f2',
@@ -265,7 +291,43 @@ _SOME_GENERATIONS = [
     ),
     (
         "cmip6plus",
+        "generate_from_mapping|file_name",
+        {
+            'member_id': 'r2i2p1f2',
+            'activity_id': 'CMIP',
+            'source_id': 'MIROC6',
+            'mip_era': 'CMIP6Plus',
+            'experiment_id': 'amip',
+            'variable_id': 'od550aer',
+            'table_id': 'ACmon',
+            'grid_label': 'gn',
+            'institution_id': 'IPSL',
+        },
+        [],
+        [(MissingTerm, "time_range", 7)],
+        "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc"
+    ),
+    (
+        "cmip6plus",
         "generate_dataset_id_from_bag_of_terms",
+        {
+            'r2i2p1f2',
+            'CMIP',
+            'MIROC6',
+            'CMIP6Plus',
+            'amip',
+            'od550aer',
+            'ACmon',
+            'gn',
+            'IPSL',
+        },
+        [],
+        [],
+        "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn"
+    ),
+    (
+        "cmip6plus",
+        "generate_from_bag_of_terms|dataset_id",
         {
             'r2i2p1f2',
             'CMIP',
@@ -299,6 +361,101 @@ _SOME_GENERATIONS = [
         [],
         [],
         "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201611-201712.nc"
+    ),
+    (
+        "cmip6plus",
+        "generate_from_bag_of_terms|file_name",
+        {
+            'r2i2p1f2',
+            'CMIP',
+            'MIROC6',
+            'CMIP6Plus',
+            'amip',
+            'od550aer',
+            'ACmon',
+            '201611-201712',
+            'gn',
+            'IPSL',
+        },
+        [],
+        [],
+        "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201611-201712.nc"
+    ),
+    (
+        "cmip6plus",
+        "generate_directory_from_bag_of_terms",
+        {
+            'r2i2p1f2',
+            'CMIP',
+            'MIROC6',
+            'CMIP6Plus',
+            'amip',
+            'od550aer',
+            'ACmon',
+            'v20190923',
+            'gn',
+            'NCC',
+        },
+        [],
+        [],
+        "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923"
+    ),
+    (
+        "cmip6plus",
+        "generate_from_bag_of_terms|directory",
+        {
+            'r2i2p1f2',
+            'CMIP',
+            'MIROC6',
+            'CMIP6Plus',
+            'amip',
+            'od550aer',
+            'ACmon',
+            'v20190923',
+            'gn',
+            'NCC',
+        },
+        [],
+        [],
+        "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923"
+    ),
+    (
+        "cmip6plus",
+        "generate_directory_from_mapping",
+        {
+            'member_id': 'r2i2p1f2',
+            'activity_id': 'CMIP',
+            'source_id': 'MIROC6',
+            'mip_era': 'CMIP6Plus',
+            'version': 'v20190923',
+            'variable_id': 'od550aer',
+            'table_id': 'ACmon',
+            'grid_label': 'gn',
+            'institution_id': 'NCC',
+            'experiment_id': 'amip'
+        },
+        [],
+        [],
+        "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923"
+    ),
+    (
+        "cmip6plus",
+        "generate_from_mapping|directory",
+        {
+            'member_id': 'r2i2p1f2',
+            'activity_id': 'CMIP',
+            'source_id': 'MIROC6',
+            'mip_era': 'CMIP6Plus',
+            'version': 'v20190923',
+            'variable_id': 'od550aer',
+            'table_id': 'ACmon',
+            'grid_label': 'gn',
+            'institution_id': 'NCC',
+            'experiment_id': 'amip'
+        },
+        [],
+        [],
+        "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923"
     )
 ]
 
@@ -315,3 +472,20 @@ def mapping(request) -> tuple:
 
 def test_generate_dataset_id_from_mapping(mapping) -> None:
     _generate_expression_and_check(mapping)
+
+
+def test_pedantic() -> None:
+    mapping = {
+            'member_id': 'r2i2p1f2',
+            'activity_id': 'CMIP',
+            'source_id': 'MIROC6',
+            'mip_era': 'CMIP6Plus',
+            'experiment_id': 'amip',
+            'variable_id': 'od550aer',
+            'table_id': 'ACmon',
+            'grid_label': 'gn',
+            'institution_id': 'IPSL',
+    }
+    generator = DrsGenerator("cmip6plus", pedantic=True)
+    report = generator.generate_file_name_from_mapping(mapping)
+    assert report.nb_errors == 1

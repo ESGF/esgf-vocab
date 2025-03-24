@@ -2,6 +2,7 @@ from typing import Any, Callable, Generator, cast
 
 import pytest
 
+from esgvoc.api.project_specs import DrsType
 from esgvoc.apps.drs.report import (
     BlankTerm,
     DrsIssue,
@@ -122,6 +123,16 @@ def test_dataset_id_validation(dataset_id_expression) -> None:
     validator = DrsValidator(project_id)
     report = validator.validate_dataset_id(expression)
     assert report and report.nb_warnings == 0
+
+
+def test_validate(directory_expression, file_name_expression, dataset_id_expression) -> None:
+    expressions = [(directory_expression, DrsType.DIRECTORY),
+                   (file_name_expression, DrsType.FILE_NAME),
+                   (dataset_id_expression, DrsType.DATASET_ID)]
+    for expression in expressions:
+        validator = DrsValidator(expression[0][0])
+        report = validator.validate(expression[0][1], expression[1])
+        assert report and report.nb_warnings == 0
 
 
 _SOME_DIRECTORY_EXPRESSION_TYPO_WARNINGS: list[tuple[str, tuple[str, list, list]]] = [
@@ -702,3 +713,12 @@ def test_dataset_id_expression_error(dataset_id_expression_error) -> None:
     expression, errors, warnings = expression_and_expected
     validator = DrsValidator(project_id)
     _check_expression(expression, errors, warnings, validator.validate_dataset_id)
+
+
+def test_pedantic(directory_expression_typo_warning) -> None:
+    project_id, expression_and_expected = directory_expression_typo_warning
+    expression, errors, warnings = expression_and_expected
+    validator = DrsValidator(project_id, pedantic=True)
+    errors.extend(warnings)
+    _check_expression(expression=expression, errors=errors,
+                      warnings=[], validating_method=validator.validate_directory)
