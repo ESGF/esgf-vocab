@@ -766,7 +766,8 @@ def get_collection_from_data_descriptor_in_all_projects(data_descriptor_id: str)
 
     :param data_descriptor_id: The id of the given data descriptor.
     :type data_descriptor_id: str
-    :returns: A list of collection ids and contexts. Returns an empty list if no matches are found.
+    :returns: A list of collection ids, their project_ids and contexts. \
+    Returns an empty list if no matches are found.
     :rtype: list[tuple[str, str, dict]]
     """
     result = list()
@@ -776,6 +777,88 @@ def get_collection_from_data_descriptor_in_all_projects(data_descriptor_id: str)
                                                                           data_descriptor_id)
         if collection_found:
             result.append((project_id, collection_found[0], collection_found[1]))
+    return result
+
+
+def _get_term_from_universe_term_id_in_project(data_descriptor_id: str,
+                                               universe_term_id: str,
+                                               project_session: Session) -> PTerm | None:
+    statement = select(PTerm).join(Collection).where(Collection.data_descriptor_id == data_descriptor_id,
+                                                     PTerm.id == universe_term_id)
+    results = project_session.exec(statement)
+    result = results.one_or_none()
+    return result
+
+
+def get_term_from_universe_term_id_in_project(project_id: str,
+                                              data_descriptor_id: str,
+                                              universe_term_id: str,
+                                              selected_term_fields: Iterable[str] | None = None) \
+                                                               -> tuple[str, DataDescriptor] | None:
+    """
+    Returns the term, in the given project, that corresponds to the given term in the universe.
+    This function performs an exact match on the `project_id`, `data_descriptor_id`
+    and `universe_term_id`, and does not search for similar or related projects, data descriptors
+    and terms. If any of the provided ids (`project_id`, `data_descriptor_id` or `universe_term_id`)
+    is not found, or if there is no project term corresponding to the given universe term
+    the function returns `None`.
+
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :param data_descriptor_id: The id of the data descriptor that contains the given universe term.
+    :type data_descriptor_id: str
+    :param universe_term_id: The id of the given universe term.
+    :type universe_term_id: str
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned. If empty, selects the id and type fields.
+    :type selected_term_fields: Iterable[str] | None
+    :returns: A collection id and the project term instance. Returns `None` if no matches are found.
+    :rtype: tuple[str, DataDescriptor] | None
+    """
+    result: tuple[str, DataDescriptor] | None = None
+    if connection := _get_project_connection(project_id):
+        with connection.create_session() as session:
+            term_found = _get_term_from_universe_term_id_in_project(data_descriptor_id,
+                                                                    universe_term_id,
+                                                                    session)
+            if term_found:
+                pydantic_term = instantiate_pydantic_term(term_found, selected_term_fields)
+                result = (term_found.collection.id, pydantic_term)
+    return result
+
+
+def get_term_from_universe_term_id_in_all_projects(data_descriptor_id: str,
+                                                   universe_term_id: str,
+                                                   selected_term_fields: Iterable[str] | None = None) \
+                                                           -> list[tuple[str, str, DataDescriptor]]:
+    """
+    Returns the terms, in all projects, that correspond to the given term in the universe.
+    This function performs an exact match on the `data_descriptor_id`
+    and `universe_term_id`, and does not search for similar or related data descriptors
+    and terms. If any of the provided ids (`data_descriptor_id` or `universe_term_id`)
+    is not found, or if there is no project term corresponding to the given universe term
+    the function returns an empty list.
+
+    :param data_descriptor_id: The id of the data descriptor that contains the given universe term.
+    :type data_descriptor_id: str
+    :param universe_term_id: The id of the given universe term.
+    :type universe_term_id: str
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned. If empty, selects the id and type fields.
+    :type selected_term_fields: Iterable[str] | None
+    :returns: A project_id, collection id and the project term instance. \
+    Returns an empty list if no matches are found.
+    :rtype: list[tuple[str, str, DataDescriptor]]
+    """
+    result: list[tuple[str, str, DataDescriptor]] = list()
+    project_ids = get_all_projects()
+    for project_id in project_ids:
+        term_found = get_term_from_universe_term_id_in_project(project_id,
+                                                               data_descriptor_id,
+                                                               universe_term_id,
+                                                               selected_term_fields)
+        if term_found:
+            result.append((project_id, term_found[0], term_found[1]))
     return result
 
 

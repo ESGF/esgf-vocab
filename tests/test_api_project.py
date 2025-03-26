@@ -8,13 +8,14 @@ from esgvoc.api.search import ItemKind
 _SOME_PROJECT_IDS = ['cmip6plus', 'cmip6']
 _SOME_COLLECTION_IDS = ['institution_id', 'time_range', 'source_id']
 _SOME_DATA_DESCRIPTOR_IDS = ['organisation', 'time_range', 'source']
-_SOME_PROJ_DD_COL_IDS = [(_SOME_PROJECT_IDS[0], _SOME_DATA_DESCRIPTOR_IDS[0], _SOME_COLLECTION_IDS[0]),
-                         (_SOME_PROJECT_IDS[0], _SOME_DATA_DESCRIPTOR_IDS[1], _SOME_COLLECTION_IDS[1]),
-                         (_SOME_PROJECT_IDS[0], _SOME_DATA_DESCRIPTOR_IDS[2], _SOME_COLLECTION_IDS[2]),
-                         (_SOME_PROJECT_IDS[1], _SOME_DATA_DESCRIPTOR_IDS[0], _SOME_COLLECTION_IDS[0]),
-                         (_SOME_PROJECT_IDS[1], _SOME_DATA_DESCRIPTOR_IDS[1], _SOME_COLLECTION_IDS[1]),
-                         (_SOME_PROJECT_IDS[1], _SOME_DATA_DESCRIPTOR_IDS[2], _SOME_COLLECTION_IDS[2])]
 _SOME_TERM_IDS = ['ipsl', 'daily', 'miroc6']
+_SOME_PROJ_DD_COL_TERM_IDS = [
+    (_SOME_PROJECT_IDS[0], _SOME_DATA_DESCRIPTOR_IDS[0], _SOME_COLLECTION_IDS[0], _SOME_TERM_IDS[0]),
+    (_SOME_PROJECT_IDS[0], _SOME_DATA_DESCRIPTOR_IDS[1], _SOME_COLLECTION_IDS[1], _SOME_TERM_IDS[1]),
+    (_SOME_PROJECT_IDS[0], _SOME_DATA_DESCRIPTOR_IDS[2], _SOME_COLLECTION_IDS[2], _SOME_TERM_IDS[2]),
+    (_SOME_PROJECT_IDS[1], _SOME_DATA_DESCRIPTOR_IDS[0], _SOME_COLLECTION_IDS[0], _SOME_TERM_IDS[0]),
+    (_SOME_PROJECT_IDS[1], _SOME_DATA_DESCRIPTOR_IDS[1], _SOME_COLLECTION_IDS[1], _SOME_TERM_IDS[1]),
+    (_SOME_PROJECT_IDS[1], _SOME_DATA_DESCRIPTOR_IDS[2], _SOME_COLLECTION_IDS[2], _SOME_TERM_IDS[2])]
 _SOME_PROJ_COL_TERM_IDS = [(_SOME_PROJECT_IDS[0], _SOME_COLLECTION_IDS[0], _SOME_TERM_IDS[0]),
                            (_SOME_PROJECT_IDS[0], _SOME_COLLECTION_IDS[1], _SOME_TERM_IDS[1]),
                            (_SOME_PROJECT_IDS[0], _SOME_COLLECTION_IDS[2], _SOME_TERM_IDS[2]),
@@ -73,12 +74,12 @@ def val_query(request) -> tuple:
 
 
 def _provide_proj_dd_col_ids() -> Generator:
-    for combo in _SOME_PROJ_DD_COL_IDS:
+    for combo in _SOME_PROJ_DD_COL_TERM_IDS:
         yield combo
 
 
 @pytest.fixture(params=_provide_proj_dd_col_ids())
-def proj_dd_col_id(request) -> str:
+def proj_dd_col_term_id(request) -> tuple[str, str, str, str]:
     return request.param
 
 
@@ -234,11 +235,11 @@ def test_get_collection_in_project(proj_col_term_id) -> None:
     assert collection_found[0] == proj_col_term_id[1]
 
 
-def test_get_collection_from_data_descriptor_in_project(proj_dd_col_id) -> None:
-    collection_found = projects.get_collection_from_data_descriptor_in_project(proj_dd_col_id[0],
-                                                                               proj_dd_col_id[1])
+def test_get_collection_from_data_descriptor_in_project(proj_dd_col_term_id) -> None:
+    collection_found = projects.get_collection_from_data_descriptor_in_project(proj_dd_col_term_id[0],
+                                                                               proj_dd_col_term_id[1])
     assert collection_found
-    assert collection_found[0] == proj_dd_col_id[2]
+    assert collection_found[0] == proj_dd_col_term_id[2]
 
 
 def test_get_collection_from_data_descriptor_in_all_projects(data_descriptor_id):
@@ -246,13 +247,13 @@ def test_get_collection_from_data_descriptor_in_all_projects(data_descriptor_id)
     assert len(collections_found) == len(_SOME_PROJECT_IDS)
 
 
-def test_find_collections_in_project(proj_dd_col_id) -> None:
-    collections_found = projects.find_collections_in_project(proj_dd_col_id[2],
-                                                             proj_dd_col_id[0],
+def test_find_collections_in_project(proj_dd_col_term_id) -> None:
+    collections_found = projects.find_collections_in_project(proj_dd_col_term_id[2],
+                                                             proj_dd_col_term_id[0],
                                                              limit=10)
     has_been_found = False
     for collection_found in collections_found:
-        if collection_found[0] == proj_dd_col_id[2]:
+        if collection_found[0] == proj_dd_col_term_id[2]:
             has_been_found = True
             break
     assert has_been_found
@@ -327,3 +328,19 @@ def test_only_id_limit_and_offset_find_items(item_id):
             has_been_found = True
             break
     assert not has_been_found
+
+
+def test_get_term_from_universe_term_id_in_project(proj_dd_col_term_id) -> None:
+    term_found = projects.get_term_from_universe_term_id_in_project(proj_dd_col_term_id[0],
+                                                                    proj_dd_col_term_id[1],
+                                                                    proj_dd_col_term_id[3])
+    assert term_found
+    assert term_found[0] == proj_dd_col_term_id[2]
+    assert term_found[1].id == proj_dd_col_term_id[3]
+
+
+def test_get_term_from_universe_term_id_in_all_projects(proj_dd_col_term_id) -> None:
+    terms_found = projects.get_term_from_universe_term_id_in_all_projects(proj_dd_col_term_id[1],
+                                                                          proj_dd_col_term_id[3])
+    assert terms_found
+    assert len(terms_found) == len(_SOME_PROJECT_IDS)
