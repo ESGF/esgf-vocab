@@ -2,7 +2,6 @@ from typing import cast
 
 import esgvoc.api.projects as projects
 import esgvoc.apps.drs.constants as constants
-from esgvoc.api import EsgvocException
 from esgvoc.api.project_specs import (
     DrsCollection,
     DrsConstant,
@@ -29,6 +28,7 @@ from esgvoc.apps.drs.report import (
     ValidationError,
     ValidationWarning,
 )
+from esgvoc.core.exceptions import EsgvocException
 
 
 class DrsApplication:

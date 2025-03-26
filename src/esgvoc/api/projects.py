@@ -11,7 +11,6 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
 from esgvoc.api.search import (
-    EsgvocException,
     Item,
     MatchingTerm,
     execute_find_item_statements,
@@ -32,6 +31,7 @@ from esgvoc.core.db.models.project import (
     PTermFTS5,
 )
 from esgvoc.core.db.models.universe import UTerm
+from esgvoc.core.exceptions import EsgvocException
 
 # [OPTIMIZATION]
 _VALID_TERM_IN_COLLECTION_CACHE: dict[str, list[MatchingTerm]] = dict()

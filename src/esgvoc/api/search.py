@@ -15,9 +15,7 @@ from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
 from esgvoc.core.db.models.project import PCollectionFTS5, PTerm, PTermFTS5
 from esgvoc.core.db.models.universe import UDataDescriptorFTS5, UTerm, UTermFTS5
-
-
-class EsgvocException(Exception): ... # noqa
+from esgvoc.core.exceptions import EsgvocException
 
 
 class ItemKind(Enum):
