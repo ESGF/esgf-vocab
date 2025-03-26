@@ -297,7 +297,7 @@ def valid_term(value: str,
               composite so as to compare it as a regex to the value.
 
     If any of the provided ids (`project_id`, `collection_id` or `term_id`) is not found,
-    the function raises a APIException.
+    the function raises a EsgvocNotFoundError.
 
     :param value: A value to be validated
     :type value: str
@@ -309,7 +309,7 @@ def valid_term(value: str,
     :type term_id: str
     :returns: A validation report that contains the possible errors
     :rtype: ValidationReport
-    :raises APIException: If any of the provided ids is not found
+    :raises EsgvocNotFoundError: If any of the provided ids is not found
     """
     value = _check_value(value)
     with get_universe_session() as universe_session, \
@@ -376,7 +376,7 @@ def valid_term_in_collection(value: str,
               composite so as to compare it as a regex to the value.
 
     If any of the provided ids (`project_id` or `collection_id`) is not found,
-    the function raises a APIException.
+    the function raises a EsgvocNotFoundError.
 
     :param value: A value to be validated
     :type value: str
@@ -386,7 +386,7 @@ def valid_term_in_collection(value: str,
     :type collection_id: str
     :returns: The list of terms that the value matches.
     :rtype: list[MatchingTerm]
-    :raises APIException: If any of the provided ids is not found
+    :raises EsgvocNotFoundError: If any of the provided ids is not found
     """
     with get_universe_session() as universe_session, \
          _get_project_session_with_exception(project_id) as project_session:
@@ -421,7 +421,7 @@ def valid_term_in_project(value: str, project_id: str) -> list[MatchingTerm]:
             - if the composite hasn't got a separator, the function aggregates the parts of the \
               composite so as to compare it as a regex to the value.
 
-    If the `project_id` is not found, the function raises a APIException.
+    If the `project_id` is not found, the function raises a EsgvocNotFoundError.
 
     :param value: A value to be validated
     :type value: str
@@ -429,7 +429,7 @@ def valid_term_in_project(value: str, project_id: str) -> list[MatchingTerm]:
     :type project_id: str
     :returns: The list of terms that the value matches.
     :rtype: list[MatchingTerm]
-    :raises APIException: If the `project_id` is not found
+    :raises EsgvocNotFoundError: If the `project_id` is not found
     """
     with get_universe_session() as universe_session, \
          _get_project_session_with_exception(project_id) as project_session:
@@ -827,7 +827,7 @@ def find_collections_in_project(expression: str, project_id: str,
     :type offset: int | None
     :returns: A list of collection ids and contexts. Returns an empty list if no matches are found.
     :rtype: list[tuple[str, dict]]
-    :raises APIException: If the `expression` cannot be interpreted.
+    :raises EsgvocValueError: If the `expression` cannot be interpreted.
     """
     result: list[tuple[str, dict]] = list()
     if connection := _get_project_connection(project_id):
@@ -907,7 +907,7 @@ def find_terms_in_collection(expression: str, project_id: str,
     :type selected_term_fields: Iterable[str] | None
     :returns: A list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
-    :raises APIException: If the `expression` cannot be interpreted.
+    :raises EsgvocValueError: If the `expression` cannot be interpreted.
     """
     result: list[DataDescriptor] = list()
     if connection := _get_project_connection(project_id):
@@ -960,7 +960,7 @@ def find_terms_in_project(expression: str,
     :type selected_term_fields: Iterable[str] | None
     :returns: A list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
-    :raises APIException: If the `expression` cannot be interpreted.
+    :raises EsgvocValueError: If the `expression` cannot be interpreted.
     """
     result: list[DataDescriptor] = list()
     if connection := _get_project_connection(project_id):
@@ -1006,7 +1006,7 @@ def find_terms_in_all_projects(expression: str,
     :type selected_term_fields: Iterable[str] | None
     :returns: A list of project ids and term instances. Returns an empty list if no matches are found.
     :rtype: list[tuple[str, list[DataDescriptor]]]
-    :raises APIException: If the `expression` cannot be interpreted.
+    :raises EsgvocValueError: If the `expression` cannot be interpreted.
     """
     result: list[tuple[str, list[DataDescriptor]]] = list()
     project_ids = get_all_projects()
@@ -1054,7 +1054,7 @@ def find_items_in_project(expression: str,
     :type offset: int | None
     :returns: A list of item instances. Returns an empty list if no matches are found.
     :rtype: list[Item]
-    :raises APIException: If the `expression` cannot be interpreted.
+    :raises EsgvocValueError: If the `expression` cannot be interpreted.
     """
     # TODO: execute union query when it will be possible to compute parent of terms and collections.
     result = list()

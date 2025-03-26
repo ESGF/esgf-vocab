@@ -237,7 +237,7 @@ def find_data_descriptors_in_universe(expression: str,
     :type offset: int | None
     :returns: A list of data descriptor ids and contexts. Returns an empty list if no matches are found.
     :rtype: list[tuple[str, dict]]
-    :raises APIException: If the `expression` cannot be interpreted.
+    :raises EsgvocValueError: If the `expression` cannot be interpreted.
     """
     result: list[tuple[str, dict]] = list()
     with get_universe_session() as session:
@@ -293,7 +293,7 @@ def find_terms_in_universe(expression: str,
     :type selected_term_fields: Iterable[str] | None
     :returns: A list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
-    :raises APIException: If the `expression` cannot be interpreted.
+    :raises EsgvocValueError: If the `expression` cannot be interpreted.
     """
     result: list[DataDescriptor] = list()
     with get_universe_session() as session:
@@ -353,7 +353,7 @@ def find_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
     :type selected_term_fields: Iterable[str] | None
     :returns: A list of term instances. Returns an empty list if no matches are found.
     :rtype: list[DataDescriptor]
-    :raises APIException: If the `expression` cannot be interpreted.
+    :raises EsgvocValueError: If the `expression` cannot be interpreted.
     """
     result: list[DataDescriptor] = list()
     with get_universe_session() as session:
@@ -396,7 +396,7 @@ def find_items_in_universe(expression: str,
     :type offset: int | None
     :returns: A list of item instances. Returns an empty list if no matches are found.
     :rtype: list[Item]
-    :raises APIException: If the `expression` cannot be interpreted.
+    :raises EsgvocValueError: If the `expression` cannot be interpreted.
     """
     # TODO: execute union query when it will be possible to compute parent of terms and data descriptors.
     result = list()
