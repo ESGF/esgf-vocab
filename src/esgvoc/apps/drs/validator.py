@@ -147,7 +147,7 @@ class DrsValidator(DrsApplication):
             case DrsType.DATASET_ID:
                 return self.validate_dataset_id(drs_expression=drs_expression)
             case _:
-                raise RuntimeError(f'unsupported drs type {drs_type}')
+                raise EsgvocDbError(f'unsupported drs type {drs_type}')
 
     def _parse(self,
                drs_expression: str,
