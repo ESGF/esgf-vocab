@@ -28,7 +28,7 @@ from esgvoc.apps.drs.report import (
     ValidationError,
     ValidationWarning,
 )
-from esgvoc.core.exceptions import EsgvocException
+from esgvoc.core.exceptions import EsgvocNotFoundError
 
 
 class DrsApplication:
@@ -43,7 +43,7 @@ class DrsApplication:
         """Same as the option of GCC: turn warnings into errors. Default False."""
         project_specs: ProjectSpecs | None = projects.get_project(project_id)
         if not project_specs:
-            raise EsgvocException(f'unable to find project {project_id}')
+            raise EsgvocNotFoundError(f'unable to find project {project_id}')
         for specs in project_specs.drs_specs:
             match specs.type:
                 case DrsType.DIRECTORY:
@@ -232,13 +232,9 @@ class DrsValidator(DrsApplication):
         match part.kind:
             case DrsPartKind.COLLECTION:
                 casted_part: DrsCollection = cast(DrsCollection, part)
-                try:
-                    matching_terms = projects.valid_term_in_collection(term,
-                                                                       self.project_id,
-                                                                       casted_part.collection_id)
-                except Exception as e:
-                    msg = f'problem while validating term: {e}.Abort.'
-                    raise EsgvocException(msg) from e
+                matching_terms = projects.valid_term_in_collection(term,
+                                                                   self.project_id,
+                                                                   casted_part.collection_id)
                 if len(matching_terms) > 0:
                     return True
                 else:

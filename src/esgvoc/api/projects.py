@@ -31,7 +31,7 @@ from esgvoc.core.db.models.project import (
     PTermFTS5,
 )
 from esgvoc.core.db.models.universe import UTerm
-from esgvoc.core.exceptions import EsgvocException
+from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocValueError
 
 # [OPTIMIZATION]
 _VALID_TERM_IN_COLLECTION_CACHE: dict[str, list[MatchingTerm]] = dict()
@@ -50,7 +50,7 @@ def _get_project_session_with_exception(project_id: str) -> Session:
         project_session = connection.create_session()
         return project_session
     else:
-        raise EsgvocException(f'unable to find project {project_id}')
+        raise EsgvocNotFoundError(f'unable to find project {project_id}')
 
 
 def _resolve_term(composite_term_part: dict,
@@ -118,8 +118,8 @@ def _transform_to_pattern(term: UTerm | PTerm,
             if constants.DRS_SPECS_JSON_KEY in term.specs:
                 result = term.specs[constants.DRS_SPECS_JSON_KEY]
             else:
-                raise EsgvocException(f"the term {term.id} doesn't have drs name. " +
-                                   "Can't validate it.")
+                raise EsgvocValueError(f"the term {term.id} doesn't have drs name. " +
+                                       "Can't validate it.")
         case TermKind.PATTERN:
             result = term.specs[constants.PATTERN_JSON_KEY]
         case TermKind.COMPOSITE:
@@ -201,8 +201,8 @@ def _valid_value(value: str,
                 if term.specs[constants.DRS_SPECS_JSON_KEY] != value:
                     result.append(_create_term_error(value, term))
             else:
-                raise EsgvocException(f"the term {term.id} doesn't have drs name. " +
-                                   "Can't validate it.")
+                raise EsgvocValueError(f"the term {term.id} doesn't have drs name. " +
+                                       "Can't validate it.")
         case TermKind.PATTERN:
             # TODO: Pattern can be compiled and stored for further matching.
             pattern_match = re.match(term.specs[constants.PATTERN_JSON_KEY], value)
@@ -219,7 +219,7 @@ def _valid_value(value: str,
 
 def _check_value(value: str) -> str:
     if not value or value.isspace():
-        raise EsgvocException('value should be set')
+        raise EsgvocValueError('value should be set')
     else:
         return value
 
@@ -271,8 +271,8 @@ def _valid_value_against_given_term(value: str,
         if term:
             result = _valid_value(value, term, universe_session, project_session)
         else:
-            raise EsgvocException(f'unable to find term {term_id} ' +
-                               f'in collection {collection_id}')
+            raise EsgvocNotFoundError(f'unable to find term {term_id} ' +
+                                      f'in collection {collection_id}')
         _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE[key] = result
     return result
 
@@ -352,7 +352,7 @@ def _valid_term_in_collection(value: str,
                                                    term_id=term_id_found))
         else:
             msg = f'unable to find collection {collection_id}'
-            raise EsgvocException(msg)
+            raise EsgvocNotFoundError(msg)
         _VALID_TERM_IN_COLLECTION_CACHE[key] = result
     return result
 
