@@ -10,6 +10,7 @@ import esgvoc.api as ev
 from esgvoc.apps.drs.generator import DrsGenerator
 from esgvoc.apps.drs.report import DrsGenerationReport, DrsValidationReport
 from esgvoc.apps.drs.validator import DrsValidator
+from esgvoc.core.exceptions import EsgvocValueError
 
 app = typer.Typer()
 console = Console()
@@ -108,7 +109,7 @@ def drsvalid(
             case "dataset":
                 report = validator.validate_dataset_id(string)
             case _:
-                raise RuntimeError("drstype is not known")
+                raise EsgvocValueError("drstype is not known")
         reports.append(report)
 
     if verbose:
@@ -213,7 +214,7 @@ def drsgen(
             case "dataset":
                 report = generator.generate_dataset_id_from_bag_of_terms(bag_of_terms)
             case _:
-                raise RuntimeError("drstype is not known")
+                raise EsgvocValueError("drstype is not known")
         generated_reports.append(report)
 
     if verbose:
