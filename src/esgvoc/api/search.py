@@ -17,7 +17,7 @@ from esgvoc.core.db.models.project import PCollectionFTS5, PTerm, PTermFTS5
 from esgvoc.core.db.models.universe import UDataDescriptorFTS5, UTerm, UTermFTS5
 
 
-class APIException(Exception): ... # noqa
+class EsgvocException(Exception): ... # noqa
 
 
 class ItemKind(Enum):
@@ -110,7 +110,7 @@ def execute_match_statement(expression: str, statement: ExecutableReturnsRows, s
         results = [result[0] for result in raw_results.all()]
         return results
     except OperationalError as e:
-        raise APIException(f"unable to interpret expression '{expression}'") from e
+        raise EsgvocException(f"unable to interpret expression '{expression}'") from e
 
 
 def execute_find_item_statements(session: Session,
@@ -141,7 +141,7 @@ def execute_find_item_statements(session: Session,
             framed_tmp_result = sorted_tmp_result[start:]
         result = [Item(id=r[0], kind=r[1], parent_id=r[2]) for r in framed_tmp_result]
     except OperationalError as e:
-        raise APIException(f"unable to interpret expression '{expression}'") from e
+        raise EsgvocException(f"unable to interpret expression '{expression}'") from e
     return result
 
 

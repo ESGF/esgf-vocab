@@ -2,7 +2,7 @@ from typing import cast
 
 import esgvoc.api.projects as projects
 import esgvoc.apps.drs.constants as constants
-from esgvoc.api import APIException
+from esgvoc.api import EsgvocException
 from esgvoc.api.project_specs import (
     DrsCollection,
     DrsConstant,
@@ -43,7 +43,7 @@ class DrsApplication:
         """Same as the option of GCC: turn warnings into errors. Default False."""
         project_specs: ProjectSpecs | None = projects.get_project(project_id)
         if not project_specs:
-            raise APIException(f'unable to find project {project_id}')
+            raise EsgvocException(f'unable to find project {project_id}')
         for specs in project_specs.drs_specs:
             match specs.type:
                 case DrsType.DIRECTORY:
@@ -238,7 +238,7 @@ class DrsValidator(DrsApplication):
                                                                        casted_part.collection_id)
                 except Exception as e:
                     msg = f'problem while validating term: {e}.Abort.'
-                    raise APIException(msg) from e
+                    raise EsgvocException(msg) from e
                 if len(matching_terms) > 0:
                     return True
                 else:

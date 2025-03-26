@@ -11,7 +11,7 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
 from esgvoc.api.search import (
-    APIException,
+    EsgvocException,
     Item,
     MatchingTerm,
     execute_find_item_statements,
@@ -50,7 +50,7 @@ def _get_project_session_with_exception(project_id: str) -> Session:
         project_session = connection.create_session()
         return project_session
     else:
-        raise APIException(f'unable to find project {project_id}')
+        raise EsgvocException(f'unable to find project {project_id}')
 
 
 def _resolve_term(composite_term_part: dict,
@@ -118,7 +118,7 @@ def _transform_to_pattern(term: UTerm | PTerm,
             if constants.DRS_SPECS_JSON_KEY in term.specs:
                 result = term.specs[constants.DRS_SPECS_JSON_KEY]
             else:
-                raise APIException(f"the term {term.id} doesn't have drs name. " +
+                raise EsgvocException(f"the term {term.id} doesn't have drs name. " +
                                    "Can't validate it.")
         case TermKind.PATTERN:
             result = term.specs[constants.PATTERN_JSON_KEY]
@@ -201,7 +201,7 @@ def _valid_value(value: str,
                 if term.specs[constants.DRS_SPECS_JSON_KEY] != value:
                     result.append(_create_term_error(value, term))
             else:
-                raise APIException(f"the term {term.id} doesn't have drs name. " +
+                raise EsgvocException(f"the term {term.id} doesn't have drs name. " +
                                    "Can't validate it.")
         case TermKind.PATTERN:
             # TODO: Pattern can be compiled and stored for further matching.
@@ -219,7 +219,7 @@ def _valid_value(value: str,
 
 def _check_value(value: str) -> str:
     if not value or value.isspace():
-        raise APIException('value should be set')
+        raise EsgvocException('value should be set')
     else:
         return value
 
@@ -271,7 +271,7 @@ def _valid_value_against_given_term(value: str,
         if term:
             result = _valid_value(value, term, universe_session, project_session)
         else:
-            raise APIException(f'unable to find term {term_id} ' +
+            raise EsgvocException(f'unable to find term {term_id} ' +
                                f'in collection {collection_id}')
         _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE[key] = result
     return result
@@ -352,7 +352,7 @@ def _valid_term_in_collection(value: str,
                                                    term_id=term_id_found))
         else:
             msg = f'unable to find collection {collection_id}'
-            raise APIException(msg)
+            raise EsgvocException(msg)
         _VALID_TERM_IN_COLLECTION_CACHE[key] = result
     return result
 

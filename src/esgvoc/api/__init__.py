@@ -36,7 +36,7 @@ from esgvoc.api.report import (
                                       ValidationErrorVisitor,
                                       ValidationReport,
 )
-from esgvoc.api.search import APIException, MatchingTerm
+from esgvoc.api.search import EsgvocException, MatchingTerm
 from esgvoc.api.universe import (
                                       find_data_descriptors_in_universe,
                                       find_items_in_universe,
@@ -51,7 +51,7 @@ from esgvoc.api.universe import (
 )
 
 __all__ = [
-           "APIException",
+           "EsgvocException",
            "DrsCollection",
            "DrsConstant",
            "DrsPart",
