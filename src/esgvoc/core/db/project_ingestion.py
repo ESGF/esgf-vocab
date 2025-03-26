@@ -11,6 +11,7 @@ from esgvoc.core.data_handler import JsonLdResource
 from esgvoc.core.db.connection import DBConnection, read_json_file
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import Collection, Project, PTerm
+from esgvoc.core.exceptions import EsgvocDbError
 from esgvoc.core.service.data_merger import DataMerger
 
 _LOGGER = logging.getLogger("project_ingestion")
@@ -59,7 +60,7 @@ def ingest_collection(collection_dir_path: Path,
     except Exception as e:
         msg = f'Unable to read project context file {collection_context_file_path}. Abort.'
         _LOGGER.fatal(msg)
-        raise RuntimeError(msg) from e
+        raise EsgvocDbError(msg) from e
     # [KEEP]
     collection = Collection(
         id=collection_id,
@@ -116,7 +117,7 @@ def ingest_project(project_dir_path: Path,
     except Exception as e:
         msg = f'Unable to read project SQLite file at {project_db_file_path}. Abort.'
         _LOGGER.fatal(msg)
-        raise RuntimeError(msg) from e
+        raise EsgvocDbError(msg) from e
 
     with project_connection.create_session() as project_db_session:
         project_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.PROJECT_SPECS_FILENAME)
@@ -126,7 +127,7 @@ def ingest_project(project_dir_path: Path,
         except Exception as e:
             msg = f'Unable to read project specs file  {project_specs_file_path}. Abort.'
             _LOGGER.fatal(msg)
-            raise RuntimeError(msg) from e
+            raise EsgvocDbError(msg) from e
 
         project = Project(id=project_id, specs=project_json_specs, git_hash=git_hash)
         project_db_session.add(project)
@@ -142,7 +143,7 @@ def ingest_project(project_dir_path: Path,
                 except Exception as e:
                     msg = f'Unexpected error while ingesting collection {collection_dir_path}. Abort.'
                     _LOGGER.fatal(msg)
-                    raise RuntimeError(msg) from e
+                    raise EsgvocDbError(msg) from e
         project_db_session.commit()
 
         # Well, the following instructions are not data duplication. It is more building an index.
@@ -154,7 +155,7 @@ def ingest_project(project_dir_path: Path,
         except Exception as e:
             msg = f'Unable to insert rows into pterms_fts5 table for {project_db_file_path}. Abort.'
             _LOGGER.fatal(msg)
-            raise RuntimeError(msg) from e
+            raise EsgvocDbError(msg) from e
         project_db_session.commit()
         try:
             sql_query = 'INSERT INTO pcollections_fts5(pk, id, data_descriptor_id, context, ' + \
@@ -164,5 +165,5 @@ def ingest_project(project_dir_path: Path,
         except Exception as e:
             msg = f'Unable to insert rows into pcollections_fts5 table for {project_db_file_path}. Abort.'
             _LOGGER.fatal(msg)
-            raise RuntimeError(msg) from e
+            raise EsgvocDbError(msg) from e
         project_db_session.commit()

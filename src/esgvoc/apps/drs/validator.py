@@ -28,7 +28,7 @@ from esgvoc.apps.drs.report import (
     ValidationError,
     ValidationWarning,
 )
-from esgvoc.core.exceptions import EsgvocNotFoundError
+from esgvoc.core.exceptions import EsgvocDbError, EsgvocNotFoundError
 
 
 class DrsApplication:
@@ -56,7 +56,7 @@ class DrsApplication:
                     self.dataset_id_specs: DrsSpecification = specs
                     """The DRS dataset id specs of the project."""
                 case _:
-                    raise RuntimeError(f'unsupported DRS specs type {specs.type}')
+                    raise EsgvocDbError(f'unsupported DRS specs type {specs.type}')
 
     def _get_full_file_name_extension(self) -> str:
         """
@@ -71,8 +71,8 @@ class DrsApplication:
             full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
                              specs.properties[constants.FILE_NAME_EXTENSION_KEY]
         else:
-            raise RuntimeError('missing properties in the DRS file name specifications of the ' +
-                               f'project {self.project_id}')
+            raise EsgvocDbError('missing properties in the DRS file name specifications of the ' +
+                                f'project {self.project_id}')
         return full_extension
 
 
@@ -243,7 +243,7 @@ class DrsValidator(DrsApplication):
                 part_casted: DrsConstant = cast(DrsConstant, part)
                 return part_casted.value != term
             case _:
-                raise RuntimeError(f'unsupported DRS specs part type {part.kind}')
+                raise EsgvocDbError(f'unsupported DRS specs part type {part.kind}')
 
     def _create_report(self,
                        type: DrsType,

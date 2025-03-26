@@ -11,6 +11,7 @@ from esgvoc.core.data_handler import JsonLdResource
 from esgvoc.core.db.connection import read_json_file
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.universe import UDataDescriptor, Universe, UTerm, universe_create_db
+from esgvoc.core.exceptions import EsgvocDbError
 from esgvoc.core.service.data_merger import DataMerger
 
 _LOGGER = logging.getLogger(__name__)
@@ -41,7 +42,7 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
             except Exception as e:
                 msg = f'Unexpected error while processing data descriptor {data_descriptor_dir_path}. Abort.'
                 _LOGGER.fatal(msg)
-                raise RuntimeError(msg) from e
+                raise EsgvocDbError(msg) from e
 
     with connection.create_session() as session:
         # Well, the following instructions are not data duplication. It is more building an index.
@@ -53,7 +54,7 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
         except Exception as e:
             msg = f'Unable to insert rows into uterms_fts5 table for {universe_db_file_path}. Abort.'
             _LOGGER.fatal(msg)
-            raise RuntimeError(msg) from e
+            raise EsgvocDbError(msg) from e
         session.commit()
         try:
             sql_query = 'INSERT INTO udata_descriptors_fts5(pk, id, universe_pk, context, term_kind) ' + \
@@ -62,7 +63,7 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
         except Exception as e:
             msg = f'Unable to insert rows into udata_descriptors_fts5 table for {universe_db_file_path}. Abort.'
             _LOGGER.fatal(msg)
-            raise RuntimeError(msg) from e
+            raise EsgvocDbError(msg) from e
         session.commit()
 
 

@@ -31,7 +31,7 @@ from esgvoc.core.db.models.project import (
     PTermFTS5,
 )
 from esgvoc.core.db.models.universe import UTerm
-from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocValueError
+from esgvoc.core.exceptions import EsgvocDbError, EsgvocNotFoundError, EsgvocNotImplementedError, EsgvocValueError
 
 # [OPTIMIZATION]
 _VALID_TERM_IN_COLLECTION_CACHE: dict[str, list[MatchingTerm]] = dict()
@@ -72,7 +72,7 @@ def _resolve_term(composite_term_part: dict,
         return pterm
     else:
         msg = f'unable to find the term {term_id} in {term_type}'
-        raise RuntimeError(msg)
+        raise EsgvocNotFoundError(msg)
 
 
 def _get_composite_term_separator_parts(term: UTerm | PTerm) -> tuple[str, list]:
@@ -131,7 +131,7 @@ def _transform_to_pattern(term: UTerm | PTerm,
                 result = f'{result}{pattern}{separator}'
             result = result.rstrip(separator)
         case _:
-            raise RuntimeError(f'unsupported term kind {term.kind}')
+            raise EsgvocDbError(f'unsupported term kind {term.kind}')
     return result
 
 
@@ -155,14 +155,14 @@ def _valid_value_composite_term_separator_less(value: str,
             regex = re.compile(pattern)
         except Exception as e:
             msg = f'regex compilation error while processing term {term.id}:\n{e}'
-            raise RuntimeError(msg) from e
+            raise EsgvocDbError(msg) from e
         match = regex.match(value)
         if match is None:
             result.append(_create_term_error(value, term))
         return result
     except Exception as e:
         msg = f'cannot validate separator less composite term {term.id}:\n{e}'
-        raise RuntimeError(msg) from e
+        raise EsgvocNotImplementedError(msg) from e
 
 
 def _valid_value_for_composite_term(value: str,
@@ -213,7 +213,7 @@ def _valid_value(value: str,
                                                           universe_session,
                                                           project_session))
         case _:
-            raise RuntimeError(f'unsupported term kind {term.kind}')
+            raise EsgvocDbError(f'unsupported term kind {term.kind}')
     return result
 
 
@@ -250,7 +250,7 @@ def _valid_value_against_all_terms_of_collection(value: str,
                 result.append(pterm.id)
         return result
     else:
-        raise RuntimeError(f'collection {collection.id} has no term')
+        raise EsgvocDbError(f'collection {collection.id} has no term')
 
 
 def _valid_value_against_given_term(value: str,
@@ -714,7 +714,7 @@ def get_project(project_id: str) -> ProjectSpecs | None:
                 result = ProjectSpecs(**project.specs)  # type: ignore
             except Exception as e:
                 msg = f'Unable to read specs in project {project_id}'
-                raise RuntimeError(msg) from e
+                raise EsgvocDbError(msg) from e
     return result
 
 

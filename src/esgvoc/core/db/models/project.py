@@ -8,6 +8,7 @@ from sqlmodel import Column, Field, Relationship, SQLModel
 
 import esgvoc.core.db.connection as db
 from esgvoc.core.db.models.mixins import IdMixin, PkMixin, TermKind
+from esgvoc.core.exceptions import EsgvocDbError
 
 _LOGGER = logging.getLogger("project_db_creation")
 
@@ -63,7 +64,7 @@ def project_create_db(db_file_path: Path):
     except Exception as e:
         msg = f'Unable to create SQlite file at {db_file_path}. Abort.'
         _LOGGER.fatal(msg)
-        raise RuntimeError(msg) from e
+        raise EsgvocDbError(msg) from e
     try:
         # Do not include pterms_fts5 table: it is build from a raw SQL query.
         tables_to_be_created = [SQLModel.metadata.tables['projects'],
@@ -73,7 +74,7 @@ def project_create_db(db_file_path: Path):
     except Exception as e:
         msg = f'Unable to create tables in SQLite database at {db_file_path}. Abort.'
         _LOGGER.fatal(msg)
-        raise RuntimeError(msg) from e
+        raise EsgvocDbError(msg) from e
     try:
         with connection.create_session() as session:
             sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS pterms_fts5 USING ' + \
@@ -83,7 +84,7 @@ def project_create_db(db_file_path: Path):
     except Exception as e:
         msg = f'Unable to create table pterms_fts5 for {db_file_path}. Abort.'
         _LOGGER.fatal(msg)
-        raise RuntimeError(msg) from e
+        raise EsgvocDbError(msg) from e
     try:
         with connection.create_session() as session:
             sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS pcollections_fts5 USING ' + \
@@ -94,7 +95,7 @@ def project_create_db(db_file_path: Path):
     except Exception as e:
         msg = f'Unable to create table pcollections_fts5 for {db_file_path}. Abort.'
         _LOGGER.fatal(msg)
-        raise RuntimeError(msg) from e
+        raise EsgvocDbError(msg) from e
 
 
 if __name__ == "__main__":

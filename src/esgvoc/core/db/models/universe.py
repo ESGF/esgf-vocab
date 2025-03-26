@@ -8,6 +8,7 @@ from sqlmodel import Column, Field, Relationship, SQLModel
 
 import esgvoc.core.db.connection as db
 from esgvoc.core.db.models.mixins import IdMixin, PkMixin, TermKind
+from esgvoc.core.exceptions import EsgvocDbError
 
 _LOGGER = logging.getLogger("universe_db_creation")
 
@@ -59,7 +60,7 @@ def universe_create_db(db_file_path: Path) -> None:
     except Exception as e:
         msg = f'Unable to create SQLite file at {db_file_path}. Abort.'
         _LOGGER.fatal(msg)
-        raise RuntimeError(msg) from e
+        raise EsgvocDbError(msg) from e
     try:
         # Avoid creating project tables.
         tables_to_be_created = [SQLModel.metadata.tables['uterms'],
@@ -69,7 +70,7 @@ def universe_create_db(db_file_path: Path) -> None:
     except Exception as e:
         msg = f'Unable to create tables in SQLite database at {db_file_path}. Abort.'
         _LOGGER.fatal(msg)
-        raise RuntimeError(msg) from e
+        raise EsgvocDbError(msg) from e
     try:
         with connection.create_session() as session:
             sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS uterms_fts5 USING ' + \
@@ -79,7 +80,7 @@ def universe_create_db(db_file_path: Path) -> None:
     except Exception as e:
         msg = f'Unable to create table uterms_fts5 for {db_file_path}. Abort.'
         _LOGGER.fatal(msg)
-        raise RuntimeError(msg) from e
+        raise EsgvocDbError(msg) from e
     try:
         with connection.create_session() as session:
             sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS udata_descriptors_fts5 USING ' + \
@@ -90,7 +91,7 @@ def universe_create_db(db_file_path: Path) -> None:
     except Exception as e:
         msg = f'Unable to create table udata_descriptors_fts5 for {db_file_path}. Abort.'
         _LOGGER.fatal(msg)
-        raise RuntimeError(msg) from e
+        raise EsgvocDbError(msg) from e
 
 
 if __name__ == "__main__":

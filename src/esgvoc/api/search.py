@@ -15,7 +15,7 @@ from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
 from esgvoc.core.db.models.project import PCollectionFTS5, PTerm, PTermFTS5
 from esgvoc.core.db.models.universe import UDataDescriptorFTS5, UTerm, UTermFTS5
-from esgvoc.core.exceptions import EsgvocValueError
+from esgvoc.core.exceptions import EsgvocDbError, EsgvocValueError
 
 
 class ItemKind(Enum):
@@ -41,7 +41,7 @@ def get_pydantic_class(data_descriptor_id_or_term_type: str) -> type[DataDescrip
     if data_descriptor_id_or_term_type in DATA_DESCRIPTOR_CLASS_MAPPING:
         return DATA_DESCRIPTOR_CLASS_MAPPING[data_descriptor_id_or_term_type]
     else:
-        raise RuntimeError(f"{data_descriptor_id_or_term_type} pydantic class not found")
+        raise EsgvocDbError(f"{data_descriptor_id_or_term_type} pydantic class not found")
 
 
 def get_universe_session() -> Session:
@@ -50,7 +50,7 @@ def get_universe_session() -> Session:
     if UNIVERSE_DB_CONNECTION:
         return UNIVERSE_DB_CONNECTION.create_session()
     else:
-        raise RuntimeError('universe connection is not initialized')
+        raise EsgvocDbError('universe connection is not initialized')
 
 
 def instantiate_pydantic_term(term: UTerm | PTerm,
