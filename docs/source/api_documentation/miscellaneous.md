@@ -11,4 +11,8 @@
 .. autoclass:: esgvoc.core.db.models.mixins.TermKind
    :members:
    :member-order: groupwise
+.. automodule:: esgvoc.core.exceptions
+   :members:
+   :imported-members:
+   :member-order: groupwise
 ```
