@@ -132,7 +132,7 @@ class DrsGenerator(DrsApplication):
             case DrsType.DATASET_ID:
                 return self.generate_dataset_id_from_mapping(mapping=mapping)
             case _:
-                raise EsgvocDbError(f'unsupported drs type {drs_type}')
+                raise EsgvocDbError(f"unsupported drs type '{drs_type}'")
 
     def generate_from_bag_of_terms(self, terms: Iterable[str], drs_type: DrsType | str) \
                                                                              -> DrsGenerationReport: # noqa E127
@@ -154,7 +154,7 @@ class DrsGenerator(DrsApplication):
             case DrsType.DATASET_ID:
                 return self.generate_dataset_id_from_bag_of_terms(terms=terms)
             case _:
-                raise EsgvocDbError(f'unsupported drs type {drs_type}')
+                raise EsgvocDbError(f"unsupported drs type '{drs_type}'")
 
     def _generate_from_mapping(self, mapping: Mapping[str, str], specs: DrsSpecification) \
                                                                             -> DrsGenerationReport: # noqa E127

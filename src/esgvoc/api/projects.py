@@ -50,7 +50,7 @@ def _get_project_session_with_exception(project_id: str) -> Session:
         project_session = connection.create_session()
         return project_session
     else:
-        raise EsgvocNotFoundError(f'unable to find project {project_id}')
+        raise EsgvocNotFoundError(f"unable to find project '{project_id}'")
 
 
 def _resolve_term(composite_term_part: dict,
@@ -71,7 +71,7 @@ def _resolve_term(composite_term_part: dict,
     if pterm:
         return pterm
     else:
-        msg = f'unable to find the term {term_id} in {term_type}'
+        msg = f"unable to find the term '{term_id}' in '{term_type}'"
         raise EsgvocNotFoundError(msg)
 
 
@@ -118,7 +118,7 @@ def _transform_to_pattern(term: UTerm | PTerm,
             if constants.DRS_SPECS_JSON_KEY in term.specs:
                 result = term.specs[constants.DRS_SPECS_JSON_KEY]
             else:
-                raise EsgvocValueError(f"the term {term.id} doesn't have drs name. " +
+                raise EsgvocValueError(f"the term '{term.id}' doesn't have drs name. " +
                                        "Can't validate it.")
         case TermKind.PATTERN:
             result = term.specs[constants.PATTERN_JSON_KEY]
@@ -131,7 +131,7 @@ def _transform_to_pattern(term: UTerm | PTerm,
                 result = f'{result}{pattern}{separator}'
             result = result.rstrip(separator)
         case _:
-            raise EsgvocDbError(f'unsupported term kind {term.kind}')
+            raise EsgvocDbError(f"unsupported term kind '{term.kind}'")
     return result
 
 
@@ -154,14 +154,14 @@ def _valid_value_composite_term_separator_less(value: str,
             pattern = f'^{pattern}$'
             regex = re.compile(pattern)
         except Exception as e:
-            msg = f'regex compilation error while processing term {term.id}:\n{e}'
+            msg = f"regex compilation error while processing term '{term.id}'':\n{e}"
             raise EsgvocDbError(msg) from e
         match = regex.match(value)
         if match is None:
             result.append(_create_term_error(value, term))
         return result
     except Exception as e:
-        msg = f'cannot validate separator less composite term {term.id}:\n{e}'
+        msg = f"cannot validate separator less composite term '{term.id}':\n{e}"
         raise EsgvocNotImplementedError(msg) from e
 
 
@@ -201,7 +201,7 @@ def _valid_value(value: str,
                 if term.specs[constants.DRS_SPECS_JSON_KEY] != value:
                     result.append(_create_term_error(value, term))
             else:
-                raise EsgvocValueError(f"the term {term.id} doesn't have drs name. " +
+                raise EsgvocValueError(f"the term '{term.id}' doesn't have drs name. " +
                                        "Can't validate it.")
         case TermKind.PATTERN:
             # TODO: Pattern can be compiled and stored for further matching.
@@ -213,7 +213,7 @@ def _valid_value(value: str,
                                                           universe_session,
                                                           project_session))
         case _:
-            raise EsgvocDbError(f'unsupported term kind {term.kind}')
+            raise EsgvocDbError(f"unsupported term kind '{term.kind}'")
     return result
 
 
@@ -250,7 +250,7 @@ def _valid_value_against_all_terms_of_collection(value: str,
                 result.append(pterm.id)
         return result
     else:
-        raise EsgvocDbError(f'collection {collection.id} has no term')
+        raise EsgvocDbError(f"collection '{collection.id}' has no term")
 
 
 def _valid_value_against_given_term(value: str,
@@ -271,8 +271,8 @@ def _valid_value_against_given_term(value: str,
         if term:
             result = _valid_value(value, term, universe_session, project_session)
         else:
-            raise EsgvocNotFoundError(f'unable to find term {term_id} ' +
-                                      f'in collection {collection_id}')
+            raise EsgvocNotFoundError(f"unable to find term '{term_id}' " +
+                                      f"in collection '{collection_id}'")
         _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE[key] = result
     return result
 
@@ -351,7 +351,7 @@ def _valid_term_in_collection(value: str,
                                                    collection_id=collection_id,
                                                    term_id=term_id_found))
         else:
-            msg = f'unable to find collection {collection_id}'
+            msg = f"unable to find collection '{collection_id}'"
             raise EsgvocNotFoundError(msg)
         _VALID_TERM_IN_COLLECTION_CACHE[key] = result
     return result
@@ -713,7 +713,7 @@ def get_project(project_id: str) -> ProjectSpecs | None:
                 # Project can't be missing if session exists.
                 result = ProjectSpecs(**project.specs)  # type: ignore
             except Exception as e:
-                msg = f'Unable to read specs in project {project_id}'
+                msg = f"unable to read specs in project '{project_id}'"
                 raise EsgvocDbError(msg) from e
     return result
 

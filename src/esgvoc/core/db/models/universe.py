@@ -58,7 +58,7 @@ def universe_create_db(db_file_path: Path) -> None:
     try:
         connection = db.DBConnection(db_file_path)
     except Exception as e:
-        msg = f'Unable to create SQLite file at {db_file_path}. Abort.'
+        msg = f'unable to create SQLite file at {db_file_path}'
         _LOGGER.fatal(msg)
         raise EsgvocDbError(msg) from e
     try:
@@ -68,7 +68,7 @@ def universe_create_db(db_file_path: Path) -> None:
                                 SQLModel.metadata.tables['universes']]
         SQLModel.metadata.create_all(connection.get_engine(), tables=tables_to_be_created)
     except Exception as e:
-        msg = f'Unable to create tables in SQLite database at {db_file_path}. Abort.'
+        msg = f'unable to create tables in SQLite database at {db_file_path}'
         _LOGGER.fatal(msg)
         raise EsgvocDbError(msg) from e
     try:
@@ -78,7 +78,7 @@ def universe_create_db(db_file_path: Path) -> None:
             session.exec(text(sql_query))  # type: ignore
             session.commit()
     except Exception as e:
-        msg = f'Unable to create table uterms_fts5 for {db_file_path}. Abort.'
+        msg = f'unable to create table uterms_fts5 for {db_file_path}'
         _LOGGER.fatal(msg)
         raise EsgvocDbError(msg) from e
     try:
@@ -89,7 +89,7 @@ def universe_create_db(db_file_path: Path) -> None:
             session.exec(text(sql_query))  # type: ignore
             session.commit()
     except Exception as e:
-        msg = f'Unable to create table udata_descriptors_fts5 for {db_file_path}. Abort.'
+        msg = f'unable to create table udata_descriptors_fts5 for {db_file_path}'
         _LOGGER.fatal(msg)
         raise EsgvocDbError(msg) from e
 

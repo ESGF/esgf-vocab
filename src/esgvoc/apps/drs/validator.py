@@ -43,7 +43,7 @@ class DrsApplication:
         """Same as the option of GCC: turn warnings into errors. Default False."""
         project_specs: ProjectSpecs | None = projects.get_project(project_id)
         if not project_specs:
-            raise EsgvocNotFoundError(f'unable to find project {project_id}')
+            raise EsgvocNotFoundError(f"unable to find project '{project_id}'")
         for specs in project_specs.drs_specs:
             match specs.type:
                 case DrsType.DIRECTORY:
@@ -56,7 +56,7 @@ class DrsApplication:
                     self.dataset_id_specs: DrsSpecification = specs
                     """The DRS dataset id specs of the project."""
                 case _:
-                    raise EsgvocDbError(f'unsupported DRS specs type {specs.type}')
+                    raise EsgvocDbError(f"unsupported DRS specs type '{specs.type}'")
 
     def _get_full_file_name_extension(self) -> str:
         """
@@ -72,7 +72,7 @@ class DrsApplication:
                              specs.properties[constants.FILE_NAME_EXTENSION_KEY]
         else:
             raise EsgvocDbError('missing properties in the DRS file name specifications of the ' +
-                                f'project {self.project_id}')
+                                f"project '{self.project_id}'")
         return full_extension
 
 
@@ -147,7 +147,7 @@ class DrsValidator(DrsApplication):
             case DrsType.DATASET_ID:
                 return self.validate_dataset_id(drs_expression=drs_expression)
             case _:
-                raise EsgvocDbError(f'unsupported drs type {drs_type}')
+                raise EsgvocDbError(f"unsupported drs type '{drs_type}'")
 
     def _parse(self,
                drs_expression: str,
@@ -243,7 +243,7 @@ class DrsValidator(DrsApplication):
                 part_casted: DrsConstant = cast(DrsConstant, part)
                 return part_casted.value != term
             case _:
-                raise EsgvocDbError(f'unsupported DRS specs part type {part.kind}')
+                raise EsgvocDbError(f"unsupported DRS specs part type '{part.kind}'")
 
     def _create_report(self,
                        type: DrsType,

@@ -40,7 +40,7 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
             try:
                 ingest_data_descriptor(data_descriptor_dir_path, connection)
             except Exception as e:
-                msg = f'Unexpected error while processing data descriptor {data_descriptor_dir_path}. Abort.'
+                msg = f'unexpected error while processing data descriptor {data_descriptor_dir_path}'
                 _LOGGER.fatal(msg)
                 raise EsgvocDbError(msg) from e
 
@@ -52,7 +52,7 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
                         'SELECT pk, id, specs, kind, data_descriptor_pk FROM uterms;'  # noqa: S608
             session.exec(text(sql_query))  # type: ignore
         except Exception as e:
-            msg = f'Unable to insert rows into uterms_fts5 table for {universe_db_file_path}. Abort.'
+            msg = f'unable to insert rows into uterms_fts5 table for {universe_db_file_path}'
             _LOGGER.fatal(msg)
             raise EsgvocDbError(msg) from e
         session.commit()
@@ -61,7 +61,7 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
                         'SELECT pk, id, universe_pk, context, term_kind FROM udata_descriptors;'  # noqa: S608
             session.exec(text(sql_query))  # type: ignore
         except Exception as e:
-            msg = f'Unable to insert rows into udata_descriptors_fts5 table for {universe_db_file_path}. Abort.'
+            msg = f'unable to insert rows into udata_descriptors_fts5 table for {universe_db_file_path}'
             _LOGGER.fatal(msg)
             raise EsgvocDbError(msg) from e
         session.commit()

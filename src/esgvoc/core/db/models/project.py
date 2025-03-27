@@ -62,7 +62,7 @@ def project_create_db(db_file_path: Path):
     try:
         connection = db.DBConnection(db_file_path)
     except Exception as e:
-        msg = f'Unable to create SQlite file at {db_file_path}. Abort.'
+        msg = f'unable to create SQlite file at {db_file_path}'
         _LOGGER.fatal(msg)
         raise EsgvocDbError(msg) from e
     try:
@@ -72,7 +72,7 @@ def project_create_db(db_file_path: Path):
                                 SQLModel.metadata.tables['pterms']]
         SQLModel.metadata.create_all(connection.get_engine(), tables=tables_to_be_created)
     except Exception as e:
-        msg = f'Unable to create tables in SQLite database at {db_file_path}. Abort.'
+        msg = f'unable to create tables in SQLite database at {db_file_path}'
         _LOGGER.fatal(msg)
         raise EsgvocDbError(msg) from e
     try:
@@ -82,7 +82,7 @@ def project_create_db(db_file_path: Path):
             session.exec(text(sql_query))  # type: ignore
             session.commit()
     except Exception as e:
-        msg = f'Unable to create table pterms_fts5 for {db_file_path}. Abort.'
+        msg = f'unable to create table pterms_fts5 for {db_file_path}'
         _LOGGER.fatal(msg)
         raise EsgvocDbError(msg) from e
     try:
@@ -93,7 +93,7 @@ def project_create_db(db_file_path: Path):
             session.exec(text(sql_query))  # type: ignore
             session.commit()
     except Exception as e:
-        msg = f'Unable to create table pcollections_fts5 for {db_file_path}. Abort.'
+        msg = f'unable to create table pcollections_fts5 for {db_file_path}'
         _LOGGER.fatal(msg)
         raise EsgvocDbError(msg) from e
 

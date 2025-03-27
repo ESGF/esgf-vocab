@@ -58,7 +58,7 @@ def ingest_collection(collection_dir_path: Path,
         collection_context = read_json_file(collection_context_file_path)
         data_descriptor_id = get_data_descriptor_id_from_context(collection_context)
     except Exception as e:
-        msg = f'Unable to read project context file {collection_context_file_path}. Abort.'
+        msg = f'unable to read project context file {collection_context_file_path}'
         _LOGGER.fatal(msg)
         raise EsgvocDbError(msg) from e
     # [KEEP]
@@ -115,7 +115,7 @@ def ingest_project(project_dir_path: Path,
     try:
         project_connection = db.DBConnection(project_db_file_path)
     except Exception as e:
-        msg = f'Unable to read project SQLite file at {project_db_file_path}. Abort.'
+        msg = f'unable to read project SQLite file at {project_db_file_path}'
         _LOGGER.fatal(msg)
         raise EsgvocDbError(msg) from e
 
@@ -125,7 +125,7 @@ def ingest_project(project_dir_path: Path,
             project_json_specs = read_json_file(project_specs_file_path)
             project_id = project_json_specs[esgvoc.core.constants.PROJECT_ID_JSON_KEY]
         except Exception as e:
-            msg = f'Unable to read project specs file  {project_specs_file_path}. Abort.'
+            msg = f'unable to read project specs file  {project_specs_file_path}'
             _LOGGER.fatal(msg)
             raise EsgvocDbError(msg) from e
 
@@ -141,7 +141,7 @@ def ingest_project(project_dir_path: Path,
                                       project,
                                       project_db_session)
                 except Exception as e:
-                    msg = f'Unexpected error while ingesting collection {collection_dir_path}. Abort.'
+                    msg = f'unexpected error while ingesting collection {collection_dir_path}'
                     _LOGGER.fatal(msg)
                     raise EsgvocDbError(msg) from e
         project_db_session.commit()
@@ -153,7 +153,7 @@ def ingest_project(project_dir_path: Path,
                         'SELECT pk, id, specs, kind, collection_pk FROM pterms;'  # noqa: S608
             project_db_session.exec(text(sql_query))  # type: ignore
         except Exception as e:
-            msg = f'Unable to insert rows into pterms_fts5 table for {project_db_file_path}. Abort.'
+            msg = f'unable to insert rows into pterms_fts5 table for {project_db_file_path}'
             _LOGGER.fatal(msg)
             raise EsgvocDbError(msg) from e
         project_db_session.commit()
@@ -163,7 +163,7 @@ def ingest_project(project_dir_path: Path,
                          'project_pk, term_kind FROM collections;'  # noqa: S608
             project_db_session.exec(text(sql_query))  # type: ignore
         except Exception as e:
-            msg = f'Unable to insert rows into pcollections_fts5 table for {project_db_file_path}. Abort.'
+            msg = f'unable to insert rows into pcollections_fts5 table for {project_db_file_path}'
             _LOGGER.fatal(msg)
             raise EsgvocDbError(msg) from e
         project_db_session.commit()
