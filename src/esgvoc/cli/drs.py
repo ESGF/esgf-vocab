@@ -109,7 +109,7 @@ def drsvalid(
             case "dataset":
                 report = validator.validate_dataset_id(string)
             case _:
-                raise EsgvocValueError("drstype is not known")
+                raise EsgvocValueError(f"unsupported drs type '{current_drs_type}'")
         reports.append(report)
 
     if verbose:
@@ -214,7 +214,7 @@ def drsgen(
             case "dataset":
                 report = generator.generate_dataset_id_from_bag_of_terms(bag_of_terms)
             case _:
-                raise EsgvocValueError("drstype is not known")
+                raise EsgvocValueError(f"unsupported drs type '{current_drs_type}'")
         generated_reports.append(report)
 
     if verbose:
