@@ -5,6 +5,7 @@ import pytest
 import esgvoc.api.universe as universe
 from esgvoc.api.search import ItemKind
 
+# TODO: refactor into data class.
 _SOME_DATA_DESCRIPTOR_IDS = ['institution', 'product', 'variable']
 _SOME_TERM_IDS = ['ipsl', 'observations', 'airmass']
 _SOME_EXPRESSIONS = [('ipsl', 'institution', 'ipsl', ItemKind.TERM),

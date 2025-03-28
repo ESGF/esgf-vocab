@@ -135,6 +135,7 @@ def test_validate(directory_expression, file_name_expression, dataset_id_express
         assert report and report.nb_warnings == 0
 
 
+# TODO: refactor into data class.
 _SOME_DIRECTORY_EXPRESSION_TYPO_WARNINGS: list[tuple[str, tuple[str, list, list]]] = [
     (
         "cmip6plus",

@@ -5,6 +5,7 @@ import pytest
 import esgvoc.api.projects as projects
 from esgvoc.api.search import ItemKind
 
+# TODO: refactor into data class.
 _SOME_PROJECT_IDS = ['cmip6plus', 'cmip6']
 _SOME_COLLECTION_IDS = ['institution_id', 'time_range', 'source_id']
 _SOME_DATA_DESCRIPTOR_IDS = ['organisation', 'time_range', 'source']

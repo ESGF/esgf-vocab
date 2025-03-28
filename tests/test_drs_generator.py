@@ -73,6 +73,7 @@ def _generate_expression_and_check(test: tuple) -> None:
         report.warnings[index].accept(checker)
 
 
+# TODO: refactor into data class.
 _SOME_CONFLICTS = [
     (
         {"c0": {"w0"}, "c1": {"w1"}},
