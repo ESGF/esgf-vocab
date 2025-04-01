@@ -505,8 +505,8 @@ DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression |
         DrsTermsGeneratorExpression("cmip6plus", DrsType.DATASET_ID,
                                     "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
                                     [], [],
-                                    {'r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer',
-                                     'ACmon', 'IPSL', 'gn'}),
+                                    ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer',
+                                     'ACmon', 'IPSL', 'gn']),
         DrsMappingGeneratorExpression("cmip6plus", DrsType.FILE_NAME,
                                       "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc",
                                       [], [DrsGenerationIssue(MissingTerm, index=7,
@@ -525,8 +525,8 @@ DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression |
         DrsTermsGeneratorExpression("cmip6plus", DrsType.FILE_NAME,
                                     "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201611-201712.nc",
                                     [], [],
-                                    {'r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer',
-                                     'ACmon', '201611-201712', 'gn', 'IPSL'}),
+                                    ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer',
+                                     'ACmon', '201611-201712', 'gn', 'IPSL']),
         DrsMappingGeneratorExpression("cmip6plus", DrsType.DIRECTORY,
                                       "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923",
                                       [], [],
@@ -545,8 +545,8 @@ DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression |
         DrsTermsGeneratorExpression("cmip6plus", DrsType.DIRECTORY,
                                     "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923",
                                     [], [],
-                                    {'r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer',
-                                     'ACmon', 'v20190923', 'gn', 'NCC'}),
+                                    ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer',
+                                     'ACmon', 'v20190923', 'gn', 'NCC']),
     ]
 
 
@@ -584,6 +584,12 @@ def check_id(obj: str | DataDescriptor | dict | tuple | list | ProjectSpecs | Ma
             assert obj.term_id == id
 
 
+def check_validation(val_query: ValidationExpression, matching_terms: list[MatchingTerm]) -> None:
+    assert len(matching_terms) == val_query.nb_matching_terms
+    if val_query.nb_matching_terms > 0:
+        check_id(matching_terms, val_query.item.term_id)
+
+
 def check_drs_validation_issue(issue: DrsIssue, expected_result: DrsValidatorIssue) -> None:
     assert isinstance(issue, expected_result.type)
     match issue:
@@ -619,9 +625,9 @@ def check_drs_validation_expression(val_expression: DrsValidatorExpression,
         check_drs_validation_issue(report.warnings[index], val_expression.warnings[index])
 
 
-def check_generated_expression(expression: DrsMappingGeneratorExpression |
-                                           DrsTermsGeneratorExpression,
-                               report: DrsGenerationReport) -> None:
+def check_drs_generated_expression(expression: DrsMappingGeneratorExpression |
+                                               DrsTermsGeneratorExpression,
+                                   report: DrsGenerationReport) -> None:
     assert expression.generated_expression == report.generated_drs_expression
     assert len(expression.errors) == report.nb_errors
     assert len(expression.warnings) == report.nb_warnings

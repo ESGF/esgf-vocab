@@ -15,7 +15,7 @@ from tests.api_inputs import (  # noqa: F401
     DrsMappingGeneratorExpression,
     DrsTermsGeneratorExpression,
     GenerationIssueChecker,
-    check_generated_expression,
+    check_drs_generated_expression,
     drs_generation_expression,
 )
 
@@ -202,9 +202,9 @@ def test_check_collection_terms_mapping(collection_terms_mapping) -> None:
 def test_generate_dataset_id_from_mapping(drs_generation_expression) -> None:
     generator = DrsGenerator(drs_generation_expression.project_id)
     report = _generate_explicit_call(drs_generation_expression, generator)
-    check_generated_expression(drs_generation_expression, report)
+    check_drs_generated_expression(drs_generation_expression, report)
     report = _generate_generic_call(drs_generation_expression, generator)
-    check_generated_expression(drs_generation_expression, report)
+    check_drs_generated_expression(drs_generation_expression, report)
 
 
 def test_pedantic() -> None:
