@@ -1,4 +1,4 @@
-from typing import Any, Generator
+from typing import Generator
 
 import pytest
 
@@ -8,52 +8,16 @@ from esgvoc.apps.drs.report import (
     AssignedTerm,
     ConflictingCollections,
     DrsGenerationReport,
-    GenerationIssue,
-    InvalidTerm,
-    MissingTerm,
     TooManyTermCollection,
 )
 from tests.api_inputs import (  # noqa: F401
     DrsGenerationIssue,
     DrsMappingGeneratorExpression,
     DrsTermsGeneratorExpression,
+    GenerationIssueChecker,
+    check_generated_expression,
     drs_generation_expression,
 )
-
-
-class IssueChecker:
-
-    def __init__(self, expected_result: DrsGenerationIssue) -> None:
-        self.expected_result = expected_result
-
-    def _check_type(self, issue: GenerationIssue) -> None:
-        assert isinstance(issue, self.expected_result.type)
-
-    def visit_invalid_term_issue(self, issue: InvalidTerm) -> Any:
-        self._check_type(issue)
-        assert self.expected_result.parts == issue.term
-        assert self.expected_result.collection_ids == issue.collection_id_or_constant_value
-        assert self.expected_result.index == issue.term_position
-
-    def visit_missing_term_issue(self, issue: MissingTerm) -> Any:
-        self._check_type(issue)
-        assert self.expected_result.collection_ids == issue.collection_id
-        assert self.expected_result.index == issue.collection_position
-
-    def visit_too_many_terms_collection_issue(self, issue: TooManyTermCollection) -> Any:
-        self._check_type(issue)
-        assert self.expected_result.collection_ids == issue.collection_id
-        assert self.expected_result.parts == issue.terms
-
-    def visit_conflicting_collections_issue(self, issue: ConflictingCollections) -> Any:
-        self._check_type(issue)
-        assert self.expected_result.collection_ids == issue.collection_ids
-        assert self.expected_result.parts == issue.terms
-
-    def visit_assign_term_issue(self, issue: AssignedTerm) -> Any:
-        self._check_type(issue)
-        assert self.expected_result.parts == issue.term
-        assert self.expected_result.collection_ids == issue.collection_id
 
 
 def _generate_generic_call(expression: DrsMappingGeneratorExpression | DrsTermsGeneratorExpression,
@@ -86,24 +50,6 @@ def _generate_explicit_call(expression: DrsMappingGeneratorExpression | DrsTerms
         case _:
             raise TypeError(f"unsupported type {expression.drs_type}")
     return report
-
-
-def _generate_expression_and_check(expression: DrsMappingGeneratorExpression |
-                                   DrsTermsGeneratorExpression, explicit: bool) -> None:
-    generator = DrsGenerator(expression.project_id)
-    if explicit:
-        report = _generate_explicit_call(expression, generator)
-    else:
-        report = _generate_generic_call(expression, generator)
-    assert expression.generated_expression == report.generated_drs_expression
-    assert len(expression.errors) == report.nb_errors
-    assert len(expression.warnings) == report.nb_warnings
-    for index in range(0, len(expression.errors)):
-        checker = IssueChecker(expression.errors[index])
-        report.errors[index].accept(checker)
-    for index in range(0, len(expression.warnings)):
-        checker = IssueChecker(expression.warnings[index])
-        report.warnings[index].accept(checker)
 
 
 # TODO: refactor into data class.
@@ -183,7 +129,7 @@ def test_resolve_conflicts(conflict) -> None:
     assert _out == result_mapping
     assert len(expected_warnings) == len(result_warnings)
     for index in range(0, len(expected_warnings)):
-        checker = IssueChecker(expected_warnings[index])
+        checker = GenerationIssueChecker(expected_warnings[index])
         result_warnings[index].accept(checker)
 
 
@@ -249,13 +195,16 @@ def test_check_collection_terms_mapping(collection_terms_mapping) -> None:
     assert _out == result_mapping
     assert len(expected_errors) == len(result_errors)
     for index in range(0, len(expected_errors)):
-        checker = IssueChecker(expected_errors[index])
+        checker = GenerationIssueChecker(expected_errors[index])
         result_errors[index].accept(checker)
 
 
 def test_generate_dataset_id_from_mapping(drs_generation_expression) -> None:
-    _generate_expression_and_check(drs_generation_expression, explicit=True)
-    _generate_expression_and_check(drs_generation_expression, explicit=False)
+    generator = DrsGenerator(drs_generation_expression.project_id)
+    report = _generate_explicit_call(drs_generation_expression, generator)
+    check_generated_expression(drs_generation_expression, report)
+    report = _generate_generic_call(drs_generation_expression, generator)
+    check_generated_expression(drs_generation_expression, report)
 
 
 def test_pedantic() -> None:

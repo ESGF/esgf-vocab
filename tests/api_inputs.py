@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Generator, Iterable, Mapping
+from typing import Any, Generator, Iterable, Mapping
 
 import pytest
 
@@ -7,19 +7,25 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import DrsType, ProjectSpecs
 from esgvoc.api.search import Item, ItemKind, MatchingTerm
 from esgvoc.apps.drs.report import (
+    AssignedTerm,
     BlankTerm,
+    ConflictingCollections,
+    DrsGenerationReport,
     DrsIssue,
+    DrsValidationReport,
     ExtraChar,
     ExtraSeparator,
     ExtraTerm,
     FileNameExtensionIssue,
     GenerationError,
+    GenerationIssue,
     GenerationWarning,
     InvalidTerm,
     MissingTerm,
     ParsingIssue,
     Space,
     TermIssue,
+    TooManyTermCollection,
     Unparsable,
     ValidationError,
     ValidationWarning,
@@ -91,6 +97,41 @@ class DrsMappingGeneratorExpression(DrsGeneratorExpression):
 @dataclass
 class DrsTermsGeneratorExpression(DrsGeneratorExpression):
     terms: Iterable[str]
+
+
+class GenerationIssueChecker:
+
+    def __init__(self, expected_result: DrsGenerationIssue) -> None:
+        self.expected_result = expected_result
+
+    def _check_type(self, issue: GenerationIssue) -> None:
+        assert isinstance(issue, self.expected_result.type)
+
+    def visit_invalid_term_issue(self, issue: InvalidTerm) -> Any:
+        self._check_type(issue)
+        assert self.expected_result.parts == issue.term
+        assert self.expected_result.collection_ids == issue.collection_id_or_constant_value
+        assert self.expected_result.index == issue.term_position
+
+    def visit_missing_term_issue(self, issue: MissingTerm) -> Any:
+        self._check_type(issue)
+        assert self.expected_result.collection_ids == issue.collection_id
+        assert self.expected_result.index == issue.collection_position
+
+    def visit_too_many_terms_collection_issue(self, issue: TooManyTermCollection) -> Any:
+        self._check_type(issue)
+        assert self.expected_result.collection_ids == issue.collection_id
+        assert self.expected_result.parts == issue.terms
+
+    def visit_conflicting_collections_issue(self, issue: ConflictingCollections) -> Any:
+        self._check_type(issue)
+        assert self.expected_result.collection_ids == issue.collection_ids
+        assert self.expected_result.parts == issue.terms
+
+    def visit_assign_term_issue(self, issue: AssignedTerm) -> Any:
+        self._check_type(issue)
+        assert self.expected_result.parts == issue.term
+        assert self.expected_result.collection_ids == issue.collection_id
 
 
 PROJECT_IDS = ['cmip6plus', 'cmip6']
@@ -498,7 +539,7 @@ DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression |
     ]
 
 
-def check_id(obj: str | DataDescriptor | dict | tuple | list | ProjectSpecs | None,
+def check_id(obj: str | DataDescriptor | dict | tuple | list | ProjectSpecs | MatchingTerm | Item | None,
              id: str,
              kind: ItemKind | None = None,
              parent_id: str | None = None) -> None:
@@ -508,7 +549,7 @@ def check_id(obj: str | DataDescriptor | dict | tuple | list | ProjectSpecs | No
             found = False
             for item in obj:
                 try:
-                    check_id(item, id, kind, parent_id)  # type: ignore
+                    check_id(item, id, kind, parent_id)
                 except AssertionError:
                     continue
                 found = True
@@ -519,7 +560,7 @@ def check_id(obj: str | DataDescriptor | dict | tuple | list | ProjectSpecs | No
         case str():
             assert obj == id
         case dict():
-            assert obj['id'] == id  # type: ignore
+            assert obj['id'] == id
         case Item():
             assert obj.id == id
             assert obj.kind == kind
@@ -532,7 +573,7 @@ def check_id(obj: str | DataDescriptor | dict | tuple | list | ProjectSpecs | No
             assert obj.term_id == id
 
 
-def check_issue(issue: DrsIssue, expected_result: DrsValidatorIssue) -> None:
+def check_drs_validation_issue(issue: DrsIssue, expected_result: DrsValidatorIssue) -> None:
     assert isinstance(issue, expected_result.type)
     match issue:
         case ParsingIssue():
@@ -558,14 +599,27 @@ def check_issue(issue: DrsIssue, expected_result: DrsValidatorIssue) -> None:
 
 
 def check_drs_validation_expression(val_expression: DrsValidatorExpression,
-                                    validating_method: Callable) -> None:
-    report = validating_method(val_expression.expression)
+                                    report: DrsValidationReport) -> None:
     assert report.nb_errors == len(val_expression.errors)
     assert report.nb_warnings == len(val_expression.warnings)
     for index in range(0, len(val_expression.errors)):
-        check_issue(report.errors[index], val_expression.errors[index])
+        check_drs_validation_issue(report.errors[index], val_expression.errors[index])
     for index in range(0, len(val_expression.warnings)):
-        check_issue(report.warnings[index], val_expression.warnings[index])
+        check_drs_validation_issue(report.warnings[index], val_expression.warnings[index])
+
+
+def check_generated_expression(expression: DrsMappingGeneratorExpression |
+                                           DrsTermsGeneratorExpression,
+                               report: DrsGenerationReport) -> None:
+    assert expression.generated_expression == report.generated_drs_expression
+    assert len(expression.errors) == report.nb_errors
+    assert len(expression.warnings) == report.nb_warnings
+    for index in range(0, len(expression.errors)):
+        checker = GenerationIssueChecker(expression.errors[index])
+        report.errors[index].accept(checker)
+    for index in range(0, len(expression.warnings)):
+        checker = GenerationIssueChecker(expression.warnings[index])
+        report.warnings[index].accept(checker)
 
 
 def _provide_get_parameters() -> Generator:

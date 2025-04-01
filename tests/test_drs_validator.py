@@ -39,64 +39,64 @@ def test_validate(drs_validation_error_less_query) -> None:
 
 def test_directory_expression_typo_warning(drs_validation_directory_typo_warnings) -> None:
     validator = DrsValidator(drs_validation_directory_typo_warnings.project_id)
-    check_drs_validation_expression(drs_validation_directory_typo_warnings,
-                                    validator.validate_directory)
+    report = validator.validate_directory(drs_validation_directory_typo_warnings.expression)
+    check_drs_validation_expression(drs_validation_directory_typo_warnings, report)
 
 
 def test_directory_expression_typo_error(drs_validation_directory_typo_error) -> None:
     validator = DrsValidator(drs_validation_directory_typo_error.project_id)
-    check_drs_validation_expression(drs_validation_directory_typo_error,
-                                    validator.validate_directory)
+    report = validator.validate_directory(drs_validation_directory_typo_error.expression)
+    check_drs_validation_expression(drs_validation_directory_typo_error, report)
 
 
 def test_filename_expression_warning(drs_validation_file_name_warning) -> None:
     validator = DrsValidator(drs_validation_file_name_warning.project_id)
-    check_drs_validation_expression(drs_validation_file_name_warning,
-                                    validator.validate_file_name)
+    report = validator.validate_file_name(drs_validation_file_name_warning.expression)
+    check_drs_validation_expression(drs_validation_file_name_warning, report)
 
 
 def test_filename_extension_error(drs_validation_file_name_extension_error) -> None:
     validator = DrsValidator(drs_validation_file_name_extension_error.project_id)
-    check_drs_validation_expression(drs_validation_file_name_extension_error,
-                                    validator.validate_file_name)
+    report = validator.validate_file_name(drs_validation_file_name_extension_error.expression)
+    check_drs_validation_expression(drs_validation_file_name_extension_error, report)
 
 
 def test_filename_expression_extra_token_error(drs_validation_file_name_extra_token_error) -> None:
     validator = DrsValidator(drs_validation_file_name_extra_token_error.project_id)
-    check_drs_validation_expression(drs_validation_file_name_extra_token_error,
-                                    validator.validate_file_name)
+    report = validator.validate_file_name(drs_validation_file_name_extra_token_error.expression)
+    check_drs_validation_expression(drs_validation_file_name_extra_token_error, report)
 
 
 def test_dataset_id_expression_typo_warning(drs_validation_dataset_id_typo_warning) -> None:
     validator = DrsValidator(drs_validation_dataset_id_typo_warning.project_id)
-    check_drs_validation_expression(drs_validation_dataset_id_typo_warning,
-                                    validator.validate_dataset_id)
+    report = validator.validate_dataset_id(drs_validation_dataset_id_typo_warning.expression)
+    check_drs_validation_expression(drs_validation_dataset_id_typo_warning, report)
 
 
 def test_dataset_id_expression_typo_error(drs_validation_dataset_id_typo_error) -> None:
     validator = DrsValidator(drs_validation_dataset_id_typo_error.project_id)
-    check_drs_validation_expression(drs_validation_dataset_id_typo_error,
-                                    validator.validate_dataset_id)
+    report = validator.validate_dataset_id(drs_validation_dataset_id_typo_error.expression)
+    check_drs_validation_expression(drs_validation_dataset_id_typo_error, report)
 
 
 def test_dataset_id_expression_token_error(drs_validation_dataset_id_token_error) -> None:
     validator = DrsValidator(drs_validation_dataset_id_token_error.project_id)
-    check_drs_validation_expression(drs_validation_dataset_id_token_error,
-                                    validator.validate_dataset_id)
+    report = validator.validate_dataset_id(drs_validation_dataset_id_token_error.expression)
+    check_drs_validation_expression(drs_validation_dataset_id_token_error, report)
 
 
 def test_dataset_id_expression_error(drs_validation_dataset_id_error) -> None:
     validator = DrsValidator(drs_validation_dataset_id_error.project_id)
-    check_drs_validation_expression(drs_validation_dataset_id_error,
-                                    validator.validate_dataset_id)
+    report = validator.validate_dataset_id(drs_validation_dataset_id_error.expression)
+    check_drs_validation_expression(drs_validation_dataset_id_error, report)
 
 
 def test_pedantic(drs_validation_directory_typo_warnings) -> None:
     validator = DrsValidator(drs_validation_directory_typo_warnings.project_id, pedantic=True)
     drs_validation_directory_typo_warnings.errors.extend(drs_validation_directory_typo_warnings.warnings)
     drs_validation_directory_typo_warnings.warnings = list()
-    check_drs_validation_expression(drs_validation_directory_typo_warnings,
-                                    validator.validate_directory)
+    report = validator.validate_directory(drs_validation_directory_typo_warnings.expression)
+    check_drs_validation_expression(drs_validation_directory_typo_warnings, report)
 
 
 def test_directory_prefix(drs_validation_error_less_query) -> None:
