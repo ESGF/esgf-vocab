@@ -457,6 +457,17 @@ DRS_VALIDATION_DATASET_ID_ERRORS: list[DrsValidatorExpression] = \
                                                                collection_id="mip_era")], []),
     ]
 
+DRS_VALIDATION_ALL_QUERIES = DRS_VALIDATION_DATASET_ID_ERRORS + \
+                             DRS_VALIDATION_DATASET_ID_TOKEN_ERRORS + \
+                             DRS_VALIDATION_DATASET_ID_TYPO_ERRORS + \
+                             DRS_VALIDATION_DATASET_ID_TYPO_WARNINGS + \
+                             DRS_VALIDATION_FILE_NAME_EXTRA_TOKEN_ERRORS + \
+                             DRS_VALIDATION_FILE_NAME_EXTENSION_ERRORS + \
+                             DRS_VALIDATION_FILE_NAME_WARNINGS + \
+                             DRS_VALIDATION_DIRECTORY_TYPO_ERRORS + \
+                             DRS_VALIDATION_DIRECTORY_TYPO_WARNINGS + \
+                             DRS_VALIDATION_ERROR_LESS_QUERIES
+
 DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression |
                                  DrsMappingGeneratorExpression] = \
     [
@@ -789,6 +800,16 @@ def _provide_drs_validation_dataset_id_errors() -> Generator:
 
 @pytest.fixture(params=_provide_drs_validation_dataset_id_errors())
 def drs_validation_dataset_id_error(request) -> DrsValidatorExpression:
+    return request.param
+
+
+def _provide_drs_validation_all_queries() -> Generator:
+    for param in DRS_VALIDATION_ALL_QUERIES:
+        yield param
+
+
+@pytest.fixture(params=_provide_drs_validation_all_queries())
+def drs_validation_query(request) -> DrsValidatorExpression:
     return request.param
 
 
