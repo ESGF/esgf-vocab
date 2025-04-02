@@ -3,7 +3,9 @@ from esgvoc.api.search import ItemKind
 from tests.api_inputs import (  # noqa: F401
     LEN_COLLECTIONS,
     LEN_PROJECTS,
+    ValidationExpression,
     check_id,
+    check_validation,
     find_col_param,
     find_proj_item_param,
     find_term_param,
@@ -116,23 +118,20 @@ def test_valid_term_in_collection(val_query) -> None:
     matching_terms = projects.valid_term_in_collection(val_query.value,
                                                        val_query.item.project_id,
                                                        val_query.item.collection_id)
-    assert len(matching_terms) == val_query.nb_matching_terms
-    if val_query.nb_matching_terms > 0:
-        check_id(matching_terms, val_query.item.term_id)
+    check_validation(val_query, matching_terms)
 
 
 def test_valid_term_in_project(val_query) -> None:
     matching_terms = projects.valid_term_in_project(val_query.value, val_query.item.project_id)
-    assert len(matching_terms) == val_query.nb_matching_terms
-    if val_query.nb_matching_terms > 0:
-        check_id(matching_terms, val_query.item.term_id)
+    check_validation(val_query, matching_terms)
 
 
 def test_valid_term_in_all_projects(val_query) -> None:
     matching_terms = projects.valid_term_in_all_projects(val_query.value)
-    assert len(matching_terms) == val_query.nb_matching_terms * LEN_PROJECTS
-    if val_query.nb_matching_terms > 0:
-        check_id(matching_terms, val_query.item.term_id)
+    query = ValidationExpression(value=val_query.value, item=val_query.item,
+                                 nb_matching_terms=val_query.nb_matching_terms*LEN_PROJECTS,
+                                 nb_errors=val_query.nb_errors)
+    check_validation(query, matching_terms)
 
 
 def test_find_collections_in_project(find_col_param) -> None:
