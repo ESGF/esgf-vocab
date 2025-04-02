@@ -182,6 +182,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/project_specs.html">Project specs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/drs.html">DRS applications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/data_descriptors.html">Data descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/miscellaneous.html">Miscellaneous</a></li>
 </ul>
 
     </div>
@@ -407,8 +408,8 @@ document.write(`
 </div>
 </div><div aria-labelledby="tab-0-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
 
-<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;institution&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
-<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_universe</span><span class="p">(</span><span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span> <span class="c1"># same result but slower (still fast)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;institution&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_universe</span><span class="p">(</span><span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span> <span class="c1"># same result but slower but still fast</span>
 </pre></div>
 </div>
 <img alt="../_images/Jup_one_term.png" src="../_images/Jup_one_term.png" />
@@ -456,9 +457,9 @@ esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6::ipsl
 </div>
 </div><div aria-labelledby="tab-2-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-2-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
 
-<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_universe</span><span class="p">(</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
-<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_project</span><span class="p">(</span><span class="s2">&quot;cmip6&quot;</span><span class="p">,</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
-<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_project</span><span class="p">(</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_universe</span><span class="p">(</span><span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_project</span><span class="p">(</span><span class="s2">&quot;cmip6&quot;</span><span class="p">,</span> <span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_project</span><span class="p">(</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="s2">&quot;ipsl&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="../_images/Jup_one_term_from_one_CV.png" src="../_images/Jup_one_term_from_one_CV.png" />

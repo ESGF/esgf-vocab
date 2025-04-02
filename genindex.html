@@ -179,6 +179,7 @@
 <li class="toctree-l1"><a class="reference internal" href="api_documentation/project_specs.html">Project specs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_documentation/drs.html">DRS applications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_documentation/data_descriptors.html">Data descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_documentation/miscellaneous.html">Miscellaneous</a></li>
 </ul>
 
     </div>
@@ -501,8 +502,6 @@ document.write(`
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchSettings.case_sensitive">case_sensitive (esgvoc.api.search.SearchSettings attribute)</a>
-</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Consortium.changes">changes (esgvoc.api.data_descriptors.Consortium attribute)</a>
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.report.ProjectTermError.class_name">class_name (esgvoc.api.report.ProjectTermError property)</a>
@@ -516,13 +515,15 @@ document.write(`
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Source.cohort">cohort (esgvoc.api.data_descriptors.Source attribute)</a>
 </li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsPartKind.COLLECTION">COLLECTION (esgvoc.api.project_specs.DrsPartKind attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/miscellaneous.html#esgvoc.api.search.ItemKind.COLLECTION">(esgvoc.api.search.ItemKind attribute)</a>
 </li>
+      </ul></li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsCollection.collection_id">collection_id (esgvoc.api.project_specs.DrsCollection attribute)</a>
 
       <ul>
         <li><a href="api_documentation/projects.html#esgvoc.api.report.ProjectTermError.collection_id">(esgvoc.api.report.ProjectTermError attribute)</a>
-</li>
-        <li><a href="api_documentation/projects.html#esgvoc.api.search.MatchingTerm.collection_id">(esgvoc.api.search.MatchingTerm attribute)</a>
 </li>
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.AssignedTerm.collection_id">(esgvoc.apps.drs.report.AssignedTerm attribute)</a>
 </li>
@@ -557,7 +558,7 @@ document.write(`
       </ul></li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ComplianceIssueVisitor">ComplianceIssueVisitor (class in esgvoc.apps.drs.report)</a>
 </li>
-      <li><a href="api_documentation/projects.html#esgvoc.core.db.models.mixins.TermKind.COMPOSITE">COMPOSITE (esgvoc.core.db.models.mixins.TermKind attribute)</a>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.core.db.models.mixins.TermKind.COMPOSITE">COMPOSITE (esgvoc.core.db.models.mixins.TermKind attribute)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.IssueKind.CONFLICT">CONFLICT (esgvoc.apps.drs.report.IssueKind attribute)</a>
 </li>
@@ -569,6 +570,8 @@ document.write(`
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.api.search.ItemKind.DATA_DESCRIPTOR">DATA_DESCRIPTOR (esgvoc.api.search.ItemKind attribute)</a>
+</li>
       <li><a href="api_documentation/projects.html#esgvoc.api.report.UniverseTermError.data_descriptor_id">data_descriptor_id (esgvoc.api.report.UniverseTermError attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor">DataDescriptorVisitor (class in esgvoc.api.data_descriptors.data_descriptor)</a>
@@ -703,8 +706,6 @@ document.write(`
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Experiment.end_year">end_year (esgvoc.api.data_descriptors.Experiment attribute)</a>
 </li>
-      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchType.ENDS_WITH">ENDS_WITH (esgvoc.api.search.SearchType attribute)</a>
-</li>
       <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationReport.errors">errors (esgvoc.api.report.ValidationReport attribute)</a>
 
       <ul>
@@ -754,11 +755,9 @@ document.write(`
     esgvoc.api.search
 
       <ul>
-        <li><a href="api_documentation/projects.html#module-esgvoc.api.search">module</a>
+        <li><a href="api_documentation/miscellaneous.html#module-esgvoc.api.search">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     esgvoc.api.universe
 
@@ -773,6 +772,8 @@ document.write(`
         <li><a href="api_documentation/drs.html#module-esgvoc.apps.drs.generator">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     esgvoc.apps.drs.report
 
@@ -787,9 +788,24 @@ document.write(`
         <li><a href="api_documentation/drs.html#module-esgvoc.apps.drs.validator">module</a>
 </li>
       </ul></li>
-      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Institution.established">established (esgvoc.api.data_descriptors.Institution attribute)</a>
+      <li>
+    esgvoc.core.exceptions
+
+      <ul>
+        <li><a href="api_documentation/miscellaneous.html#module-esgvoc.core.exceptions">module</a>
 </li>
-      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchType.EXACT">EXACT (esgvoc.api.search.SearchType attribute)</a>
+      </ul></li>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.core.exceptions.EsgvocDbError">EsgvocDbError</a>
+</li>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.core.exceptions.EsgvocException">EsgvocException</a>
+</li>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.core.exceptions.EsgvocNotFoundError">EsgvocNotFoundError</a>
+</li>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.core.exceptions.EsgvocNotImplementedError">EsgvocNotImplementedError</a>
+</li>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.core.exceptions.EsgvocValueError">EsgvocValueError</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Institution.established">established (esgvoc.api.data_descriptors.Institution attribute)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.Unparsable.expected_drs_type">expected_drs_type (esgvoc.apps.drs.report.Unparsable attribute)</a>
 </li>
@@ -837,11 +853,9 @@ document.write(`
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_project">find_project() (in module esgvoc.api.projects)</a>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_items_in_project">find_items_in_project() (in module esgvoc.api.projects)</a>
 </li>
-      <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_terms_from_data_descriptor_in_all_projects">find_terms_from_data_descriptor_in_all_projects() (in module esgvoc.api.projects)</a>
-</li>
-      <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_terms_from_data_descriptor_in_project">find_terms_from_data_descriptor_in_project() (in module esgvoc.api.projects)</a>
+      <li><a href="api_documentation/universe.html#esgvoc.api.universe.find_items_in_universe">find_items_in_universe() (in module esgvoc.api.universe)</a>
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_terms_in_all_projects">find_terms_in_all_projects() (in module esgvoc.api.projects)</a>
 </li>
@@ -877,8 +891,6 @@ document.write(`
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGenerationReport.generated_drs_expression">generated_drs_expression (esgvoc.apps.drs.report.DrsGenerationReport attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.GenerationIssueVisitor">GenerationIssueVisitor (class in esgvoc.apps.drs.report)</a>
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_all_collections_in_project">get_all_collections_in_project() (in module esgvoc.api.projects)</a>
@@ -891,11 +903,35 @@ document.write(`
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_all_terms_in_collection">get_all_terms_in_collection() (in module esgvoc.api.projects)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/universe.html#esgvoc.api.universe.get_all_terms_in_data_descriptor">get_all_terms_in_data_descriptor() (in module esgvoc.api.universe)</a>
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_all_terms_in_project">get_all_terms_in_project() (in module esgvoc.api.projects)</a>
 </li>
       <li><a href="api_documentation/universe.html#esgvoc.api.universe.get_all_terms_in_universe">get_all_terms_in_universe() (in module esgvoc.api.universe)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_collection_from_data_descriptor_in_all_projects">get_collection_from_data_descriptor_in_all_projects() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_collection_from_data_descriptor_in_project">get_collection_from_data_descriptor_in_project() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_collection_in_project">get_collection_in_project() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/universe.html#esgvoc.api.universe.get_data_descriptor_in_universe">get_data_descriptor_in_universe() (in module esgvoc.api.universe)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_project">get_project() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_term_from_universe_term_id_in_all_projects">get_term_from_universe_term_id_in_all_projects() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_term_from_universe_term_id_in_project">get_term_from_universe_term_id_in_project() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_term_in_collection">get_term_in_collection() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/universe.html#esgvoc.api.universe.get_term_in_data_descriptor">get_term_in_data_descriptor() (in module esgvoc.api.universe)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_term_in_project">get_term_in_project() (in module esgvoc.api.projects)</a>
+</li>
+      <li><a href="api_documentation/universe.html#esgvoc.api.universe.get_term_in_universe">get_term_in_universe() (in module esgvoc.api.universe)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGenerationReport.given_mapping_or_bag_of_terms">given_mapping_or_bag_of_terms (esgvoc.apps.drs.report.DrsGenerationReport attribute)</a>
 </li>
@@ -982,6 +1018,8 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VerticalLabel.id">(esgvoc.api.data_descriptors.VerticalLabel attribute)</a>
 </li>
+        <li><a href="api_documentation/miscellaneous.html#esgvoc.api.search.Item.id">(esgvoc.api.search.Item attribute)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -997,6 +1035,8 @@ document.write(`
       </ul></li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.IssueKind">IssueKind (class in esgvoc.apps.drs.report)</a>
 </li>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.api.search.ItemKind">ItemKind (class in esgvoc.api.search)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1011,6 +1051,8 @@ document.write(`
         <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsCollection.kind">(esgvoc.api.project_specs.DrsCollection attribute)</a>
 </li>
         <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsConstant.kind">(esgvoc.api.project_specs.DrsConstant attribute)</a>
+</li>
+        <li><a href="api_documentation/miscellaneous.html#esgvoc.api.search.Item.kind">(esgvoc.api.search.Item attribute)</a>
 </li>
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.AssignedTerm.kind">(esgvoc.apps.drs.report.AssignedTerm attribute)</a>
 </li>
@@ -1075,8 +1117,6 @@ document.write(`
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Source.license">(esgvoc.api.data_descriptors.Source attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchType.LIKE">LIKE (esgvoc.api.search.SearchType attribute)</a>
-</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Institution.location">location (esgvoc.api.data_descriptors.Institution attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Activity.long_name">long_name (esgvoc.api.data_descriptors.Activity attribute)</a>
@@ -1105,7 +1145,7 @@ document.write(`
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.IssueKind.MISSING_TERM">MISSING_TERM (esgvoc.apps.drs.report.IssueKind attribute)</a>
 </li>
-      <li><a href="api_documentation/projects.html#esgvoc.core.db.models.mixins.TermKind.MIXED">MIXED (esgvoc.core.db.models.mixins.TermKind attribute)</a>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.core.db.models.mixins.TermKind.MIXED">MIXED (esgvoc.core.db.models.mixins.TermKind attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Source.model_component">model_component (esgvoc.api.data_descriptors.Source attribute)</a>
 </li>
@@ -1123,7 +1163,7 @@ document.write(`
 </li>
         <li><a href="api_documentation/projects.html#module-esgvoc.api.report">esgvoc.api.report</a>
 </li>
-        <li><a href="api_documentation/projects.html#module-esgvoc.api.search">esgvoc.api.search</a>
+        <li><a href="api_documentation/miscellaneous.html#module-esgvoc.api.search">esgvoc.api.search</a>
 </li>
         <li><a href="api_documentation/universe.html#module-esgvoc.api.universe">esgvoc.api.universe</a>
 </li>
@@ -1132,6 +1172,8 @@ document.write(`
         <li><a href="api_documentation/drs.html#module-esgvoc.apps.drs.report">esgvoc.apps.drs.report</a>
 </li>
         <li><a href="api_documentation/drs.html#module-esgvoc.apps.drs.validator">esgvoc.apps.drs.validator</a>
+</li>
+        <li><a href="api_documentation/miscellaneous.html#module-esgvoc.core.exceptions">esgvoc.core.exceptions</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1182,8 +1224,6 @@ document.write(`
       </ul></li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.nominal_resolution">nominal_resolution (esgvoc.api.data_descriptors.ModelComponent attribute)</a>
 </li>
-      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchSettings.not_operator">not_operator (esgvoc.api.search.SearchSettings attribute)</a>
-</li>
   </ul></td>
 </tr></table>
 
@@ -1202,6 +1242,8 @@ document.write(`
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Experiment.parent_experiment_id">parent_experiment_id (esgvoc.api.data_descriptors.Experiment attribute)</a>
 </li>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.api.search.Item.parent_id">parent_id (esgvoc.api.search.Item attribute)</a>
+</li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ParsingIssueVisitor">ParsingIssueVisitor (class in esgvoc.apps.drs.report)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.BrandedSuffix.parts">parts (esgvoc.api.data_descriptors.BrandedSuffix attribute)</a>
@@ -1218,7 +1260,7 @@ document.write(`
         <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsSpecification.parts">(esgvoc.api.project_specs.DrsSpecification attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api_documentation/projects.html#esgvoc.core.db.models.mixins.TermKind.PATTERN">PATTERN (esgvoc.core.db.models.mixins.TermKind attribute)</a>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.core.db.models.mixins.TermKind.PATTERN">PATTERN (esgvoc.core.db.models.mixins.TermKind attribute)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.pedantic">pedantic (esgvoc.apps.drs.generator.DrsGenerator attribute)</a>
 
@@ -1230,15 +1272,13 @@ document.write(`
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_documentation/projects.html#esgvoc.core.db.models.mixins.TermKind.PLAIN">PLAIN (esgvoc.core.db.models.mixins.TermKind attribute)</a>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.core.db.models.mixins.TermKind.PLAIN">PLAIN (esgvoc.core.db.models.mixins.TermKind attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Table.product">product (esgvoc.api.data_descriptors.Table attribute)</a>
 </li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.ProjectSpecs.project_id">project_id (esgvoc.api.project_specs.ProjectSpecs attribute)</a>
 
       <ul>
-        <li><a href="api_documentation/projects.html#esgvoc.api.search.MatchingTerm.project_id">(esgvoc.api.search.MatchingTerm attribute)</a>
-</li>
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.project_id">(esgvoc.apps.drs.generator.DrsGenerator attribute)</a>
 </li>
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGenerationReport.project_id">(esgvoc.apps.drs.report.DrsGenerationReport attribute)</a>
@@ -1282,8 +1322,6 @@ document.write(`
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchType.REGEX">REGEX (esgvoc.api.search.SearchType attribute)</a>
-</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridLabel.region">region (esgvoc.api.data_descriptors.GridLabel attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Source.release_year">release_year (esgvoc.api.data_descriptors.Source attribute)</a>
@@ -1298,10 +1336,6 @@ document.write(`
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchType">SearchType (class in esgvoc.api.search)</a>
-</li>
-      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchSettings.selected_term_fields">selected_term_fields (esgvoc.api.search.SearchSettings attribute)</a>
-</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.BrandedSuffix.separator">separator (esgvoc.api.data_descriptors.BrandedSuffix attribute)</a>
 
       <ul>
@@ -1328,8 +1362,6 @@ document.write(`
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Experiment.start_year">start_year (esgvoc.api.data_descriptors.Experiment attribute)</a>
 </li>
-      <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchType.STARTS_WITH">STARTS_WITH (esgvoc.api.search.SearchType attribute)</a>
-</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Consortium.status">status (esgvoc.api.data_descriptors.Consortium attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Experiment.sub_experiment_id">sub_experiment_id (esgvoc.api.data_descriptors.Experiment attribute)</a>
@@ -1349,8 +1381,12 @@ document.write(`
 </li>
         <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationError.term">(esgvoc.api.report.ValidationError attribute)</a>
 </li>
-        <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.AssignedTerm.term">(esgvoc.apps.drs.report.AssignedTerm attribute)</a>
+      </ul></li>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.api.search.ItemKind.TERM">TERM (esgvoc.api.search.ItemKind attribute)</a>
 </li>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.AssignedTerm.term">term (esgvoc.apps.drs.report.AssignedTerm attribute)</a>
+
+      <ul>
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ExtraTerm.term">(esgvoc.apps.drs.report.ExtraTerm attribute)</a>
 </li>
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.InvalidTerm.term">(esgvoc.apps.drs.report.InvalidTerm attribute)</a>
@@ -1358,8 +1394,6 @@ document.write(`
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.TermIssue.term">(esgvoc.apps.drs.report.TermIssue attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api_documentation/projects.html#esgvoc.api.search.MatchingTerm.term_id">term_id (esgvoc.api.search.MatchingTerm attribute)</a>
-</li>
       <li><a href="api_documentation/projects.html#esgvoc.api.report.ProjectTermError.term_kind">term_kind (esgvoc.api.report.ProjectTermError attribute)</a>
 
       <ul>
@@ -1376,7 +1410,7 @@ document.write(`
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.TermIssue.term_position">(esgvoc.apps.drs.report.TermIssue attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api_documentation/projects.html#esgvoc.core.db.models.mixins.TermKind">TermKind (class in esgvoc.core.db.models.mixins)</a>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.core.db.models.mixins.TermKind">TermKind (class in esgvoc.core.db.models.mixins)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ConflictingCollections.terms">terms (esgvoc.apps.drs.report.ConflictingCollections attribute)</a>
 
@@ -1466,8 +1500,6 @@ document.write(`
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VerticalLabel.type">(esgvoc.api.data_descriptors.VerticalLabel attribute)</a>
 </li>
         <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsSpecification.type">(esgvoc.api.project_specs.DrsSpecification attribute)</a>
-</li>
-        <li><a href="api_documentation/projects.html#esgvoc.api.search.SearchSettings.type">(esgvoc.api.search.SearchSettings attribute)</a>
 </li>
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGenerationReport.type">(esgvoc.apps.drs.report.DrsGenerationReport attribute)</a>
 </li>

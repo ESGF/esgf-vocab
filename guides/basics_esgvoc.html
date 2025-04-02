@@ -180,6 +180,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/project_specs.html">Project specs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/drs.html">DRS applications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/data_descriptors.html">Data descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/miscellaneous.html">Miscellaneous</a></li>
 </ul>
 
     </div>
@@ -380,9 +381,15 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universe">Universe</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listing">Listing</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#little-detour-pydantic-model-instance-return">Little detour: pydantic model instance return</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#find-terms-in-universe">Find terms in universe</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#find-terms-or-data-decriptors-in-universe">Find terms or data decriptors in universe</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-example-cmip6plus">Project example: CMIP6plus</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-example-cmip6plus">Project example: CMIP6plus</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#find-terms-in-a-project">Find terms in a project</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#find-terms-and-collections">Find terms and collections</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-string-against-the-project-cv">Validating string against the project CV</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#queries-based-on-the-project-and-the-collection-ids">Queries based on the project and the collection ids</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#queries-based-only-on-the-project-id">Queries based only on the project id</a></li>
@@ -403,12 +410,13 @@ document.write(`
   <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
 <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>datetime.datetime(2025, 3, 10, 10, 50, 58, 666709)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>datetime.datetime(2025, 3, 21, 11, 3, 21, 470482)
 </pre></div>
 </div>
 </div>
@@ -449,8 +457,8 @@ All terms from all projects (cross-validation).</p></li>
 <h2>ESGVOC API organization<a class="headerlink" href="#esgvoc-api-organization" title="Link to this heading">#</a></h2>
 <p>The API functions are sorted as follows:</p>
 <ul class="simple">
-<li><p><strong>get</strong> functions return a list of something (collections from a project, terms from a collection, etc.)</p></li>
-<li><p><strong>find</strong> functions try to find terms corresponding to an input string.</p></li>
+<li><p><strong>get</strong> functions return a list of something based on an id (collections from a project, terms from a collection, etc.)</p></li>
+<li><p><strong>find</strong> functions try to find terms, data descriptors or collections corresponding to an expression.</p></li>
 <li><p><strong>valid</strong> functions check the compliance of an input string to the DRS of terms.</p></li>
 </ul>
 <div class="cell docutils container">
@@ -490,7 +498,6 @@ All terms from all projects (cross-validation).</p></li>
  &#39;vertical_label&#39;,
  &#39;source&#39;,
  &#39;date&#39;,
- &#39;branded_variable&#39;,
  &#39;model_component&#39;,
  &#39;product&#39;,
  &#39;institution&#39;,
@@ -498,7 +505,6 @@ All terms from all projects (cross-validation).</p></li>
  &#39;time_range&#39;,
  &#39;table&#39;,
  &#39;variant_label&#39;,
- &#39;branded_suffix&#39;,
  &#39;organisation&#39;,
  &#39;experiment&#39;,
  &#39;area_label&#39;,
@@ -510,7 +516,7 @@ All terms from all projects (cross-validation).</p></li>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_terms_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_terms_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
 <span class="c1"># each datadescriptor from the above cell could be use as argument</span>
 <span class="c1"># [:3] just to limit the result with the 3 first one</span>
 </pre></div>
@@ -526,12 +532,12 @@ All terms from all projects (cross-validation).</p></li>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;aerchemmip&quot;</span><span class="p">)</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;aerchemmip&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Activity(id=&#39;aerchemmip&#39;, type=&#39;activity&#39;, drs_name=&#39;AerChemMIP&#39;, name=&#39;AerChemMIP&#39;, long_name=&#39;Aerosols and Chemistry Model Intercomparison Project&#39;, url=None, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;AerChemMIP&#39;)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Activity(id=&#39;aerchemmip&#39;, type=&#39;activity&#39;, drs_name=&#39;AerChemMIP&#39;, name=&#39;AerChemMIP&#39;, long_name=&#39;Aerosols and Chemistry Model Intercomparison Project&#39;, url=None, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;AerChemMIP&#39;)
 </pre></div>
 </div>
 </div>
@@ -542,7 +548,7 @@ All terms from all projects (cross-validation).</p></li>
 <p>The result of the previous call is a list of instances of a pydantic model of the requested data descriptor. From the above example, the result is an <strong>Activity</strong> object that can be query directly in Python.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_activity</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;aerchemmip&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_activity</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;aerchemmip&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">my_activity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">my_activity</span><span class="o">.</span><span class="n">drs_name</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">my_activity</span><span class="o">.</span><span class="n">long_name</span><span class="p">)</span>
@@ -561,12 +567,66 @@ id=&#39;aerchemmip&#39; type=&#39;activity&#39; drs_name=&#39;AerChemMIP&#39; na
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_universe</span><span class="p">(</span><span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;aerchemmip&quot;</span><span class="p">)</span> <span class="c1"># give the same result as above</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_universe</span><span class="p">(</span><span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;aerchemmip&quot;</span><span class="p">)</span> <span class="c1"># give the same result as above</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Activity(id=&#39;aerchemmip&#39;, type=&#39;activity&#39;, drs_name=&#39;AerChemMIP&#39;, name=&#39;AerChemMIP&#39;, long_name=&#39;Aerosols and Chemistry Model Intercomparison Project&#39;, url=None, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;AerChemMIP&#39;)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Activity(id=&#39;aerchemmip&#39;, type=&#39;activity&#39;, drs_name=&#39;AerChemMIP&#39;, name=&#39;AerChemMIP&#39;, long_name=&#39;Aerosols and Chemistry Model Intercomparison Project&#39;, url=None, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;AerChemMIP&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="find-terms-in-universe">
+<h3>Find terms in universe<a class="headerlink" href="#find-terms-in-universe" title="Link to this heading">#</a></h3>
+<p>The find functions perform full text search (FTS) over terms or data descriptor specs. They accept expressions composed not only of keywords but boolean operators that relate them together. The result is sorted according to the hit rank (bm25): the first term in the list is the better match (index zero).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The headquarter of the institution IPSL and the CNES are both located in Paris.</span>
+<span class="c1"># We want to find the term which corresponds to the IPSL institution, but not the CNES one:</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_data_descriptor</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;pArIs NOT CNES&#39;</span><span class="p">,</span>
+                                 <span class="n">data_descriptor_id</span><span class="o">=</span><span class="s1">&#39;institution&#39;</span><span class="p">,</span>
+                                 <span class="n">selected_term_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[DataDescriptorSubSet(id=&#39;ipsl&#39;, type=&#39;institution&#39;, location={&#39;city&#39;: &#39;Paris&#39;, &#39;country&#39;: [&#39;France&#39;, &#39;FR&#39;], &#39;lat&#39;: 48.855675, &#39;lon&#39;: 2.332105})]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can also search in the whole universe, but expect to find many more terms:</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_universe</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;pArIs NOT CNES&#39;</span><span class="p">,</span>
+                          <span class="n">selected_term_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[DataDescriptorSubSet(id=&#39;ipsl&#39;, type=&#39;institution&#39;, location={&#39;city&#39;: &#39;Paris&#39;, &#39;country&#39;: [&#39;France&#39;, &#39;FR&#39;], &#39;lat&#39;: 48.855675, &#39;lon&#39;: 2.332105}),
+ DataDescriptorSubSet(id=&#39;institution/ipsl&#39;, type=&#39;institution&#39;, location={&#39;city&#39;: &#39;Paris&#39;, &#39;country&#39;: [&#39;France&#39;, &#39;FR&#39;], &#39;lat&#39;: 48.855675, &#39;lon&#39;: 2.332105})]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="find-terms-or-data-decriptors-in-universe">
+<h3>Find terms or data decriptors in universe<a class="headerlink" href="#find-terms-or-data-decriptors-in-universe" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We want to find the data descriptors time_range and its terms:</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">find_items_in_universe</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;time_range&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Item(id=&#39;daily&#39;, kind=&lt;ItemKind.TERM: &#39;term&#39;&gt;, parent_id=&#39;time_range&#39;),
+ Item(id=&#39;monthly&#39;, kind=&lt;ItemKind.TERM: &#39;term&#39;&gt;, parent_id=&#39;time_range&#39;),
+ Item(id=&#39;hourly&#39;, kind=&lt;ItemKind.TERM: &#39;term&#39;&gt;, parent_id=&#39;time_range&#39;),
+ Item(id=&#39;time_range&#39;, kind=&lt;ItemKind.DATA_DESCRIPTOR: &#39;data_descriptor&#39;&gt;, parent_id=&#39;universe&#39;)]
 </pre></div>
 </div>
 </div>
@@ -575,6 +635,7 @@ id=&#39;aerchemmip&#39; type=&#39;activity&#39; drs_name=&#39;AerChemMIP&#39; na
 </section>
 <section id="project-example-cmip6plus">
 <h2>Project example: CMIP6plus<a class="headerlink" href="#project-example-cmip6plus" title="Link to this heading">#</a></h2>
+<p>The API provides the same functions for the projects (get, find) and adds the validation functions.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_projects</span><span class="p">()</span>
@@ -624,23 +685,81 @@ id=&#39;aerchemmip&#39; type=&#39;activity&#39; drs_name=&#39;AerChemMIP&#39; na
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_collection</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;activity_id&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;cmip&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_collection</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;activity_id&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;cmip&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Activity(id=&#39;cmip&#39;, type=&#39;activity&#39;, drs_name=&#39;CMIP&#39;, name=&#39;CMIP&#39;, long_name=&#39;CMIP DECK: 1pctCO2, abrupt4xCO2, amip, esm-piControl, esm-historical, historical, and piControl experiments&#39;, url=&#39;https://gmd.copernicus.org/articles/9/1937/2016/gmd-9-1937-2016.pdf&#39;, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;CMIP&#39;)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Activity(id=&#39;cmip&#39;, type=&#39;activity&#39;, drs_name=&#39;CMIP&#39;, name=&#39;CMIP&#39;, long_name=&#39;CMIP DECK: 1pctCO2, abrupt4xCO2, amip, esm-piControl, esm-historical, historical, and piControl experiments&#39;, url=&#39;https://gmd.copernicus.org/articles/9/1937/2016/gmd-9-1937-2016.pdf&#39;, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;CMIP&#39;)
 </pre></div>
 </div>
 </div>
 </div>
+<section id="find-terms-in-a-project">
+<h3>Find terms in a project<a class="headerlink" href="#find-terms-in-a-project" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We want to find all the term related to miroc:</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_project</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;mir*&#39;</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s1">&#39;cmip6plus&#39;</span><span class="p">,</span> <span class="n">selected_term_fields</span><span class="o">=</span><span class="p">[])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[DataDescriptorSubSet(id=&#39;miroc6&#39;, type=&#39;source&#39;),
+ DataDescriptorSubSet(id=&#39;miroc&#39;, type=&#39;organisation&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="find-terms-and-collections">
+<h3>Find terms and collections<a class="headerlink" href="#find-terms-and-collections" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We want to find the collection named &#39;institution_id&#39;</span>
+<span class="n">items_found</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">find_items_in_project</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;instit*&#39;</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s1">&#39;cmip6plus&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;number of items: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">items_found</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items_found</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;collection&#39;</span><span class="p">:</span>
+        <span class="k">break</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>number of items: 41
+id=&#39;institution_id&#39; kind=&lt;ItemKind.COLLECTION: &#39;collection&#39;&gt; parent_id=&#39;cmip6plus&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># But we probably should execute this function:</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">find_collections_in_project</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;instit*&#39;</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s1">&#39;cmip6plus&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(&#39;institution_id&#39;,
+  {&#39;@context&#39;: {&#39;id&#39;: &#39;@id&#39;,
+    &#39;type&#39;: &#39;@type&#39;,
+    &#39;@base&#39;: &#39;https://espri-mod.github.io/mip-cmor-tables/organisation/&#39;,
+    &#39;organisation&#39;: &#39;https://espri-mod.github.io/mip-cmor-tables/organisation&#39;,
+    &#39;myprop&#39;: &#39;http://TEST&#39;,
+    &#39;established&#39;: {&#39;@id&#39;: &#39;https://schema.org/foundingDate&#39;}}})]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 <section id="validating-string-against-the-project-cv">
 <h2>Validating string against the project CV<a class="headerlink" href="#validating-string-against-the-project-cv" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">valid_string</span> <span class="o">=</span> <span class="s2">&quot;IPSL&quot;</span> <span class="c1"># the standard name of the institution : &quot;Institut Pierre Simon Laplace&quot;</span>
-<span class="n">unvalid_string</span> <span class="o">=</span> <span class="s2">&quot;ipsl&quot;</span> <span class="c1"># NOT the DRS name ! but in that case it is the &#39;id&#39; of the term </span>
+<span class="n">unvalid_string</span> <span class="o">=</span> <span class="s2">&quot;ipsl&quot;</span> <span class="c1"># NOT the DRS name ! but in that case it is the &#39;id&#39; of the term</span>
 </pre></div>
 </div>
 </div>
@@ -787,9 +906,15 @@ id=&#39;aerchemmip&#39; type=&#39;activity&#39; drs_name=&#39;AerChemMIP&#39; na
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universe">Universe</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listing">Listing</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#little-detour-pydantic-model-instance-return">Little detour: pydantic model instance return</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#find-terms-in-universe">Find terms in universe</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#find-terms-or-data-decriptors-in-universe">Find terms or data decriptors in universe</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-example-cmip6plus">Project example: CMIP6plus</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-example-cmip6plus">Project example: CMIP6plus</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#find-terms-in-a-project">Find terms in a project</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#find-terms-and-collections">Find terms and collections</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-string-against-the-project-cv">Validating string against the project CV</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#queries-based-on-the-project-and-the-collection-ids">Queries based on the project and the collection ids</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#queries-based-only-on-the-project-id">Queries based only on the project id</a></li>

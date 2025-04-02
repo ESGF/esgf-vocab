@@ -21,16 +21,3 @@
    :inherited-members: BaseModel
    :member-order: groupwise
 ```
-
-## Search settings
-
-```{eval-rst}
-.. automodule:: esgvoc.api.search
-   :members:
-   :member-order: groupwise
-```
-```{eval-rst}
-.. autoclass:: esgvoc.core.db.models.mixins.TermKind
-   :members:
-   :member-order: groupwise
-```
