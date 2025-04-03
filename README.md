@@ -65,6 +65,6 @@ pre-commit install
 * Rye
 
 ```bash
-rye install
+rye sync
 rye run pre-commit install
 ```
