@@ -870,9 +870,20 @@ document.write(`
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.AreaLabel">
 <em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">AreaLabel</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.AreaLabel" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlainTermDataDescriptor</span></code></a></p>
+<p>Area sampling label.</p>
+<p>This label provides information about the area sampling of a given dataset.
+For a list of allowed values, see
+[TODO think about how to cross-reference to somewhere where people can look up the allowed values,
+e.g. some summary of the values in <a class="github reference external" href="https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc/area_label">WCRP-CMIP/WCRP-universe</a>.]</p>
+<p>This label is used as the area component of a branded variable’s suffix
+(see <a class="reference internal" href="#esgvoc.api.data_descriptors.BrandedSuffix" title="esgvoc.api.data_descriptors.BrandedSuffix"><code class="xref py py-class docutils literal notranslate"><span class="pre">BrandedSuffix</span></code></a>).
+By definition, the area label must be consistent with the branded suffix.
+area labels must not contain dashes
+(as the dash is used as a separator when constructing the branded suffix).</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AreaLabel&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Area sampling label.\n\nThis label provides information about the area sampling of a given dataset.\nFor a list of allowed values, see\n[TODO think about how to cross-reference to somewhere where people can look up the allowed values,\ne.g. some summary of the values in https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc/area_label.]\n\nThis label is used as the area component of a branded variable&#39;s suffix\n(see :py:class:`BrandedSuffix`).\nBy definition, the area label must be consistent with the branded suffix.\narea labels must not contain dashes\n(as the dash is used as a separator when constructing the branded suffix).&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -957,9 +968,25 @@ document.write(`
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.BrandedSuffix">
 <em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">BrandedSuffix</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.BrandedSuffix" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeTermDataDescriptor</span></code></a></p>
+<p>The suffix of a branded variable.</p>
+<p>A branded variable is composed of two parts.
+The first part is the root variable (see [TODO cross-ref to Variable]).
+The second is the suffix, i.e. the component described here.
+The suffix captures all the information
+about the time sampling, horizontal sampling, vertical sampling
+and area masking of the variable.</p>
+<p>The suffix is composed of the following components:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#esgvoc.api.data_descriptors.TemporalLabel" title="esgvoc.api.data_descriptors.TemporalLabel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemporalLabel</span></code></a></p></li>
+<li><p><a class="reference internal" href="#esgvoc.api.data_descriptors.VerticalLabel" title="esgvoc.api.data_descriptors.VerticalLabel"><code class="xref py py-class docutils literal notranslate"><span class="pre">VerticalLabel</span></code></a></p></li>
+<li><p><a class="reference internal" href="#esgvoc.api.data_descriptors.HorizontalLabel" title="esgvoc.api.data_descriptors.HorizontalLabel"><code class="xref py py-class docutils literal notranslate"><span class="pre">HorizontalLabel</span></code></a></p></li>
+<li><p><a class="reference internal" href="#esgvoc.api.data_descriptors.AreaLabel" title="esgvoc.api.data_descriptors.AreaLabel"><code class="xref py py-class docutils literal notranslate"><span class="pre">AreaLabel</span></code></a></p></li>
+</ol>
+<p>These components are separated by a separator to create the branded suffix.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BrandedSuffix&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The suffix of a branded variable.\n\nA branded variable is composed of two parts.\nThe first part is the root variable (see [TODO cross-ref to Variable]).\nThe second is the suffix, i.e. the component described here.\nThe suffix captures all the information\nabout the time sampling, horizontal sampling, vertical sampling\nand area masking of the variable.\n\nThe suffix is composed of the following components:\n\n#. :py:class:`TemporalLabel`\n#. :py:class:`VerticalLabel`\n#. :py:class:`HorizontalLabel`\n#. :py:class:`AreaLabel`\n\nThese components are separated by a separator to create the branded suffix.&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1076,9 +1103,17 @@ document.write(`
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.BrandedVariable">
 <em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">BrandedVariable</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.BrandedVariable" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeTermDataDescriptor</span></code></a></p>
+<p>A climate-related quantity or measurement, including information about sampling.</p>
+<p>The concept of a branded variable was introduced in CMIP7.
+A branded variable is composed of two parts.
+The first part is the root variable (see <a class="reference internal" href="#esgvoc.api.data_descriptors.Variable" title="esgvoc.api.data_descriptors.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a>).
+The second is the suffix (see <a class="reference internal" href="#esgvoc.api.data_descriptors.BrandedSuffix" title="esgvoc.api.data_descriptors.BrandedSuffix"><code class="xref py py-class docutils literal notranslate"><span class="pre">BrandedSuffix</span></code></a>).</p>
+<p>For further details on the development of branded variables,
+see [this paper draft](<a class="reference external" href="https://docs.google.com/document/d/19jzecgymgiiEsTDzaaqeLP6pTvLT-NzCMaq-wu-QoOc/edit?pli=1&amp;tab=t.0">https://docs.google.com/document/d/19jzecgymgiiEsTDzaaqeLP6pTvLT-NzCMaq-wu-QoOc/edit?pli=1&amp;tab=t.0</a>).</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BrandedVariable&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A climate-related quantity or measurement, including information about sampling.\n\nThe concept of a branded variable was introduced in CMIP7.\nA branded variable is composed of two parts.\nThe first part is the root variable (see :py:class:`Variable`).\nThe second is the suffix (see :py:class:`BrandedSuffix`).\n\nFor further details on the development of branded variables,\nsee [this paper draft](https://docs.google.com/document/d/19jzecgymgiiEsTDzaaqeLP6pTvLT-NzCMaq-wu-QoOc/edit?pli=1&amp;tab=t.0).&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2115,9 +2150,19 @@ document.write(`
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.HorizontalLabel">
 <em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">HorizontalLabel</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.HorizontalLabel" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlainTermDataDescriptor</span></code></a></p>
+<p>Horizontal sampling label.</p>
+<p>This label provides information about the horizontal sampling of a given dataset.
+For a list of allowed values, see
+[TODO think about how to cross-reference to somewhere where people can look up the allowed values,
+e.g. some summary of the values in <a class="github reference external" href="https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc/horizontal_label">WCRP-CMIP/WCRP-universe</a>.]</p>
+<p>This label is used as the horizontal component of a branded variable’s suffix
+(see <a class="reference internal" href="#esgvoc.api.data_descriptors.BrandedSuffix" title="esgvoc.api.data_descriptors.BrandedSuffix"><code class="xref py py-class docutils literal notranslate"><span class="pre">BrandedSuffix</span></code></a>).
+By definition, the horizontal label must be consistent with the branded suffix.
+Horizontal labels must not contain the separator used when constructing the branded suffix.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HorizontalLabel&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Horizontal sampling label.\n\nThis label provides information about the horizontal sampling of a given dataset.\nFor a list of allowed values, see\n[TODO think about how to cross-reference to somewhere where people can look up the allowed values,\ne.g. some summary of the values in https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc/horizontal_label.]\n\nThis label is used as the horizontal component of a branded variable&#39;s suffix\n(see :py:class:`BrandedSuffix`).\nBy definition, the horizontal label must be consistent with the branded suffix.\nHorizontal labels must not contain the separator used when constructing the branded suffix.&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -3714,9 +3759,19 @@ document.write(`
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.TemporalLabel">
 <em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">TemporalLabel</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.TemporalLabel" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlainTermDataDescriptor</span></code></a></p>
+<p>Temporal sampling label.</p>
+<p>This label provides information about the temporal sampling of a given dataset.
+For a list of allowed values, see
+[TODO think about how to cross-reference to somewhere where people can look up the allowed values,
+e.g. some summary of the values in <a class="github reference external" href="https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc/temporal_label">WCRP-CMIP/WCRP-universe</a>.]</p>
+<p>This label is used as the temporal component of a branded variable’s suffix
+(see <a class="reference internal" href="#esgvoc.api.data_descriptors.BrandedSuffix" title="esgvoc.api.data_descriptors.BrandedSuffix"><code class="xref py py-class docutils literal notranslate"><span class="pre">BrandedSuffix</span></code></a>).
+By definition, the temporal label must be consistent with the branded suffix.
+Temporal labels must not contain the separator used when constructing the branded suffix.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TemporalLabel&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Temporal sampling label.\n\nThis label provides information about the temporal sampling of a given dataset.\nFor a list of allowed values, see\n[TODO think about how to cross-reference to somewhere where people can look up the allowed values,\ne.g. some summary of the values in https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc/temporal_label.]\n\nThis label is used as the temporal component of a branded variable&#39;s suffix\n(see :py:class:`BrandedSuffix`).\nBy definition, the temporal label must be consistent with the branded suffix.\nTemporal labels must not contain the separator used when constructing the branded suffix.&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -3920,13 +3975,28 @@ document.write(`
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Variable">
 <em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">Variable</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Variable" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlainTermDataDescriptor</span></code></a></p>
-<p>A variable refers to a specific type of climate-related quantity or measurement that is     simulated and stored in a data file. These variables represent key physical, chemical, or     biological properties of the Earth system and are outputs from climate models.
-Each variable captures a different aspect of the climate system, such as temperature,     precipitation, sea level, radiation, or atmospheric composition.
-Examples of Variables: tas: Near-surface air temperature (often measured at 2 meters above     the surface) pr: Precipitation psl: Sea level pressure zg: Geopotential height rlut:     Top-of-atmosphere longwave radiation siconc: Sea ice concentration co2: Atmospheric CO2 concentration</p>
+<p>A climate-related quantity or measurement.</p>
+<p>These quantities represent key physical, chemical or biological properties of the Earth system
+and can be the result of direct observation of the climate system or simulations.
+Variables cover a range of aspects of the climate system,
+such as temperature, precipitation, sea level, radiation, or atmospheric composition.
+Some examples of variables that have been used in CMIP:</p>
+<ul class="simple">
+<li><p><em>tas</em>: Near-surface air temperature (often measured at 2 meters above the surface)</p></li>
+<li><p><em>pr</em>: Precipitation</p></li>
+<li><p><em>psl</em>: Sea-level pressure</p></li>
+<li><p><em>zg</em>: Geopotential height</p></li>
+<li><p><em>rlut</em>: Top-of-atmosphere longwave radiation</p></li>
+<li><p><em>siconc</em>: Sea-ice concentration</p></li>
+<li><p><em>co2</em>: Atmospheric CO2 concentration</p></li>
+</ul>
+<p>Since CMIP7, the concept of a variable has been augmented with the idea of ‘branding’,
+leading to the idea of a ‘branded variable’.
+For details, see <a class="reference internal" href="#esgvoc.api.data_descriptors.BrandedVariable" title="esgvoc.api.data_descriptors.BrandedVariable"><code class="xref py py-class docutils literal notranslate"><span class="pre">BrandedVariable</span></code></a>.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Variable&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A variable refers to a specific type of climate-related quantity or measurement that is     simulated and stored in a data file. These variables represent key physical, chemical, or     biological properties of the Earth system and are outputs from climate models.\nEach variable captures a different aspect of the climate system, such as temperature,     precipitation, sea level, radiation, or atmospheric composition.\nExamples of Variables: tas: Near-surface air temperature (often measured at 2 meters above     the surface) pr: Precipitation psl: Sea level pressure zg: Geopotential height rlut:     Top-of-atmosphere longwave radiation siconc: Sea ice concentration co2: Atmospheric CO2 concentration&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A climate-related quantity or measurement.\n\nThese quantities represent key physical, chemical or biological properties of the Earth system\nand can be the result of direct observation of the climate system or simulations.\nVariables cover a range of aspects of the climate system,\nsuch as temperature, precipitation, sea level, radiation, or atmospheric composition.\nSome examples of variables that have been used in CMIP:\n\n- *tas*: Near-surface air temperature (often measured at 2 meters above the surface)\n- *pr*: Precipitation\n- *psl*: Sea-level pressure\n- *zg*: Geopotential height\n- *rlut*: Top-of-atmosphere longwave radiation\n- *siconc*: Sea-ice concentration\n- *co2*: Atmospheric CO2 concentration\n\nSince CMIP7, the concept of a variable has been augmented with the idea of &#39;branding&#39;,\nleading to the idea of a &#39;branded variable&#39;.\nFor details, see :py:class:`BrandedVariable`.&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -4164,9 +4234,19 @@ Examples of Variables: tas: Near-surface air temperature (often measured at 2 me
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.VerticalLabel">
 <em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">VerticalLabel</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.VerticalLabel" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatternTermDataDescriptor</span></code></a></p>
+<p>Vertical label.</p>
+<p>This label provides information about the vertical sampling of a given dataset.
+For a list of allowed values, see
+[TODO think about how to cross-reference to somewhere where people can look up the allowed values,
+e.g. some summary of the values in <a class="github reference external" href="https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc/vertical_label">WCRP-CMIP/WCRP-universe</a>.]</p>
+<p>This label is used as the vertical component of a branded variable’s suffix
+(see <a class="reference internal" href="#esgvoc.api.data_descriptors.BrandedSuffix" title="esgvoc.api.data_descriptors.BrandedSuffix"><code class="xref py py-class docutils literal notranslate"><span class="pre">BrandedSuffix</span></code></a>).
+By definition, the vertical label must be consistent with the branded suffix.
+Vertical labels must not contain the separator used when constructing the branded suffix.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VerticalLabel&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Vertical label.\n\nThis label provides information about the vertical sampling of a given dataset.\nFor a list of allowed values, see\n[TODO think about how to cross-reference to somewhere where people can look up the allowed values,\ne.g. some summary of the values in https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc/vertical_label.]\n\nThis label is used as the vertical component of a branded variable&#39;s suffix\n(see :py:class:`BrandedSuffix`).\nBy definition, the vertical label must be consistent with the branded suffix.\nVertical labels must not contain the separator used when constructing the branded suffix.&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
