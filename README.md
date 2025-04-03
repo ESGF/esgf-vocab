@@ -58,6 +58,7 @@ rye sync
 * Pip
 
 ```bash
+wily build
 pip install pre-commit
 pre-commit install
 ```
@@ -66,5 +67,6 @@ pre-commit install
 
 ```bash
 rye sync
+rye run wily build
 rye run pre-commit install
 ```
