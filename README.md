@@ -69,5 +69,4 @@ pre-commit install
 rye sync
 rye run wily setup
 rye run pre-commit install
-
 ```
