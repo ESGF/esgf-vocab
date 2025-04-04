@@ -3,13 +3,10 @@ name: Test on push
 on:
   push:
     branches:
-      - main
-      - integration
-    paths:
-      - src/**
+      - test
 
 env:
-  SLACK_CHANNEL: C040XHV7E0P
+  SLACK_CHANNEL: C08LQBPRQ4A
 
 jobs:
   test_push:
