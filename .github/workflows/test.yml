@@ -3,7 +3,7 @@ name: Test on push
 on:
   push:
     branches:
-      - test
+      - tmp
 
 env:
   SLACK_CHANNEL: C08LQBPRQ4A
