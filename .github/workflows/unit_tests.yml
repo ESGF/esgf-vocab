@@ -1,4 +1,4 @@
-name: Test on push
+name: Unit tests
 
 on:
   push:
@@ -12,24 +12,25 @@ env:
   SLACK_CHANNEL: C040XHV7E0P
 
 jobs:
-  test_push:
+  unit_tests:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Install the latest version of rye
+      - name: Rye Install
         uses: eifinger/setup-rye@v4
         with:
           enable-cache: true
 
-      - name: Sync dependencies
+      - name: Rye sync
         run: rye sync
 
       - name: Test
         run: rye run pytest --ignore 'tests/test_config.py' tests
 
-      - name: Send Slack message on failure
+      - name: Slack
         uses: someimportantcompany/github-actions-slack-message@v1
         if: failure()
         with:
