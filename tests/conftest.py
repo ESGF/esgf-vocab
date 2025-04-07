@@ -22,11 +22,11 @@ def pytest_collection_modifyitems(session, config, items) -> None:
     config_test_items = list()
     config_test_func_names = _get_test_functions(_CONFIG_TEST_FILE_PATH)
     for item in items:
-        for name in basic_scenario_test_func_names:
-            if name in item.name:
+        for test_name in basic_scenario_test_func_names:
+            if item.name.startswith(test_name):
                 basic_scenario_test_items.append(item)
-        for name in config_test_func_names:
-            if name in item.name:
+        for test_name in config_test_func_names:
+            if item.name.startswith(test_name):
                 config_test_items.append(item)
     for item in basic_scenario_test_items + config_test_items:
         items.remove(item)
