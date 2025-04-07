@@ -28,7 +28,7 @@ jobs:
         run: rye sync
 
       - name: Test
-        run: rye run pytest --ignore 'tests/test_config.py' tests
+        run: rye run pytest tests
 
       - name: Slack
         uses: someimportantcompany/github-actions-slack-message@v1
