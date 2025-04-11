@@ -24,4 +24,3 @@ class Source(PlainTermDataDescriptor):
     license: dict = Field(default_factory=dict)
     model_component: Optional[dict] = None
     release_year: Optional[int] = None
-
