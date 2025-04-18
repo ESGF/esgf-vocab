@@ -13,7 +13,7 @@ env:
 
 jobs:
   unit_tests:
-    name: Unit tests
+    name: Run unit tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
