@@ -13,22 +13,22 @@ env:
 
 jobs:
   unit_tests:
+    name: Run unit tests
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Rye Install
-        uses: eifinger/setup-rye@v4
+      - name: Install UV
+        uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
 
-      - name: Rye sync
-        run: rye sync
+      - name: Sync
+        run: uv sync
 
       - name: Test
-        run: rye run pytest tests
+        run: uv run pytest tests
 
       - name: Slack
         uses: someimportantcompany/github-actions-slack-message@v1
