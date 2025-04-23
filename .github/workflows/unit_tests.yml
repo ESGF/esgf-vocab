@@ -3,10 +3,16 @@ name: Unit tests
 on:
   push:
     branches:
-      - main
       - integration
     paths:
       - src/**
+      - tests/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - src/**
+      - tests/**
 
 env:
   SLACK_CHANNEL: C040XHV7E0P
