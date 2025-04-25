@@ -10,7 +10,7 @@ import esgvoc.core.db.connection as db
 from esgvoc.core.db.models.mixins import IdMixin, PkMixin, TermKind
 from esgvoc.core.exceptions import EsgvocDbError
 
-_LOGGER = logging.getLogger("universe_db_creation")
+_LOGGER = logging.getLogger(__name__)
 
 
 class Universe(SQLModel, PkMixin, table=True):

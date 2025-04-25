@@ -14,7 +14,7 @@ from esgvoc.core.db.models.project import Collection, Project, PTerm
 from esgvoc.core.exceptions import EsgvocDbError
 from esgvoc.core.service.data_merger import DataMerger
 
-_LOGGER = logging.getLogger("project_ingestion")
+_LOGGER = logging.getLogger(__name__)
 
 
 def infer_term_kind(json_specs: dict) -> TermKind:
@@ -146,9 +146,9 @@ def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash:
         # Read: https://sqlite.org/fts5.html
         try:
             sql_query = (
-                "INSERT INTO pterms_fts5(pk, id, specs, kind, collection_pk) "
+                "INSERT INTO pterms_fts5(pk, id, specs, kind, collection_pk) "  # noqa: S608
                 + "SELECT pk, id, specs, kind, collection_pk FROM pterms;"
-            )  # noqa: S608
+            )
             project_db_session.exec(text(sql_query))  # type: ignore
         except Exception as e:
             msg = f"unable to insert rows into pterms_fts5 table for {project_db_file_path}"
@@ -157,10 +157,10 @@ def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash:
         project_db_session.commit()
         try:
             sql_query = (
-                "INSERT INTO pcollections_fts5(pk, id, data_descriptor_id, context, "
+                "INSERT INTO pcollections_fts5(pk, id, data_descriptor_id, context, "  # noqa: S608
                 + "project_pk, term_kind) SELECT pk, id, data_descriptor_id, context, "
                 + "project_pk, term_kind FROM collections;"
-            )  # noqa: S608
+            )
             project_db_session.exec(text(sql_query))  # type: ignore
         except Exception as e:
             msg = f"unable to insert rows into pcollections_fts5 table for {project_db_file_path}"
