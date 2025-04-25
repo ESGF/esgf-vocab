@@ -1,9 +1,9 @@
+import logging
 import re
 from typing import Any
 
 import typer
 from pydantic import BaseModel
-from requests import logging
 from rich.console import Console
 from rich.json import JSON
 from rich.table import Table
