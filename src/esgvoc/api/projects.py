@@ -95,14 +95,38 @@ def _valid_value_composite_term_with_separator(value: str,
         if len(splits) == len(parts):
             for index in range(0, len(splits)):
                 given_value = splits[index]
-                resolved_term = _resolve_term(parts[index],
+                if "id" not in parts[index].keys():
+                    terms= universe.get_all_terms_in_data_descriptor(parts[index]["type"],None)
+                    parts[index]["id"] = [term.id for term in terms]
+                   
+
+                if type(parts[index]["id"]) is str:
+                    parts[index]["id"]=[parts[index]["id"]]
+
+                errors_list = list()
+                for id in parts[index]["id"]:
+                    
+                    part_parts = dict(parts[index])
+                    part_parts["id"]=id
+                    #print(part_parts)
+
+                    resolved_term = _resolve_term(part_parts,
                                               universe_session,
                                               project_session)
-                errors = _valid_value(given_value,
+                    errors = _valid_value(given_value,
                                       resolved_term,
                                       universe_session,
                                       project_session)
-                result.extend(errors)
+                    if len(errors)==0:
+                        errors_list = errors
+                        break
+                    else:
+                        errors_list.extend(errors) 
+                    #print(errors)
+                    
+                else:
+                    #result.extend(errors_list)
+                    result.append(_create_term_error(value, term))
         else:
             result.append(_create_term_error(value, term))
     else:
