@@ -237,6 +237,7 @@ class StateService:
         print("sync projects")
         for project in self.projects.values():
             project.sync()
+        self.connect_db()
 
     def table(self):
         table = Table(show_header=False, show_lines=True)
