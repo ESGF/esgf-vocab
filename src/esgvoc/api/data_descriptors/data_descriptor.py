@@ -86,7 +86,7 @@ class CompositeTermPart(ConfiguredBaseModel):
     """
     A reference to a term, part of a composite term.
     """
-    id: str
+    id: str | list[str] | None = None
     """The id of the referenced term."""
     type: str
     """The type of the referenced term."""

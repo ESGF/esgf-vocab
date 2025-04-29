@@ -173,18 +173,18 @@ class RepoFetcher:
             command.extend(["--branch", branch])
         with redirect_stdout_to_log():
             try:
-                subprocess.run(command, check=True)
-                _LOGGER.debug(f"Repository cloned successfully into {destination}")
-            except subprocess.CalledProcessError:
-                try:
+                if not Path(destination).exists():
+                    subprocess.run(command, check=True)
+                    _LOGGER.debug(f"Repository cloned successfully into {destination}")
+                else:
                     current_work_dir = os.getcwd()
                     os.chdir(f"{destination}")
                     command = ["git", "pull"]
                     subprocess.run(command, check=True)
                     os.chdir(current_work_dir)
 
-                except Exception as e:
-                    raise Exception(f"Failed to clone repository: {e}")
+            except Exception as e:
+                raise Exception(f"Failed to clone repository: {e}")
 
     def get_github_version_with_api(self, owner: str, repo: str, branch: str = "main"):
         """Fetch the latest commit version (or any other versioning scheme) from GitHub."""

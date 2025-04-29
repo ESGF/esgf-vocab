@@ -1,34 +1,46 @@
-
-from typing import Any
-from esgvoc.api.projects import get_all_collections_in_project, get_all_projects, \
-    get_all_terms_in_collection, get_term_in_project, get_term_in_collection
-from esgvoc.api.universe import find_terms_in_data_descriptor, find_terms_in_universe, \
-    get_all_data_descriptors_in_universe, get_all_terms_in_data_descriptor, get_term_in_data_descriptor, \
-    get_term_in_universe
-from pydantic import BaseModel
-from requests import logging
-from rich.table import Table
-import typer
+import logging
 import re
-from rich.json import JSON
+from typing import Any
+
+import typer
+from pydantic import BaseModel
 from rich.console import Console
+from rich.json import JSON
+from rich.table import Table
+
+from esgvoc.api.projects import (
+    get_all_collections_in_project,
+    get_all_projects,
+    get_all_terms_in_collection,
+    get_term_in_collection,
+    get_term_in_project,
+)
+from esgvoc.api.universe import (
+    find_terms_in_data_descriptor,
+    find_terms_in_universe,
+    get_all_data_descriptors_in_universe,
+    get_all_terms_in_data_descriptor,
+    get_term_in_data_descriptor,
+    get_term_in_universe,
+)
 
 app = typer.Typer()
 console = Console()
 
 _LOGGER = logging.getLogger(__name__)
 
+
 def validate_key_format(key: str):
     """
     Validate if the key matches the XXXX:YYYY:ZZZZ format.
     """
-    if not re.match(r"^[a-zA-Z0-9\/_]*:[a-zA-Z0-9\/_]*:[a-zA-Z0-9\/_.]*$", key):
+    if not re.match(r"^[a-zA-Z0-9\/_-]*:[a-zA-Z0-9\/_-]*:[a-zA-Z0-9\/_.-]*$", key):
         raise typer.BadParameter(f"Invalid key format: {key}. Must be XXXX:YYYY:ZZZZ.")
     return key.split(":")
 
 
-def handle_universe(data_descriptor_id:str|None,term_id:str|None, options=None):
-    _LOGGER.debug(f"Handling universe with data_descriptor_id={data_descriptor_id}, term_id={term_id}") 
+def handle_universe(data_descriptor_id: str | None, term_id: str | None, options=None):
+    _LOGGER.debug(f"Handling universe with data_descriptor_id={data_descriptor_id}, term_id={term_id}")
 
     if data_descriptor_id and term_id:
         return get_term_in_data_descriptor(data_descriptor_id, term_id, options)
@@ -38,7 +50,6 @@ def handle_universe(data_descriptor_id:str|None,term_id:str|None, options=None):
         return get_term_in_universe(term_id, options)
         # dict[str, BaseModel] | dict[str, dict[str, BaseModel]] | None:
 
-
     elif data_descriptor_id:
         return get_all_terms_in_data_descriptor(data_descriptor_id)
         # dict[str, BaseModel]|None:
@@ -47,17 +58,17 @@ def handle_universe(data_descriptor_id:str|None,term_id:str|None, options=None):
         return get_all_data_descriptors_in_universe()
         # dict[str, dict]:
 
-def handle_project(project_id:str,collection_id:str|None,term_id:str|None,options=None):
+
+def handle_project(project_id: str, collection_id: str | None, term_id: str | None, options=None):
     _LOGGER.debug(f"Handling project {project_id} with Y={collection_id}, Z={term_id}, options = {options}")
-    
+
     if project_id and collection_id and term_id:
         return get_term_in_collection(project_id, collection_id, term_id, options)
         # BaseModel|dict[str: BaseModel]|None:
 
     elif term_id:
-        return get_term_in_project(project_id, term_id,options)
+        return get_term_in_project(project_id, term_id, options)
         # dict[str, BaseModel] | dict[str, dict[str, BaseModel]] | None:
-
 
     elif collection_id:
         return get_all_terms_in_collection(project_id, collection_id)
@@ -72,12 +83,11 @@ def handle_project(project_id:str,collection_id:str|None,term_id:str|None,option
         # dict[str, dict]:
 
 
-def handle_unknown(x:str|None,y:str|None,z:str|None):
+def handle_unknown(x: str | None, y: str | None, z: str | None):
     print(f"Something wrong in X,Y or Z : X={x}, Y={y}, Z={z}")
 
 
-def display(data:Any):
-
+def display(data: Any):
     if isinstance(data, BaseModel):
         # Pydantic Model
         console.print(JSON.from_data(data.model_dump()))
@@ -96,6 +106,7 @@ def display(data:Any):
         # Fallback to simple print
         console.print(data)
 
+
 @app.command()
 def get(keys: list[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZZZ format")):
     """
@@ -113,7 +124,7 @@ def get(keys: list[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZ
         <term>\t\tThe term id within the specified collection.\n
     \n
     Example:
-        To retrieve the value from the "cmip6plus" project, under the "institution_id" column, the term with the identifier "ipsl", you would use: \n 
+        To retrieve the value from the "cmip6plus" project, under the "institution_id" column, the term with the identifier "ipsl", you would use: \n
             `get cmip6plus:institution_id:ipsl`\n
         The default project is the universe CV : the argument would be like `universe:institution:ipsl` or `:institution:ipsl` \n
         - to get list of available term from universe institution `:institution:` \n
@@ -124,23 +135,21 @@ def get(keys: list[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZ
         - Use a colon (`:`) to separate the parts of the argument.  \n
         - if more than one argument is given i.e get X:Y:Z A:B:C the 2 results are appended. \n
     \n
-    """ 
+    """
     known_projects = get_all_projects()
 
     # Validate and process each key
     for key in keys:
         validated_key = validate_key_format(key)
         _LOGGER.debug(f"Processed key: {validated_key}")
-        where,what,who = validated_key
-        what = what if what!="" else None
-        who = who if who!="" else None
-        if where == "" or where=="universe": 
-            res = handle_universe(what,who)
+        where, what, who = validated_key
+        what = what if what != "" else None
+        who = who if who != "" else None
+        if where == "" or where == "universe":
+            res = handle_universe(what, who)
         elif where in known_projects:
-            res = handle_project(where,what,who,None)
+            res = handle_project(where, what, who, None)
         else:
-            res = handle_unknown(where,what,who)
-        
+            res = handle_unknown(where, what, who)
+
         display(res)
-
-

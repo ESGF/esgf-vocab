@@ -3,13 +3,16 @@ name: Unit tests
 on:
   push:
     branches:
-      - main
       - integration
     paths:
       - src/**
-
-env:
-  SLACK_CHANNEL: C040XHV7E0P
+      - tests/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - src/**
+      - tests/**
 
 jobs:
   unit_tests:
@@ -29,12 +32,3 @@ jobs:
 
       - name: Test
         run: uv run pytest tests
-
-      - name: Slack
-        uses: someimportantcompany/github-actions-slack-message@v1
-        if: failure()
-        with:
-          channel: ${{ env.SLACK_CHANNEL }}
-          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-          text: Test[s] failed
-          color: failure
