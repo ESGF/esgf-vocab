@@ -152,7 +152,7 @@
         },
         {
           "required": [
-            "cmip6:member_id"
+            "cmip6:variant_label"
           ]
         }
       ]
