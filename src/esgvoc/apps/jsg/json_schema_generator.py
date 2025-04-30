@@ -7,7 +7,7 @@ from sqlmodel import Session
 from esgvoc.api import projects, search
 from esgvoc.core.constants import PATTERN_JSON_KEY
 from esgvoc.core.db.models.project import Collection, TermKind
-from esgvoc.core.exceptions import EsgvocValueError
+from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocNotImplementedError
 
 KEY_SEPARATOR = ':'
 FIELD_PART_SEPARATOR = '_'
@@ -24,7 +24,7 @@ def _process_plain(collection: Collection, selected_field: str) -> list[str]:
             value = term.specs[selected_field]
             result.append(value)
         else:
-            raise EsgvocValueError(f'missing key {selected_field} for term {term.id}')
+            raise EsgvocNotFoundError(f'missing key {selected_field} for term {term.id}')
     return result
 
 
@@ -38,7 +38,7 @@ def _process_composite(collection: Collection, universe_session: Session,
             if resolved_term.kind == TermKind.PATTERN:
                 result += resolved_term.specs[PATTERN_JSON_KEY]
             else:
-                raise NotImplementedError(f'{term.kind} term is not supported yet')
+                raise EsgvocNotImplementedError(f'{term.kind} term is not supported yet')
     # Patterns terms are meant to be validated individually.
     # So their regex are defined as a whole (begins by a ^, ends by a $).
     # As the pattern is a concatenation of plain or regex, multiple ^ and $ can exist.
@@ -67,7 +67,7 @@ def _match_collection(field: str, collections: list[Collection], universe_sessio
                 case _:
                     msg = f'unsupported term kind {collection.term_kind} ' + \
                           f"for schema field '{field}'"
-                    raise EsgvocValueError(msg)
+                    raise EsgvocNotImplementedError(msg)
             break
     return property_key, property_value
 
@@ -88,7 +88,7 @@ def _generate_property(project_id: str, collections: list[Collection], schema_fi
             property_value = _process_plain(collection=matched_collection, selected_field='long_name')
             property_key = 'enum'
         else:
-            raise EsgvocValueError(f"collection '{recomputed_schema_field}' not found")
+            raise EsgvocNotFoundError(f"collection '{recomputed_schema_field}' not found")
     else:
         # 2. Process schema_fields that are collection ids. (e.g. of sub_experiment_id).
         property_key, property_value = _match_collection(schema_field,
@@ -107,7 +107,7 @@ def _generate_property(project_id: str, collections: list[Collection], schema_fi
                             property_key = 'enum'
                             break
     if property_value is None or property_key is None:
-        raise EsgvocValueError(f"unsupported schema field '{schema_field}'")
+        raise EsgvocNotImplementedError(f"unsupported schema field '{schema_field}'")
     else:
         value[property_key] = property_value
     return (key, value)
@@ -150,4 +150,4 @@ def generate_json_schema(project_id: str) -> str:
         _inject_properties(root, properties)
         return json.dumps(root, indent=JSON_INDENTATION)
     else:
-        raise NotImplementedError(f"project '{project_id}' is not supported yet")
+        raise EsgvocNotFoundError(f"project '{project_id}' is not supported/found yet")
