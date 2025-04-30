@@ -129,6 +129,16 @@ def _inject_properties(json_root: dict, properties: list[tuple]) -> None:
 
 
 def generate_json_schema(project_id: str) -> str:
+    """
+    Generate json schema for the given project.
+
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :returns: The content of a json schema
+    :rtype: str
+    :raises EsgvocNotFoundError: On missing information
+    :raises EsgvocNotImplementedError: On unexpected operations
+    """
     file_name = JSON_SCHEMA_TEMPLATE_FILE_NAME_TEMPLATE.format(project_id=project_id)
     template_file_path = JSON_SCHEMA_TEMPLATE_DIR_PATH.joinpath(file_name)
     if template_file_path.exists():

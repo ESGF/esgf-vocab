@@ -111,7 +111,8 @@ guides/basics_drs.ipynb
 api_documentation/universe.md
 api_documentation/projects.md
 api_documentation/project_specs.md
-api_documentation/drs.md
 api_documentation/data_descriptors.md
+api_documentation/drs.md
+api_documentation/jsg.md
 api_documentation/miscellaneous.md
 ```
