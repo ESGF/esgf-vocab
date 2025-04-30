@@ -1,5 +1,4 @@
 import json
-import logging
 from pathlib import Path
 from typing import Any
 
@@ -10,7 +9,6 @@ from esgvoc.core.constants import PATTERN_JSON_KEY
 from esgvoc.core.db.models.project import Collection, TermKind
 from esgvoc.core.exceptions import EsgvocValueError
 
-_LOGGER = logging.getLogger(__name__)
 KEY_SEPARATOR = ':'
 FIELD_PART_SEPARATOR = '_'
 LONG_NAME_POSTFIX = '_long_name'
@@ -144,15 +142,11 @@ def generate_json_schema(project_id: str) -> str:
              projects._get_project_session_with_exception(project_id) as project_session:
             collections = projects._get_all_collections_in_project(project_session)
             for schema_field in schema_fields:
-                try:
-                    property = _generate_property(project_id=project_id, collections=collections,
-                                                  schema_field=schema_field,
-                                                  universe_session=universe_session,
-                                                  project_session=project_session)
-                    properties.append(property)
-                except Exception as e:  # DEBUG
-                    _LOGGER.error(e)
-                    continue
+                property = _generate_property(project_id=project_id, collections=collections,
+                                              schema_field=schema_field,
+                                              universe_session=universe_session,
+                                              project_session=project_session)
+                properties.append(property)
         _inject_properties(root, properties)
         return json.dumps(root, indent=JSON_INDENTATION)
     else:
