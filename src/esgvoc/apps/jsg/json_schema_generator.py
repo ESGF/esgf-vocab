@@ -22,8 +22,11 @@ JSON_INDENTATION = 4
 def _process_plain(collection: Collection, selected_field: str) -> list[str]:
     result: list[str] = list()
     for term in collection.terms:
-        value = term.specs.get(selected_field, 'None')
-        result.append(value)
+        if selected_field in term.specs:
+            value = term.specs[selected_field]
+            result.append(value)
+        else:
+            raise EsgvocValueError(f'missing key {selected_field} for term {term.id}')
     return result
 
 
@@ -65,7 +68,7 @@ def _match_collection(field: str, collections: list[Collection], universe_sessio
                     property_key = 'pattern'
                 case _:
                     msg = f'unsupported term kind {collection.term_kind} ' + \
-                          f"for field '{field}'"
+                          f"for schema field '{field}'"
                     raise EsgvocValueError(msg)
             break
     return property_key, property_value
@@ -81,10 +84,13 @@ def _generate_property(project_id: str, collections: list[Collection], schema_fi
     # 1. Process "long name" fields.
     if LONG_NAME_POSTFIX in schema_field:
         recomputed_schema_field = schema_field.removesuffix(LONG_NAME_POSTFIX)
-        property_key, property_value = _match_collection(recomputed_schema_field,
-                                                         collections,
-                                                         universe_session,
-                                                         project_session)
+        matched_collection = projects._get_collection_in_project(collection_id=recomputed_schema_field,
+                                                                 session=project_session)
+        if matched_collection:
+            property_value = _process_plain(collection=matched_collection, selected_field='long_name')
+            property_key = 'enum'
+        else:
+            raise EsgvocValueError(f"collection '{recomputed_schema_field}' not found")
     else:
         # 2. Process schema_fields that are collection ids. (e.g. of sub_experiment_id).
         property_key, property_value = _match_collection(schema_field,
@@ -97,13 +103,13 @@ def _generate_property(project_id: str, collections: list[Collection], schema_fi
                 if schema_field in collection.id:
                     postfix = collection.id.removeprefix(schema_field)
                     match postfix:
-                        case '_id' | '_label':
+                        case '_id' | '_label':  # Process "description" fields.
                             property_value = _process_plain(collection=collection,
                                                             selected_field='description')
                             property_key = 'enum'
                             break
     if property_value is None or property_key is None:
-        raise EsgvocValueError(f"unsupported field '{schema_field}'")
+        raise EsgvocValueError(f"unsupported schema field '{schema_field}'")
     else:
         value[property_key] = property_value
     return (key, value)
