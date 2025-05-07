@@ -6,7 +6,7 @@ from sqlmodel import Session
 
 from esgvoc.api import projects, search
 from esgvoc.core.constants import PATTERN_JSON_KEY
-from esgvoc.core.db.models.project import Collection, TermKind
+from esgvoc.core.db.models.project import PCollection, TermKind
 from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocNotImplementedError
 
 KEY_SEPARATOR = ':'
@@ -17,7 +17,7 @@ JSON_SCHEMA_TEMPLATE_FILE_NAME_TEMPLATE = '{project_id}_template.json'
 JSON_INDENTATION = 4
 
 
-def _process_plain(collection: Collection, selected_field: str) -> list[str]:
+def _process_plain(collection: PCollection, selected_field: str) -> list[str]:
     result: list[str] = list()
     for term in collection.terms:
         if selected_field in term.specs:
@@ -28,7 +28,7 @@ def _process_plain(collection: Collection, selected_field: str) -> list[str]:
     return result
 
 
-def _process_composite(collection: Collection, universe_session: Session,
+def _process_composite(collection: PCollection, universe_session: Session,
                        project_session: Session) -> str:
     result = ""
     for term in collection.terms:
@@ -48,7 +48,7 @@ def _process_composite(collection: Collection, universe_session: Session,
     return result
 
 
-def _match_collection(field: str, collections: list[Collection], universe_session: Session,
+def _match_collection(field: str, collections: list[PCollection], universe_session: Session,
                       project_session: Session) -> tuple[str | None, str | list | None]:
     property_value: str | list | None = None
     property_key: str | None = None
@@ -72,7 +72,7 @@ def _match_collection(field: str, collections: list[Collection], universe_sessio
     return property_key, property_value
 
 
-def _generate_property(project_id: str, collections: list[Collection], schema_field: str,
+def _generate_property(project_id: str, collections: list[PCollection], schema_field: str,
                        universe_session: Session, project_session: Session) -> tuple[str, dict]:
     key = f'{project_id}{KEY_SEPARATOR}{schema_field}'
     value: dict[str, Any] = dict()
