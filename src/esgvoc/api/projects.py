@@ -24,7 +24,7 @@ from esgvoc.api.search import (
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import (
-    Collection,
+    PCollection,
     PCollectionFTS5,
     Project,
     PTerm,
@@ -96,36 +96,29 @@ def _valid_value_composite_term_with_separator(value: str,
             for index in range(0, len(splits)):
                 given_value = splits[index]
                 if "id" not in parts[index].keys():
-                    terms= universe.get_all_terms_in_data_descriptor(parts[index]["type"],None)
+                    terms = universe.get_all_terms_in_data_descriptor(parts[index]["type"], None)
                     parts[index]["id"] = [term.id for term in terms]
-                   
-
                 if type(parts[index]["id"]) is str:
-                    parts[index]["id"]=[parts[index]["id"]]
+                    parts[index]["id"] = [parts[index]["id"]]
 
                 errors_list = list()
                 for id in parts[index]["id"]:
-                    
-                    part_parts = dict(parts[index])
-                    part_parts["id"]=id
-                    #print(part_parts)
 
+                    part_parts = dict(parts[index])
+                    part_parts["id"] = id
                     resolved_term = _resolve_term(part_parts,
-                                              universe_session,
-                                              project_session)
+                                                  universe_session,
+                                                  project_session)
                     errors = _valid_value(given_value,
-                                      resolved_term,
-                                      universe_session,
-                                      project_session)
-                    if len(errors)==0:
+                                          resolved_term,
+                                          universe_session,
+                                          project_session)
+                    if len(errors) == 0:
                         errors_list = errors
                         break
                     else:
-                        errors_list.extend(errors) 
-                    #print(errors)
-                    
+                        errors_list.extend(errors)
                 else:
-                    #result.extend(errors_list)
                     result.append(_create_term_error(value, term))
         else:
             result.append(_create_term_error(value, term))
@@ -252,15 +245,15 @@ def _search_plain_term_and_valid_value(value: str,
                                        collection_id: str,
                                        project_session: Session) \
                                         -> str | None:
-    where_expression = and_(Collection.id == collection_id,
+    where_expression = and_(PCollection.id == collection_id,
                             PTerm.specs[constants.DRS_SPECS_JSON_KEY] == f'"{value}"')
-    statement = select(PTerm).join(Collection).where(where_expression)
+    statement = select(PTerm).join(PCollection).where(where_expression)
     term = project_session.exec(statement).one_or_none()
     return term.id if term else None
 
 
 def _valid_value_against_all_terms_of_collection(value: str,
-                                                 collection: Collection,
+                                                 collection: PCollection,
                                                  universe_session: Session,
                                                  project_session: Session) \
                                                      -> list[str]:
@@ -519,7 +512,7 @@ def get_all_terms_in_collection(project_id: str,
     return result
 
 
-def _get_all_collections_in_project(session: Session) -> list[Collection]:
+def _get_all_collections_in_project(session: Session) -> list[PCollection]:
     project = session.get(Project, constants.SQLITE_FIRST_PK)
     # Project can't be missing if session exists.
     return project.collections  # type: ignore
@@ -546,7 +539,7 @@ def get_all_collections_in_project(project_id: str) -> list[str]:
     return result
 
 
-def _get_all_terms_in_collection(collection: Collection,
+def _get_all_terms_in_collection(collection: PCollection,
                                  selected_term_fields: Iterable[str] | None) -> list[DataDescriptor]:
     result: list[DataDescriptor] = list()
     instantiate_pydantic_terms(collection.terms, result, selected_term_fields)
@@ -647,8 +640,8 @@ def get_term_in_project(project_id: str, term_id: str,
 
 
 def _get_term_in_collection(collection_id: str, term_id: str, session: Session) -> PTerm | None:
-    statement = select(PTerm).join(Collection).where(Collection.id == collection_id,
-                                                     PTerm.id == term_id)
+    statement = select(PTerm).join(PCollection).where(PCollection.id == collection_id,
+                                                      PTerm.id == term_id)
     results = session.exec(statement)
     result = results.one_or_none()
     return result
@@ -685,8 +678,8 @@ def get_term_in_collection(project_id: str, collection_id: str, term_id: str,
     return result
 
 
-def _get_collection_in_project(collection_id: str, session: Session) -> Collection | None:
-    statement = select(Collection).where(Collection.id == collection_id)
+def _get_collection_in_project(collection_id: str, session: Session) -> PCollection | None:
+    statement = select(PCollection).where(PCollection.id == collection_id)
     results = session.exec(statement)
     result = results.one_or_none()
     return result
@@ -743,8 +736,8 @@ def get_project(project_id: str) -> ProjectSpecs | None:
 
 
 def _get_collection_from_data_descriptor_in_project(data_descriptor_id: str,
-                                                    session: Session) -> Collection | None:
-    statement = select(Collection).where(Collection.data_descriptor_id == data_descriptor_id)
+                                                    session: Session) -> PCollection | None:
+    statement = select(PCollection).where(PCollection.data_descriptor_id == data_descriptor_id)
     result = session.exec(statement).one_or_none()
     return result
 
@@ -807,8 +800,8 @@ def get_collection_from_data_descriptor_in_all_projects(data_descriptor_id: str)
 def _get_term_from_universe_term_id_in_project(data_descriptor_id: str,
                                                universe_term_id: str,
                                                project_session: Session) -> PTerm | None:
-    statement = select(PTerm).join(Collection).where(Collection.data_descriptor_id == data_descriptor_id,
-                                                     PTerm.id == universe_term_id)
+    statement = select(PTerm).join(PCollection).where(PCollection.data_descriptor_id == data_descriptor_id,
+                                                      PTerm.id == universe_term_id)
     results = project_session.exec(statement)
     result = results.one_or_none()
     return result
@@ -890,10 +883,10 @@ def _find_collections_in_project(expression: str,
                                  session: Session,
                                  only_id: bool = False,
                                  limit: int | None = None,
-                                 offset: int | None = None) -> Sequence[Collection]:
+                                 offset: int | None = None) -> Sequence[PCollection]:
     matching_condition = generate_matching_condition(PCollectionFTS5, expression, only_id)
     tmp_statement = select(PCollectionFTS5).where(matching_condition)
-    statement = select(Collection).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
+    statement = select(PCollection).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
     return execute_match_statement(expression, statement, session)
 
 
@@ -953,8 +946,8 @@ def _find_terms_in_collection(expression: str,
                               limit: int | None = None,
                               offset: int | None = None) -> Sequence[PTerm]:
     matching_condition = generate_matching_condition(PTermFTS5, expression, only_id)
-    where_condition = Collection.id == collection_id, matching_condition
-    tmp_statement = select(PTermFTS5).join(Collection).where(*where_condition)
+    where_condition = PCollection.id == collection_id, matching_condition
+    tmp_statement = select(PTermFTS5).join(PCollection).where(*where_condition)
     statement = select(PTerm).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
     return execute_match_statement(expression, statement, session)
 
@@ -1181,8 +1174,8 @@ def find_items_in_project(expression: str,
             term_where_condition = term_column.match(expression)
             term_statement = select(PTermFTS5.id,
                                     text("'term' AS TYPE"),
-                                    Collection.id,
-                                    text('rank')).join(Collection) \
+                                    PCollection.id,
+                                    text('rank')).join(PCollection) \
                                                  .where(term_where_condition)
             result = execute_find_item_statements(session, expression, collection_statement,
                                                   term_statement, limit, offset)

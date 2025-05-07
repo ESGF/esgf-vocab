@@ -16,4 +16,3 @@ class Institution(PlainTermDataDescriptor):
     name: str
     ror: str | None
     url: list[str] = Field(default_factory=list)
-

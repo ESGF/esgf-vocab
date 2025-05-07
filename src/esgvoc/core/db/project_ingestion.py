@@ -10,7 +10,7 @@ import esgvoc.core.service as service
 from esgvoc.core.data_handler import JsonLdResource
 from esgvoc.core.db.connection import DBConnection, read_json_file
 from esgvoc.core.db.models.mixins import TermKind
-from esgvoc.core.db.models.project import Collection, Project, PTerm
+from esgvoc.core.db.models.project import PCollection, Project, PTerm
 from esgvoc.core.exceptions import EsgvocDbError
 from esgvoc.core.service.data_merger import DataMerger
 
@@ -59,7 +59,7 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
         _LOGGER.fatal(msg)
         raise EsgvocDbError(msg) from e
     # [KEEP]
-    collection = Collection(
+    collection = PCollection(
         id=collection_id,
         context=collection_context,
         project=project,
@@ -159,7 +159,7 @@ def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash:
             sql_query = (
                 "INSERT INTO pcollections_fts5(pk, id, data_descriptor_id, context, "  # noqa: S608
                 + "project_pk, term_kind) SELECT pk, id, data_descriptor_id, context, "
-                + "project_pk, term_kind FROM collections;"
+                + "project_pk, term_kind FROM pcollections;"
             )
             project_db_session.exec(text(sql_query))  # type: ignore
         except Exception as e:
