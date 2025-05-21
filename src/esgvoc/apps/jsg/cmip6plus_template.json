@@ -1,0 +1,171 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://stac-extensions.github.io/cmip6plus/v1.0.0/schema.json#",
+  "title": "CMIP6Plus Extension",
+  "description": "STAC CMIP6Plus Extension for STAC Items and STAC Collection Summaries.",
+  "type": "object",
+  "required": [
+    "stac_extensions"
+  ],
+  "properties": {
+    "stac_extensions": {
+      "type": "array",
+      "contains": {
+        "const": "https://stac-extensions.github.io/cmip6plus/v1.0.0/schema.json"
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$comment": "This is the schema for STAC Items.",
+      "type": "object",
+      "required": [
+        "type",
+        "properties"
+      ],
+      "properties": {
+        "type": {
+          "const": "Feature"
+        },
+        "properties": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/require_any"
+            },
+            {
+              "$ref": "#/definitions/fields"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "$comment": "This is the schema for STAC Collections, or more specifically only Collection Summaries in this case. By default, only checks the existence of the properties, but not the schema of the summaries.",
+      "type": "object",
+      "required": [
+        "type",
+        "summaries"
+      ],
+      "properties": {
+        "type": {
+          "const": "Collection"
+        },
+        "summaries": {
+          "$ref": "#/definitions/require_any"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "require_any": {
+      "$comment": "Please list all fields here so that we can force the existence of one of them in other parts of the schemas.",
+      "anyOf": [
+        {
+          "required": [
+            "cmip6plus:activity_id"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:data_specs_version"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:experiment_id"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:experiment"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:frequency"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:further_info_url"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:grid"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:grid_label"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:institution"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:institution_id"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:mip_era"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:nominal_resolution"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:source_id"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:source_type"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:sub_experiment_id"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:table_id"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:variable_id"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:variable_id_long_name"
+          ]
+        },
+        {
+          "required": [
+            "cmip6plus:variant_label"
+          ]
+        }
+      ]
+    },
+    "fields": {
+      "$comment": " Don't require fields here, do that above in the corresponding schema.",
+      "type": "object",
+      "properties": {
+      },
+      "patternProperties": {
+        "^(?!cmip6plus:)": {}
+      },
+      "additionalProperties": false
+    }
+  }
+}
