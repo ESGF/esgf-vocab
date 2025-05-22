@@ -1,7 +1,7 @@
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
-class Resolution(PlainTermDataDescriptor):
+class EMDResolution(PlainTermDataDescriptor):
     """
     The nominal resolution (in km) characterises the resolution of a model’s native horizontal grid. See section 5.1 Native horizontal grid properties.
     Options for the native horizontal grid nominal resolution property are defined in the following table as a function of the value of the mean resolution km property:

@@ -1,7 +1,7 @@
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
-class ModelComponent(PlainTermDataDescriptor):
+class EMDModelComponent(PlainTermDataDescriptor):
     """
     Properties that provide a description of individual model components.
     Eight model components are defined that somewhat independently account for different sets of interactive processes: aerosol, atmosphere, atmospheric chemistry, land surface, land ice, ocean, ocean biogeochemistry, and sea ice. The interactive processes covered by each  component are described in more detail in section 7.1. Model Component Type CV.
