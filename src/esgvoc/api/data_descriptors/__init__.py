@@ -17,6 +17,7 @@ from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVaria
 from esgvoc.api.data_descriptors.license import License
 from esgvoc.api.data_descriptors.mip_era import MipEra
 from esgvoc.api.data_descriptors.model_component import ModelComponent
+from esgvoc.api.data_descriptors.obs_type import ObsType
 from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.physic_index import PhysicIndex
 from esgvoc.api.data_descriptors.product import Product
@@ -70,4 +71,5 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "branded_variable": BrandedVariable,
     "publication_status": PublicationStatus,
     "known_branded_variable": KnownBrandedVariable,
+    "obs_type": ObsType,  # obs4Mips
 }
