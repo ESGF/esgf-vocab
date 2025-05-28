@@ -44,7 +44,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "forcing_index": ForcingIndex,
     "frequency": Frequency,
     "grid": GridLabel,  # Universe
-    "grid_label": GridLabel,  # cmip6, cmip6plus
+    # "grid_label": GridLabel,  # cmip6, cmip6plus
     "initialisation_index": InitialisationIndex,
     "institution": Institution,
     "license": License,
