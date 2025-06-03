@@ -1,5 +1,5 @@
 import re
-from typing import Any
+from typing import Any, List, Optional
 
 import typer
 from pydantic import BaseModel
@@ -41,7 +41,7 @@ def validate_key_format(key: str):
 
 def handle_universe(data_descriptor_id: str | None, term_id: str | None, options=None):
     _LOGGER.debug(f"Handling universe with data_descriptor_id={data_descriptor_id}, term_id={term_id}")
-
+    print("OLA", options)
     if data_descriptor_id and term_id:
         return get_term_in_data_descriptor(data_descriptor_id, term_id, options)
         # BaseModel|dict[str: BaseModel]|None:
@@ -51,7 +51,7 @@ def handle_universe(data_descriptor_id: str | None, term_id: str | None, options
         # dict[str, BaseModel] | dict[str, dict[str, BaseModel]] | None:
 
     elif data_descriptor_id:
-        return get_all_terms_in_data_descriptor(data_descriptor_id)
+        return get_all_terms_in_data_descriptor(data_descriptor_id, options)
         # dict[str, BaseModel]|None:
 
     else:
@@ -71,7 +71,7 @@ def handle_project(project_id: str, collection_id: str | None, term_id: str | No
         # dict[str, BaseModel] | dict[str, dict[str, BaseModel]] | None:
 
     elif collection_id:
-        return get_all_terms_in_collection(project_id, collection_id)
+        return get_all_terms_in_collection(project_id, collection_id, options)
         # dict[str, BaseModel]|None:
 
     else:
@@ -108,7 +108,10 @@ def display(data: Any):
 
 
 @app.command()
-def get(keys: list[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZZZ format")):
+def get(
+    keys: List[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZZZ format"),
+    select: Optional[List[str]] = typer.Option(None, "--select", help="keys selected for the result"),
+):
     """
     Retrieve a specific value from the database system.\n
     This command allows you to fetch a value by specifying the universe/project, data_descriptor/collection,
@@ -136,6 +139,7 @@ def get(keys: list[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZ
         - if more than one argument is given i.e get X:Y:Z A:B:C the 2 results are appended. \n
     \n
     """
+    print("TOTO", select)
     known_projects = get_all_projects()
 
     # Validate and process each key
@@ -146,9 +150,9 @@ def get(keys: list[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZ
         what = what if what != "" else None
         who = who if who != "" else None
         if where == "" or where == "universe":
-            res = handle_universe(what, who)
+            res = handle_universe(what, who, select)
         elif where in known_projects:
-            res = handle_project(where, what, who, None)
+            res = handle_project(where, what, who, select)
         else:
             res = handle_unknown(where, what, who)
 
