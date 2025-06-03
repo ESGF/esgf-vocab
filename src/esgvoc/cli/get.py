@@ -8,21 +8,15 @@ from rich.console import Console
 from rich.json import JSON
 from rich.table import Table
 
-from esgvoc.api.projects import (
-    get_all_collections_in_project,
-    get_all_projects,
-    get_all_terms_in_collection,
-    get_term_in_collection,
-    get_term_in_project,
-)
-from esgvoc.api.universe import (
-    find_terms_in_data_descriptor,
-    find_terms_in_universe,
-    get_all_data_descriptors_in_universe,
-    get_all_terms_in_data_descriptor,
-    get_term_in_data_descriptor,
-    get_term_in_universe,
-)
+from esgvoc.api.projects import (get_all_collections_in_project,
+                                 get_all_projects, get_all_terms_in_collection,
+                                 get_term_in_collection, get_term_in_project)
+from esgvoc.api.universe import (find_terms_in_data_descriptor,
+                                 find_terms_in_universe,
+                                 get_all_data_descriptors_in_universe,
+                                 get_all_terms_in_data_descriptor,
+                                 get_term_in_data_descriptor,
+                                 get_term_in_universe)
 
 app = typer.Typer()
 console = Console()
@@ -41,7 +35,6 @@ def validate_key_format(key: str):
 
 def handle_universe(data_descriptor_id: str | None, term_id: str | None, options=None):
     _LOGGER.debug(f"Handling universe with data_descriptor_id={data_descriptor_id}, term_id={term_id}")
-    print("OLA", options)
     if data_descriptor_id and term_id:
         return get_term_in_data_descriptor(data_descriptor_id, term_id, options)
         # BaseModel|dict[str: BaseModel]|None:
@@ -139,7 +132,6 @@ def get(
         - if more than one argument is given i.e get X:Y:Z A:B:C the 2 results are appended. \n
     \n
     """
-    print("TOTO", select)
     known_projects = get_all_projects()
 
     # Validate and process each key
