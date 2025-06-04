@@ -100,30 +100,20 @@ def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnecti
         for term_file_path in data_descriptor_path.iterdir():
             _LOGGER.debug(f"found term path : {term_file_path}, {term_file_path.suffix}")
             if term_file_path.is_file() and term_file_path.suffix == ".json":
-                debug_str = "cVeg_tavg-z0-hxy-lnd"
-                if "cVeg_tavg-z0-hxy-lnd" in str(term_file_path):
-                    print("ON EST LA : 'cVeg_tavg-z0-hxy-lnd'")
                 try:
                     locally_available = {
                         "https://espri-mod.github.io/mip-cmor-tables": service.current_state.universe.local_path
                     }
 
-                    if "cVeg_tavg-z0-hxy-lnd" in str(term_file_path):
-                        json_data = JsonLdResource(uri=str(term_file_path))
-                        print(json_data)
                     json_specs = DataMerger(
                         data=JsonLdResource(uri=str(term_file_path)), locally_available=locally_available
                     ).merge_linked_json()[-1]
 
-                    if "cVeg_tavg-z0-hxy-lnd" in str(term_file_path):
-                        print("ON EST LA : 'cVeg_tavg-z0-hxy-lnd'")
                     term_kind = infer_term_kind(json_specs)
                     term_id = json_specs["id"]
 
                     if term_kind_dd is None:
                         term_kind_dd = term_kind
-                    if "cVeg_tavg-z0-hxy-lnd" in str(term_file_path):
-                        print("BON CA l AIR BIEN", term_id)
                 except Exception as e:
                     _LOGGER.warning(
                         f"Unable to read term {term_file_path} for data descriptor "
@@ -131,15 +121,13 @@ def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnecti
                     )
                     continue
                 if term_id and json_specs and data_descriptor and term_kind:
-                    _LOGGER.debug("adding {term_id}")
+                    _LOGGER.debug(f"adding {term_id}")
                     term = UTerm(
                         id=term_id,
                         specs=json_specs,
                         data_descriptor=data_descriptor,
                         kind=term_kind,
                     )
-                    if "cVeg_tavg-z0-hxy-lnd" in str(term_file_path):
-                        print("DU COUP LE TERM ", term)
 
                     session.add(term)
         if term_kind_dd is not None:

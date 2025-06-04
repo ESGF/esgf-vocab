@@ -48,17 +48,11 @@ class DataMerger:
         visited = set(self.data.uri)  # Track visited URIs to prevent cycles
         current_data = self.data
         # print(current_data.expanded)
-        if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-            print("Dans Merge :", current_data)
         while True:
             next_id = self._get_next_id(current_data.expanded[0])
-            if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-                print("Dans Merge 2:", next_id)
 
             if not next_id or next_id in visited or not self._should_resolve(next_id):
                 break
-            if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-                print("Dans Merge 3:")
 
             visited.add(next_id)
 
@@ -67,27 +61,14 @@ class DataMerger:
             for local_repo in self.locally_available.keys():
                 if next_id.startswith(local_repo):
                     next_id = next_id.replace(local_repo, self.locally_available[local_repo])
-            if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-                print("Dans Merge 4:", next_id)
 
             next_data_instance = JsonLdResource(uri=next_id)
-            if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-                print("Dans Merge 5:", next_data_instance)
-                print("5.1")
-                print(current_data.info)
-                print("5.2")
-                print(next_data_instance.info)
             merged_json_data = merge_dicts([current_data.json_dict], [next_data_instance.json_dict])
-            if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-                print("Dans Merge 6:", merged_json_data)
-
             next_data_instance.json_dict = merged_json_data
 
             # Add the merged instance to the result list
             result_list.append(merged_json_data)
             current_data = next_data_instance
-        if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-            print("Dans Merge 10 :", result_list)
         return result_list
 
 
