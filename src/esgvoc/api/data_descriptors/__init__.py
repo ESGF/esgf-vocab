@@ -4,6 +4,7 @@ from esgvoc.api.data_descriptors.branded_suffix import BrandedSuffix
 from esgvoc.api.data_descriptors.branded_variable import BrandedVariable
 from esgvoc.api.data_descriptors.consortium import Consortium
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+from esgvoc.api.data_descriptors.data_spec_version import DataSpecVersion
 from esgvoc.api.data_descriptors.date import Date
 from esgvoc.api.data_descriptors.directory_date import DirectoryDate
 from esgvoc.api.data_descriptors.experiment import Experiment
@@ -71,5 +72,6 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "branded_variable": BrandedVariable,
     "publication_status": PublicationStatus,
     "known_branded_variable": KnownBrandedVariable,
+    "data_spec_version": DataSpecVersion,
     "obs_type": ObsType,  # obs4Mips
 }
