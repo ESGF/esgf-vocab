@@ -79,6 +79,13 @@ class BaseState:
             if self.github_version is None:
                 self.github_access = False
 
+    def connect_db(self):
+        if self.db_path:
+            if not os.path.exists(self.db_path):
+                self.db_access = False
+            else:
+                self.db_connection = DBConnection(db_file_path=Path(self.db_path))
+
     def fetch_version_db(self):
         if self.db_path:
             if not os.path.exists(self.db_path):
@@ -86,7 +93,6 @@ class BaseState:
                 self.db_access = False
             else:
                 try:
-                    self.db_connection = DBConnection(db_file_path=Path(self.db_path))
                     with self.db_connection.create_session() as session:
                         self.db_version = session.exec(select(self.db_sqlmodel.git_hash)).one()
                         self.db_access = True
@@ -215,10 +221,15 @@ class StateService:
         project_statuses = {name: proj.check_sync_status() for name, proj in self.projects.items()}
         return {"universe": universe_status, "projects": project_statuses}
 
-    def connect_db(self):
+    def fetch_versions(self):
         self.universe.fetch_versions()
         for _, proj_state in self.projects.items():
             proj_state.fetch_versions()
+
+    def connect_db(self):
+        self.universe.connect_db()
+        for _, proj_state in self.projects.items():
+            proj_state.connect_db()
 
     def synchronize_all(self):
         print("sync universe")
@@ -226,6 +237,7 @@ class StateService:
         print("sync projects")
         for project in self.projects.values():
             project.sync()
+        self.connect_db()
 
     def table(self):
         table = Table(show_header=False, show_lines=True)

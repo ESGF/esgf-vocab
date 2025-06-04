@@ -1,26 +1,21 @@
 
-from typing import List
-from esgvoc.api.projects import (
-    valid_term, 
-    valid_term_in_collection, 
-    valid_term_in_project, 
-    valid_term_in_all_projects
-)
-from requests import logging
-from rich.table import Table
-import typer
 import re
+from typing import List
+
+import typer
 from rich.console import Console
+from rich.table import Table
+
+from esgvoc.api.projects import valid_term, valid_term_in_all_projects, valid_term_in_collection, valid_term_in_project
 
 app = typer.Typer()
 console = Console()
 
-_LOGGER = logging.getLogger(__name__)
 
 @app.command()
 def valid(
     strings_targets: List[str] = typer.Argument(
-        ..., 
+        ...,
         help=(
             "Pairs of strings to validate against a key in the form '<StringToValidate> <Project:Collection:Term>'.\n"
             "Multiple pairs can be provided. The key '<Project:Collection:Term>' consists of three parts:\n"
@@ -51,7 +46,7 @@ def valid(
             \t\t- A string to validate.\n
             \t\t- A key in the form '<Project:Collection:Term>'.\n
     Usage :\n
-        \tValid one:\n 
+        \tValid one:\n
         \tesgvocab valid IPSL cmip6plus:institution_id:ipsl\n
         \tesgvocab valid IPSL cmip6plus:institution_id:\n
         \tesgvocab valid IPSL cmip6plus::\n
@@ -67,7 +62,7 @@ def valid(
         \tesgvocab valid IPSL :: IPS :: \n
         \t\tresult will be [True, False]\n
         \n
-        \tesgvocab valid --verbose IPS :: IPSL ::\n 
+        \tesgvocab valid --verbose IPS :: IPSL ::\n
         \tresult will be \n
         \t\t┏━━━━━━━━┳━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n
         \t\t┃ String ┃ Key ┃ Result     ┃ Errors                      ┃\n
@@ -83,7 +78,7 @@ def valid(
 
     # Combine string and target into pairs
     pairs = [strings_targets[i] + " " + strings_targets[i + 1] for i in range(0, len(strings_targets), 2)]
-    
+
     # Validate each string against each target
     for validation in pairs:
         match = re.match(r"(.+)\s+([^:]*):([^:]*):([^:]*)", validation)
@@ -109,7 +104,7 @@ def valid(
         except Exception as e:
             validation_result=False
             exception_message = repr(e)
-        
+
         # Handle validation result
 
         if validation_result:
