@@ -48,6 +48,17 @@ def _process_composite(collection: PCollection, universe_session: Session,
     return result
 
 
+def _process_pattern(collection: PCollection) -> str:
+    # The generation of the value of the field pattern for the collections with more than one term
+    # is not specified yet.
+    if len(collection.terms) == 1:
+        term = collection.terms[0]
+        return term.specs[PATTERN_JSON_KEY]
+    else:
+        msg = f"unsupported collection of term pattern with more than one term for '{collection.id}'"
+        raise EsgvocNotImplementedError(msg)
+
+
 def _match_collection(field: str, collections: list[PCollection], universe_session: Session,
                       project_session: Session) -> tuple[str | None, str | list | None]:
     property_value: str | list | None = None
@@ -63,6 +74,9 @@ def _match_collection(field: str, collections: list[PCollection], universe_sessi
                     property_value = _process_composite(collection=collection,
                                                         universe_session=universe_session,
                                                         project_session=project_session)
+                    property_key = 'pattern'
+                case TermKind.PATTERN:
+                    property_value = _process_pattern(collection)
                     property_key = 'pattern'
                 case _:
                     msg = f'unsupported term kind {collection.term_kind} ' + \
