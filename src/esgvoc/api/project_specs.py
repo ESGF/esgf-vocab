@@ -96,93 +96,57 @@ class GlobalAttributeValueType(str, Enum):
     """List value type."""
 
 
-class GlobalAttributeSourceKind(str, Enum):
-    """
-    The kinds of global attribute sources.
-    """
-
-    DIRECT = "direct"
-    """Direct field specification."""
-    COLLECTION = "collection"
-    """Value from a collection."""
-    CONSTANT = "constant"
-    """Constant value."""
-    COMPUTED = "computed"
-    """Computed/derived value."""
-
-
-class GlobalAttributeDirectSource(BaseModel):
-    """
-    A direct source for a global attribute (field-based with optional default).
-    """
-
-    default_value: Optional[str] = None
-    """Optional default value if not provided elsewhere."""
-    kind: Literal[GlobalAttributeSourceKind.DIRECT] = GlobalAttributeSourceKind.DIRECT
-    """The source kind."""
-
-
-class GlobalAttributeCollectionSource(BaseModel):
-    """
-    A collection source for a global attribute.
-    """
-
-    collection_id: str
-    """The collection ID to reference."""
-    kind: Literal[GlobalAttributeSourceKind.COLLECTION] = GlobalAttributeSourceKind.COLLECTION
-    """The source kind."""
-
-
-class GlobalAttributeConstantSource(BaseModel):
-    """
-    A constant source for a global attribute.
-    """
-
-    value: str
-    """The constant value."""
-    kind: Literal[GlobalAttributeSourceKind.CONSTANT] = GlobalAttributeSourceKind.CONSTANT
-    """The source kind."""
-
-
-class GlobalAttributeComputedSource(BaseModel):
-    """
-    A computed source for a global attribute.
-    """
-
-    computation_rule: str
-    """The computation rule or formula."""
-    kind: Literal[GlobalAttributeSourceKind.COMPUTED] = GlobalAttributeSourceKind.COMPUTED
-    """The source kind."""
-
-
-GlobalAttributeSource = Annotated[
-    GlobalAttributeDirectSource
-    | GlobalAttributeCollectionSource
-    | GlobalAttributeConstantSource
-    | GlobalAttributeComputedSource,
-    Field(discriminator="kind"),
-]
-"""A source specification for a global attribute"""
-
-
 class GlobalAttributeSpec(BaseModel):
     """
     Specification for a global attribute.
     """
 
-    attribute_name: str
-    """The name of the global attribute."""
-    is_value_required: bool
-    """Whether the attribute value is required."""
-    source: GlobalAttributeSource
-    """The source specification for the attribute value."""
+    source_collection: str
+    """The source collection for the attribute value."""
+    specific_key: Optional[str]
+    """If the validation is for the value of a specific key, for instance description or ui-label """
+    default_value: Optional[str] = None
+    """default if the attribute value is optional."""
     value_type: Optional[GlobalAttributeValueType] = None
     """The expected value type."""
     description: Optional[str] = None
     """Description of the attribute."""
 
+
+class GlobalAttributeSpecs(BaseModel):
+    """
+    Container for global attribute specifications.
+    """
+
+    specs: dict[str, GlobalAttributeSpec] = Field(default_factory=dict)
+    """The global attributes specifications dictionary."""
+
     def __str__(self) -> str:
-        return self.attribute_name
+        """Return all keys when printing."""
+        return str(list(self.specs.keys()))
+
+    def __repr__(self) -> str:
+        """Return all keys when using repr."""
+        return f"GlobalAttributeSpecs(keys={list(self.specs.keys())})"
+
+    # Dictionary-like access methods
+    def __getitem__(self, key: str) -> GlobalAttributeSpec:
+        return self.specs[key]
+
+    def __setitem__(self, key: str, value: GlobalAttributeSpec) -> None:
+        self.specs[key] = value
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.specs
+
+    def keys(self):
+        return self.specs.keys()
+
+    def values(self):
+        return self.specs.values()
+
+    def items(self):
+        return self.specs.items()
 
 
 class ProjectSpecs(BaseModel):
@@ -196,6 +160,6 @@ class ProjectSpecs(BaseModel):
     """The description of the project."""
     drs_specs: list[DrsSpecification]
     """The DRS specifications of the project (directory, file name and dataset id)."""
-    global_attributes_specs: Optional[dict[str, GlobalAttributeSpec]] = None
+    global_attributes_specs: Optional[GlobalAttributeSpecs] = None
     """The global attributes specifications of the project."""
     model_config = ConfigDict(extra="allow")
