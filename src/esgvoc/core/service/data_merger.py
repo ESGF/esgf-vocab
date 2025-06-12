@@ -43,33 +43,37 @@ class DataMerger:
         return None
 
     def merge_linked_json(self) -> List[Dict]:
-        """Fetch and merge data recursively, returning a list of progressively merged Data json instances."""
-        result_list = [self.data.json_dict]  # Start with the original json object
-        visited = set(self.data.uri)  # Track visited URIs to prevent cycles
-        current_data = self.data
-        # print(current_data.expanded)
-        while True:
-            next_id = self._get_next_id(current_data.expanded[0])
+        try:
+            """Fetch and merge data recursively, returning a list of progressively merged Data json instances."""
+            result_list = [self.data.json_dict]  # Start with the original json object
+            visited = set(self.data.uri)  # Track visited URIs to prevent cycles
+            current_data = self.data
+            # print(current_data.expanded)
+            while True:
+                next_id = self._get_next_id(current_data.expanded[0])
 
-            if not next_id or next_id in visited or not self._should_resolve(next_id):
-                break
+                if not next_id or next_id in visited or not self._should_resolve(next_id):
+                    break
 
-            visited.add(next_id)
+                visited.add(next_id)
 
-            # Fetch and merge the next customization
-            # do we have it in local ? if so use it instead of remote
-            for local_repo in self.locally_available.keys():
-                if next_id.startswith(local_repo):
-                    next_id = next_id.replace(local_repo, self.locally_available[local_repo])
+                # Fetch and merge the next customization
+                # do we have it in local ? if so use it instead of remote
+                for local_repo in self.locally_available.keys():
+                    if next_id.startswith(local_repo):
+                        next_id = next_id.replace(local_repo, self.locally_available[local_repo])
 
-            next_data_instance = JsonLdResource(uri=next_id)
-            merged_json_data = merge_dicts([current_data.json_dict], [next_data_instance.json_dict])
-            next_data_instance.json_dict = merged_json_data
+                next_data_instance = JsonLdResource(uri=next_id)
+                merged_json_data = merge_dicts([current_data.json_dict], [next_data_instance.json_dict])
+                next_data_instance.json_dict = merged_json_data
 
-            # Add the merged instance to the result list
-            result_list.append(merged_json_data)
-            current_data = next_data_instance
-        return result_list
+                # Add the merged instance to the result list
+                result_list.append(merged_json_data)
+                current_data = next_data_instance
+            return result_list
+        except Exception as e:
+            print(self.data)
+            print(e)
 
 
 if __name__ == "__main__":
