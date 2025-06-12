@@ -97,7 +97,7 @@ class GlobalAttributeSpecBase(BaseModel):
 
     source_collection: str
     """the source_collection to get the term from"""
-    value_type: Optional[GlobalAttributeValueType] = GlobalAttributeValueType.STRING
+    value_type: GlobalAttributeValueType
     """The expected value type."""
 
 
