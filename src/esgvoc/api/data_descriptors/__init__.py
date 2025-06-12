@@ -33,6 +33,7 @@ from esgvoc.api.data_descriptors.sub_experiment import SubExperiment
 from esgvoc.api.data_descriptors.table import Table
 from esgvoc.api.data_descriptors.temporal_label import TemporalLabel
 from esgvoc.api.data_descriptors.time_range import TimeRange
+from esgvoc.api.data_descriptors.tracking_id import TrackingId
 from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
@@ -75,5 +76,6 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "known_branded_variable": KnownBrandedVariable,
     "data_specs_version": DataSpecsVersion,
     "further_info_url": FurtherInfoUrl,
+    "tracking_id": TrackingId,
     "obs_type": ObsType,  # obs4Mips
 }
