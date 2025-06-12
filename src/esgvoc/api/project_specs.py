@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Annotated, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 
 class DrsType(str, Enum):
@@ -88,29 +88,29 @@ class GlobalAttributeValueType(str, Enum):
     """Integer value type."""
     FLOAT = "float"
     """Float value type."""
-    BOOLEAN = "boolean"
-    """Boolean value type."""
-    DATETIME = "datetime"
-    """Datetime value type."""
-    LIST = "list"
-    """List value type."""
 
 
-class GlobalAttributeSpec(BaseModel):
+class GlobalAttributeSpecBase(BaseModel):
     """
     Specification for a global attribute.
     """
 
     source_collection: str
-    """The source collection for the attribute value."""
-    specific_key: Optional[str]
     """If the validation is for the value of a specific key, for instance description or ui-label """
-    default_value: Optional[str] = None
-    """default if the attribute value is optional."""
-    value_type: Optional[GlobalAttributeValueType] = None
+    value_type: Optional[GlobalAttributeValueType] = GlobalAttributeValueType.STRING
     """The expected value type."""
-    description: Optional[str] = None
-    """Description of the attribute."""
+
+
+class GlobalAttributeSpecSpecific(GlobalAttributeSpecBase):
+    """
+    Specification for a global attribute.
+    with a specific key
+    """
+
+    specific_key: str
+
+
+GlobalAttributeSpec = RootModel[GlobalAttributeSpecBase | GlobalAttributeSpecSpecific]
 
 
 class GlobalAttributeSpecs(BaseModel):
