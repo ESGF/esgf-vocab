@@ -213,9 +213,9 @@ VALIDATION_QUERIES: list[ValidationExpression] = [
     ValidationExpression("IPSL", PARAMETERS["cmip6plus_ipsl"], 1, 0),
     ValidationExpression("r1i1p1f1", PARAMETERS["cmip6plus_ripf"], 1, 0),
     ValidationExpression("IPL", PARAMETERS["cmip6plus_ipsl"], 0, 1),
-    ValidationExpression("r1i1p1f111", PARAMETERS["cmip6plus_ripf"], 0, 1),
+    ValidationExpression("r1i1p1f111", PARAMETERS["cmip6plus_ripf"], 1, 0),
     ValidationExpression("20241206-20241207", PARAMETERS["cmip6plus_daily"], 1, 0),
-    ValidationExpression("0241206-0241207", PARAMETERS["cmip6plus_daily"], 0, 2),
+    ValidationExpression("0241206-0241207", PARAMETERS["cmip6plus_daily"], 0, 1),
 ]
 
 # DrsValidatorExpression("",
