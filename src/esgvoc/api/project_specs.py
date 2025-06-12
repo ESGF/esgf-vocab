@@ -96,7 +96,7 @@ class GlobalAttributeSpecBase(BaseModel):
     """
 
     source_collection: str
-    """If the validation is for the value of a specific key, for instance description or ui-label """
+    """the source_collection to get the term from"""
     value_type: Optional[GlobalAttributeValueType] = GlobalAttributeValueType.STRING
     """The expected value type."""
 
@@ -108,6 +108,7 @@ class GlobalAttributeSpecSpecific(GlobalAttributeSpecBase):
     """
 
     specific_key: str
+    """If the validation is for the value of a specific key, for instance description or ui-label """
 
 
 GlobalAttributeSpec = RootModel[GlobalAttributeSpecBase | GlobalAttributeSpecSpecific]
