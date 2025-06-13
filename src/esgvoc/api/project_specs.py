@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Annotated, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, RootModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class DrsType(str, Enum):
@@ -111,7 +111,7 @@ class GlobalAttributeSpecSpecific(GlobalAttributeSpecBase):
     """If the validation is for the value of a specific key, for instance description or ui-label """
 
 
-GlobalAttributeSpec = RootModel[GlobalAttributeSpecBase | GlobalAttributeSpecSpecific]
+GlobalAttributeSpec = GlobalAttributeSpecSpecific | GlobalAttributeSpecBase
 
 
 class GlobalAttributeSpecs(BaseModel):
