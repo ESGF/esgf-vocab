@@ -74,7 +74,7 @@ def universe_create_db(db_file_path: Path) -> None:
     try:
         with connection.create_session() as session:
             sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS uterms_fts5 USING ' + \
-                        'fts5(pk, id, specs, kind, data_descriptor_pk, content=uterms, content_rowid=pk);'
+                        'fts5(pk, id, specs, kind, data_descriptor_pk, content=uterms, content_rowid=pk, prefix=3);'
             session.exec(text(sql_query))  # type: ignore
             session.commit()
     except Exception as e:
@@ -85,7 +85,7 @@ def universe_create_db(db_file_path: Path) -> None:
         with connection.create_session() as session:
             sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS udata_descriptors_fts5 USING ' + \
                         'fts5(pk, id, universe_pk, context, ' + \
-                        'term_kind, content=udata_descriptors, content_rowid=pk);'
+                        'term_kind, content=udata_descriptors, content_rowid=pk, prefix=3);'
             session.exec(text(sql_query))  # type: ignore
             session.commit()
     except Exception as e:
