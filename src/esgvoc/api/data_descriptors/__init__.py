@@ -3,6 +3,8 @@ from esgvoc.api.data_descriptors.area_label import AreaLabel
 from esgvoc.api.data_descriptors.branded_suffix import BrandedSuffix
 from esgvoc.api.data_descriptors.branded_variable import BrandedVariable
 from esgvoc.api.data_descriptors.consortium import Consortium
+from esgvoc.api.data_descriptors.conventions import Convention
+from esgvoc.api.data_descriptors.creation_date import CreationDate
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.data_descriptors.data_specs_version import DataSpecsVersion
 from esgvoc.api.data_descriptors.date import Date
@@ -77,5 +79,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "data_specs_version": DataSpecsVersion,
     "further_info_url": FurtherInfoUrl,
     "tracking_id": TrackingId,
+    "creation_date": CreationDate,
+    "conventions": Convention,
     "obs_type": ObsType,  # obs4Mips
 }
