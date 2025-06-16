@@ -20,6 +20,7 @@ from esgvoc.api.search import (
     handle_rank_limit_offset,
     instantiate_pydantic_term,
     instantiate_pydantic_terms,
+    process_expression,
 )
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
@@ -896,12 +897,15 @@ def find_collections_in_project(expression: str, project_id: str,
                                 offset: int | None = None) -> list[tuple[str, dict]]:
     """
     Find collections in the given project based on a full text search defined by the given `expression`.
-    The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of collection ids and contexts, sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     This function performs an exact match on the `project_id`,
@@ -972,12 +976,16 @@ def find_terms_in_collection(expression: str, project_id: str,
                                                                           -> list[DataDescriptor]:
     """
     Find terms in the given project and collection based on a full text search defined by the given
-    `expression`. The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    `expression`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of term instances, sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     This function performs an exact match on the `project_id` and `collection_id`,
@@ -1026,13 +1034,16 @@ def find_terms_in_project(expression: str,
                           selected_term_fields: Iterable[str] | None = None) \
                                                                           -> list[DataDescriptor]:
     """
-    Find terms in the given project on a full text search defined by the given
-    `expression`. The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    Find terms in the given project on a full text search defined by the given `expression`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of term instances, sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     This function performs an exact match on the `project_id`,
@@ -1077,13 +1088,16 @@ def find_terms_in_all_projects(expression: str,
                                selected_term_fields: Iterable[str] | None = None) \
                                                         -> list[tuple[str, list[DataDescriptor]]]:
     """
-    Find terms in the all projects on a full text search defined by the given
-    `expression`. The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    Find terms in the all projects on a full text search defined by the given `expression`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of project ids and term instances, sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     If the provided `expression` does not hit any term, the function returns an empty list.
@@ -1125,12 +1139,16 @@ def find_items_in_project(expression: str,
                           offset: int | None = None) -> list[Item]:
     """
     Find items, at the moment terms and collections, in the given project based on a full-text
-    search defined by the given `expression`. The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    search defined by the given `expression`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of item instances sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     This function performs an exact match on the `project_id`,
@@ -1160,23 +1178,24 @@ def find_items_in_project(expression: str,
     result = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
+            processed_expression = process_expression(expression)
             if only_id:
                 collection_column = col(PCollectionFTS5.id)
                 term_column = col(PTermFTS5.id)
             else:
                 collection_column = col(PCollectionFTS5.id)  # TODO: use specs when implemented!
                 term_column = col(PTermFTS5.specs)  # type: ignore
-            collection_where_condition = collection_column.match(expression)
+            collection_where_condition = collection_column.match(processed_expression)
             collection_statement = select(PCollectionFTS5.id,
                                           text("'collection' AS TYPE"),
                                           text(f"'{project_id}' AS TYPE"),
                                           text('rank')).where(collection_where_condition)
-            term_where_condition = term_column.match(expression)
+            term_where_condition = term_column.match(processed_expression)
             term_statement = select(PTermFTS5.id,
                                     text("'term' AS TYPE"),
                                     PCollection.id,
                                     text('rank')).join(PCollection) \
                                                  .where(term_where_condition)
-            result = execute_find_item_statements(session, expression, collection_statement,
+            result = execute_find_item_statements(session, processed_expression, collection_statement,
                                                   term_statement, limit, offset)
     return result

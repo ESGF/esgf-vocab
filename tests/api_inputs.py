@@ -43,8 +43,8 @@ class Parameter:
 @dataclass
 class FindExpression:
     expression: str
-    item: Parameter
-    item_kind: ItemKind
+    item: Parameter | None
+    item_kind: ItemKind | None
 
 
 @dataclass
@@ -133,7 +133,9 @@ class GenerationIssueChecker:
         assert self.expected_result.parts == issue.term
         assert self.expected_result.collection_ids == issue.collection_id
 
-
+DEFAULT_DD = 'variable'
+DEFAULT_PROJECT = 'cmip6plus'
+DEFAULT_COLLECTION = 'variable_id'
 PROJECT_IDS = ['cmip6plus', 'cmip6']
 LEN_PROJECTS = len(PROJECT_IDS)
 LEN_COLLECTIONS: dict[str, dict[str, int]] = \
@@ -145,7 +147,8 @@ LEN_COLLECTIONS: dict[str, dict[str, int]] = \
             'source_id': 6,
             'variable_id': 990,
             'table_id': 70,
-            'member_id': 1
+            'member_id': 1,
+            'experiment_id': 300
         },
         'cmip6':
         {
@@ -154,7 +157,8 @@ LEN_COLLECTIONS: dict[str, dict[str, int]] = \
             'source_id': 130,
             'variable_id': 990,
             'table_id': 40,
-            'member_id': 1
+            'member_id': 1,
+            'experiment_id': 300
         }
     }
 LEN_DATA_DESCRIPTORS: dict[str, int] = \
@@ -164,7 +168,8 @@ LEN_DATA_DESCRIPTORS: dict[str, int] = \
         'source': 130,
         'variable': 1300,
         'table': 110,
-        'variant_label': 3
+        'variant_label': 3,
+        'experiment': 300
     }
 
 
@@ -183,6 +188,8 @@ GET_PARAMETERS: list[Parameter] = \
         Parameter('cmip6', 'source', 'source_id', 'miroc6'),
         Parameter('cmip6', 'variable', 'variable_id', 'airmass'),
         Parameter('cmip6', 'table', 'table_id', 'Eyr'),
+        Parameter('cmip6', 'experiment', 'experiment_id', 'ssp245-aer'),
+        Parameter('cmip6', 'variable', 'variable_id', 'prw2h'),
     ]
 
 PARAMETERS: dict[str, Parameter] = {f'{param.project_id}_{param.term_id}': param for param in GET_PARAMETERS}
@@ -195,6 +202,20 @@ FIND_TERM_PARAMETERS: list[FindExpression] = \
         FindExpression('cnes', PARAMETERS['cmip6plus_cnes'], ItemKind.TERM),
         FindExpression('mir*', PARAMETERS['cmip6plus_miroc6'], ItemKind.TERM),
         FindExpression('pArIs NOT CNES', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
+        FindExpression('ssp245-aer', PARAMETERS['cmip6_ssp245-aer'], ItemKind.TERM),
+        FindExpression('ssp245"-"aer', PARAMETERS['cmip6_ssp245-aer'], ItemKind.TERM),
+        FindExpression("'ssp245-aer'" , PARAMETERS['cmip6_ssp245-aer'], ItemKind.TERM),
+        FindExpression('- column : paris', None, None),
+        FindExpression('- column : ^ paris', None, None),
+        FindExpression('NEAR(e d, 10)', None, None),
+        FindExpression('NEAR("e d", 10)', None, None),
+        FindExpression('NEAR(e d)', None, None),
+        FindExpression('NEAR("e d")', None, None),
+        FindExpression('ipsl +paris', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
+        FindExpression('pari*', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
+        FindExpression('ipsl paris', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
+        FindExpression('ipsl* paris*', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
+        FindExpression('prw* NOT prw', PARAMETERS['cmip6_prw2h'], ItemKind.TERM)
     ]
 
 # FindExpression('', PARAMETERS[''], ItemKind.DATA_DESCRIPTOR),
@@ -551,10 +572,14 @@ DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression |
 
 
 def check_id(obj: str | DataDescriptor | dict | tuple | list | ProjectSpecs | MatchingTerm | Item | None,
-             id: str,
+             id: str | None,
              kind: ItemKind | None = None,
              parent_id: str | None = None) -> None:
-    assert obj, f"'{id}' returns no result"  # None and empty list.
+    if id:
+        assert obj, f"'{id}' returns no result"  # None and empty list.
+    else:
+        assert not obj, f"'{id}' returns result but should not!"
+        return
     match obj:
         case list():
             found = False
