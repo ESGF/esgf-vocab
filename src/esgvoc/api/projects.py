@@ -1034,7 +1034,7 @@ def find_terms_in_project(expression: str,
                           selected_term_fields: Iterable[str] | None = None) \
                                                                           -> list[DataDescriptor]:
     """
-    Find terms in the given project on a full text search defined by the given `expression`.
+    Find terms in the given project based on a full text search defined by the given `expression`.
     The `expression` can be composed of one or multiple keywords.
     The keywords can combined with boolean operators: `AND`,
     `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
@@ -1088,7 +1088,7 @@ def find_terms_in_all_projects(expression: str,
                                selected_term_fields: Iterable[str] | None = None) \
                                                         -> list[tuple[str, list[DataDescriptor]]]:
     """
-    Find terms in the all projects on a full text search defined by the given `expression`.
+    Find terms in all projects based on a full text search defined by the given `expression`.
     The `expression` can be composed of one or multiple keywords.
     The keywords can combined with boolean operators: `AND`,
     `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
