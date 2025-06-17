@@ -29,6 +29,7 @@ from esgvoc.api.data_descriptors.product import Product
 from esgvoc.api.data_descriptors.publication_status import PublicationStatus
 from esgvoc.api.data_descriptors.realisation_index import RealisationIndex
 from esgvoc.api.data_descriptors.realm import Realm
+from esgvoc.api.data_descriptors.region import Region
 from esgvoc.api.data_descriptors.resolution import Resolution
 from esgvoc.api.data_descriptors.source import Source
 from esgvoc.api.data_descriptors.source_type import SourceType
@@ -85,5 +86,6 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "conventions": Convention,
     "title": Title,
     "contact": Contact,
+    "region": Region,
     "obs_type": ObsType,  # obs4Mips
 }
