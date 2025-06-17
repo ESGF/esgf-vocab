@@ -16,11 +16,9 @@ from esgvoc.api.data_descriptors.frequency import Frequency
 from esgvoc.api.data_descriptors.further_info_url import FurtherInfoUrl
 from esgvoc.api.data_descriptors.grid_label import GridLabel
 from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
-from esgvoc.api.data_descriptors.initialisation_index import \
-    InitialisationIndex
+from esgvoc.api.data_descriptors.initialisation_index import InitialisationIndex
 from esgvoc.api.data_descriptors.institution import Institution
-from esgvoc.api.data_descriptors.known_branded_variable import \
-    KnownBrandedVariable
+from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable
 from esgvoc.api.data_descriptors.license import License
 from esgvoc.api.data_descriptors.mip_era import MipEra
 from esgvoc.api.data_descriptors.model_component import ModelComponent
@@ -86,6 +84,6 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "creation_date": CreationDate,
     "conventions": Convention,
     "title": Title,
-    "contact", Contact,
+    "contact": Contact,
     "obs_type": ObsType,  # obs4Mips
 }
