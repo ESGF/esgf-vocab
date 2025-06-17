@@ -3,6 +3,7 @@ from esgvoc.api.data_descriptors.area_label import AreaLabel
 from esgvoc.api.data_descriptors.branded_suffix import BrandedSuffix
 from esgvoc.api.data_descriptors.branded_variable import BrandedVariable
 from esgvoc.api.data_descriptors.consortium import Consortium
+from esgvoc.api.data_descriptors.contact import Contact
 from esgvoc.api.data_descriptors.conventions import Convention
 from esgvoc.api.data_descriptors.creation_date import CreationDate
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
@@ -15,9 +16,11 @@ from esgvoc.api.data_descriptors.frequency import Frequency
 from esgvoc.api.data_descriptors.further_info_url import FurtherInfoUrl
 from esgvoc.api.data_descriptors.grid_label import GridLabel
 from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
-from esgvoc.api.data_descriptors.initialisation_index import InitialisationIndex
+from esgvoc.api.data_descriptors.initialisation_index import \
+    InitialisationIndex
 from esgvoc.api.data_descriptors.institution import Institution
-from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable
+from esgvoc.api.data_descriptors.known_branded_variable import \
+    KnownBrandedVariable
 from esgvoc.api.data_descriptors.license import License
 from esgvoc.api.data_descriptors.mip_era import MipEra
 from esgvoc.api.data_descriptors.model_component import ModelComponent
@@ -35,6 +38,7 @@ from esgvoc.api.data_descriptors.sub_experiment import SubExperiment
 from esgvoc.api.data_descriptors.table import Table
 from esgvoc.api.data_descriptors.temporal_label import TemporalLabel
 from esgvoc.api.data_descriptors.time_range import TimeRange
+from esgvoc.api.data_descriptors.title import Title
 from esgvoc.api.data_descriptors.tracking_id import TrackingId
 from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
@@ -81,5 +85,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "tracking_id": TrackingId,
     "creation_date": CreationDate,
     "conventions": Convention,
+    "title": Title,
+    "contact", Contact,
     "obs_type": ObsType,  # obs4Mips
 }
