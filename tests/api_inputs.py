@@ -203,7 +203,6 @@ FIND_TERM_PARAMETERS: list[FindExpression] = \
         FindExpression('mir*', PARAMETERS['cmip6plus_miroc6'], ItemKind.TERM),
         FindExpression('pArIs NOT CNES', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
         FindExpression('ssp245-aer', PARAMETERS['cmip6_ssp245-aer'], ItemKind.TERM),
-        FindExpression('ssp245"-"aer', PARAMETERS['cmip6_ssp245-aer'], ItemKind.TERM),
         FindExpression("'ssp245-aer'" , PARAMETERS['cmip6_ssp245-aer'], ItemKind.TERM),
         FindExpression('- column : paris', None, None),
         FindExpression('- column : ^ paris', None, None),
