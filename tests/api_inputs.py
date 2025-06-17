@@ -212,6 +212,7 @@ FIND_TERM_PARAMETERS: list[FindExpression] = \
         FindExpression('NEAR(e d)', None, None),
         FindExpression('NEAR("e d")', None, None),
         FindExpression('ipsl +paris', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
+        FindExpression('pari', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
         FindExpression('pari*', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
         FindExpression('ipsl paris', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
         FindExpression('ipsl* paris*', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
