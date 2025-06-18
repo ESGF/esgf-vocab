@@ -77,8 +77,8 @@ def project_create_db(db_file_path: Path):
         raise EsgvocDbError(msg) from e
     try:
         with connection.create_session() as session:
-            sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS pterms_fts5 USING ' + \
-                        'fts5(pk, id, specs, kind, collection_pk, content=pterms, content_rowid=pk);'
+            sql_query = "CREATE VIRTUAL TABLE IF NOT EXISTS pterms_fts5 USING " + \
+                        "fts5(pk, id, specs, kind, collection_pk, content=pterms, content_rowid=pk, prefix=3);"
             session.exec(text(sql_query))  # type: ignore
             session.commit()
     except Exception as e:
@@ -89,7 +89,7 @@ def project_create_db(db_file_path: Path):
         with connection.create_session() as session:
             sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS pcollections_fts5 USING ' + \
                         'fts5(pk, id, data_descriptor_id, context, project_pk, ' + \
-                        'term_kind, content=pcollections, content_rowid=pk);'
+                        'term_kind, content=pcollections, content_rowid=pk, prefix=3);'
             session.exec(text(sql_query))  # type: ignore
             session.commit()
     except Exception as e:

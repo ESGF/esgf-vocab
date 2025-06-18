@@ -76,18 +76,45 @@ def instantiate_pydantic_terms(db_terms: Iterable[UTerm | PTerm],
         list_to_populate.append(term)
 
 
+def process_expression(expression: str) -> str:
+    """
+    Allows only SQLite FST operators AND OR NOT and perform prefix search for single word expressions.
+    """
+    # 1. Remove single and double quotes.
+    result = expression.replace('"', '')
+    result = result.replace("'", '')
+
+    # 2. Escape keywords.
+    result = result.replace('NEAR', '"NEAR"')
+    result = result.replace('+', '"+"')
+    result = result.replace('-', '"-"')
+    result = result.replace(':', '":"')
+    result = result.replace('^', '"^"')
+    result = result.replace('(', '"("')
+    result = result.replace(')', '")"')
+    result = result.replace(',', '","')
+
+    # 3. Make single word request a prefix search.
+    if not result.endswith('*'):
+        tokens = result.split(sep=None)
+        if len(tokens) == 1:
+            result += '*'
+    return result
+
+
 def generate_matching_condition(cls: type[UTermFTS5] | type[UDataDescriptorFTS5] |
                                 type[PTermFTS5] | type[PCollectionFTS5],
                                 expression: str,
                                 only_id: bool) -> ColumnElement[bool]:
+    processed_expression = process_expression(expression)
     # TODO: fix this when specs will ba available in collections and Data descriptors.
     if cls is PTermFTS5 or cls is UTermFTS5:
         if only_id:
-            result = col(cls.id).match(expression)
+            result = col(cls.id).match(processed_expression)
         else:
-            result = col(cls.specs).match(expression)  # type: ignore
+            result = col(cls.specs).match(processed_expression)  # type: ignore
     else:
-        result = col(cls.id).match(expression)
+        result = col(cls.id).match(processed_expression)
     return result
 
 

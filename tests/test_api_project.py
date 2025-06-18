@@ -1,6 +1,8 @@
 import esgvoc.api.projects as projects
 from esgvoc.api.search import ItemKind
 from tests.api_inputs import (  # noqa: F401
+    DEFAULT_COLLECTION,
+    DEFAULT_PROJECT,
     LEN_COLLECTIONS,
     LEN_PROJECTS,
     ValidationExpression,
@@ -137,33 +139,45 @@ def test_valid_term_in_all_projects(val_query) -> None:
 def test_find_collections_in_project(find_col_param) -> None:
     collections_found = projects.find_collections_in_project(find_col_param.expression,
                                                              find_col_param.item.project_id)
-    check_id(collections_found, find_col_param.item.collection_id)
+    id = find_col_param.item.collection_id if find_col_param.item else None
+    check_id(collections_found, id)
 
 
 def test_find_terms_in_collection(find_term_param) -> None:
+    if find_term_param.item:
+        project_id = find_term_param.item.project_id
+        collection_id = find_term_param.item.collection_id
+    else:
+        project_id = DEFAULT_PROJECT
+        collection_id = DEFAULT_COLLECTION
     terms_found = projects.find_terms_in_collection(find_term_param.expression,
-                                                    find_term_param.item.project_id,
-                                                    find_term_param.item.collection_id,
+                                                    project_id,
+                                                    collection_id,
                                                     selected_term_fields=[])
-    check_id(terms_found, find_term_param.item.term_id)
+    id = find_term_param.item.term_id if find_term_param.item else None
+    check_id(terms_found, id)
 
 
 def test_find_terms_in_project(find_term_param) -> None:
+    project_id = find_term_param.item.project_id if find_term_param.item else DEFAULT_PROJECT
     terms_found = projects.find_terms_in_project(find_term_param.expression,
-                                                 find_term_param.item.project_id,
+                                                 project_id,
                                                  selected_term_fields=[])
-    check_id(terms_found, find_term_param.item.term_id)
+    id = find_term_param.item.term_id if find_term_param.item else None
+    check_id(terms_found, id)
 
 
 def test_find_terms_in_all_projects(find_term_param) -> None:
     terms_found = projects.find_terms_in_all_projects(find_term_param.expression)
     for term_found in terms_found:
-        check_id(term_found[1], find_term_param.item.term_id)
+        id = find_term_param.item.term_id if find_term_param.item else None
+        check_id(term_found[1], id)
 
 
 def test_only_id_limit_and_offset_find_terms(find_term_param):
+    project_id = find_term_param.item.project_id if find_term_param.item else DEFAULT_PROJECT
     terms_found = projects.find_terms_in_project(find_term_param.expression,
-                                                 find_term_param.item.project_id,
+                                                 project_id,
                                                  only_id=True,
                                                  limit=10,
                                                  offset=5,
@@ -172,14 +186,19 @@ def test_only_id_limit_and_offset_find_terms(find_term_param):
 
 
 def test_find_items_in_project(find_proj_item_param) -> None:
+    project_id = find_proj_item_param.item.project_id if find_proj_item_param.item else DEFAULT_PROJECT
     items_found = projects.find_items_in_project(find_proj_item_param.expression,
-                                                 find_proj_item_param.item.project_id)
-    if find_proj_item_param.item_kind == ItemKind.TERM:
-        id = find_proj_item_param.item.term_id
-        parent_id = find_proj_item_param.item.collection_id
+                                                 project_id)
+    if find_proj_item_param.item is None:
+        id = None
+        parent_id = None
     else:
-        id = find_proj_item_param.item.collection_id
-        parent_id = find_proj_item_param.item.project_id
+        if find_proj_item_param.item_kind == ItemKind.TERM:
+            id = find_proj_item_param.item.term_id
+            parent_id = find_proj_item_param.item.collection_id
+        else:
+            id = find_proj_item_param.item.collection_id
+            parent_id = find_proj_item_param.item.project_id
     check_id(items_found,
              id,
              find_proj_item_param.item_kind,
@@ -187,6 +206,7 @@ def test_find_items_in_project(find_proj_item_param) -> None:
 
 
 def test_only_id_limit_and_offset_find_items(find_proj_item_param):
+    project_id = find_proj_item_param.item.project_id if find_proj_item_param.item else DEFAULT_PROJECT
     _ = projects.find_items_in_project(find_proj_item_param.expression,
-                                       find_proj_item_param.item.project_id,
+                                       project_id,
                                        limit=10, offset=5)
