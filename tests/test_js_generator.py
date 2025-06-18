@@ -4,7 +4,6 @@ from typing import Generator
 import pytest
 
 from esgvoc.api import projects
-from esgvoc.api.search import get_universe_session
 from esgvoc.apps.jsg import json_schema_generator as jsg
 
 JSG_PROJECT_IDS = ["cmip6"]
@@ -23,19 +22,20 @@ def jsg_project_id(request) -> str:
 @dataclass
 class JSGParameter:
     project_id: str
-    schema_field: str
+    attribute_name: str
     expected_values: list[str]
 
 
 JSG_PARAMETERS: list[JSGParameter] = [
     JSGParameter(
         "cmip6",
-        "variable_id_long_name",
-        [
-            "Total Odd Oxygen (Ox) Production Rate",
-            "Carbon Mass in Soil on Grass Tiles",
-            "Percentage Cover of Stratiform Cloud",
-        ],
+        "variable_id",
+        ["airmass", "albc", "chlcalc"],
+    ),
+    JSGParameter(
+        "cmip6",
+        "grid_label",
+        ["gr6g", "gr9a", "grz"],
     ),
     JSGParameter("cmip6", "sub_experiment_id", ["none", "s1976", "s1974"]),
     JSGParameter(
@@ -56,7 +56,7 @@ JSG_PARAMETERS: list[JSGParameter] = [
             "Against a background of the ScenarioMIP high forcing, reduce cirrus cloud optical depth by a constant amount",
         ],
     ),
-    JSGParameter("cmip6", "variant_label", ["^r\\d+i\\d+p\\d+f\\d+$"]),
+    JSGParameter("cmip6", "data_specs_version", ["^\\d{2}\\.\\d{2}\\.\\d{2}$"]),
 ]
 
 
@@ -76,21 +76,17 @@ def test_cmip6_js_generation(jsg_project_id) -> None:
 
 
 def test_generate_property(jsg_parameter) -> None:
-    with (
-        get_universe_session() as universe_session,
-        projects._get_project_session_with_exception(project_id=jsg_parameter.project_id) as project_session,
-    ):
-        collections = projects._get_all_collections_in_project(project_session)
-        js = jsg._generate_property(
-            project_id=jsg_parameter.project_id,
-            collections=collections,
-            schema_field=jsg_parameter.schema_field,
-            universe_session=universe_session,
-            project_session=project_session,
-        )
-        print(js)
+    project_specs = projects.get_project(jsg_parameter.project_id)
+    assert project_specs
+    assert project_specs.global_attributes_specs
+    with jsg.JsonPropertiesVisitor(jsg_parameter.project_id) as visitor:
+        assert jsg_parameter.attribute_name in project_specs.global_attributes_specs
+        attribute = project_specs.global_attributes_specs[jsg_parameter.attribute_name]
+        attribute_key, attribute_properties = attribute.accept(jsg_parameter.attribute_name, visitor)
         for expected_value in jsg_parameter.expected_values:
-            if "enum" in js[1]:
-                assert expected_value in js[1]["enum"]
+            if "enum" in attribute_properties:
+                assert "enum" in attribute_properties
+                assert expected_value in attribute_properties["enum"]
             else:
-                assert expected_value in js[1]["pattern"]
+                assert "pattern" in attribute_properties
+                assert expected_value in attribute_properties["pattern"]
