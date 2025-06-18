@@ -1,20 +1,24 @@
+import contextlib
 import json
 from pathlib import Path
-from typing import Any
+from typing import Iterable
 
 from sqlmodel import Session
 
 from esgvoc.api import projects, search
-from esgvoc.core.constants import PATTERN_JSON_KEY
+from esgvoc.api.project_specs import (
+    GlobalAttributeSpecBase,
+    GlobalAttributeSpecSpecific,
+    GlobalAttributeVisitor,
+)
+from esgvoc.core.constants import DRS_SPECS_JSON_KEY, PATTERN_JSON_KEY
 from esgvoc.core.db.models.project import PCollection, TermKind
 from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocNotImplementedError
 
 KEY_SEPARATOR = ':'
-FIELD_PART_SEPARATOR = '_'
-LONG_NAME_POSTFIX = '_long_name'
 JSON_SCHEMA_TEMPLATE_DIR_PATH = Path(__file__).parent
 JSON_SCHEMA_TEMPLATE_FILE_NAME_TEMPLATE = '{project_id}_template.json'
-JSON_INDENTATION = 4
+JSON_INDENTATION = 2
 
 
 def _process_plain(collection: PCollection, selected_field: str) -> list[str]:
@@ -24,7 +28,8 @@ def _process_plain(collection: PCollection, selected_field: str) -> list[str]:
             value = term.specs[selected_field]
             result.append(value)
         else:
-            raise EsgvocNotFoundError(f'missing key {selected_field} for term {term.id}')
+            raise EsgvocNotFoundError(f'missing key {selected_field} for term {term.id} in ' +
+                                      f'collection {collection.id}')
     return result
 
 
@@ -59,82 +64,83 @@ def _process_pattern(collection: PCollection) -> str:
         raise EsgvocNotImplementedError(msg)
 
 
-def _match_collection(field: str, collections: list[PCollection], universe_session: Session,
-                      project_session: Session) -> tuple[str | None, str | list | None]:
-    property_value: str | list | None = None
-    property_key: str | None = None
-    for collection in collections:
-        if field == collection.id:
-            match collection.term_kind:
-                case TermKind.PLAIN:
-                    property_value = _process_plain(collection=collection,
-                                                    selected_field='drs_name')
-                    property_key = 'enum'
-                case TermKind.COMPOSITE:
-                    property_value = _process_composite(collection=collection,
-                                                        universe_session=universe_session,
-                                                        project_session=project_session)
-                    property_key = 'pattern'
-                case TermKind.PATTERN:
-                    property_value = _process_pattern(collection)
-                    property_key = 'pattern'
-                case _:
-                    msg = f'unsupported term kind {collection.term_kind} ' + \
-                          f"for schema field '{field}'"
-                    raise EsgvocNotImplementedError(msg)
-            break
-    return property_key, property_value
+def _generate_attribute_key(project_id: str, attribute_name) -> str:
+    return f'{project_id}{KEY_SEPARATOR}{attribute_name}'
 
 
-def _generate_property(project_id: str, collections: list[PCollection], schema_field: str,
-                       universe_session: Session, project_session: Session) -> tuple[str, dict]:
-    key = f'{project_id}{KEY_SEPARATOR}{schema_field}'
-    value: dict[str, Any] = dict()
-    value['type'] = 'string'
-    property_value: str | list | None = None
-    property_key: str | None = None
-    # 1. Process "long name" fields.
-    if LONG_NAME_POSTFIX in schema_field:
-        recomputed_schema_field = schema_field.removesuffix(LONG_NAME_POSTFIX)
-        matched_collection = projects._get_collection_in_project(collection_id=recomputed_schema_field,
-                                                                 session=project_session)
-        if matched_collection:
-            property_value = _process_plain(collection=matched_collection, selected_field='long_name')
-            property_key = 'enum'
-        else:
-            raise EsgvocNotFoundError(f"collection '{recomputed_schema_field}' not found")
-    else:
-        # 2. Process schema_fields that are collection ids. (e.g. of sub_experiment_id).
-        property_key, property_value = _match_collection(schema_field,
-                                                         collections,
-                                                         universe_session,
-                                                         project_session)
-        if property_value is None or property_key is None:
-            # 3. Process schema_fields that are part of collection ids.
-            for collection in collections:
-                if schema_field in collection.id:
-                    postfix = collection.id.removeprefix(schema_field)
-                    match postfix:
-                        case '_id' | '_label':  # Process "description" fields.
-                            property_value = _process_plain(collection=collection,
-                                                            selected_field='description')
-                            property_key = 'enum'
-                            break
-    if property_value is None or property_key is None:
-        raise EsgvocNotImplementedError(f"unsupported schema field '{schema_field}'")
-    else:
-        value[property_key] = property_value
-    return (key, value)
+class JsonPropertiesVisitor(GlobalAttributeVisitor, contextlib.AbstractContextManager):
+    def __init__(self, project_id: str) -> None:
+        self.project_id = project_id
+        # Project session can't be None here.
+        self.universe_session: Session = search.get_universe_session()
+        self.project_session: Session = projects._get_project_session_with_exception(project_id)
+        self.collections: dict[str, PCollection] = dict()
+        for collection in projects._get_all_collections_in_project(self.project_session):
+            self.collections[collection.id] = collection
+
+    def __exit__(self, exception_type, exception_value, exception_traceback):
+        self.project_session.close()
+        self.universe_session.close()
+        if exception_type is not None:
+            raise exception_value
+        return True
+
+    def _generate_attribute_property(self, attribute_name: str, source_collection: str,
+                                     selected_field: str) -> tuple[str, str | list[str]]:
+        property_value: str | list[str]
+        property_key: str
+        if source_collection not in self.collections:
+            raise EsgvocNotFoundError(f"collection '{source_collection}' referenced by attribute " +
+                                      f"{attribute_name} is not found")
+        collection = self.collections[source_collection]
+        match collection.term_kind:
+            case TermKind.PLAIN:
+                property_value = _process_plain(collection=collection,
+                                                selected_field=selected_field)
+                property_key = 'enum'
+            case TermKind.COMPOSITE:
+                property_value = _process_composite(collection=collection,
+                                                    universe_session=self.universe_session,
+                                                    project_session=self.project_session)
+                property_key = 'pattern'
+            case TermKind.PATTERN:
+                property_value = _process_pattern(collection)
+                property_key = 'pattern'
+            case _:
+                msg = f"unsupported term kind '{collection.term_kind}' " + \
+                      f"for global attribute {attribute_name}"
+                raise EsgvocNotImplementedError(msg)
+        return property_key, property_value
+
+    def visit_base_attribute(self, attribute_name: str, attribute: GlobalAttributeSpecBase) \
+            -> tuple[str, dict[str, str | list[str]]]:
+        attribute_key = _generate_attribute_key(self.project_id, attribute_name)
+        attribute_properties: dict[str, str | list[str]] = dict()
+        attribute_properties['type'] = attribute.value_type.value
+        property_key, property_value = self._generate_attribute_property(attribute_name,
+                                                                         attribute.source_collection,
+                                                                         DRS_SPECS_JSON_KEY)
+        attribute_properties[property_key] = property_value
+        return attribute_key, attribute_properties
+
+    def visit_specific_attribute(self, attribute_name: str, attribute: GlobalAttributeSpecSpecific) \
+            -> tuple[str, dict[str, str | list[str]]]:
+        attribute_key = _generate_attribute_key(self.project_id, attribute_name)
+        attribute_properties: dict[str, str | list[str]] = dict()
+        attribute_properties['type'] = attribute.value_type.value
+        property_key, property_value = self._generate_attribute_property(attribute_name,
+                                                                         attribute.source_collection,
+                                                                         attribute.specific_key)
+        attribute_properties[property_key] = property_value
+        return attribute_key, attribute_properties
 
 
-def _get_schema_fields(json_root: dict) -> list[str]:
-    result = list()
-    objs = json_root['definitions']['require_any']['anyOf']
-    for obj in objs:
-        key = obj['required'][0]
-        collection_name = key.split(KEY_SEPARATOR)[1]
-        result.append(collection_name)
-    return result
+def _inject_global_attributes(json_root: dict, project_id: str, attribute_names: Iterable[str]) -> None:
+    attribute_properties = list()
+    for attribute_name in attribute_names:
+        attribute_key = _generate_attribute_key(project_id, attribute_name)
+        attribute_properties.append({"required": [attribute_key]})
+    json_root['definitions']['require_any']['anyOf'] = attribute_properties
 
 
 def _inject_properties(json_root: dict, properties: list[tuple]) -> None:
@@ -156,22 +162,24 @@ def generate_json_schema(project_id: str) -> str:
     file_name = JSON_SCHEMA_TEMPLATE_FILE_NAME_TEMPLATE.format(project_id=project_id)
     template_file_path = JSON_SCHEMA_TEMPLATE_DIR_PATH.joinpath(file_name)
     if template_file_path.exists():
-        with open(file=template_file_path, mode='r') as file:
-            file_content = file.read()
-        root = json.loads(file_content)
-        schema_fields = _get_schema_fields(root)
-        properties = list()
-        # Connection can't be None here.
-        with search.get_universe_session() as universe_session, \
-             projects._get_project_session_with_exception(project_id) as project_session:
-            collections = projects._get_all_collections_in_project(project_session)
-            for schema_field in schema_fields:
-                property = _generate_property(project_id=project_id, collections=collections,
-                                              schema_field=schema_field,
-                                              universe_session=universe_session,
-                                              project_session=project_session)
-                properties.append(property)
-        _inject_properties(root, properties)
-        return json.dumps(root, indent=JSON_INDENTATION)
+        project_specs = projects.get_project(project_id)
+        if project_specs:
+            if project_specs.global_attributes_specs:
+                with open(file=template_file_path, mode='r') as file, \
+                     JsonPropertiesVisitor(project_id) as visitor:
+                    file_content = file.read()
+                    root = json.loads(file_content)
+                    properties: list[tuple[str, dict[str, str | list[str]]]] = list()
+                    for attribute_name, attribute in project_specs.global_attributes_specs.items():
+                        attribute_key, attribute_properties = attribute.accept(attribute_name, visitor)
+                        properties.append((attribute_key, attribute_properties))
+                _inject_properties(root, properties)
+                _inject_global_attributes(root, project_id, project_specs.global_attributes_specs.keys())
+                return json.dumps(root, indent=JSON_INDENTATION)
+            else:
+                raise EsgvocNotFoundError(f"global attributes for the project '{project_id}' " +
+                                          "are not provided")
+        else:
+            raise EsgvocNotFoundError(f"project '{project_id}' is not found")
     else:
-        raise EsgvocNotFoundError(f"project '{project_id}' is not supported/found yet")
+        raise EsgvocNotFoundError(f"template for project '{project_id}' is not found")

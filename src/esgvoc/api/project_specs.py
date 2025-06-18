@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Annotated, Literal, Optional
+from typing import Annotated, Any, Literal, Optional, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -90,6 +90,23 @@ class GlobalAttributeValueType(str, Enum):
     """Float value type."""
 
 
+class GlobalAttributeVisitor(Protocol):
+    """
+    Specifications for a global attribute visitor.
+    """
+    def visit_base_attribute(self,
+                             attribute_name: str,
+                             attribute: "GlobalAttributeSpecBase") -> Any:
+        """Visit a base global attribute."""
+        pass
+
+    def visit_specific_attribute(self,
+                                 attribute_name: str,
+                                 attribute: "GlobalAttributeSpecSpecific") -> Any:
+        """Visit a specific global attribute."""
+        pass
+
+
 class GlobalAttributeSpecBase(BaseModel):
     """
     Specification for a global attribute.
@@ -100,6 +117,9 @@ class GlobalAttributeSpecBase(BaseModel):
     value_type: GlobalAttributeValueType
     """The expected value type."""
 
+    def accept(self, attribute_name: str, visitor: GlobalAttributeVisitor) -> Any:
+        return visitor.visit_base_attribute(attribute_name, self)
+
 
 class GlobalAttributeSpecSpecific(GlobalAttributeSpecBase):
     """
@@ -109,6 +129,18 @@ class GlobalAttributeSpecSpecific(GlobalAttributeSpecBase):
 
     specific_key: str
     """If the validation is for the value of a specific key, for instance description or ui-label """
+
+    def accept(self, attribute_name: str, visitor: GlobalAttributeVisitor) -> Any:
+        """
+        Accept a global attribute visitor.
+
+        :param attribute_name: The attribute name.
+        :param visitor: The global attribute visitor.
+        :type visitor: GlobalAttributeVisitor
+        :return: Depending on the visitor.
+        :rtype: Any
+        """
+        return visitor.visit_specific_attribute(attribute_name, self)
 
 
 GlobalAttributeSpec = GlobalAttributeSpecSpecific | GlobalAttributeSpecBase
