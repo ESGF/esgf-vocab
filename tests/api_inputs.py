@@ -253,13 +253,16 @@ VALIDATION_QUERIES: list[ValidationExpression] = [
 #                        "", [], []),
 DRS_VALIDATION_ERROR_LESS_QUERIES: list[DrsValidatorExpression] = [
     DrsValidatorExpression(
-        "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923", DrsType.DIRECTORY, "cmip6plus", [], []
+        "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923",
+        DrsType.DIRECTORY, "cmip6plus", [], []
     ),
     DrsValidatorExpression(
-        "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212.nc", DrsType.FILE_NAME, "cmip6plus", [], []
+        "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212.nc",
+        DrsType.FILE_NAME, "cmip6plus", [], []
     ),
     DrsValidatorExpression(
-        "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn", DrsType.DATASET_ID, "cmip6plus", [], []
+        "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
+        DrsType.DATASET_ID, "cmip6plus", [], []
     ),
 ]
 
@@ -590,7 +593,9 @@ DRS_VALIDATION_DATASET_ID_TOKEN_ERRORS: list[DrsValidatorExpression] = [
         "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.hello.world",
         DrsType.DATASET_ID,
         "cmip6plus",
-        [DrsValidatorIssue(ExtraTerm, index=9, part="hello"), DrsValidatorIssue(ExtraTerm, index=10, part="world")],
+        [
+            DrsValidatorIssue(ExtraTerm, index=9, part="hello"),
+            DrsValidatorIssue(ExtraTerm, index=10, part="world")],
         [],
     ),
 ]
@@ -707,7 +712,8 @@ DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression | DrsMappingGenerat
         "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201611-201712.nc",
         [],
         [],
-        ["r2i2p1f2", "CMIP", "MIROC6", "CMIP6Plus", "amip", "od550aer", "ACmon", "201611-201712", "gn", "IPSL"],
+        ["r2i2p1f2", "CMIP", "MIROC6", "CMIP6Plus", "amip", "od550aer", "ACmon", "201611-201712",
+         "gn", "IPSL"],
     ),
     DrsMappingGeneratorExpression(
         "cmip6plus",
@@ -734,7 +740,8 @@ DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression | DrsMappingGenerat
         "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923",
         [],
         [],
-        ["r2i2p1f2", "CMIP", "MIROC6", "CMIP6Plus", "amip", "od550aer", "ACmon", "v20190923", "gn", "NCC"],
+        ["r2i2p1f2", "CMIP", "MIROC6", "CMIP6Plus", "amip", "od550aer", "ACmon", "v20190923",
+         "gn", "NCC"],
     ),
 ]
 
@@ -813,7 +820,8 @@ def check_drs_validation_issue(issue: DrsIssue, expected_result: DrsValidatorIss
             raise TypeError(f"unsupported type {expected_result.type}")
 
 
-def check_drs_validation_expression(val_expression: DrsValidatorExpression, report: DrsValidationReport) -> None:
+def check_drs_validation_expression(val_expression: DrsValidatorExpression,
+                                    report: DrsValidationReport) -> None:
     assert report.nb_errors == len(val_expression.errors)
     assert report.nb_warnings == len(val_expression.warnings)
     for index in range(0, len(val_expression.errors)):
@@ -823,8 +831,8 @@ def check_drs_validation_expression(val_expression: DrsValidatorExpression, repo
 
 
 def check_drs_generated_expression(
-    expression: DrsMappingGeneratorExpression | DrsTermsGeneratorExpression, report: DrsGenerationReport
-) -> None:
+    expression: DrsMappingGeneratorExpression | DrsTermsGeneratorExpression,
+    report: DrsGenerationReport) -> None:
     assert expression.generated_expression == report.generated_drs_expression
     assert len(expression.errors) == report.nb_errors
     assert len(expression.warnings) == report.nb_warnings
