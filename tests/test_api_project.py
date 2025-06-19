@@ -130,10 +130,7 @@ def test_valid_term_in_project(val_query) -> None:
 
 def test_valid_term_in_all_projects(val_query) -> None:
     matching_terms = projects.valid_term_in_all_projects(val_query.value)
-    query = ValidationExpression(value=val_query.value, item=val_query.item,
-                                 nb_matching_terms=val_query.nb_matching_terms*LEN_PROJECTS,
-                                 nb_errors=val_query.nb_errors)
-    check_validation(query, matching_terms)
+    check_validation(val_query, matching_terms, True)
 
 
 def test_find_collections_in_project(find_col_param) -> None:

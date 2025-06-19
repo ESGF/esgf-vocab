@@ -1,22 +1,27 @@
-import logging
 import re
-from typing import Any, List, Optional
+from typing import Any
 
 import typer
 from pydantic import BaseModel
+from requests import logging
 from rich.console import Console
 from rich.json import JSON
 from rich.table import Table
 
-from esgvoc.api.projects import (get_all_collections_in_project,
-                                 get_all_projects, get_all_terms_in_collection,
-                                 get_term_in_collection, get_term_in_project)
-from esgvoc.api.universe import (find_terms_in_data_descriptor,
-                                 find_terms_in_universe,
-                                 get_all_data_descriptors_in_universe,
-                                 get_all_terms_in_data_descriptor,
-                                 get_term_in_data_descriptor,
-                                 get_term_in_universe)
+from esgvoc.api.projects import (
+    find_collections_in_project,
+    find_items_in_project,
+    find_terms_in_all_projects,
+    find_terms_in_collection,
+    find_terms_in_project,
+    get_all_projects,
+)
+from esgvoc.api.universe import (
+    find_data_descriptors_in_universe,
+    find_items_in_universe,
+    find_terms_in_data_descriptor,
+    find_terms_in_universe,
+)
 
 app = typer.Typer()
 console = Console()
@@ -33,42 +38,30 @@ def validate_key_format(key: str):
     return key.split(":")
 
 
-def handle_universe(data_descriptor_id: str | None, term_id: str | None, options=None):
+def handle_universe(expression: str, data_descriptor_id: str | None, term_id: str | None, options=None):
     _LOGGER.debug(f"Handling universe with data_descriptor_id={data_descriptor_id}, term_id={term_id}")
-    if data_descriptor_id and term_id:
-        return get_term_in_data_descriptor(data_descriptor_id, term_id, options)
+
+    if data_descriptor_id:
+        return find_terms_in_data_descriptor(expression, data_descriptor_id)
         # BaseModel|dict[str: BaseModel]|None:
 
-    elif term_id:
-        return get_term_in_universe(term_id, options)
-        # dict[str, BaseModel] | dict[str, dict[str, BaseModel]] | None:
-
-    elif data_descriptor_id:
-        return get_all_terms_in_data_descriptor(data_descriptor_id, options)
-        # dict[str, BaseModel]|None:
-
     else:
-        return get_all_data_descriptors_in_universe()
+        return find_terms_in_universe(expression)
         # dict[str, dict]:
 
 
-def handle_project(project_id: str, collection_id: str | None, term_id: str | None, options=None):
+def handle_project(expression: str, project_id: str, collection_id: str | None, term_id: str | None, options=None):
     _LOGGER.debug(f"Handling project {project_id} with Y={collection_id}, Z={term_id}, options = {options}")
 
-    if project_id and collection_id and term_id:
-        return get_term_in_collection(project_id, collection_id, term_id, options)
-        # BaseModel|dict[str: BaseModel]|None:
-
-    elif term_id:
-        return get_term_in_project(project_id, term_id, options)
-        # dict[str, BaseModel] | dict[str, dict[str, BaseModel]] | None:
+    if project_id == "all":
+        return find_terms_in_all_projects(expression)
 
     elif collection_id:
-        return get_all_terms_in_collection(project_id, collection_id, options)
+        return find_terms_in_collection(expression, project_id, collection_id)
         # dict[str, BaseModel]|None:
 
     else:
-        res = get_all_collections_in_project(project_id)
+        res = find_terms_in_project(expression, project_id)
         if res is None:
             return None
         else:
@@ -101,10 +94,7 @@ def display(data: Any):
 
 
 @app.command()
-def get(
-    keys: List[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZZZ format"),
-    select: Optional[List[str]] = typer.Option(None, "--select", help="keys selected for the result"),
-):
+def find(expression: str, keys: list[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZZZ format")):
     """
     Retrieve a specific value from the database system.\n
     This command allows you to fetch a value by specifying the universe/project, data_descriptor/collection,
@@ -112,19 +102,15 @@ def get(
     \n
 
     Usage:\n
-        `get <project>:<collection>:<term>`\n
+        `find <expression> <project>:<collection>:<term>`\n
     \n
     Arguments:\n
+        <expression>\t The full text search expression.
         <project>\tThe project id to query. like `cmip6plus`\n
         <collection>\tThe collection id in the specified database.\n
         <term>\t\tThe term id within the specified collection.\n
     \n
     Example:
-        To retrieve the value from the "cmip6plus" project, under the "institution_id" column, the term with the identifier "ipsl", you would use: \n
-            `get cmip6plus:institution_id:ipsl`\n
-        The default project is the universe CV : the argument would be like `universe:institution:ipsl` or `:institution:ipsl` \n
-        - to get list of available term from universe institution `:institution:` \n
-        \n
     \n
     Notes:\n
         - Ensure data exist in your system before using this command (use `esgvoc status` command to see whats available).\n
@@ -133,6 +119,7 @@ def get(
     \n
     """
     known_projects = get_all_projects()
+    _LOGGER.debug(f"Processed expression: {expression}")
 
     # Validate and process each key
     for key in keys:
@@ -142,9 +129,9 @@ def get(
         what = what if what != "" else None
         who = who if who != "" else None
         if where == "" or where == "universe":
-            res = handle_universe(what, who, select)
+            res = handle_universe(expression, what, who)
         elif where in known_projects:
-            res = handle_project(where, what, who, select)
+            res = handle_project(expression, where, what, who, None)
         else:
             res = handle_unknown(where, what, who)
 
