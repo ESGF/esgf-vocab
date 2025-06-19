@@ -51,7 +51,8 @@ class FindExpression:
 class ValidationExpression:
     value: str
     item: Parameter
-    nb_matching_terms: int
+    nb_matching_terms_in_project: int
+    nb_matching_terms_in_all_projects: int
     nb_errors: int
 
 
@@ -214,6 +215,7 @@ FIND_TERM_PARAMETERS: list[FindExpression] = \
         FindExpression('pari*', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
         FindExpression('ipsl paris', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
         FindExpression('ipsl* paris*', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
+        FindExpression('ipsl* AND paris*', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
         FindExpression('prw* NOT prw', PARAMETERS['cmip6_prw2h'], ItemKind.TERM)
     ]
 
@@ -235,14 +237,15 @@ FIND_UNIVERSE_ITEM_PARAMETERS = FIND_TERM_PARAMETERS + FIND_DATA_DESCRIPTOR_PARA
 
 FIND_PROJECT_ITEM_PARAMETERS = FIND_TERM_PARAMETERS + FIND_COLLECTION_PARAMETERS
 
-# ValidationExpression('', PARAMETERS[''], , ),
+# ValidationExpression('', PARAMETERS[''], , , ),
 VALIDATION_QUERIES: list[ValidationExpression] = [
-    ValidationExpression("IPSL", PARAMETERS["cmip6plus_ipsl"], 1, 0),
-    ValidationExpression("r1i1p1f1", PARAMETERS["cmip6plus_ripf"], 1, 0),
-    ValidationExpression("IPL", PARAMETERS["cmip6plus_ipsl"], 0, 1),
-    ValidationExpression("r1i1p1f111", PARAMETERS["cmip6plus_ripf"], 1, 0),
-    ValidationExpression("20241206-20241207", PARAMETERS["cmip6plus_daily"], 1, 0),
-    ValidationExpression("0241206-0241207", PARAMETERS["cmip6plus_daily"], 0, 1),
+    ValidationExpression("IPSL", PARAMETERS["cmip6plus_ipsl"], 1, 2, 0),
+    ValidationExpression("ssp245-aer", PARAMETERS["cmip6_ssp245-aer"], 1, 1, 0),
+    ValidationExpression("r1i1p1f1", PARAMETERS["cmip6plus_ripf"], 1, 2, 0),
+    ValidationExpression("IPL", PARAMETERS["cmip6plus_ipsl"], 0, 0, 1),
+    ValidationExpression("r1i1p1f111", PARAMETERS["cmip6plus_ripf"], 1, 2, 0),
+    ValidationExpression("20241206-20241207", PARAMETERS["cmip6plus_daily"], 1, 2, 0),
+    ValidationExpression("0241206-0241207", PARAMETERS["cmip6plus_daily"], 0, 0, 1),
 ]
 
 # DrsValidatorExpression("",
@@ -774,9 +777,14 @@ def check_id(obj: str | DataDescriptor | dict | tuple | list | ProjectSpecs | Ma
             assert obj.term_id == id
 
 
-def check_validation(val_query: ValidationExpression, matching_terms: list[MatchingTerm]) -> None:
-    assert len(matching_terms) == val_query.nb_matching_terms
-    if val_query.nb_matching_terms > 0:
+def check_validation(val_query: ValidationExpression,
+                     matching_terms: list[MatchingTerm],
+                     check_in_all_projects: bool = False) -> None:
+    if check_in_all_projects:
+        assert len(matching_terms) == val_query.nb_matching_terms_in_all_projects
+    else:
+        assert len(matching_terms) == val_query.nb_matching_terms_in_project
+    if val_query.nb_matching_terms_in_project > 0:
         check_id(matching_terms, val_query.item.term_id)
 
 
