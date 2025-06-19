@@ -26,12 +26,12 @@ Previously, controlled vocabularies were stored in multiple locations and format
 
 You can install `ESGVOC` using recent Python packaging tools. It is only available in pypi.org (not in anaconda.org). We recommend the following methods:
 
-### Using Rye (preferred)
+### Using UV (preferred)
 
-[Rye](https://rye-up.com/) is recommended for managing dependencies and isolating the library:
+[UV](https://docs.astral.sh/uv/) is recommended for managing dependencies and isolating the library:
 
 ```bash
-rye add esgvoc
+uv add esgvoc
 ```
 
 This ensures all dependencies are installed, and cached repositories and databases will be stored in the `.cache` directory alongside the `.venv` folder. This approach simplifies updates and uninstallation.

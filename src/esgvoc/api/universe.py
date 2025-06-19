@@ -13,6 +13,7 @@ from esgvoc.api.search import (
     handle_rank_limit_offset,
     instantiate_pydantic_term,
     instantiate_pydantic_terms,
+    process_expression,
 )
 from esgvoc.core.db.models.universe import UDataDescriptor, UDataDescriptorFTS5, UTerm, UTermFTS5
 
@@ -211,12 +212,15 @@ def find_data_descriptors_in_universe(expression: str,
                                       offset: int | None = None) -> list[tuple[str, dict]]:
     """
     Find data descriptors in the universe based on a full text search defined by the given `expression`.
-    The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of data descriptor ids and contexts, sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     If the provided `expression` does not hit any data descriptor, the function returns an empty list.
@@ -266,12 +270,15 @@ def find_terms_in_universe(expression: str,
                            selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
     """
     Find terms in the universe based on a full-text search defined by the given `expression`.
-    The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of term instances sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     If the provided `expression` does not hit any term, the function returns an empty list.
@@ -323,12 +330,15 @@ def find_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
                                                                             -> list[DataDescriptor]:
     """
     Find terms in the given data descriptor based on a full-text search defined by the given `expression`.
-    The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of term instances sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     This function performs an exact match on the `data_descriptor_id`,
@@ -370,12 +380,16 @@ def find_items_in_universe(expression: str,
                            offset: int | None = None) -> list[Item]:
     """
     Find items, at the moment terms and data descriptors, in the universe based on a full-text
-    search defined by the given `expression`. The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    search defined by the given `expression`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of item instances sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     If the provided `expression` does not hit any item, the function returns an empty list.
@@ -401,23 +415,24 @@ def find_items_in_universe(expression: str,
     # TODO: execute union query when it will be possible to compute parent of terms and data descriptors.
     result = list()
     with get_universe_session() as session:
+        processed_expression = process_expression(expression)
         if only_id:
             dd_column = col(UDataDescriptorFTS5.id)
             term_column = col(UTermFTS5.id)
         else:
             dd_column = col(UDataDescriptorFTS5.id)  # TODO: use specs when implemented!
             term_column = col(UTermFTS5.specs)  # type: ignore
-        dd_where_condition = dd_column.match(expression)
+        dd_where_condition = dd_column.match(processed_expression)
         dd_statement = select(UDataDescriptorFTS5.id,
                               text("'data_descriptor' AS TYPE"),
                               text("'universe' AS TYPE"),
                               text('rank')).where(dd_where_condition)
-        term_where_condition = term_column.match(expression)
+        term_where_condition = term_column.match(processed_expression)
         term_statement = select(UTermFTS5.id,
                                 text("'term' AS TYPE"),
                                 UDataDescriptor.id,
                                 text('rank')).join(UDataDescriptor) \
                                              .where(term_where_condition)
-        result = execute_find_item_statements(session, expression, dd_statement,
+        result = execute_find_item_statements(session, processed_expression, dd_statement,
                                               term_statement, limit, offset)
         return result

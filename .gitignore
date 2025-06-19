@@ -28,3 +28,4 @@ tmp*
 sb.py
 CHANGELOG.md
 .coverage
+codemcp.toml

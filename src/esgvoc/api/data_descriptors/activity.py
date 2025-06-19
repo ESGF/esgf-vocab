@@ -9,6 +9,6 @@ class Activity(PlainTermDataDescriptor):
     Activities are often organized around key research themes and may involve multiple experiments, \
     scenarios, and model configurations.
     """
-    name: str 
-    long_name: str 
-    url: str|None
+    name: str
+    long_name: str
+    url: str | None

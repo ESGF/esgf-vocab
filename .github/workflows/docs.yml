@@ -11,22 +11,24 @@ on:
 
 jobs:
   documentation:
+    name: Publish documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Install the latest version of rye
-        uses: eifinger/setup-rye@v4
+      - name: Install UV
+        uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
 
-      - name: Sync dependencies
-        run: rye sync
+      - name: Sync
+        run: uv sync
 
-      - name: build
+      - name: Build
         run: docs/build.sh
 
-      - name: deploy
+      - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/documentation' }}
         with:

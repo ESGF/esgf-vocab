@@ -39,34 +39,19 @@ esgvoc install
 
 ## How to contribute
 
-### Install Python dev environment
-
 * Pip
 
 ```bash
 pip install -e .
-```
-
-* Rye
-
-```bash
-rye sync
-```
-
-### Linters & code formatters
-
-* Pip
-
-```bash
 wily setup
 pip install pre-commit
 pre-commit install
 ```
 
-* Rye
+* UV
 
 ```bash
-rye sync
-rye run wily setup
-rye run pre-commit install
+uv sync
+uv run wily setup
+uv run pre-commit install
 ```
