@@ -177,8 +177,9 @@
 <li class="toctree-l1"><a class="reference internal" href="api_documentation/universe.html">Universe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_documentation/projects.html">Projects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_documentation/project_specs.html">Project specs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_documentation/drs.html">DRS applications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_documentation/data_descriptors.html">Data descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_documentation/drs.html">DRS applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_documentation/jsg.html">Json schema generator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_documentation/miscellaneous.html">Miscellaneous</a></li>
 </ul>
 
@@ -341,6 +342,7 @@ document.write(`
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
  | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
@@ -369,6 +371,12 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Consortium.accept">(esgvoc.api.data_descriptors.Consortium method)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Contact.accept">(esgvoc.api.data_descriptors.Contact method)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Convention.accept">(esgvoc.api.data_descriptors.Convention method)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CreationDate.accept">(esgvoc.api.data_descriptors.CreationDate method)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor.accept">(esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.DataDescriptor.accept">(esgvoc.api.data_descriptors.data_descriptor.DataDescriptor method)</a>
@@ -378,6 +386,8 @@ document.write(`
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor.accept">(esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor.accept">(esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor method)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataSpecsVersion.accept">(esgvoc.api.data_descriptors.DataSpecsVersion method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Date.accept">(esgvoc.api.data_descriptors.Date method)</a>
 </li>
@@ -389,6 +399,8 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.accept">(esgvoc.api.data_descriptors.Frequency method)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FurtherInfoUrl.accept">(esgvoc.api.data_descriptors.FurtherInfoUrl method)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridLabel.accept">(esgvoc.api.data_descriptors.GridLabel method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalLabel.accept">(esgvoc.api.data_descriptors.HorizontalLabel method)</a>
@@ -397,11 +409,15 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Institution.accept">(esgvoc.api.data_descriptors.Institution method)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.accept">(esgvoc.api.data_descriptors.KnownBrandedVariable method)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.License.accept">(esgvoc.api.data_descriptors.License method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.MipEra.accept">(esgvoc.api.data_descriptors.MipEra method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.accept">(esgvoc.api.data_descriptors.ModelComponent method)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ObsType.accept">(esgvoc.api.data_descriptors.ObsType method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Organisation.accept">(esgvoc.api.data_descriptors.Organisation method)</a>
 </li>
@@ -409,9 +425,13 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Product.accept">(esgvoc.api.data_descriptors.Product method)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.PublicationStatus.accept">(esgvoc.api.data_descriptors.PublicationStatus method)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.RealisationIndex.accept">(esgvoc.api.data_descriptors.RealisationIndex method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Realm.accept">(esgvoc.api.data_descriptors.Realm method)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Region.accept">(esgvoc.api.data_descriptors.Region method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Resolution.accept">(esgvoc.api.data_descriptors.Resolution method)</a>
 </li>
@@ -427,11 +447,19 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.TimeRange.accept">(esgvoc.api.data_descriptors.TimeRange method)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Title.accept">(esgvoc.api.data_descriptors.Title method)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.TrackingId.accept">(esgvoc.api.data_descriptors.TrackingId method)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Variable.accept">(esgvoc.api.data_descriptors.Variable method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VariantLabel.accept">(esgvoc.api.data_descriptors.VariantLabel method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VerticalLabel.accept">(esgvoc.api.data_descriptors.VerticalLabel method)</a>
+</li>
+        <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeSpecBase.accept">(esgvoc.api.project_specs.GlobalAttributeSpecBase method)</a>
+</li>
+        <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeSpecSpecific.accept">(esgvoc.api.project_specs.GlobalAttributeSpecSpecific method)</a>
 </li>
         <li><a href="api_documentation/projects.html#esgvoc.api.report.ProjectTermError.accept">(esgvoc.api.report.ProjectTermError method)</a>
 </li>
@@ -502,6 +530,8 @@ document.write(`
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.cell_methods">cell_methods (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Consortium.changes">changes (esgvoc.api.data_descriptors.Consortium attribute)</a>
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.report.ProjectTermError.class_name">class_name (esgvoc.api.report.ProjectTermError property)</a>
@@ -595,6 +625,8 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Consortium.description">(esgvoc.api.data_descriptors.Consortium attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Convention.description">(esgvoc.api.data_descriptors.Convention attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Experiment.description">(esgvoc.api.data_descriptors.Experiment attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.description">(esgvoc.api.data_descriptors.Frequency attribute)</a>
@@ -603,11 +635,19 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalLabel.description">(esgvoc.api.data_descriptors.HorizontalLabel attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.description">(esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.description">(esgvoc.api.data_descriptors.ModelComponent attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ObsType.description">(esgvoc.api.data_descriptors.ObsType attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Product.description">(esgvoc.api.data_descriptors.Product attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.PublicationStatus.description">(esgvoc.api.data_descriptors.PublicationStatus attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Realm.description">(esgvoc.api.data_descriptors.Realm attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Region.description">(esgvoc.api.data_descriptors.Region attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Resolution.description">(esgvoc.api.data_descriptors.Resolution attribute)</a>
 </li>
@@ -619,11 +659,15 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.TimeRange.description">(esgvoc.api.data_descriptors.TimeRange attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.TrackingId.description">(esgvoc.api.data_descriptors.TrackingId attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VariantLabel.description">(esgvoc.api.data_descriptors.VariantLabel attribute)</a>
 </li>
         <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.ProjectSpecs.description">(esgvoc.api.project_specs.ProjectSpecs attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.dimensions">dimensions (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsType.DIRECTORY">DIRECTORY (esgvoc.api.project_specs.DrsType attribute)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.directory_specs">directory_specs (esgvoc.apps.drs.generator.DrsGenerator attribute)</a>
@@ -643,6 +687,8 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Consortium.drs_name">(esgvoc.api.data_descriptors.Consortium attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Convention.drs_name">(esgvoc.api.data_descriptors.Convention attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor.drs_name">(esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Experiment.drs_name">(esgvoc.api.data_descriptors.Experiment attribute)</a>
@@ -655,17 +701,25 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Institution.drs_name">(esgvoc.api.data_descriptors.Institution attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.drs_name">(esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.License.drs_name">(esgvoc.api.data_descriptors.License attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.MipEra.drs_name">(esgvoc.api.data_descriptors.MipEra attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.drs_name">(esgvoc.api.data_descriptors.ModelComponent attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ObsType.drs_name">(esgvoc.api.data_descriptors.ObsType attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Organisation.drs_name">(esgvoc.api.data_descriptors.Organisation attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Product.drs_name">(esgvoc.api.data_descriptors.Product attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.PublicationStatus.drs_name">(esgvoc.api.data_descriptors.PublicationStatus attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Realm.drs_name">(esgvoc.api.data_descriptors.Realm attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Region.drs_name">(esgvoc.api.data_descriptors.Region attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Resolution.drs_name">(esgvoc.api.data_descriptors.Resolution attribute)</a>
 </li>
@@ -789,6 +843,13 @@ document.write(`
 </li>
       </ul></li>
       <li>
+    esgvoc.apps.jsg.json_schema_generator
+
+      <ul>
+        <li><a href="api_documentation/jsg.html#module-esgvoc.apps.jsg.json_schema_generator">module</a>
+</li>
+      </ul></li>
+      <li>
     esgvoc.core.exceptions
 
       <ul>
@@ -867,6 +928,8 @@ document.write(`
 </li>
       <li><a href="api_documentation/universe.html#esgvoc.api.universe.find_terms_in_universe">find_terms_in_universe() (in module esgvoc.api.universe)</a>
 </li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeValueType.FLOAT">FLOAT (esgvoc.api.project_specs.GlobalAttributeValueType attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -889,6 +952,8 @@ document.write(`
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.generate_from_mapping">generate_from_mapping() (esgvoc.apps.drs.generator.DrsGenerator method)</a>
 </li>
+      <li><a href="api_documentation/jsg.html#esgvoc.apps.jsg.json_schema_generator.generate_json_schema">generate_json_schema() (in module esgvoc.apps.jsg.json_schema_generator)</a>
+</li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGenerationReport.generated_drs_expression">generated_drs_expression (esgvoc.apps.drs.report.DrsGenerationReport attribute)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.GenerationIssueVisitor">GenerationIssueVisitor (class in esgvoc.apps.drs.report)</a>
@@ -903,10 +968,10 @@ document.write(`
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_all_terms_in_collection">get_all_terms_in_collection() (in module esgvoc.api.projects)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/universe.html#esgvoc.api.universe.get_all_terms_in_data_descriptor">get_all_terms_in_data_descriptor() (in module esgvoc.api.universe)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_all_terms_in_project">get_all_terms_in_project() (in module esgvoc.api.projects)</a>
 </li>
       <li><a href="api_documentation/universe.html#esgvoc.api.universe.get_all_terms_in_universe">get_all_terms_in_universe() (in module esgvoc.api.universe)</a>
@@ -935,6 +1000,12 @@ document.write(`
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGenerationReport.given_mapping_or_bag_of_terms">given_mapping_or_bag_of_terms (esgvoc.apps.drs.report.DrsGenerationReport attribute)</a>
 </li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.ProjectSpecs.global_attributes_specs">global_attributes_specs (esgvoc.api.project_specs.ProjectSpecs attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeValueType">GlobalAttributeValueType (class in esgvoc.api.project_specs)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeVisitor">GlobalAttributeVisitor (class in esgvoc.api.project_specs)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -952,6 +1023,12 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Consortium.id">(esgvoc.api.data_descriptors.Consortium attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Contact.id">(esgvoc.api.data_descriptors.Contact attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Convention.id">(esgvoc.api.data_descriptors.Convention attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CreationDate.id">(esgvoc.api.data_descriptors.CreationDate attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor.id">(esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.CompositeTermPart.id">(esgvoc.api.data_descriptors.data_descriptor.CompositeTermPart attribute)</a>
@@ -964,6 +1041,8 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor.id">(esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataSpecsVersion.id">(esgvoc.api.data_descriptors.DataSpecsVersion attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Date.id">(esgvoc.api.data_descriptors.Date attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DirectoryDate.id">(esgvoc.api.data_descriptors.DirectoryDate attribute)</a>
@@ -974,6 +1053,8 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.id">(esgvoc.api.data_descriptors.Frequency attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FurtherInfoUrl.id">(esgvoc.api.data_descriptors.FurtherInfoUrl attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridLabel.id">(esgvoc.api.data_descriptors.GridLabel attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalLabel.id">(esgvoc.api.data_descriptors.HorizontalLabel attribute)</a>
@@ -982,11 +1063,15 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Institution.id">(esgvoc.api.data_descriptors.Institution attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.id">(esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.License.id">(esgvoc.api.data_descriptors.License attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.MipEra.id">(esgvoc.api.data_descriptors.MipEra attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.id">(esgvoc.api.data_descriptors.ModelComponent attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ObsType.id">(esgvoc.api.data_descriptors.ObsType attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Organisation.id">(esgvoc.api.data_descriptors.Organisation attribute)</a>
 </li>
@@ -994,9 +1079,13 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Product.id">(esgvoc.api.data_descriptors.Product attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.PublicationStatus.id">(esgvoc.api.data_descriptors.PublicationStatus attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.RealisationIndex.id">(esgvoc.api.data_descriptors.RealisationIndex attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Realm.id">(esgvoc.api.data_descriptors.Realm attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Region.id">(esgvoc.api.data_descriptors.Region attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Resolution.id">(esgvoc.api.data_descriptors.Resolution attribute)</a>
 </li>
@@ -1012,6 +1101,10 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.TimeRange.id">(esgvoc.api.data_descriptors.TimeRange attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Title.id">(esgvoc.api.data_descriptors.Title attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.TrackingId.id">(esgvoc.api.data_descriptors.TrackingId attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Variable.id">(esgvoc.api.data_descriptors.Variable attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VariantLabel.id">(esgvoc.api.data_descriptors.VariantLabel attribute)</a>
@@ -1023,6 +1116,8 @@ document.write(`
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeValueType.INTEGER">INTEGER (esgvoc.api.project_specs.GlobalAttributeValueType attribute)</a>
+</li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGenerationReport.INVALID_TAG">INVALID_TAG (esgvoc.apps.drs.report.DrsGenerationReport attribute)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.IssueKind.INVALID_TERM">INVALID_TERM (esgvoc.apps.drs.report.IssueKind attribute)</a>
@@ -1037,12 +1132,24 @@ document.write(`
 </li>
       <li><a href="api_documentation/miscellaneous.html#esgvoc.api.search.ItemKind">ItemKind (class in esgvoc.api.search)</a>
 </li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeSpecs.items">items() (esgvoc.api.project_specs.GlobalAttributeSpecs method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/jsg.html#esgvoc.apps.jsg.json_schema_generator.JsonPropertiesVisitor">JsonPropertiesVisitor (class in esgvoc.apps.jsg.json_schema_generator)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="K">K</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeSpecs.keys">keys() (esgvoc.api.project_specs.GlobalAttributeSpecs method)</a>
+</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.License.kind">kind (esgvoc.api.data_descriptors.License attribute)</a>
 
       <ul>
@@ -1098,7 +1205,11 @@ document.write(`
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.AreaLabel.label">label (esgvoc.api.data_descriptors.AreaLabel attribute)</a>
 
       <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Convention.label">(esgvoc.api.data_descriptors.Convention attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalLabel.label">(esgvoc.api.data_descriptors.HorizontalLabel attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.label">(esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Source.label">(esgvoc.api.data_descriptors.Source attribute)</a>
 </li>
@@ -1107,10 +1218,10 @@ document.write(`
       </ul></li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Source.label_extended">label_extended (esgvoc.api.data_descriptors.Source attribute)</a>
 </li>
-      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Institution.labels">labels (esgvoc.api.data_descriptors.Institution attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Institution.labels">labels (esgvoc.api.data_descriptors.Institution attribute)</a>
+</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.License.license">license (esgvoc.api.data_descriptors.License attribute)</a>
 
       <ul>
@@ -1172,6 +1283,8 @@ document.write(`
         <li><a href="api_documentation/drs.html#module-esgvoc.apps.drs.report">esgvoc.apps.drs.report</a>
 </li>
         <li><a href="api_documentation/drs.html#module-esgvoc.apps.drs.validator">esgvoc.apps.drs.validator</a>
+</li>
+        <li><a href="api_documentation/jsg.html#module-esgvoc.apps.jsg.json_schema_generator">esgvoc.apps.jsg.json_schema_generator</a>
 </li>
         <li><a href="api_documentation/miscellaneous.html#module-esgvoc.core.exceptions">esgvoc.core.exceptions</a>
 </li>
@@ -1253,10 +1366,6 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor.parts">(esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor attribute)</a>
 </li>
-        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.TimeRange.parts">(esgvoc.api.data_descriptors.TimeRange attribute)</a>
-</li>
-        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VariantLabel.parts">(esgvoc.api.data_descriptors.VariantLabel attribute)</a>
-</li>
         <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsSpecification.parts">(esgvoc.api.project_specs.DrsSpecification attribute)</a>
 </li>
       </ul></li>
@@ -1302,20 +1411,36 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.realm">realm (esgvoc.api.data_descriptors.ModelComponent attribute)</a>
 </li>
-      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor.regex">regex (esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor attribute)</a>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Contact.regex">regex (esgvoc.api.data_descriptors.Contact attribute)</a>
 
       <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CreationDate.regex">(esgvoc.api.data_descriptors.CreationDate attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor.regex">(esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataSpecsVersion.regex">(esgvoc.api.data_descriptors.DataSpecsVersion attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Date.regex">(esgvoc.api.data_descriptors.Date attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DirectoryDate.regex">(esgvoc.api.data_descriptors.DirectoryDate attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ForcingIndex.regex">(esgvoc.api.data_descriptors.ForcingIndex attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FurtherInfoUrl.regex">(esgvoc.api.data_descriptors.FurtherInfoUrl attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.InitialisationIndex.regex">(esgvoc.api.data_descriptors.InitialisationIndex attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.PhysicIndex.regex">(esgvoc.api.data_descriptors.PhysicIndex attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.RealisationIndex.regex">(esgvoc.api.data_descriptors.RealisationIndex attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.TimeRange.regex">(esgvoc.api.data_descriptors.TimeRange attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Title.regex">(esgvoc.api.data_descriptors.Title attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.TrackingId.regex">(esgvoc.api.data_descriptors.TrackingId attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VariantLabel.regex">(esgvoc.api.data_descriptors.VariantLabel attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VerticalLabel.regex">(esgvoc.api.data_descriptors.VerticalLabel attribute)</a>
 </li>
@@ -1343,18 +1468,20 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor.separator">(esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor attribute)</a>
 </li>
-        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.TimeRange.separator">(esgvoc.api.data_descriptors.TimeRange attribute)</a>
-</li>
-        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VariantLabel.separator">(esgvoc.api.data_descriptors.VariantLabel attribute)</a>
-</li>
         <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsSpecification.separator">(esgvoc.api.project_specs.DrsSpecification attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridLabel.short_name">short_name (esgvoc.api.data_descriptors.GridLabel attribute)</a>
 </li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeSpecBase.source_collection">source_collection (esgvoc.api.project_specs.GlobalAttributeSpecBase attribute)</a>
+</li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.IssueKind.SPACE">SPACE (esgvoc.apps.drs.report.IssueKind attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeSpecSpecific.specific_key">specific_key (esgvoc.api.project_specs.GlobalAttributeSpecSpecific attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeSpecs.specs">specs (esgvoc.api.project_specs.GlobalAttributeSpecs attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Variable.standard_name">standard_name (esgvoc.api.data_descriptors.Variable attribute)</a>
 </li>
@@ -1363,6 +1490,8 @@ document.write(`
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Experiment.start_year">start_year (esgvoc.api.data_descriptors.Experiment attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Consortium.status">status (esgvoc.api.data_descriptors.Consortium attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeValueType.STRING">STRING (esgvoc.api.project_specs.GlobalAttributeValueType attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Experiment.sub_experiment_id">sub_experiment_id (esgvoc.api.data_descriptors.Experiment attribute)</a>
 </li>
@@ -1433,6 +1562,12 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Consortium.type">(esgvoc.api.data_descriptors.Consortium attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Contact.type">(esgvoc.api.data_descriptors.Contact attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Convention.type">(esgvoc.api.data_descriptors.Convention attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CreationDate.type">(esgvoc.api.data_descriptors.CreationDate attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor.type">(esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.CompositeTermPart.type">(esgvoc.api.data_descriptors.data_descriptor.CompositeTermPart attribute)</a>
@@ -1445,6 +1580,8 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor.type">(esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataSpecsVersion.type">(esgvoc.api.data_descriptors.DataSpecsVersion attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Date.type">(esgvoc.api.data_descriptors.Date attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DirectoryDate.type">(esgvoc.api.data_descriptors.DirectoryDate attribute)</a>
@@ -1455,6 +1592,8 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.type">(esgvoc.api.data_descriptors.Frequency attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FurtherInfoUrl.type">(esgvoc.api.data_descriptors.FurtherInfoUrl attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridLabel.type">(esgvoc.api.data_descriptors.GridLabel attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalLabel.type">(esgvoc.api.data_descriptors.HorizontalLabel attribute)</a>
@@ -1463,11 +1602,15 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Institution.type">(esgvoc.api.data_descriptors.Institution attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.type">(esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.License.type">(esgvoc.api.data_descriptors.License attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.MipEra.type">(esgvoc.api.data_descriptors.MipEra attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.type">(esgvoc.api.data_descriptors.ModelComponent attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ObsType.type">(esgvoc.api.data_descriptors.ObsType attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Organisation.type">(esgvoc.api.data_descriptors.Organisation attribute)</a>
 </li>
@@ -1475,9 +1618,13 @@ document.write(`
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Product.type">(esgvoc.api.data_descriptors.Product attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.PublicationStatus.type">(esgvoc.api.data_descriptors.PublicationStatus attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.RealisationIndex.type">(esgvoc.api.data_descriptors.RealisationIndex attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Realm.type">(esgvoc.api.data_descriptors.Realm attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Region.type">(esgvoc.api.data_descriptors.Region attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Resolution.type">(esgvoc.api.data_descriptors.Resolution attribute)</a>
 </li>
@@ -1492,6 +1639,10 @@ document.write(`
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.TemporalLabel.type">(esgvoc.api.data_descriptors.TemporalLabel attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.TimeRange.type">(esgvoc.api.data_descriptors.TimeRange attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Title.type">(esgvoc.api.data_descriptors.Title attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.TrackingId.type">(esgvoc.api.data_descriptors.TrackingId attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Variable.type">(esgvoc.api.data_descriptors.Variable attribute)</a>
 </li>
@@ -1592,20 +1743,32 @@ document.write(`
         <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationError.value">(esgvoc.api.report.ValidationError attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeSpecBase.value_type">value_type (esgvoc.api.project_specs.GlobalAttributeSpecBase attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeSpecs.values">values() (esgvoc.api.project_specs.GlobalAttributeSpecs method)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.variable">variable (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Table.variable_entry">variable_entry (esgvoc.api.data_descriptors.Table attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.version">version (esgvoc.api.data_descriptors.ModelComponent attribute)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.GenerationIssueVisitor.visit_assign_term_issue">visit_assign_term_issue() (esgvoc.apps.drs.report.GenerationIssueVisitor method)</a>
 </li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeVisitor.visit_base_attribute">visit_base_attribute() (esgvoc.api.project_specs.GlobalAttributeVisitor method)</a>
+
+      <ul>
+        <li><a href="api_documentation/jsg.html#esgvoc.apps.jsg.json_schema_generator.JsonPropertiesVisitor.visit_base_attribute">(esgvoc.apps.jsg.json_schema_generator.JsonPropertiesVisitor method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ParsingIssueVisitor.visit_blank_term_issue">visit_blank_term_issue() (esgvoc.apps.drs.report.ParsingIssueVisitor method)</a>
 
       <ul>
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ValidationIssueVisitor.visit_blank_term_issue">(esgvoc.apps.drs.report.ValidationIssueVisitor method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor.visit_composite_term">visit_composite_term() (esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor method)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.GenerationIssueVisitor.visit_conflicting_collections_issue">visit_conflicting_collections_issue() (esgvoc.apps.drs.report.GenerationIssueVisitor method)</a>
@@ -1660,6 +1823,12 @@ document.write(`
 
       <ul>
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ValidationIssueVisitor.visit_space_issue">(esgvoc.apps.drs.report.ValidationIssueVisitor method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.GlobalAttributeVisitor.visit_specific_attribute">visit_specific_attribute() (esgvoc.api.project_specs.GlobalAttributeVisitor method)</a>
+
+      <ul>
+        <li><a href="api_documentation/jsg.html#esgvoc.apps.jsg.json_schema_generator.JsonPropertiesVisitor.visit_specific_attribute">(esgvoc.apps.jsg.json_schema_generator.JsonPropertiesVisitor method)</a>
 </li>
       </ul></li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor.visit_sub_set_term">visit_sub_set_term() (esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor method)</a>

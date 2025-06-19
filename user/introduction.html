@@ -178,8 +178,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/universe.html">Universe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/projects.html">Projects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/project_specs.html">Project specs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api_documentation/drs.html">DRS applications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/data_descriptors.html">Data descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/drs.html">DRS applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/jsg.html">Json schema generator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api_documentation/miscellaneous.html">Miscellaneous</a></li>
 </ul>
 
@@ -378,7 +379,7 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-esgvoc">Why ESGVOC?</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-rye-preferred">Using Rye (preferred)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-uv-preferred">Using UV (preferred)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pip-in-a-virtual-environment">Using pip in a virtual environment</a></li>
 </ul>
 </li>
@@ -429,10 +430,10 @@ A single, centralized repository — referred to as the “Universe CV” — ho
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
 <p>You can install <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> using recent Python packaging tools. It is only available in pypi.org (not in anaconda.org). We recommend the following methods:</p>
-<section id="using-rye-preferred">
-<h3>Using Rye (preferred)<a class="headerlink" href="#using-rye-preferred" title="Link to this heading">#</a></h3>
-<p><a class="reference external" href="https://rye-up.com/">Rye</a> is recommended for managing dependencies and isolating the library:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rye<span class="w"> </span>add<span class="w"> </span>esgvoc
+<section id="using-uv-preferred">
+<h3>Using UV (preferred)<a class="headerlink" href="#using-uv-preferred" title="Link to this heading">#</a></h3>
+<p><a class="reference external" href="https://docs.astral.sh/uv/">UV</a> is recommended for managing dependencies and isolating the library:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>add<span class="w"> </span>esgvoc
 </pre></div>
 </div>
 <p>This ensures all dependencies are installed, and cached repositories and databases will be stored in the <code class="docutils literal notranslate"><span class="pre">.cache</span></code> directory alongside the <code class="docutils literal notranslate"><span class="pre">.venv</span></code> folder. This approach simplifies updates and uninstallation.</p>
@@ -539,7 +540,7 @@ pip<span class="w"> </span>install<span class="w"> </span>esgvoc
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-esgvoc">Why ESGVOC?</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-rye-preferred">Using Rye (preferred)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-uv-preferred">Using UV (preferred)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pip-in-a-virtual-environment">Using pip in a virtual environment</a></li>
 </ul>
 </li>
