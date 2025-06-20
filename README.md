@@ -43,7 +43,6 @@ esgvoc install
 
 ```bash
 pip install -e .
-wily setup
 pip install pre-commit
 pre-commit install
 ```
@@ -52,6 +51,5 @@ pre-commit install
 
 ```bash
 uv sync
-uv run wily setup
 uv run pre-commit install
 ```

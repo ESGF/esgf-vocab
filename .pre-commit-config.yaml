@@ -22,14 +22,6 @@ repos:
       - id: ruff
         name: ruff-sort-imports
         args: [--select, I, --fix]
-  - repo: local
-    hooks:
-    -   id: wily
-        name: wily
-        entry: wily diff
-        verbose: true
-        language: python
-        additional_dependencies: [wily]
   - repo: https://github.com/PyCQA/flake8
     rev: 7.1.2
     hooks:
