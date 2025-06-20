@@ -180,6 +180,6 @@ def generate_json_schema(project_id: str) -> str:
                 raise EsgvocNotFoundError(f"global attributes for the project '{project_id}' " +
                                           "are not provided")
         else:
-            raise EsgvocNotFoundError(f"project '{project_id}' is not found")
+            raise EsgvocNotFoundError(f"specs of project '{project_id}' is not found")
     else:
         raise EsgvocNotFoundError(f"template for project '{project_id}' is not found")
