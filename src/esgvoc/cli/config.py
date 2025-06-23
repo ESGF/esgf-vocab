@@ -15,51 +15,6 @@ app = typer.Typer()
 console = Console()
 
 
-def _get_fresh_config(config_manager, config_name: str):
-    """
-    Get a fresh configuration, bypassing any potential caching issues.
-    """
-    # Force reload from file to ensure we have the latest state
-    configs = config_manager.list_configs()
-    config_path = configs[config_name]
-
-    # Load directly from file to avoid any caching
-    try:
-        data = toml.load(config_path)
-        projects = {p["project_name"]: ServiceSettings.ProjectSettings(**p) for p in data.pop("projects", [])}
-        from esgvoc.core.service.configuration.setting import UniverseSettings
-
-        return ServiceSettings(universe=UniverseSettings(**data["universe"]), projects=projects)
-    except Exception:
-        # Fallback to config manager if direct load fails
-        return config_manager.get_config(config_name)
-
-
-def _save_and_reload_config(config_manager, config_name: str, config):
-    """
-    Save configuration and ensure proper state reload.
-    """
-    config_manager.save_active_config(config)
-
-    # Reset the state if we modified the active configuration
-    if config_name == config_manager.get_active_config_name():
-        service.current_state = service.get_state()
-
-        # Clear any potential caches in the config manager
-        if hasattr(config_manager, "_cached_config"):
-            config_manager._cached_config = None
-        if hasattr(config_manager, "cache"):
-            config_manager.cache.clear()
-
-    """
-    Function to display a rich table in the console.
-
-    :param table: The table to be displayed
-    """
-    console = Console(record=True, width=200)
-    console.print(table)
-
-
 @app.command()
 def list():
     """
