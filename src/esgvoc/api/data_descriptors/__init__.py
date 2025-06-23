@@ -20,6 +20,7 @@ from esgvoc.api.data_descriptors.initialisation_index import InitialisationIndex
 from esgvoc.api.data_descriptors.institution import Institution
 from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable
 from esgvoc.api.data_descriptors.license import License
+from esgvoc.api.data_descriptors.member_id import MemberId
 from esgvoc.api.data_descriptors.mip_era import MipEra
 from esgvoc.api.data_descriptors.model_component import ModelComponent
 from esgvoc.api.data_descriptors.obs_type import ObsType
@@ -87,5 +88,6 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "title": Title,
     "contact": Contact,
     "region": Region,
+    "member_id": MemberId,
     "obs_type": ObsType,  # obs4Mips
 }
