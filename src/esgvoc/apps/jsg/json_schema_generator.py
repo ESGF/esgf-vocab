@@ -1,5 +1,6 @@
 import contextlib
 import json
+from json import JSONEncoder
 from pathlib import Path
 from typing import Iterable
 
@@ -21,12 +22,12 @@ JSON_SCHEMA_TEMPLATE_FILE_NAME_TEMPLATE = '{project_id}_template.json'
 JSON_INDENTATION = 2
 
 
-def _process_plain(collection: PCollection, selected_field: str) -> list[str]:
-    result: list[str] = list()
+def _process_plain(collection: PCollection, selected_field: str) -> set[str]:
+    result: set[str] = set()
     for term in collection.terms:
         if selected_field in term.specs:
             value = term.specs[selected_field]
-            result.append(value)
+            result.add(value)
         else:
             raise EsgvocNotFoundError(f'missing key {selected_field} for term {term.id} in ' +
                                       f'collection {collection.id}')
@@ -86,8 +87,8 @@ class JsonPropertiesVisitor(GlobalAttributeVisitor, contextlib.AbstractContextMa
         return True
 
     def _generate_attribute_property(self, attribute_name: str, source_collection: str,
-                                     selected_field: str) -> tuple[str, str | list[str]]:
-        property_value: str | list[str]
+                                     selected_field: str) -> tuple[str, str | set[str]]:
+        property_value: str | set[str]
         property_key: str
         if source_collection not in self.collections:
             raise EsgvocNotFoundError(f"collection '{source_collection}' referenced by attribute " +
@@ -113,9 +114,9 @@ class JsonPropertiesVisitor(GlobalAttributeVisitor, contextlib.AbstractContextMa
         return property_key, property_value
 
     def visit_base_attribute(self, attribute_name: str, attribute: GlobalAttributeSpecBase) \
-            -> tuple[str, dict[str, str | list[str]]]:
+            -> tuple[str, dict[str, str | set[str]]]:
         attribute_key = _generate_attribute_key(self.project_id, attribute_name)
-        attribute_properties: dict[str, str | list[str]] = dict()
+        attribute_properties: dict[str, str | set[str]] = dict()
         attribute_properties['type'] = attribute.value_type.value
         property_key, property_value = self._generate_attribute_property(attribute_name,
                                                                          attribute.source_collection,
@@ -124,9 +125,9 @@ class JsonPropertiesVisitor(GlobalAttributeVisitor, contextlib.AbstractContextMa
         return attribute_key, attribute_properties
 
     def visit_specific_attribute(self, attribute_name: str, attribute: GlobalAttributeSpecSpecific) \
-            -> tuple[str, dict[str, str | list[str]]]:
+            -> tuple[str, dict[str, str | set[str]]]:
         attribute_key = _generate_attribute_key(self.project_id, attribute_name)
-        attribute_properties: dict[str, str | list[str]] = dict()
+        attribute_properties: dict[str, str | set[str]] = dict()
         attribute_properties['type'] = attribute.value_type.value
         property_key, property_value = self._generate_attribute_property(attribute_name,
                                                                          attribute.source_collection,
@@ -146,6 +147,14 @@ def _inject_global_attributes(json_root: dict, project_id: str, attribute_names:
 def _inject_properties(json_root: dict, properties: list[tuple]) -> None:
     for property in properties:
         json_root['definitions']['fields']['properties'][property[0]] = property[1]
+
+
+class SetEncoder(JSONEncoder):
+    def default(self, o):
+        if isinstance(o, set):
+            return list(o)
+        else:
+            return super().default(self, o)
 
 
 def generate_json_schema(project_id: str) -> str:
@@ -169,13 +178,13 @@ def generate_json_schema(project_id: str) -> str:
                      JsonPropertiesVisitor(project_id) as visitor:
                     file_content = file.read()
                     root = json.loads(file_content)
-                    properties: list[tuple[str, dict[str, str | list[str]]]] = list()
+                    properties: list[tuple[str, dict[str, str | set[str]]]] = list()
                     for attribute_name, attribute in project_specs.global_attributes_specs.items():
                         attribute_key, attribute_properties = attribute.accept(attribute_name, visitor)
                         properties.append((attribute_key, attribute_properties))
                 _inject_properties(root, properties)
                 _inject_global_attributes(root, project_id, project_specs.global_attributes_specs.keys())
-                return json.dumps(root, indent=JSON_INDENTATION)
+                return json.dumps(root, indent=JSON_INDENTATION, cls=SetEncoder)
             else:
                 raise EsgvocNotFoundError(f"global attributes for the project '{project_id}' " +
                                           "are not provided")
