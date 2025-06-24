@@ -1,3 +1,4 @@
+import itertools
 import re
 from typing import Iterable, Sequence
 
@@ -72,9 +73,86 @@ def _get_composite_term_separator_parts(term: UTerm | PTerm) -> tuple[str, list]
     return separator, parts
 
 
+def _valid_value_composite_term_with_separator(
+    value: str, term: UTerm | PTerm, universe_session: Session, project_session: Session
+) -> list[UniverseTermError | ProjectTermError]:
+    result = []
+    separator, parts = _get_composite_term_separator_parts(term)
+    required_indices = {i for i, p in enumerate(parts) if p.get("is_required", False)}
+
+    splits = value.split(separator)
+    nb_splits = len(splits)
+    nb_parts = len(parts)
+
+    if nb_splits > nb_parts:
+        return [_create_term_error(value, term)]
+
+    # Generate all possible assignments of split values into parts
+    # Only keep those that include all required parts
+    all_positions = [i for i in range(nb_parts)]
+    valid_combinations = [
+        comb for comb in itertools.combinations(all_positions, nb_splits) if required_indices.issubset(comb)
+    ]
+
+    for positions in valid_combinations:
+        candidate = [None] * nb_parts
+        for idx, pos in enumerate(positions):
+            candidate[pos] = splits[idx]
+
+        # Separator structure validation:
+        # - No leading separator if the first part is None
+        # - No trailing separator if the last part is None
+        # - No double separators where two adjacent optional parts are missing
+        if candidate[0] is None and value.startswith(separator):
+            continue
+        if candidate[-1] is None and value.endswith(separator):
+            continue
+        if any(
+            candidate[i] is None and candidate[i + 1] is None and separator * 2 in value for i in range(nb_parts - 1)
+        ):
+            continue  # invalid double separator between two missing parts
+
+        # Validate each filled part value
+        all_valid = True
+        for i, given_value in enumerate(candidate):
+            if given_value is None:
+                if parts[i].get("is_required", False):
+                    all_valid = False
+                    break
+                continue  # optional and missing part is allowed
+
+            part = parts[i]
+
+            # Resolve term ID list if not present
+            if "id" not in part:
+                terms = universe.get_all_terms_in_data_descriptor(part["type"], None)
+                part["id"] = [term.id for term in terms]
+            if isinstance(part["id"], str):
+                part["id"] = [part["id"]]
+
+            # Try all possible term IDs to find a valid match
+            valid_for_this_part = False
+            for id in part["id"]:
+                part_copy = dict(part)
+                part_copy["id"] = id
+                resolved_term = _resolve_term(part_copy, universe_session, project_session)
+                errors = _valid_value(given_value, resolved_term, universe_session, project_session)
+                if not errors:
+                    valid_for_this_part = True
+                    break
+            if not valid_for_this_part:
+                all_valid = False
+                break
+
+        if all_valid:
+            return []  # At least one valid combination found
+
+    return [_create_term_error(value, term)]  # No valid combination found
+
+
 # TODO: support optionality of parts of composite.
 # It is backtrack possible for more than one missing parts.
-def _valid_value_composite_term_with_separator(
+def _valid_value_composite_term_with_separator2(
     value: str, term: UTerm | PTerm, universe_session: Session, project_session: Session
 ) -> list[UniverseTermError | ProjectTermError]:
     result = list()
@@ -1113,16 +1191,16 @@ def find_items_in_project(
                 collection_column = col(PCollectionFTS5.id)  # TODO: use specs when implemented!
                 term_column = col(PTermFTS5.specs)  # type: ignore
             collection_where_condition = collection_column.match(processed_expression)
-            collection_statement = select(PCollectionFTS5.id,
-                                          text("'collection' AS TYPE"),
-                                          text(f"'{project_id}' AS TYPE"),
-                                          text('rank')).where(collection_where_condition)
+            collection_statement = select(
+                PCollectionFTS5.id, text("'collection' AS TYPE"), text(f"'{project_id}' AS TYPE"), text("rank")
+            ).where(collection_where_condition)
             term_where_condition = term_column.match(processed_expression)
-            term_statement = select(PTermFTS5.id,
-                                    text("'term' AS TYPE"),
-                                    PCollection.id,
-                                    text('rank')).join(PCollection) \
-                                                 .where(term_where_condition)
-            result = execute_find_item_statements(session, processed_expression, collection_statement,
-                                                  term_statement, limit, offset)
+            term_statement = (
+                select(PTermFTS5.id, text("'term' AS TYPE"), PCollection.id, text("rank"))
+                .join(PCollection)
+                .where(term_where_condition)
+            )
+            result = execute_find_item_statements(
+                session, processed_expression, collection_statement, term_statement, limit, offset
+            )
     return result

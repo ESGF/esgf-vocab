@@ -51,6 +51,7 @@ class FindExpression:
 class ValidationExpression:
     value: str
     item: Parameter
+    nb_matching_terms_in_collection: int
     nb_matching_terms_in_project: int
     nb_matching_terms_in_all_projects: int
     nb_errors: int
@@ -133,91 +134,89 @@ class GenerationIssueChecker:
         assert self.expected_result.parts == issue.term
         assert self.expected_result.collection_ids == issue.collection_id
 
-DEFAULT_DD = 'variable'
-DEFAULT_PROJECT = 'cmip6plus'
-DEFAULT_COLLECTION = 'variable_id'
-PROJECT_IDS = ['cmip6plus', 'cmip6']
+
+DEFAULT_DD = "variable"
+DEFAULT_PROJECT = "cmip6plus"
+DEFAULT_COLLECTION = "variable_id"
+PROJECT_IDS = ["cmip6plus", "cmip6"]
 LEN_PROJECTS = len(PROJECT_IDS)
-LEN_COLLECTIONS: dict[str, dict[str, int]] = \
-    {
-        'cmip6plus':
-        {
-            'institution_id': 90,
-            'time_range': 3,
-            'source_id': 6,
-            'variable_id': 990,
-            'table_id': 70,
-            'variant_label': 1,
-            'experiment_id': 300
-        },
-        'cmip6':
-        {
-            'institution_id': 30,
-            'time_range': 3,
-            'source_id': 130,
-            'variable_id': 990,
-            'table_id': 40,
-            'variant_label': 1,
-            'experiment_id': 300
-        }
-    }
-LEN_DATA_DESCRIPTORS: dict[str, int] = \
-    {
-        'institution': 70,
-        'time_range': 3,
-        'source': 130,
-        'variable': 1300,
-        'table': 110,
-        'variant_label': 3,
-        'experiment': 300
-    }
+LEN_COLLECTIONS: dict[str, dict[str, int]] = {
+    "cmip6plus": {
+        "institution_id": 90,
+        "time_range": 3,
+        "source_id": 6,
+        "variable_id": 990,
+        "table_id": 70,
+        "variant_label": 1,
+        "experiment_id": 300,
+    },
+    "cmip6": {
+        "institution_id": 30,
+        "time_range": 3,
+        "source_id": 130,
+        "variable_id": 990,
+        "table_id": 40,
+        "variant_label": 1,
+        "experiment_id": 300,
+        "member_id": 1,
+    },
+}
+LEN_DATA_DESCRIPTORS: dict[str, int] = {
+    "institution": 70,
+    "time_range": 3,
+    "source": 130,
+    "variable": 1300,
+    "table": 110,
+    "variant_label": 3,
+    "experiment": 300,
+    "member_id": 1,
+}
 
 
 # Parameter('', '', '', ''),
-GET_PARAMETERS: list[Parameter] = \
-    [
-        Parameter('cmip6plus', 'institution', 'institution_id', 'ipsl'),
-        Parameter('cmip6plus', 'time_range', 'time_range', 'daily'),
-        Parameter('cmip6plus', 'source', 'source_id', 'miroc6'),
-        Parameter('cmip6plus', 'variable', 'variable_id', 'airmass'),
-        Parameter('cmip6plus', 'institution', 'institution_id', 'cnes'),
-        Parameter('cmip6plus', 'table', 'table_id', 'ACmon'),
-        Parameter('cmip6plus', 'variant_label', 'variant_label', 'ripf'),
-        Parameter('cmip6', 'institution', 'institution_id', 'ipsl'),
-        Parameter('cmip6', 'time_range', 'time_range', 'daily'),
-        Parameter('cmip6', 'source', 'source_id', 'miroc6'),
-        Parameter('cmip6', 'variable', 'variable_id', 'airmass'),
-        Parameter('cmip6', 'table', 'table_id', 'Eyr'),
-        Parameter('cmip6', 'experiment', 'experiment_id', 'ssp245-aer'),
-        Parameter('cmip6', 'variable', 'variable_id', 'prw2h'),
-    ]
+GET_PARAMETERS: list[Parameter] = [
+    Parameter("cmip6plus", "institution", "institution_id", "ipsl"),
+    Parameter("cmip6plus", "time_range", "time_range", "daily"),
+    Parameter("cmip6plus", "source", "source_id", "miroc6"),
+    Parameter("cmip6plus", "variable", "variable_id", "airmass"),
+    Parameter("cmip6plus", "institution", "institution_id", "cnes"),
+    Parameter("cmip6plus", "table", "table_id", "ACmon"),
+    Parameter("cmip6plus", "variant_label", "variant_label", "ripf"),
+    Parameter("cmip6", "institution", "institution_id", "ipsl"),
+    Parameter("cmip6", "time_range", "time_range", "daily"),
+    Parameter("cmip6", "source", "source_id", "miroc6"),
+    Parameter("cmip6", "variable", "variable_id", "airmass"),
+    Parameter("cmip6", "table", "table_id", "Eyr"),
+    Parameter("cmip6", "experiment", "experiment_id", "ssp245-aer"),
+    Parameter("cmip6", "variable", "variable_id", "prw2h"),
+    Parameter("cmip6", "member_id", "member_id", "subexp_variant"),
+]
 
 PARAMETERS: dict[str, Parameter] = {f"{param.project_id}_{param.term_id}": param for param in GET_PARAMETERS}
 
 # FindExpression('', PARAMETERS[''], ItemKind.TERM),
-FIND_TERM_PARAMETERS: list[FindExpression] = \
-    [
-        FindExpression('ipsl', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
-        FindExpression('airmass', PARAMETERS['cmip6_airmass'], ItemKind.TERM),
-        FindExpression('cnes', PARAMETERS['cmip6plus_cnes'], ItemKind.TERM),
-        FindExpression('mir*', PARAMETERS['cmip6plus_miroc6'], ItemKind.TERM),
-        FindExpression('pArIs NOT CNES', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
-        FindExpression('ssp245-aer', PARAMETERS['cmip6_ssp245-aer'], ItemKind.TERM),
-        FindExpression("'ssp245-aer'" , PARAMETERS['cmip6_ssp245-aer'], ItemKind.TERM),
-        FindExpression('- column : paris', None, None),
-        FindExpression('- column : ^ paris', None, None),
-        FindExpression('NEAR(e d, 10)', None, None),
-        FindExpression('NEAR("e d", 10)', None, None),
-        FindExpression('NEAR(e d)', None, None),
-        FindExpression('NEAR("e d")', None, None),
-        FindExpression('ipsl +paris', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
-        FindExpression('pari', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
-        FindExpression('pari*', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
-        FindExpression('ipsl paris', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
-        FindExpression('ipsl* paris*', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
-        FindExpression('ipsl* AND paris*', PARAMETERS['cmip6plus_ipsl'], ItemKind.TERM),
-        FindExpression('prw* NOT prw', PARAMETERS['cmip6_prw2h'], ItemKind.TERM)
-    ]
+FIND_TERM_PARAMETERS: list[FindExpression] = [
+    FindExpression("ipsl", PARAMETERS["cmip6plus_ipsl"], ItemKind.TERM),
+    FindExpression("airmass", PARAMETERS["cmip6_airmass"], ItemKind.TERM),
+    FindExpression("cnes", PARAMETERS["cmip6plus_cnes"], ItemKind.TERM),
+    FindExpression("mir*", PARAMETERS["cmip6plus_miroc6"], ItemKind.TERM),
+    FindExpression("pArIs NOT CNES", PARAMETERS["cmip6plus_ipsl"], ItemKind.TERM),
+    FindExpression("ssp245-aer", PARAMETERS["cmip6_ssp245-aer"], ItemKind.TERM),
+    FindExpression("'ssp245-aer'", PARAMETERS["cmip6_ssp245-aer"], ItemKind.TERM),
+    FindExpression("- column : paris", None, None),
+    FindExpression("- column : ^ paris", None, None),
+    FindExpression("NEAR(e d, 10)", None, None),
+    FindExpression('NEAR("e d", 10)', None, None),
+    FindExpression("NEAR(e d)", None, None),
+    FindExpression('NEAR("e d")', None, None),
+    FindExpression("ipsl +paris", PARAMETERS["cmip6plus_ipsl"], ItemKind.TERM),
+    FindExpression("pari", PARAMETERS["cmip6plus_ipsl"], ItemKind.TERM),
+    FindExpression("pari*", PARAMETERS["cmip6plus_ipsl"], ItemKind.TERM),
+    FindExpression("ipsl paris", PARAMETERS["cmip6plus_ipsl"], ItemKind.TERM),
+    FindExpression("ipsl* paris*", PARAMETERS["cmip6plus_ipsl"], ItemKind.TERM),
+    FindExpression("ipsl* AND paris*", PARAMETERS["cmip6plus_ipsl"], ItemKind.TERM),
+    FindExpression("prw* NOT prw", PARAMETERS["cmip6_prw2h"], ItemKind.TERM),
+]
 
 # FindExpression('', PARAMETERS[''], ItemKind.DATA_DESCRIPTOR),
 FIND_DATA_DESCRIPTOR_PARAMETERS: list[FindExpression] = [
@@ -239,13 +238,15 @@ FIND_PROJECT_ITEM_PARAMETERS = FIND_TERM_PARAMETERS + FIND_COLLECTION_PARAMETERS
 
 # ValidationExpression('', PARAMETERS[''], , , ),
 VALIDATION_QUERIES: list[ValidationExpression] = [
-    ValidationExpression("IPSL", PARAMETERS["cmip6plus_ipsl"], 1, 2, 0),
-    ValidationExpression("ssp245-aer", PARAMETERS["cmip6_ssp245-aer"], 1, 1, 0),
-    ValidationExpression("r1i1p1f1", PARAMETERS["cmip6plus_ripf"], 1, 2, 0),
-    ValidationExpression("IPL", PARAMETERS["cmip6plus_ipsl"], 0, 0, 1),
-    ValidationExpression("r1i1p1f111", PARAMETERS["cmip6plus_ripf"], 1, 2, 0),
-    ValidationExpression("20241206-20241207", PARAMETERS["cmip6plus_daily"], 1, 2, 0),
-    ValidationExpression("0241206-0241207", PARAMETERS["cmip6plus_daily"], 0, 0, 1),
+    ValidationExpression("IPSL", PARAMETERS["cmip6plus_ipsl"], 1, 1, 2, 0),
+    ValidationExpression("ssp245-aer", PARAMETERS["cmip6_ssp245-aer"], 1, 1, 1, 0),
+    ValidationExpression("r1i1p1f1", PARAMETERS["cmip6plus_ripf"], 2, 1, 4, 0),
+    ValidationExpression("IPL", PARAMETERS["cmip6plus_ipsl"], 0, 0, 0, 1),
+    ValidationExpression("r1i1p1f111", PARAMETERS["cmip6plus_ripf"], 2, 1, 4, 0),
+    ValidationExpression("20241206-20241207", PARAMETERS["cmip6plus_daily"], 1, 1, 2, 0),
+    ValidationExpression("0241206-0241207", PARAMETERS["cmip6plus_daily"], 0, 0, 0, 1),
+    ValidationExpression("s1990-r1i1p1f1", PARAMETERS["cmip6_subexp_variant"], 1, 1, 2, 0),
+    ValidationExpression("r1i1p1f1", PARAMETERS["cmip6_subexp_variant"], 2, 1, 4, 0),
 ]
 
 # DrsValidatorExpression("",
@@ -253,16 +254,13 @@ VALIDATION_QUERIES: list[ValidationExpression] = [
 #                        "", [], []),
 DRS_VALIDATION_ERROR_LESS_QUERIES: list[DrsValidatorExpression] = [
     DrsValidatorExpression(
-        "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923",
-        DrsType.DIRECTORY, "cmip6plus", [], []
+        "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923", DrsType.DIRECTORY, "cmip6plus", [], []
     ),
     DrsValidatorExpression(
-        "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212.nc",
-        DrsType.FILE_NAME, "cmip6plus", [], []
+        "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212.nc", DrsType.FILE_NAME, "cmip6plus", [], []
     ),
     DrsValidatorExpression(
-        "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn",
-        DrsType.DATASET_ID, "cmip6plus", [], []
+        "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn", DrsType.DATASET_ID, "cmip6plus", [], []
     ),
 ]
 
@@ -593,9 +591,7 @@ DRS_VALIDATION_DATASET_ID_TOKEN_ERRORS: list[DrsValidatorExpression] = [
         "CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.hello.world",
         DrsType.DATASET_ID,
         "cmip6plus",
-        [
-            DrsValidatorIssue(ExtraTerm, index=9, part="hello"),
-            DrsValidatorIssue(ExtraTerm, index=10, part="world")],
+        [DrsValidatorIssue(ExtraTerm, index=9, part="hello"), DrsValidatorIssue(ExtraTerm, index=10, part="world")],
         [],
     ),
 ]
@@ -712,8 +708,7 @@ DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression | DrsMappingGenerat
         "od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201611-201712.nc",
         [],
         [],
-        ["r2i2p1f2", "CMIP", "MIROC6", "CMIP6Plus", "amip", "od550aer", "ACmon", "201611-201712",
-         "gn", "IPSL"],
+        ["r2i2p1f2", "CMIP", "MIROC6", "CMIP6Plus", "amip", "od550aer", "ACmon", "201611-201712", "gn", "IPSL"],
     ),
     DrsMappingGeneratorExpression(
         "cmip6plus",
@@ -740,16 +735,17 @@ DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression | DrsMappingGenerat
         "CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923",
         [],
         [],
-        ["r2i2p1f2", "CMIP", "MIROC6", "CMIP6Plus", "amip", "od550aer", "ACmon", "v20190923",
-         "gn", "NCC"],
+        ["r2i2p1f2", "CMIP", "MIROC6", "CMIP6Plus", "amip", "od550aer", "ACmon", "v20190923", "gn", "NCC"],
     ),
 ]
 
 
-def check_id(obj: str | DataDescriptor | dict | tuple | list | ProjectSpecs | MatchingTerm | Item | None,
-             id: str | None,
-             kind: ItemKind | None = None,
-             parent_id: str | None = None) -> None:
+def check_id(
+    obj: str | DataDescriptor | dict | tuple | list | ProjectSpecs | MatchingTerm | Item | None,
+    id: str | None,
+    kind: ItemKind | None = None,
+    parent_id: str | None = None,
+) -> None:
     if id:
         assert obj, f"'{id}' returns no result"  # None and empty list.
     else:
@@ -784,12 +780,20 @@ def check_id(obj: str | DataDescriptor | dict | tuple | list | ProjectSpecs | Ma
             assert obj.term_id == id
 
 
-def check_validation(val_query: ValidationExpression,
-                     matching_terms: list[MatchingTerm],
-                     check_in_all_projects: bool = False) -> None:
-    if check_in_all_projects:
+def check_validation(
+    val_query: ValidationExpression,
+    matching_terms: list[MatchingTerm],
+    check_in_collection: bool = False,
+    check_in_all_projects: bool = False,
+) -> None:
+    if check_in_collection:
+        print(len(matching_terms), val_query.nb_matching_terms_in_collection)
+        assert len(matching_terms) == val_query.nb_matching_terms_in_collection
+    elif check_in_all_projects:
+        print(len(matching_terms), val_query.nb_matching_terms_in_all_projects)
         assert len(matching_terms) == val_query.nb_matching_terms_in_all_projects
     else:
+        print(len(matching_terms), val_query.nb_matching_terms_in_project)
         assert len(matching_terms) == val_query.nb_matching_terms_in_project
     if val_query.nb_matching_terms_in_project > 0:
         check_id(matching_terms, val_query.item.term_id)
@@ -820,8 +824,7 @@ def check_drs_validation_issue(issue: DrsIssue, expected_result: DrsValidatorIss
             raise TypeError(f"unsupported type {expected_result.type}")
 
 
-def check_drs_validation_expression(val_expression: DrsValidatorExpression,
-                                    report: DrsValidationReport) -> None:
+def check_drs_validation_expression(val_expression: DrsValidatorExpression, report: DrsValidationReport) -> None:
     assert report.nb_errors == len(val_expression.errors)
     assert report.nb_warnings == len(val_expression.warnings)
     for index in range(0, len(val_expression.errors)):
@@ -831,8 +834,12 @@ def check_drs_validation_expression(val_expression: DrsValidatorExpression,
 
 
 def check_drs_generated_expression(
-    expression: DrsMappingGeneratorExpression | DrsTermsGeneratorExpression,
-    report: DrsGenerationReport) -> None:
+    expression: DrsMappingGeneratorExpression | DrsTermsGeneratorExpression, report: DrsGenerationReport
+) -> None:
+    print(expression)
+    print(report)
+    print(report.errors)
+    print(report.warnings)
     assert expression.generated_expression == report.generated_drs_expression
     assert len(expression.errors) == report.nb_errors
     assert len(expression.warnings) == report.nb_warnings
