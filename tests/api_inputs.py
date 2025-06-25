@@ -645,7 +645,7 @@ DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression | DrsMappingGenerat
         [],
         [],
         {
-            "variant_label": "r2i2p1f2",
+            "member_id": "r2i2p1f2",
             "activity_id": "CMIP",
             "source_id": "MIROC6",
             "mip_era": "CMIP6Plus",
@@ -666,7 +666,7 @@ DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression | DrsMappingGenerat
         ],
         [],
         {
-            "variant_label": "r2i2p1f2",
+            "member_id": "r2i2p1f2",
             "activity_id": "CMIP",
             "source_id": "MIROC",
             "mip_era": "CMIP6Plus",
@@ -691,7 +691,7 @@ DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression | DrsMappingGenerat
         [],
         [DrsGenerationIssue(MissingTerm, index=7, collection_ids="time_range")],
         {
-            "variant_label": "r2i2p1f2",
+            "member_id": "r2i2p1f2",
             "activity_id": "CMIP",
             "source_id": "MIROC6",
             "mip_era": "CMIP6Plus",
@@ -717,7 +717,7 @@ DRS_GENERATION_EXPRESSIONS: list[DrsTermsGeneratorExpression | DrsMappingGenerat
         [],
         [],
         {
-            "variant_label": "r2i2p1f2",
+            "member_id": "r2i2p1f2",
             "activity_id": "CMIP",
             "source_id": "MIROC6",
             "mip_era": "CMIP6Plus",
