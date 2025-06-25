@@ -582,6 +582,15 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.License.accept"><code class="docutils literal notranslate"><span class="pre">License.accept()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId"><code class="docutils literal notranslate"><span class="pre">MemberId</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId.description"><code class="docutils literal notranslate"><span class="pre">MemberId.description</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId.id"><code class="docutils literal notranslate"><span class="pre">MemberId.id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId.parts"><code class="docutils literal notranslate"><span class="pre">MemberId.parts</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId.separator"><code class="docutils literal notranslate"><span class="pre">MemberId.separator</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId.type"><code class="docutils literal notranslate"><span class="pre">MemberId.type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId.accept"><code class="docutils literal notranslate"><span class="pre">MemberId.accept()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MipEra"><code class="docutils literal notranslate"><span class="pre">MipEra</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MipEra.drs_name"><code class="docutils literal notranslate"><span class="pre">MipEra.drs_name</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MipEra.end"><code class="docutils literal notranslate"><span class="pre">MipEra.end</span></code></a></li>
@@ -3176,6 +3185,140 @@ see [this paper draft](<a class="reference external" href="https://docs.google.c
 <dl class="py method">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.License.accept">
 <span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><span class="pre">DataDescriptorVisitor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.License.accept" title="Link to this definition">#</a></dt>
+<dd><p>Accept an term visitor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>visitor</strong> (<a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><em>DataDescriptorVisitor</em></a>) – The term visitor.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Depending on the visitor.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.MemberId">
+<em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">MemberId</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.MemberId" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeTermDataDescriptor</span></code></a></p>
+<p>The member_id uniquely identifies a specific model simulation within an experiment. It is created by combining the sub_experiment, which describes the setup or timing of the simulation (like a specific start year), and the variant_label, which details the configuration of the model (including initial conditions, physics, and forcings). Together, they form a code like s1960-r1i1p1f1. This allows users to distinguish between different ensemble members and understand how each run differs from others within the same experiment.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MemberId&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The member_id uniquely identifies a specific model simulation within an experiment. It is created by combining the sub_experiment, which describes the setup or timing of the simulation (like a specific start year), and the variant_label, which details the configuration of the model (including initial conditions, physics, and forcings). Together, they form a code like s1960-r1i1p1f1. This allows users to distinguish between different ensemble members and understand how each run differs from others within the same experiment.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;separator&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Separator&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;parts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/CompositeTermPart&quot;</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Parts&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Description&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;CompositeTermPart&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A reference to a term, part of a composite term.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                     </span><span class="p">},</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;is_required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Is Required&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;is_required&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CompositeTermPart&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;separator&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;parts&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;description&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.MemberId.description">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.MemberId.description" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.MemberId.id">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.MemberId.id" title="Link to this definition">#</a></dt>
+<dd><p>The identifier of the terms.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.MemberId.parts">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.CompositeTermPart" title="esgvoc.api.data_descriptors.data_descriptor.CompositeTermPart"><span class="pre">CompositeTermPart</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.MemberId.parts" title="Link to this definition">#</a></dt>
+<dd><p>The components.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.MemberId.separator">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">separator</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.MemberId.separator" title="Link to this definition">#</a></dt>
+<dd><p>The components separator character.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.MemberId.type">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.MemberId.type" title="Link to this definition">#</a></dt>
+<dd><p>The data descriptor to which the term belongs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.MemberId.accept">
+<span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><span class="pre">DataDescriptorVisitor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.MemberId.accept" title="Link to this definition">#</a></dt>
 <dd><p>Accept an term visitor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -5955,6 +6098,15 @@ Vertical labels must not contain the separator used when constructing the brande
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.License.type"><code class="docutils literal notranslate"><span class="pre">License.type</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.License.url"><code class="docutils literal notranslate"><span class="pre">License.url</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.License.accept"><code class="docutils literal notranslate"><span class="pre">License.accept()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId"><code class="docutils literal notranslate"><span class="pre">MemberId</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId.description"><code class="docutils literal notranslate"><span class="pre">MemberId.description</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId.id"><code class="docutils literal notranslate"><span class="pre">MemberId.id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId.parts"><code class="docutils literal notranslate"><span class="pre">MemberId.parts</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId.separator"><code class="docutils literal notranslate"><span class="pre">MemberId.separator</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId.type"><code class="docutils literal notranslate"><span class="pre">MemberId.type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MemberId.accept"><code class="docutils literal notranslate"><span class="pre">MemberId.accept()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.MipEra"><code class="docutils literal notranslate"><span class="pre">MipEra</span></code></a><ul class="nav section-nav flex-column">
