@@ -844,6 +844,16 @@ def check_drs_generated_expression(
         report.warnings[index].accept(checker)
 
 
+def _provide_project_ids() -> Generator:
+    for param in PROJECT_IDS:
+        yield param
+
+
+@pytest.fixture(params=_provide_project_ids())
+def project_id(request) -> str:
+    return request.param
+
+
 def _provide_get_parameters() -> Generator:
     for param in GET_PARAMETERS:
         yield param

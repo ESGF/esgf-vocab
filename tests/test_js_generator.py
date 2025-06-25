@@ -1,3 +1,5 @@
+import logging
+import warnings
 from dataclasses import dataclass
 from typing import Generator
 
@@ -5,18 +7,11 @@ import pytest
 
 from esgvoc.api import projects
 from esgvoc.apps.jsg import json_schema_generator as jsg
+from esgvoc.core.exceptions import EsgvocNotFoundError
+from tests.api_inputs import project_id  # noqa: F401
 
-JSG_PROJECT_IDS = ["cmip6"]
+_LOGGER = logging.getLogger(__name__)
 
-
-def _provide_get_jsg_project_ids() -> Generator:
-    for param in JSG_PROJECT_IDS:
-        yield param
-
-
-@pytest.fixture(params=_provide_get_jsg_project_ids())
-def jsg_project_id(request) -> str:
-    return request.param
 
 
 @dataclass
@@ -70,11 +65,6 @@ def jsg_parameter(request) -> JSGParameter:
     return request.param
 
 
-def test_cmip6_js_generation(jsg_project_id) -> None:
-    js = jsg.generate_json_schema(jsg_project_id)
-    assert js
-
-
 def test_generate_property(jsg_parameter) -> None:
     project_specs = projects.get_project(jsg_parameter.project_id)
     assert project_specs
@@ -90,3 +80,16 @@ def test_generate_property(jsg_parameter) -> None:
             else:
                 assert "pattern" in attribute_properties
                 assert expected_value in attribute_properties["pattern"]
+
+
+def test_js_generation(project_id) -> None:
+    try:
+        js = jsg.generate_json_schema(project_id)
+        assert js
+    except EsgvocNotFoundError as e:
+        if "template" in str(e):
+            _LOGGER.warning(f"json schema for project {project_id} not found. Escape")
+            warnings.warn(f"json schema for project {project_id} not found. Escape",
+                          stacklevel=1)
+        else:
+            raise e
