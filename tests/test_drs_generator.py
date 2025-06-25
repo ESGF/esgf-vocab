@@ -5,8 +5,8 @@ import pytest
 from esgvoc.api.project_specs import DrsType
 from esgvoc.apps.drs.generator import DrsGenerator
 from esgvoc.apps.drs.report import AssignedTerm, ConflictingCollections, DrsGenerationReport, TooManyTermCollection
+from tests.api_inputs import DrsGenerationIssue  # noqa: F401
 from tests.api_inputs import (
-    DrsGenerationIssue,  # noqa: F401
     DrsMappingGeneratorExpression,
     DrsTermsGeneratorExpression,
     GenerationIssueChecker,
@@ -224,7 +224,7 @@ def test_generate_dataset_id_from_mapping(drs_generation_expression) -> None:
 
 def test_pedantic() -> None:
     mapping = {
-        "variant_label": "r2i2p1f2",
+        "member_id": "r2i2p1f2",
         "activity_id": "CMIP",
         "source_id": "MIROC6",
         "mip_era": "CMIP6Plus",
