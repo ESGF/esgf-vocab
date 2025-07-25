@@ -167,6 +167,7 @@ class BaseState:
 
     def sync(self):
         summary = self.check_sync_status()
+        updated = False
         if (
             self.github_access
             and summary["github_db_sync"] is None
@@ -175,25 +176,32 @@ class BaseState:
         ):
             self.clone_remote()
             self.build_db()
+            updated = True
         elif self.github_access and not summary["github_db_sync"]:
             if not summary["local_db_sync"] and summary["local_db_sync"] is not None:
                 self.clone_remote()
                 self.build_db()
+                updated = True
             elif not summary["github_local_sync"]:
                 self.clone_remote()
                 self.build_db()
+                updated = True
             else:  # can be simply build in root and clone if neccessary
                 self.build_db()
+                updated = True
         elif self.local_access:
             if not summary["local_db_sync"] and summary["local_db_sync"] is not None:
                 self.build_db()
+                updated = True
             else:
                 print("Cache db is uptodate from local repository")
         elif not self.db_access:  # it can happen if the db is created but not filled
             self.build_db()
+            updated = True
         else:
             print("Nothing to install, everything up to date")
             print("Try 'esgvoc status' for more details")
+        return updated
 
 
 class StateUniverse(BaseState):
@@ -233,10 +241,12 @@ class StateService:
 
     def synchronize_all(self):
         print("sync universe")
-        self.universe.sync()
+        universe_updated = self.universe.sync()
         print("sync projects")
         for project in self.projects.values():
-            project.sync()
+            project_updated = project.sync()
+            if universe_updated and not project_updated:
+                project.build_db()
         self.connect_db()
 
     def table(self):
