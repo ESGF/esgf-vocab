@@ -1,4 +1,3 @@
-
 import os
 import json
 import logging
@@ -9,10 +8,12 @@ from pyld import jsonld
 from pydantic import BaseModel, model_validator, ConfigDict
 
 from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
+
 # Configure logging
 _LOGGER = logging.getLogger(__name__)
 
 mapping = DATA_DESCRIPTOR_CLASS_MAPPING
+
 
 def unified_document_loader(uri: str) -> Dict:
     """Load a document from a local file or a remote URI."""
@@ -27,6 +28,7 @@ def unified_document_loader(uri: str) -> Dict:
         with open(uri, "r") as f:
             return json.load(f)
 
+
 class JsonLdResource(BaseModel):
     uri: str
     local_path: Optional[str] = None
@@ -40,13 +42,15 @@ class JsonLdResource(BaseModel):
         local_path = values.get("local_path")
         if local_path:
             values["local_path"] = os.path.abspath(local_path) + "/"
-        jsonld.set_document_loader(lambda uri,options:{
-            "contextUrl": None,  # No special context URL
-            "documentUrl": uri,  # The document's actual URL
-            "document": unified_document_loader(uri),  # The parsed JSON-LD document
-        }) 
+        jsonld.set_document_loader(
+            lambda uri, options: {
+                "contextUrl": None,  # No special context URL
+                "documentUrl": uri,  # The document's actual URL
+                "document": unified_document_loader(uri),  # The parsed JSON-LD document
+            }
+        )
         return values
-    
+
     @cached_property
     def json_dict(self) -> Dict:
         """Fetch the original JSON data."""
@@ -58,12 +62,12 @@ class JsonLdResource(BaseModel):
         """Expand the JSON-LD data."""
         _LOGGER.debug(f"Expanding JSON-LD data for {self.uri}")
         return jsonld.expand(self.uri, options={"base": self.uri})
-    
+
     @cached_property
     def context(self) -> Dict:
         """Fetch and return the JSON content of the '@context'."""
-        
-        context_data =JsonLdResource(uri="/".join(self.uri.split("/")[:-1])+"/"+self.json_dict["@context"]) 
+
+        context_data = JsonLdResource(uri="/".join(self.uri.split("/")[:-1]) + "/" + self.json_dict["@context"])
         # Works only in relative path declaration
 
         context_value = context_data.json_dict
@@ -83,9 +87,7 @@ class JsonLdResource(BaseModel):
     def normalized(self) -> str:
         """Normalize the JSON-LD data."""
         _LOGGER.info(f"Normalizing JSON-LD data for {self.uri}")
-        return jsonld.normalize(
-            self.uri, options={"algorithm": "URDNA2015", "format": "application/n-quads"}
-        )
+        return jsonld.normalize(self.uri, options={"algorithm": "URDNA2015", "format": "application/n-quads"})
 
     @cached_property
     def python(self) -> Optional[Any]:
@@ -120,14 +122,14 @@ class JsonLdResource(BaseModel):
 
 
 if __name__ == "__main__":
-    ## For Universe 
-    #online
+    ## For Universe
+    # online
     # d = Data(uri = "https://espri-mod.github.io/mip-cmor-tables/activity/cmip.json")
     # print(d.info)
-    #offline
-    #print(Data(uri = ".cache/repos/mip-cmor-tables/activity/cmip.json").info)
-    ## for Project 
-    #d = Data(uri = "https://espri-mod.github.io/CMIP6Plus_CVs/activity_id/cmip.json")
-    #print(d.info)
-    #offline
-    print(JsonLdResource(uri = ".cache/repos/CMIP6Plus_CVs/activity_id/cmip.json").info)
+    # offline
+    # print(Data(uri = ".cache/repos/mip-cmor-tables/activity/cmip.json").info)
+    ## for Project
+    # d = Data(uri = "https://espri-mod.github.io/CMIP6Plus_CVs/activity_id/cmip.json")
+    # print(d.info)
+    # offline
+    print(JsonLdResource(uri=".cache/repos/CMIP6Plus_CVs/activity_id/cmip.json").info)
