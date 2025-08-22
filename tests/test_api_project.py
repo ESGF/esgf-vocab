@@ -162,7 +162,7 @@ def test_find_terms_in_all_projects(find_term_param) -> None:
 def test_only_id_limit_and_offset_find_terms(find_term_param):
     project_id = find_term_param.item.project_id if find_term_param.item else DEFAULT_PROJECT
     terms_found = projects.find_terms_in_project(
-        find_term_param.expression, project_id, only_id=True, limit=10, offset=5, selected_term_fields=[]
+        find_term_param.expression, project_id, only_id=True, limit=10, offset=6, selected_term_fields=[]
     )
     assert not terms_found
 
