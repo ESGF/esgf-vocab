@@ -41,8 +41,8 @@ class ServiceSettings(BaseModel):
         },
         "input4mip": {
             "project_name": "input4mip",
-            "github_repo": "https://github.com/ltroussellier/test_new_CV",
-            "branch": "devel",
+            "github_repo": "https://github.com/PCMDI/input4MIPs_CVs",
+            "branch": "esgvoc",
             "local_path": "repos/Input4MIP_CVs",
             "db_path": "dbs/input4mips.sqlite",
         },
@@ -52,6 +52,13 @@ class ServiceSettings(BaseModel):
             "branch": "main",
             "local_path": "repos/obs4MIPs_CVs",
             "db_path": "dbs/obs4mips.sqlite",
+        },
+        "cordex-cmip6": {
+            "project_name": "cordex-cmip6",
+            "github_repo": "https://github.com/WCRP-CORDEX/cordex-cmip6-cv",
+            "branch": "esgvoc",
+            "local_path": "repos/cordex-cmip6-cv",
+            "db_path": "dbs/cordex-cmip6.sqlite",
         },
     }
 
