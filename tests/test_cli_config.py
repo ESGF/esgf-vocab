@@ -18,8 +18,10 @@ class MockConfigManager:
 
     def __init__(self, config_dir: Path, active_config: str = "default"):
         self.config_dir = config_dir
+        self.data_config_dir = str(config_dir.parent / "data")  # Add missing attribute
         self.active_config = active_config
         self.configs = {}
+        self._target_config = None  # Track which config is being modified
         self._load_configs()
 
     def _load_configs(self):
@@ -74,6 +76,12 @@ class MockConfigManager:
         """Save the active configuration."""
         config_path = self.configs[self.active_config]
         config.save_to_file(config_path)
+    
+    def save_config_by_name(self, config: ServiceSettings, config_name: str):
+        """Save a specific configuration by name."""
+        if config_name in self.configs:
+            config_path = self.configs[config_name]
+            config.save_to_file(config_path)
 
 
 class TestConfigCLI:
@@ -136,11 +144,14 @@ class TestConfigCLI:
 
     def _patch_service_calls(self):
         """Context manager to patch service calls with our mock."""
+        # Create a mock state object with synchronize_all method  
+        mock_state = type('MockState', (), {'synchronize_all': lambda *args, **kwargs: None})()
+        
         return patch.multiple(
             "esgvoc.cli.config.service",  # Adjust this import path
-            get_config_manager=lambda: self.mock_config_manager,
-            current_state=None,
-            get_state=lambda: None,
+            get_config_manager=lambda *args, **kwargs: self.mock_config_manager,
+            current_state=mock_state,
+            get_state=lambda *args, **kwargs: mock_state,
         )
 
     # Configuration Management Tests
@@ -630,52 +641,53 @@ class TestConfigCLI:
             assert "Component 'unknown' not found in configuration" in result.stdout
 
     # NEW: Simple config command tests
+    def test_debug_commands_available(self):
+        """Debug test to check if new commands are available."""
+        with self._patch_service_calls():
+            result = self.runner.invoke(app, ["--help"])
+            
+            # Check if the new commands are in the help output
+            assert result.exit_code == 0
+            assert "add" in result.stdout or "Commands:" in result.stdout
+
     def test_config_add_single_project(self):
         """Test adding a single project using the simple 'add' command."""
         with self._patch_service_calls():
-            # Mock synchronize_all to avoid actual downloads
-            with patch("esgvoc.cli.config.service.current_state") as mock_state:
-                mock_state.synchronize_all = lambda: None
-                
-                result = self.runner.invoke(app, ["add", "input4mip"])
-                
-                assert result.exit_code == 0
-                assert "✓ Added project input4mip" in result.stdout
-                assert "✓ Successfully installed CVs" in result.stdout
-                
-                # Verify project was added
-                with open(self.default_config_path) as f:
-                    data = toml.load(f)
-                
-                project_names = [p["project_name"] for p in data["projects"]]
-                assert "input4mip" in project_names
-                assert len(data["projects"]) == 3  # Original 2 + 1 new
+            result = self.runner.invoke(app, ["add", "input4mip"])
+            
+            assert result.exit_code == 0
+            assert "✓ Added project input4mip" in result.stdout
+            assert "✓ Successfully installed CVs" in result.stdout
+            
+            # Verify project was added
+            with open(self.default_config_path) as f:
+                data = toml.load(f)
+            
+            project_names = [p["project_name"] for p in data["projects"]]
+            assert "input4mip" in project_names
+            assert len(data["projects"]) == 3  # Original 2 + 1 new
 
     def test_config_add_multiple_projects(self):
         """Test adding multiple projects using the simple 'add' command."""
         with self._patch_service_calls():
-            # Mock synchronize_all to avoid actual downloads
-            with patch("esgvoc.cli.config.service.current_state") as mock_state:
-                mock_state.synchronize_all = lambda: None
-                
-                result = self.runner.invoke(app, ["add", "input4mip", "obs4mip", "cordex-cmip6"])
-                
-                assert result.exit_code == 0
-                assert "✓ Added project input4mip" in result.stdout
-                assert "✓ Added project obs4mip" in result.stdout
-                assert "✓ Added project cordex-cmip6" in result.stdout
-                assert "Successfully added 3 project(s)" in result.stdout
-                assert "✓ Successfully installed CVs for all added projects" in result.stdout
-                
-                # Verify all projects were added
-                with open(self.default_config_path) as f:
-                    data = toml.load(f)
-                
-                project_names = [p["project_name"] for p in data["projects"]]
-                assert "input4mip" in project_names
-                assert "obs4mip" in project_names
-                assert "cordex-cmip6" in project_names
-                assert len(data["projects"]) == 5  # Original 2 + 3 new
+            result = self.runner.invoke(app, ["add", "input4mip", "obs4mip", "cordex-cmip6"])
+            
+            assert result.exit_code == 0
+            assert "✓ Added project input4mip" in result.stdout
+            assert "✓ Added project obs4mip" in result.stdout
+            assert "✓ Added project cordex-cmip6" in result.stdout
+            assert "Successfully added 3 project(s)" in result.stdout
+            assert "✓ Successfully installed CVs for all added projects" in result.stdout
+            
+            # Verify all projects were added
+            with open(self.default_config_path) as f:
+                data = toml.load(f)
+            
+            project_names = [p["project_name"] for p in data["projects"]]
+            assert "input4mip" in project_names
+            assert "obs4mip" in project_names
+            assert "cordex-cmip6" in project_names
+            assert len(data["projects"]) == 5  # Original 2 + 3 new
 
     def test_config_add_existing_project(self):
         """Test adding a project that already exists."""
@@ -689,19 +701,16 @@ class TestConfigCLI:
     def test_config_add_mixed_valid_invalid(self):
         """Test adding a mix of valid, invalid, and existing projects."""
         with self._patch_service_calls():
-            with patch("esgvoc.cli.config.service.current_state") as mock_state:
-                mock_state.synchronize_all = lambda: None
-                
-                result = self.runner.invoke(app, ["add", "input4mip", "cmip6", "invalid_project", "obs4mip"])
-                
-                assert result.exit_code == 0
-                assert "✓ Added project input4mip" in result.stdout
-                assert "✓ Added project obs4mip" in result.stdout
-                assert "⚠ Project 'cmip6' already exists - skipping" in result.stdout
-                assert "✗ Invalid project 'invalid_project'" in result.stdout
-                assert "Successfully added 2 project(s)" in result.stdout
-                assert "Skipped 1 existing project(s)" in result.stdout
-                assert "Invalid project(s): invalid_project" in result.stdout
+            result = self.runner.invoke(app, ["add", "input4mip", "cmip6", "invalid_project", "obs4mip"])
+            
+            assert result.exit_code == 0
+            assert "✓ Added project input4mip" in result.stdout
+            assert "✓ Added project obs4mip" in result.stdout
+            assert "⚠ Project 'cmip6' already exists - skipping" in result.stdout
+            assert "✗ Invalid project 'invalid_project'" in result.stdout
+            assert "Successfully added 2 project(s)" in result.stdout
+            assert "Skipped 1 existing project(s)" in result.stdout
+            assert "Invalid project(s): invalid_project" in result.stdout
 
     def test_config_add_all_invalid(self):
         """Test adding only invalid projects."""
@@ -709,6 +718,7 @@ class TestConfigCLI:
             result = self.runner.invoke(app, ["add", "invalid1", "invalid2"])
             
             assert result.exit_code == 1
+            # The error message format from the actual implementation
             assert "✗ Invalid project 'invalid1'" in result.stdout
             assert "✗ Invalid project 'invalid2'" in result.stdout
             assert "Invalid project(s): invalid1, invalid2" in result.stdout
@@ -918,20 +928,17 @@ class TestConfigCLI:
     def test_config_add_specific_config(self):
         """Test adding project to specific configuration."""
         with self._patch_service_calls():
-            with patch("esgvoc.cli.config.service.current_state") as mock_state:
-                mock_state.synchronize_all = lambda: None
-                
-                result = self.runner.invoke(app, ["add", "input4mip", "--config", "test"])
-                
-                assert result.exit_code == 0
-                assert "✓ Added project input4mip" in result.stdout
-                
-                # Verify project was added to test config
-                with open(self.test_config_path) as f:
-                    data = toml.load(f)
-                
-                project_names = [p["project_name"] for p in data["projects"]]
-                assert "input4mip" in project_names
+            result = self.runner.invoke(app, ["add", "input4mip", "--config", "test"])
+            
+            assert result.exit_code == 0
+            assert "✓ Added project input4mip" in result.stdout
+            
+            # Verify project was added to test config
+            with open(self.test_config_path) as f:
+                data = toml.load(f)
+            
+            project_names = [p["project_name"] for p in data["projects"]]
+            assert "input4mip" in project_names
 
     def test_config_rm_specific_config(self):
         """Test removing project from specific configuration."""
@@ -1007,59 +1014,56 @@ class TestConfigCLI:
     def test_integration_simple_config_workflow(self):
         """Test complete workflow using the new simple config commands."""
         with self._patch_service_calls():
-            with patch("esgvoc.cli.config.service.current_state") as mock_state:
-                mock_state.synchronize_all = lambda: None
-                
-                # 1. Create empty config and switch to it
-                result = self.runner.invoke(app, ["init", "simple_workflow"])
-                assert result.exit_code == 0
-                assert "✓ Created empty configuration: simple_workflow" in result.stdout
-                assert "✓ Switched to configuration: simple_workflow" in result.stdout
-                
-                # 2. Check that it's empty
-                result = self.runner.invoke(app, ["avail"])
-                assert "0/5 projects active" in result.stdout
-                
-                # 3. Add multiple projects at once
-                result = self.runner.invoke(app, ["add", "cmip6", "input4mip", "obs4mip"])
-                assert result.exit_code == 0
-                assert "Successfully added 3 project(s): cmip6, input4mip, obs4mip" in result.stdout
-                
-                # 4. Check projects were added
-                result = self.runner.invoke(app, ["avail"])
-                assert "3/5 projects active" in result.stdout
-                
-                # 5. Try to add existing and new projects
-                result = self.runner.invoke(app, ["add", "cmip6", "cmip6plus", "cordex-cmip6"])
-                assert result.exit_code == 0
-                assert "⚠ Project 'cmip6' already exists - skipping" in result.stdout
-                assert "Successfully added 2 project(s): cmip6plus, cordex-cmip6" in result.stdout
-                
-                # 6. Verify all are now active
-                result = self.runner.invoke(app, ["avail"])
-                assert "5/5 projects active" in result.stdout
-                
-                # 7. Remove some projects
-                result = self.runner.invoke(app, ["rm", "obs4mip", "cordex-cmip6", "--force"])
-                assert result.exit_code == 0
-                assert "Successfully removed 2 project(s): obs4mip, cordex-cmip6" in result.stdout
-                
-                # 8. Check final state
-                result = self.runner.invoke(app, ["avail"])
-                assert "3/5 projects active" in result.stdout
-                
-                # 9. Verify configuration file directly
-                simple_workflow_path = self.config_dir / "simple_workflow.toml"
-                with open(simple_workflow_path) as f:
-                    data = toml.load(f)
-                
-                project_names = [p["project_name"] for p in data["projects"]]
-                assert "cmip6" in project_names
-                assert "cmip6plus" in project_names
-                assert "input4mip" in project_names
-                assert "obs4mip" not in project_names
-                assert "cordex-cmip6" not in project_names
-                assert len(project_names) == 3
+            # 1. Create empty config and switch to it
+            result = self.runner.invoke(app, ["init", "simple_workflow"])
+            assert result.exit_code == 0
+            assert "✓ Created empty configuration: simple_workflow" in result.stdout
+            assert "✓ Switched to configuration: simple_workflow" in result.stdout
+            
+            # 2. Check that it's empty
+            result = self.runner.invoke(app, ["avail"])
+            assert "0/5 projects active" in result.stdout
+            
+            # 3. Add multiple projects at once
+            result = self.runner.invoke(app, ["add", "cmip6", "input4mip", "obs4mip"])
+            assert result.exit_code == 0
+            assert "Successfully added 3 project(s): cmip6, input4mip, obs4mip" in result.stdout
+            
+            # 4. Check projects were added
+            result = self.runner.invoke(app, ["avail"])
+            assert "3/5 projects active" in result.stdout
+            
+            # 5. Try to add existing and new projects
+            result = self.runner.invoke(app, ["add", "cmip6", "cmip6plus", "cordex-cmip6"])
+            assert result.exit_code == 0
+            assert "⚠ Project 'cmip6' already exists - skipping" in result.stdout
+            assert "Successfully added 2 project(s): cmip6plus, cordex-cmip6" in result.stdout
+            
+            # 6. Verify all are now active
+            result = self.runner.invoke(app, ["avail"])
+            assert "5/5 projects active" in result.stdout
+            
+            # 7. Remove some projects
+            result = self.runner.invoke(app, ["rm", "obs4mip", "cordex-cmip6", "--force"])
+            assert result.exit_code == 0
+            assert "Successfully removed 2 project(s): obs4mip, cordex-cmip6" in result.stdout
+            
+            # 8. Check final state
+            result = self.runner.invoke(app, ["avail"])
+            assert "3/5 projects active" in result.stdout
+            
+            # 9. Verify configuration file directly
+            simple_workflow_path = self.config_dir / "simple_workflow.toml"
+            with open(simple_workflow_path) as f:
+                data = toml.load(f)
+            
+            project_names = [p["project_name"] for p in data["projects"]]
+            assert "cmip6" in project_names
+            assert "cmip6plus" in project_names
+            assert "input4mip" in project_names
+            assert "obs4mip" not in project_names
+            assert "cordex-cmip6" not in project_names
+            assert len(project_names) == 3
 
 
 class TestEdgeCases:
@@ -1270,22 +1274,19 @@ class TestEdgeCases:
             current_state=None,
             get_state=lambda: None,
         ):
-            with patch("esgvoc.cli.config.service.current_state") as mock_state:
-                mock_state.synchronize_all = lambda: None
-                
-                # Test adding empty list (edge case)
-                result = runner.invoke(app, ["add"])
-                assert result.exit_code == 2  # Typer error for missing argument
-                
-                # Test removing empty list (edge case)
-                result = runner.invoke(app, ["rm"])
-                assert result.exit_code == 2  # Typer error for missing argument
-                
-                # Test mixed case with all existing projects
-                result = runner.invoke(app, ["add", "cmip6"])
-                assert result.exit_code == 0
-                assert "Skipped 1 existing project(s): cmip6" in result.stdout
-                assert "Successfully added" not in result.stdout  # Nothing was actually added
+            # Test adding empty list (edge case)
+            result = runner.invoke(app, ["add"])
+            assert result.exit_code == 2  # Typer error for missing argument
+            
+            # Test removing empty list (edge case)
+            result = runner.invoke(app, ["rm"])
+            assert result.exit_code == 2  # Typer error for missing argument
+            
+            # Test mixed case with all existing projects
+            result = runner.invoke(app, ["add", "cmip6"])
+            assert result.exit_code == 0
+            assert "Skipped 1 existing project(s): cmip6" in result.stdout
+            assert "Successfully added" not in result.stdout  # Nothing was actually added
 
 
 # Helper functions for test setup and assertions

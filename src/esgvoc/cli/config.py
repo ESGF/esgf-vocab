@@ -738,6 +738,7 @@ def update_project(
 
 # 🔹 NEW: Simple config management commands
 
+
 @app.command()
 def add(
     project_names: List[str] = typer.Argument(..., help="Names of the projects to add from defaults."),
@@ -747,11 +748,11 @@ def add(
 ):
     """
     Add one or more default projects to the current configuration and install their CVs.
-    
+
     This will:
     1. Add the projects to the configuration using default settings
     2. Download the projects' CVs by running synchronize_all
-    
+
     Examples:
         esgvoc config add input4mip
         esgvoc config add input4mip obs4mip cordex-cmip6
@@ -776,7 +777,7 @@ def add(
         added_projects = []
         skipped_projects = []
         invalid_projects = []
-        
+
         # Process each project
         for project_name in project_names:
             # Check if project already exists
@@ -786,18 +787,26 @@ def add(
                 continue
 
             # Add the project from defaults
-            if config.add_project_from_default(project_name):
-                added_projects.append(project_name)
-                console.print(f"[green]✓ Added project [cyan]{project_name}[/cyan][/green]")
-            else:
+            try:
+                if config.add_project_from_default(project_name):
+                    added_projects.append(project_name)
+                    console.print(f"[green]✓ Added project [cyan]{project_name}[/cyan][/green]")
+                else:
+                    invalid_projects.append(project_name)
+                    console.print(f"[red]✗ Invalid project '{project_name}'[/red]")
+            except ValueError as e:
                 invalid_projects.append(project_name)
                 console.print(f"[red]✗ Invalid project '{project_name}'[/red]")
 
         # Show summary of what was processed
         if added_projects:
-            console.print(f"[green]Successfully added {len(added_projects)} project(s): {', '.join(added_projects)}[/green]")
+            console.print(
+                f"[green]Successfully added {len(added_projects)} project(s): {', '.join(added_projects)}[/green]"
+            )
         if skipped_projects:
-            console.print(f"[yellow]Skipped {len(skipped_projects)} existing project(s): {', '.join(skipped_projects)}[/yellow]")
+            console.print(
+                f"[yellow]Skipped {len(skipped_projects)} existing project(s): {', '.join(skipped_projects)}[/yellow]"
+            )
         if invalid_projects:
             available = config.get_available_default_projects()
             console.print(f"[red]Invalid project(s): {', '.join(invalid_projects)}[/red]")
@@ -805,13 +814,16 @@ def add(
 
         # Only proceed if we actually added something
         if added_projects:
-            # Save the configuration
-            config_manager.save_active_config(config)
-            
-            # Reset the state if we modified the active configuration
+            # Save the configuration to the correct file
             if config_name == config_manager.get_active_config_name():
+                config_manager.save_active_config(config)
+                # Reset the state if we modified the active configuration
                 service.current_state = service.get_state()
-            
+            else:
+                # Save to specific config file
+                config_path = configs[config_name]
+                config.save_to_file(config_path)
+
             # Download the CVs for all added projects
             console.print(f"[blue]Downloading CVs for {len(added_projects)} project(s)...[/blue]")
             service.current_state.synchronize_all()
@@ -835,16 +847,18 @@ def rm(
         None, "--config", "-c", help="Configuration name. Uses active configuration if not specified."
     ),
     force: bool = typer.Option(False, "--force", "-f", help="Skip confirmation prompt."),
-    keep_files: bool = typer.Option(False, "--keep-files", help="Keep local repos and databases (only remove from config)."),
+    keep_files: bool = typer.Option(
+        False, "--keep-files", help="Keep local repos and databases (only remove from config)."
+    ),
 ):
     """
     Remove one or more projects from the configuration and delete their repos/databases.
-    
+
     This will:
     1. Remove the projects from the configuration
     2. Delete the local repository directories (unless --keep-files)
     3. Delete the database files (unless --keep-files)
-    
+
     Examples:
         esgvoc config rm input4mip
         esgvoc config rm input4mip obs4mip cordex-cmip6
@@ -871,7 +885,7 @@ def rm(
         valid_projects = []
         invalid_projects = []
         projects_to_remove = {}  # project_name -> project_object
-        
+
         for project_name in project_names:
             if config.has_project(project_name):
                 project = config.get_project(project_name)
@@ -883,7 +897,7 @@ def rm(
 
         if invalid_projects:
             console.print(f"[red]Invalid project(s): {', '.join(invalid_projects)}[/red]")
-        
+
         if not valid_projects:
             console.print("[red]No valid projects to remove.[/red]")
             raise typer.Exit(1)
@@ -900,16 +914,16 @@ def rm(
 
         # Get base directory for file cleanup
         base_dir = config_manager.data_config_dir or str(config_manager.data_dir)
-        
+
         removed_projects = []
         # Remove each project
         for project_name in valid_projects:
             project = projects_to_remove[project_name]
-            
+
             if config.remove_project(project_name):
                 removed_projects.append(project_name)
                 console.print(f"[green]✓ Removed [cyan]{project_name}[/cyan] from configuration[/green]")
-                
+
                 # Clean up filesystem unless --keep-files
                 if not keep_files and project:
                     # Clean up local repository
@@ -920,7 +934,7 @@ def rm(
                             console.print(f"[green]  ✓ Deleted repository: {repo_path}[/green]")
                         else:
                             console.print(f"[yellow]  Repository not found: {repo_path}[/yellow]")
-                    
+
                     # Clean up database
                     if project.db_path:
                         db_path = Path(base_dir) / project.db_path
@@ -933,14 +947,19 @@ def rm(
                 console.print(f"[red]✗ Failed to remove '{project_name}'[/red]")
 
         if removed_projects:
-            console.print(f"[green]Successfully removed {len(removed_projects)} project(s): {', '.join(removed_projects)}[/green]")
-            
-            # Save the configuration
-            config_manager.save_active_config(config)
-            
-            # Reset the state if we modified the active configuration
+            console.print(
+                f"[green]Successfully removed {len(removed_projects)} project(s): {', '.join(removed_projects)}[/green]"
+            )
+
+            # Save the configuration to the correct file
             if config_name == config_manager.get_active_config_name():
+                config_manager.save_active_config(config)
+                # Reset the state if we modified the active configuration
                 service.current_state = service.get_state()
+            else:
+                # Save to specific config file
+                config_path = configs[config_name]
+                config.save_to_file(config_path)
         else:
             console.print("[red]No projects were successfully removed.[/red]")
             raise typer.Exit(1)
@@ -953,15 +972,17 @@ def rm(
 @app.command()
 def init(
     name: str = typer.Argument(..., help="Name for the new empty configuration."),
-    no_switch: bool = typer.Option(False, "--no-switch", help="Don't switch to the new configuration (stays on current)."),
+    no_switch: bool = typer.Option(
+        False, "--no-switch", help="Don't switch to the new configuration (stays on current)."
+    ),
 ):
     """
     Create a new empty configuration with only universe settings (no projects).
-    
+
     This creates a minimal configuration with just the universe component,
     allowing you to add projects selectively using 'esgvoc config add'.
     By default, switches to the new configuration after creation.
-    
+
     Examples:
         esgvoc config init minimal
         esgvoc config init test --no-switch  # Create but don't switch
@@ -977,7 +998,7 @@ def init(
         # Create empty configuration with only universe settings
         empty_config_data = {
             "universe": ServiceSettings.DEFAULT_SETTINGS["universe"],
-            "projects": []  # No projects - completely empty
+            "projects": [],  # No projects - completely empty
         }
 
         # Add the new configuration
@@ -1004,11 +1025,11 @@ def avail(
 ):
     """
     Show a table of all available default projects and their status in the configuration.
-    
+
     Projects are marked as:
     - ✓ Active: Project is in the current configuration
     - ○ Available: Project can be added to the configuration
-    
+
     Examples:
         esgvoc config avail
         esgvoc config avail --config my_config
@@ -1043,20 +1064,17 @@ def avail(
                 status = "[green]✓ Active[/green]"
             else:
                 status = "[dim]○ Available[/dim]"
-            
-            table.add_row(
-                status,
-                project_name,
-                project_config["github_repo"],
-                project_config["branch"]
-            )
+
+            table.add_row(status, project_name, project_config["github_repo"], project_config["branch"])
 
         display(table)
 
         # Show summary
         active_count = len([p for p in available_projects.keys() if config.has_project(p)])
         total_count = len(available_projects)
-        console.print(f"\n[blue]Summary: {active_count}/{total_count} projects active in configuration '{config_name}'[/blue]")
+        console.print(
+            f"\n[blue]Summary: {active_count}/{total_count} projects active in configuration '{config_name}'[/blue]"
+        )
 
     except Exception as e:
         console.print(f"[red]Error showing available projects: {str(e)}[/red]")
