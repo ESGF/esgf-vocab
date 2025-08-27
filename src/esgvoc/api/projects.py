@@ -530,7 +530,50 @@ def get_all_terms_in_collection(
 def _get_all_collections_in_project(session: Session) -> list[PCollection]:
     project = session.get(Project, constants.SQLITE_FIRST_PK)
     # Project can't be missing if session exists.
-    return project.collections  # type: ignore
+    try:
+        return project.collections  # type: ignore
+    except Exception as e:
+        # Enhanced error context for collection retrieval failures
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to retrieve collections for project '{project.id}': {str(e)}")
+
+        # Use raw SQL to inspect collections without Pydantic validation
+        from sqlalchemy import text
+        try:
+            # Query raw data to identify problematic collections
+            raw_query = text("""
+                SELECT id, term_kind, data_descriptor_id 
+                FROM pcollections 
+                WHERE project_pk = :project_pk
+            """)
+            result = session.execute(raw_query, {"project_pk": project.pk})
+
+            problematic_collections = []
+            
+            for row in result:
+                collection_id, term_kind_value, data_descriptor_id = row
+                
+                # Only empty string is invalid - indicates ingestion couldn't determine termkind
+                if term_kind_value == '' or term_kind_value is None:
+                    problematic_collections.append((collection_id, term_kind_value, data_descriptor_id))
+                    logger.error(f"Collection '{collection_id}' has empty term_kind (data_descriptor: {data_descriptor_id}) - CV ingestion failed to determine termkind")
+
+            if problematic_collections:
+                error_details = []
+                for col_id, invalid_value, data_desc in problematic_collections:
+                    error_details.append(f"  • Collection '{col_id}' (data_descriptor: {data_desc}): EMPTY termkind")
+                
+                error_msg = (
+                    f"Found {len(problematic_collections)} collections with empty term_kind:\n" +
+                    "\n".join(error_details)
+                )
+                raise ValueError(error_msg) from e
+
+        except Exception as inner_e:
+            logger.error(f"Failed to analyze problematic collections using raw SQL: {inner_e}")
+
+        raise e
 
 
 def get_all_collections_in_project(project_id: str) -> list[str]:
@@ -547,10 +590,24 @@ def get_all_collections_in_project(project_id: str) -> list[str]:
     """
     result = list()
     if connection := _get_project_connection(project_id):
-        with connection.create_session() as session:
-            collections = _get_all_collections_in_project(session)
-            for collection in collections:
-                result.append(collection.id)
+        try:
+            with connection.create_session() as session:
+                collections = _get_all_collections_in_project(session)
+                for collection in collections:
+                    result.append(collection.id)
+        except Exception as e:
+            # Enhanced error context for project collection retrieval
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to get collections for project '{project_id}': {str(e)}")
+
+            # Re-raise with enhanced context
+            raise ValueError(
+                f"Failed to retrieve collections for project '{project_id}'. "
+                f"This may be due to invalid termkind values in the database. "
+                f"Check the project database for collections with empty or invalid termkind values. "
+                f"Original error: {str(e)}"
+            ) from e
     return result
 
 
