@@ -21,6 +21,7 @@ dependencies = [
     "toml>=0.10.2",
     "typer>=0.15.0",
     "platformdirs>=4.3.6",
+    "pytest>=8.3.5",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
