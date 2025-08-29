@@ -60,6 +60,13 @@ class ServiceSettings(BaseModel):
             "local_path": "repos/cordex-cmip6-cv",
             "db_path": "dbs/cordex-cmip6.sqlite",
         },
+        "cmip7": {
+            "project_name": "cmip7",
+            "github_repo": "https://github.com/WCRP-CMIP/CMIP7-CVs",
+            "branch": "esgvoc",
+            "local_path": "repos/CMIP7-CVs",
+            "db_path": "dbs/cmip7.sqlite",
+        },
     }
 
     # 🔹 Default settings - only includes cmip6 and cmip6plus by default
