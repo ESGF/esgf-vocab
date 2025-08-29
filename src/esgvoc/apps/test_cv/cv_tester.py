@@ -73,10 +73,11 @@ def detect_project_name() -> str:
 class CVTester:
     """Main CV testing class"""
 
-    def __init__(self):
+    def __init__(self, debug_missing_terms: bool = True):
         self.original_config_name = None
         self.test_config_name = "test_cv_temp"
         self.config_manager = None
+        self.debug_missing_terms = debug_missing_terms
 
     def get_available_projects(self) -> List[str]:
         """Get list of all available project CVs"""
@@ -283,6 +284,12 @@ class CVTester:
             console.print(f"📁 Testing collection: {directory.name}")
             collection_errors = self._test_collection_directory(directory)
             errors.extend(collection_errors)
+            
+            # Add context validation warnings (only if collection passed basic validation)
+            if not collection_errors:
+                context_warnings = self._validate_context_usage(directory, directory.name)
+                for warning in context_warnings:
+                    console.print(f"   {warning}")
 
         # Test project_specs.json if it exists
         project_specs_file = repo_dir / "project_specs.json"
@@ -417,6 +424,404 @@ class CVTester:
 
         return errors
 
+    def _debug_missing_term(self, project_name: str, collection_name: str, term_id: str, repo_path: str = "."):
+        """
+        Provide detailed debugging information for a missing term.
+        
+        Args:
+            project_name: Name of the project
+            collection_name: Name of the collection
+            term_id: ID of the missing term
+            repo_path: Path to the repository
+        """
+        console.print(f"\n[bold yellow]🔍 Debugging missing term: {term_id} in {collection_name}[/bold yellow]")
+        
+        repo_dir = Path(repo_path)
+        collection_dir = repo_dir / collection_name
+        
+        # 1. Check if term exists in project repository
+        term_file = collection_dir / f"{term_id}.json"
+        console.print(f"\n[blue]📁 Project Repository ({project_name}):[/blue]")
+        
+        if term_file.exists():
+            try:
+                with open(term_file, "r", encoding="utf-8") as f:
+                    term_content = json.load(f)
+                console.print(f"  [green]✅ Term found in project: {term_file}[/green]")
+                console.print("  [dim]Content:[/dim]")
+                formatted_json = json.dumps(term_content, indent=2, ensure_ascii=False)
+                for line in formatted_json.split('\n'):
+                    console.print(f"    {line}")
+            except Exception as e:
+                console.print(f"  [red]❌ Error reading term file: {e}[/red]")
+        else:
+            console.print(f"  [red]❌ Term not found in project: {term_file}[/red]")
+            
+            # Try to find the term by searching for files that contain this term_id
+            console.print(f"  [dim]Searching for files containing term ID '{term_id}'...[/dim]")
+            try:
+                for json_file in collection_dir.glob("*.json"):
+                    if json_file.name.endswith(".jsonld"):
+                        continue
+                    try:
+                        with open(json_file, "r", encoding="utf-8") as f:
+                            content = json.load(f)
+                        if content.get("id") == term_id:
+                            console.print(f"  [yellow]📄 Found term ID '{term_id}' in file: {json_file.name}[/yellow]")
+                            console.print(f"  [dim]Note: Filename '{json_file.name}' ≠ expected '{term_id}.json'[/dim]")
+                            console.print("  [dim]Content:[/dim]")
+                            formatted_json = json.dumps(content, indent=2, ensure_ascii=False)
+                            for line in formatted_json.split('\n'):
+                                console.print(f"    {line}")
+                            break
+                    except Exception:
+                        continue
+                else:
+                    console.print(f"  [dim]No file found containing term ID '{term_id}'[/dim]")
+            except Exception as e:
+                console.print(f"  [dim]Error searching for term: {e}[/dim]")
+        
+        # 2. Check if term exists in universe (using DataMerger to resolve links)
+        try:
+            current_state = service.get_state()
+            if hasattr(current_state, 'universe') and current_state.universe.local_path:
+                universe_dir = Path(current_state.universe.local_path)
+                
+                console.print(f"\n[blue]🌌 Universe Repository (resolved via DataMerger):[/blue]")
+                
+                # First, try to use DataMerger to resolve the universe term if project term exists
+                resolved_universe_term = None
+                universe_term_path = None
+                project_term_content = None
+                
+                if term_file.exists():
+                    try:
+                        # First, read the project term to see what it links to
+                        with open(term_file, "r", encoding="utf-8") as f:
+                            project_term_content = json.load(f)
+                        
+                        from esgvoc.core.data_handler import JsonLdResource
+                        from esgvoc.core.service.data_merger import DataMerger
+                        
+                        # Use DataMerger to resolve the universe term like in project_ingestion.py
+                        locally_avail = {
+                            "https://espri-mod.github.io/mip-cmor-tables": str(current_state.universe.local_path)
+                        }
+                        
+                        console.print(f"  [dim]Attempting DataMerger resolution...[/dim]")
+                        
+                        # Check if project term has an @id link
+                        if "@id" in project_term_content:
+                            console.print(f"  [dim]Project term @id: {project_term_content['@id']}[/dim]")
+                            
+                            # Calculate expected universe path
+                            if "https://espri-mod.github.io/mip-cmor-tables" in project_term_content["@id"]:
+                                universe_relative_path = project_term_content["@id"].replace("https://espri-mod.github.io/mip-cmor-tables/", "")
+                                if not universe_relative_path.endswith(".json"):
+                                    universe_relative_path += ".json"
+                                universe_term_path = universe_dir / universe_relative_path
+                                console.print(f"  [dim]Expected universe path: {universe_term_path}[/dim]")
+                        else:
+                            console.print(f"  [dim]Project term has no @id link to universe[/dim]")
+                            # Even without @id, try to infer the universe path from context base
+                            try:
+                                # Read the context file to get the base
+                                context_file = term_file.parent / "000_context.jsonld"
+                                if context_file.exists():
+                                    with open(context_file, "r", encoding="utf-8") as f:
+                                        context_content = json.load(f)
+                                    
+                                    base_url = context_content.get("@context", {}).get("@base", "")
+                                    if base_url and "https://espri-mod.github.io/mip-cmor-tables" in base_url:
+                                        universe_relative_path = base_url.replace("https://espri-mod.github.io/mip-cmor-tables/", "") + f"{term_id}.json"
+                                        universe_term_path = universe_dir / universe_relative_path
+                                        console.print(f"  [dim]Inferred from context @base: {universe_term_path}[/dim]")
+                            except Exception as e:
+                                console.print(f"  [dim]Could not infer universe path from context: {e}[/dim]")
+                        
+                        # Debug: Check what the JsonLdResource expansion produces
+                        json_resource = JsonLdResource(uri=str(term_file))
+                        console.print(f"  [dim]JSON-LD expanded form: {json_resource.expanded}[/dim]")
+                        
+                        merger_result = DataMerger(
+                            data=json_resource,
+                            locally_available=locally_avail,
+                        ).merge_linked_json()
+                        
+                        if merger_result and len(merger_result) > 1:
+                            # If we have more than one result, the last one is the fully merged term
+                            resolved_universe_term = merger_result[-1]
+                            
+                            console.print(f"  [green]✅ Term resolved via DataMerger (merged from universe)[/green]")
+                            if universe_term_path:
+                                console.print(f"  [dim]Resolved universe path: {universe_term_path}[/dim]")
+                                console.print(f"  [dim]Universe file exists: {universe_term_path.exists() if universe_term_path else 'N/A'}[/dim]")
+                            console.print("  [dim]Merged content:[/dim]")
+                            formatted_json = json.dumps(resolved_universe_term, indent=2, ensure_ascii=False)
+                            for line in formatted_json.split('\n'):
+                                console.print(f"    {line}")
+                        else:
+                            console.print(f"  [yellow]⚠️  No universe term linked from project term (merge result length: {len(merger_result) if merger_result else 0})[/yellow]")
+                            
+                    except Exception as e:
+                        console.print(f"  [red]❌ Error using DataMerger to resolve universe term: {e}[/red]")
+                        # Still show what the project term was trying to link to
+                        if project_term_content and "@id" in project_term_content:
+                            console.print(f"  [dim]Project term was trying to link to: {project_term_content['@id']}[/dim]")
+                            universe_relative_path = project_term_content["@id"].replace("https://espri-mod.github.io/mip-cmor-tables/", "")
+                            if not universe_relative_path.endswith(".json"):
+                                universe_relative_path += ".json"
+                            universe_term_path = universe_dir / universe_relative_path
+                            console.print(f"  [dim]Expected universe file: {universe_term_path} (exists: {universe_term_path.exists() if universe_term_path else False})[/dim]")
+                
+                # Fallback: also check direct universe path and show resolved universe file if it was calculated
+                if not resolved_universe_term:
+                    # Show the resolved path from DataMerger if we have it
+                    if universe_term_path and universe_term_path.exists():
+                        try:
+                            with open(universe_term_path, "r", encoding="utf-8") as f:
+                                universe_term_content = json.load(f)
+                            console.print(f"  [green]✅ Universe file found at resolved path: {universe_term_path}[/green]")
+                            console.print("  [dim]Content:[/dim]")
+                            formatted_json = json.dumps(universe_term_content, indent=2, ensure_ascii=False)
+                            for line in formatted_json.split('\n'):
+                                console.print(f"    {line}")
+                        except Exception as e:
+                            console.print(f"  [red]❌ Error reading resolved universe file: {e}[/red]")
+                    else:
+                        # Show detailed path info - don't try direct collection path since it's wrong
+                        console.print(f"  [red]❌ Term not found in universe:[/red]")
+                        if universe_term_path:
+                            console.print(f"    [dim]• DataMerger resolved path: {universe_term_path} (exists: {universe_term_path.exists()})[/dim]")
+                        
+                        # Try direct collection-based path as fallback (but note this may be incorrect for project collections vs universe structure)
+                        universe_collection_dir = universe_dir / collection_name  
+                        universe_term_file = universe_collection_dir / f"{term_id}.json"
+                        console.print(f"    [dim]• Direct collection path: {universe_term_file} (exists: {universe_term_file.exists()})[/dim]")
+                        
+                        # Try to find similar files in the universe to help debugging
+                        try:
+                            if universe_term_path:
+                                parent_dir = universe_term_path.parent
+                                if parent_dir.exists():
+                                    similar_files = [f.name for f in parent_dir.iterdir() if f.is_file() and f.suffix == '.json' and term_id.lower() in f.name.lower()]
+                                    if similar_files:
+                                        console.print(f"    [dim]• Similar files in {parent_dir.name}: {similar_files}[/dim]")
+                                    
+                                    # Also check if there are files with different casing
+                                    all_files = [f.name for f in parent_dir.iterdir() if f.is_file() and f.suffix == '.json']
+                                    casing_matches = [f for f in all_files if f.lower() == f"{term_id.lower()}.json"]
+                                    if casing_matches and casing_matches[0] != f"{term_id}.json":
+                                        console.print(f"    [dim]• Case mismatch found: {casing_matches[0]} vs {term_id}.json[/dim]")
+                        except Exception:
+                            pass
+            else:
+                console.print(f"  [yellow]⚠️  Universe path not available[/yellow]")
+        except Exception as e:
+            console.print(f"  [red]❌ Error accessing universe: {e}[/red]")
+            
+        # 3. Try to query the term via esgvoc API
+        console.print(f"\n[blue]🔗 ESGVoc API Query:[/blue]")
+        try:
+            import esgvoc.api as ev
+            
+            # Try to get the term from project
+            try:
+                project_terms = ev.get_all_terms_in_collection(project_name, collection_name)
+                matching_terms = [term for term in project_terms if term.id == term_id]
+                if matching_terms:
+                    term = matching_terms[0]
+                    console.print(f"  [green]✅ Term found in esgvoc project API[/green]")
+                    console.print(f"    ID: {term.id}")
+                    console.print(f"    Type: {term.type}")
+                    console.print(f"    Label: {getattr(term, 'label', 'N/A')}")
+                    console.print(f"    Description: {getattr(term, 'description', 'N/A')[:100]}...")
+                else:
+                    console.print(f"  [red]❌ Term not found in esgvoc project API[/red]")
+            except Exception as e:
+                console.print(f"  [red]❌ Error querying project API: {e}[/red]")
+            
+            # Try to get the term from universe (if available)
+            try:
+                universe_terms = ev.get_all_terms_in_collection("universe", collection_name)
+                matching_universe_terms = [term for term in universe_terms if term.id == term_id]
+                if matching_universe_terms:
+                    term = matching_universe_terms[0]
+                    console.print(f"  [green]✅ Term found in esgvoc universe API[/green]")
+                    console.print(f"    ID: {term.id}")
+                    console.print(f"    Type: {term.type}")
+                    console.print(f"    Label: {getattr(term, 'label', 'N/A')}")
+                    console.print(f"    Description: {getattr(term, 'description', 'N/A')[:100]}...")
+                else:
+                    console.print(f"  [red]❌ Term not found in esgvoc universe API[/red]")
+            except Exception as e:
+                console.print(f"  [red]❌ Error querying universe API: {e}[/red]")
+                
+        except Exception as e:
+            console.print(f"  [red]❌ Error importing esgvoc API: {e}[/red]")
+
+    def _validate_context_usage(self, collection_dir: Path, collection_name: str) -> list:
+        """
+        Validate context usage and detect potential issues.
+        
+        Returns:
+            list: List of warning messages
+        """
+        warnings = []
+        
+        try:
+            context_file = collection_dir / "000_context.jsonld"
+            if not context_file.exists():
+                return warnings
+                
+            # Read context
+            with open(context_file, "r", encoding="utf-8") as f:
+                context_data = json.load(f)
+            
+            context_mappings = context_data.get("@context", {})
+            if not isinstance(context_mappings, dict):
+                return warnings
+                
+            # Get all JSON term files
+            term_files = [f for f in collection_dir.glob("*.json") if not f.name.endswith(".jsonld")]
+            
+            # Track context key usage
+            context_keys_used = set()
+            term_properties_used = set()
+            terms_using_base_expansion = []
+            
+            for term_file in term_files:
+                try:
+                    with open(term_file, "r", encoding="utf-8") as f:
+                        term_content = json.load(f)
+                    
+                    # Check what properties and values are used in the term
+                    for key, value in term_content.items():
+                        if key not in ["@context", "@id", "@type"]:
+                            term_properties_used.add(key)
+                            
+                            # Check if this property has a shortcut in context
+                            if key in context_mappings:
+                                context_keys_used.add(key)
+                        
+                        # Check if property values use context shortcuts
+                        # For example: "type": "source" where context has "source": "https://..."
+                        if isinstance(value, str) and value in context_mappings:
+                            context_keys_used.add(value)
+                    
+                    # Check if term relies on @base expansion (has simple id but no explicit @id)
+                    term_id = term_content.get("id", term_file.stem)
+                    if "id" in term_content and "@id" not in term_content and "@base" in context_mappings:
+                        terms_using_base_expansion.append({"file": term_file.name, "id": term_id})
+                        
+                except Exception as e:
+                    continue
+            
+            # Check for unused context keys (excluding standard JSON-LD keys)
+            standard_keys = {"@base", "@vocab", "@language", "@version", "id", "type"}
+            defined_keys = set(context_mappings.keys()) - standard_keys
+            unused_keys = defined_keys - context_keys_used
+            
+            if unused_keys:
+                warnings.append(f"⚠️  Context defines unused keys in '{collection_name}': {sorted(unused_keys)}")
+            
+            # Check for properties without shortcuts
+            properties_without_shortcuts = term_properties_used - context_keys_used - {"id", "type"}
+            if properties_without_shortcuts:
+                warnings.append(f"⚠️  Properties used without context shortcuts in '{collection_name}': {sorted(properties_without_shortcuts)}")
+            
+            # Check for filename/ID mismatches
+            filename_id_mismatches = []
+            for term_file in term_files:
+                try:
+                    with open(term_file, "r", encoding="utf-8") as f:
+                        term_content = json.load(f)
+                    
+                    expected_id = term_file.stem  # filename without .json extension
+                    actual_id = term_content.get("id")
+                    
+                    if actual_id and actual_id != expected_id:
+                        filename_id_mismatches.append({
+                            "file": term_file.name,
+                            "expected_id": expected_id,
+                            "actual_id": actual_id
+                        })
+                except Exception:
+                    continue
+            
+            if filename_id_mismatches:
+                warnings.append(f"⚠️  Filename/ID mismatches in '{collection_name}':")
+                for mismatch in filename_id_mismatches[:5]:  # Show first 5
+                    warnings.append(f"     • {mismatch['file']}: id='{mismatch['actual_id']}' (expected '{mismatch['expected_id']}')")
+                if len(filename_id_mismatches) > 5:
+                    warnings.append(f"     • ... and {len(filename_id_mismatches) - 5} more mismatches")
+            
+            # Base expansion is normal JSON-LD behavior - only report if there might be issues
+            # For now, we'll skip this since @base expansion is the expected pattern
+            
+            # Only warn about @base vs shortcuts if they're used for the same purpose
+            # @base is for term identity URLs, shortcuts are for property/type values - this is normal
+            # We could add more sophisticated conflict detection here if needed
+                
+        except Exception as e:
+            warnings.append(f"⚠️  Error validating context usage in '{collection_name}': {e}")
+            
+        return warnings
+
+    def _validate_universe_warnings(self) -> bool:
+        """
+        Validate universe repository for potential issues and display warnings.
+        
+        Returns:
+            bool: True if universe validation completed (warnings don't fail the test)
+        """
+        try:
+            current_state = service.get_state()
+            if not hasattr(current_state, 'universe') or not current_state.universe.local_path:
+                console.print(f"[dim]⚠️  Universe path not available for validation[/dim]")
+                return True
+                
+            universe_dir = Path(current_state.universe.local_path)
+            if not universe_dir.exists():
+                console.print(f"[dim]⚠️  Universe directory not found: {universe_dir}[/dim]")
+                return True
+            
+            console.print(f"[blue]🌌 Validating Universe Repository: {universe_dir.name}[/blue]")
+            
+            # Find universe collections (directories with JSON files)
+            universe_collections = []
+            for item in universe_dir.iterdir():
+                if item.is_dir():
+                    json_files = list(item.glob("*.json"))
+                    jsonld_files = [f for f in json_files if f.name.endswith(".jsonld")]
+                    regular_json_files = [f for f in json_files if not f.name.endswith(".jsonld")]
+                    
+                    if regular_json_files:
+                        universe_collections.append(item)
+            
+            console.print(f"Found {len(universe_collections)} universe collections to validate")
+            
+            total_warnings = 0
+            for collection_dir in universe_collections:
+                warnings = self._validate_context_usage(collection_dir, collection_dir.name)
+                if warnings:
+                    console.print(f"📁 Universe collection '{collection_dir.name}':")
+                    for warning in warnings:
+                        console.print(f"   {warning}")
+                        total_warnings += 1
+            
+            if total_warnings == 0:
+                console.print("✅ No validation warnings found in universe")
+            else:
+                console.print(f"⚠️  Found {total_warnings} validation warnings in universe")
+                
+            console.print("")  # Add spacing before project validation
+            return True
+            
+        except Exception as e:
+            console.print(f"[red]❌ Error validating universe: {e}[/red]")
+            return True  # Don't fail the test for universe validation errors
+
     def test_esgvoc_api_access(self, project_name: str, repo_path: str = ".") -> bool:
         """
         Test that all repository collections and elements are queryable via esgvoc API
@@ -526,14 +931,18 @@ class CVTester:
                 ]
 
                 repo_elements = []
+                repo_element_sources = {}  # Track where each ID comes from
                 for json_file in json_files:
                     try:
                         with open(json_file, "r", encoding="utf-8") as f:
                             content = json.load(f)
                         element_id = content.get("id", json_file.stem)
                         repo_elements.append(element_id)
+                        repo_element_sources[element_id] = {"file": json_file.name, "from_id_field": "id" in content}
                     except:
-                        repo_elements.append(json_file.stem)
+                        element_id = json_file.stem
+                        repo_elements.append(element_id)
+                        repo_element_sources[element_id] = {"file": json_file.name, "from_id_field": False}
 
                 # Get esgvoc elements
                 try:
@@ -547,6 +956,22 @@ class CVTester:
                         errors.append(
                             f"❌ Collection '{collection_name}': Elements missing from esgvoc: {missing_elements}"
                         )
+                        
+                        # Debug missing elements source tracking
+                        if self.debug_missing_terms:
+                            console.print(f"   [dim]Missing elements and their sources:[/dim]")
+                            for elem in missing_elements:
+                                source_info = repo_element_sources.get(elem, {"file": "unknown", "from_id_field": False})
+                                id_source = "id field" if source_info["from_id_field"] else "filename" 
+                                console.print(f"   [dim]  • {elem} (from {source_info['file']} {id_source})[/dim]")
+                        
+                        # Detailed debugging for each missing element (if enabled)
+                        if self.debug_missing_terms:
+                            console.print(f"\n[bold red]📋 Detailed analysis of missing elements in '{collection_name}':[/bold red]")
+                            for missing_element in missing_elements:
+                                self._debug_missing_term(project_name, collection_name, missing_element, repo_path)
+                        else:
+                            console.print(f"[dim]💡 Use --debug-terms for detailed analysis of missing elements[/dim]")
                     else:
                         console.print(f"   [green]✅ All elements in '{collection_name}' are queryable[/green]")
 
@@ -607,7 +1032,10 @@ class CVTester:
         if not self.synchronize_cvs():
             success = False
 
-        # Step 2.5: Determine repository path AFTER synchronization - use downloaded CV repository if not specified
+        # Step 2.5: Validate universe for warnings
+        self._validate_universe_warnings()
+
+        # Step 3: Determine repository path AFTER synchronization - use downloaded CV repository if not specified
         if repo_path is None:
             # Use the state service to get the actual project path directly
             try:

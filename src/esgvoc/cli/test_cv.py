@@ -121,6 +121,7 @@ def structure(
 def api(
     project: str = typer.Argument(..., help="Project name to test API access for"),
     path: str = typer.Argument(".", help="Path to CV repository"),
+    debug_terms: bool = typer.Option(True, "--debug-terms/--no-debug-terms", help="Show detailed debugging info for missing terms"),
 ):
     """
     Test esgvoc API access for all repository collections and elements.
@@ -135,7 +136,7 @@ def api(
         esgvoc test api obs4mip .
         esgvoc test api cmip6 /path/to/cmip6/repo
     """
-    tester = CVTester()
+    tester = CVTester(debug_missing_terms=debug_terms)
 
     try:
         if not tester.test_esgvoc_api_access(project, path):
@@ -153,6 +154,7 @@ def run(
     repo_url: Optional[str] = typer.Option(None, "--repo", "-r", help="Custom repository URL"),
     branch: Optional[str] = typer.Option(None, "--branch", "-b", help="Custom branch to test"),
     universe_branch: Optional[str] = typer.Option(None, "--universe-branch", "-u", help="Custom universe branch"),
+    debug_terms: bool = typer.Option(True, "--debug-terms/--no-debug-terms", help="Show detailed debugging info for missing terms"),
 ):
     """
     Run complete CV test suite: configure, sync, structure, and API tests.
@@ -170,7 +172,7 @@ def run(
         esgvoc test run cmip6 /path/to/custom/repo --branch my-test-branch --universe-branch dev
         esgvoc test run custom --repo https://github.com/me/cvs --branch main --universe-branch main
     """
-    tester = CVTester()
+    tester = CVTester(debug_missing_terms=debug_terms)
 
     try:
         success = tester.run_complete_test(project, repo_url, branch, path, None, universe_branch)
@@ -195,6 +197,7 @@ def env(
     ),
     branch: Optional[str] = typer.Option(None, "--branch", help="Branch (from TEST_BRANCH env var if not provided)"),
     universe_branch: Optional[str] = typer.Option(None, "--universe-branch", help="Universe branch (from UNIVERSE_BRANCH env var if not provided)"),
+    debug_terms: bool = typer.Option(True, "--debug-terms/--no-debug-terms", help="Show detailed debugging info for missing terms"),
 ):
     """
     Environment variable mode for CI/CD integration and automated testing.
@@ -242,7 +245,7 @@ def env(
 
     elif command == "test":
         # Use run command
-        run(final_project, None, final_repo_url, final_branch, final_universe_branch)
+        run(final_project, None, final_repo_url, final_branch, final_universe_branch, debug_terms)
 
     else:
         console.print(f"[red]❌ Invalid env command '{command}'. Use 'configure' or 'test'[/red]")
