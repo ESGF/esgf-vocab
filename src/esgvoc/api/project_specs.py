@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Annotated, Any, Literal, Optional, Protocol
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -77,109 +77,45 @@ class DrsSpecification(BaseModel):
     """The parts of the DRS specification."""
 
 
-class GlobalAttributeValueType(str, Enum):
+class FileProperty(BaseModel):
     """
-    The types of global attribute values.
-    """
-
-    STRING = "string"
-    """String value type."""
-    INTEGER = "integer"
-    """Integer value type."""
-    FLOAT = "float"
-    """Float value type."""
-
-
-class GlobalAttributeVisitor(Protocol):
-    """
-    Specifications for a global attribute visitor.
-    """
-    def visit_base_attribute(self,
-                             attribute_name: str,
-                             attribute: "GlobalAttributeSpecBase") -> Any:
-        """Visit a base global attribute."""
-        pass
-
-    def visit_specific_attribute(self,
-                                 attribute_name: str,
-                                 attribute: "GlobalAttributeSpecSpecific") -> Any:
-        """Visit a specific global attribute."""
-        pass
-
-
-class GlobalAttributeSpecBase(BaseModel):
-    """
-    Specification for a global attribute.
+    A file property described in a catalog.
     """
 
     source_collection: str
-    """the source_collection to get the term from"""
-    value_type: GlobalAttributeValueType
-    """The expected value type."""
+    "The project collection that originated the property."
+    catalog_field_value_type: str
+    "The type of the field value."
+    is_required: bool
+    "Specifies if the property must be present in the file properties."
 
-    def accept(self, attribute_name: str, visitor: GlobalAttributeVisitor) -> Any:
-        return visitor.visit_base_attribute(attribute_name, self)
 
-
-class GlobalAttributeSpecSpecific(GlobalAttributeSpecBase):
+class DatasetProperty(BaseModel):
     """
-    Specification for a global attribute.
-    with a specific key
+    A dataset property described in a catalog.
     """
 
-    specific_key: str
-    """If the validation is for the value of a specific key, for instance description or ui-label """
-
-    def accept(self, attribute_name: str, visitor: GlobalAttributeVisitor) -> Any:
-        """
-        Accept a global attribute visitor.
-
-        :param attribute_name: The attribute name.
-        :param visitor: The global attribute visitor.
-        :type visitor: GlobalAttributeVisitor
-        :return: Depending on the visitor.
-        :rtype: Any
-        """
-        return visitor.visit_specific_attribute(attribute_name, self)
+    source_collection: str
+    "The project collection that originated the property."
+    catalog_field_value_type: str
+    "The type of the field value."
+    is_required: bool
+    "Specifies if the property must be present in the dataset properties."
+    source_collection_term: str | None = None
+    "Specifies a specific term in the collection."
+    catalog_field_name: str | None = None
+    "The field name of the collection referenced in the catalog."
 
 
-GlobalAttributeSpec = GlobalAttributeSpecSpecific | GlobalAttributeSpecBase
-
-
-class GlobalAttributeSpecs(BaseModel):
+class CatalogSpecification(BaseModel):
     """
-    Container for global attribute specifications.
+    A catalog specifications.
     """
 
-    specs: dict[str, GlobalAttributeSpec] = Field(default_factory=dict)
-    """The global attributes specifications dictionary."""
-
-    def __str__(self) -> str:
-        """Return all keys when printing."""
-        return str(list(self.specs.keys()))
-
-    def __repr__(self) -> str:
-        """Return all keys when using repr."""
-        return f"GlobalAttributeSpecs(keys={list(self.specs.keys())})"
-
-    # Dictionary-like access methods
-    def __getitem__(self, key: str) -> GlobalAttributeSpec:
-        return self.specs[key]
-
-    def __setitem__(self, key: str, value: GlobalAttributeSpec) -> None:
-        self.specs[key] = value
-
-    def __contains__(self, key: str) -> bool:
-        return key in self.specs
-
-    def keys(self):
-        return self.specs.keys()
-
-    def values(self):
-        return self.specs.values()
-
-    def items(self):
-        return self.specs.items()
+    dataset_properties: list[DatasetProperty]
+    "The properties of the dataset described in a catalog."
+    file_properties: list[FileProperty]
+    "The properties of the files described in a catalog."
 
 
 class ProjectSpecs(BaseModel):
@@ -193,6 +129,7 @@ class ProjectSpecs(BaseModel):
     """The description of the project."""
     drs_specs: list[DrsSpecification]
     """The DRS specifications of the project (directory, file name and dataset id)."""
-    global_attributes_specs: Optional[GlobalAttributeSpecs] = None
-    """The global attributes specifications of the project."""
+    # TODO: release = None when all projects have catalog_specs.yaml.
+    catalog_specs: CatalogSpecification | None = None
+    """The catalog specifications of the project."""
     model_config = ConfigDict(extra="allow")

@@ -8,7 +8,7 @@ import esgvoc.core.constants
 import esgvoc.core.db.connection as db
 import esgvoc.core.service as service
 from esgvoc.core.data_handler import JsonLdResource
-from esgvoc.core.db.connection import DBConnection, read_json_file
+from esgvoc.core.db.connection import DBConnection, read_json_file, read_yaml_file
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import PCollection, Project, PTerm
 from esgvoc.core.exceptions import EsgvocDbError
@@ -119,15 +119,23 @@ def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash:
 
     with project_connection.create_session() as project_db_session:
         project_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.PROJECT_SPECS_FILENAME)
+        drs_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.DRS_SPECS_FILENAME)
+        catalog_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.CATALOG_SPECS_FILENAME)
         try:
-            project_json_specs = read_json_file(project_specs_file_path)
-            project_id = project_json_specs[esgvoc.core.constants.PROJECT_ID_JSON_KEY]
+            raw_project_specs = read_yaml_file(project_specs_file_path)
+            project_id = raw_project_specs[esgvoc.core.constants.PROJECT_ID_JSON_KEY]
+            raw_drs_specs = read_yaml_file(drs_specs_file_path)
+            project_specs = raw_project_specs
+            project_specs['drs_specs'] = raw_drs_specs
+            if catalog_specs_file_path.exists():
+                raw_catalog_specs = read_yaml_file(catalog_specs_file_path)
+                project_specs['catalog_specs'] = raw_catalog_specs
         except Exception as e:
-            msg = f"unable to read project specs file  {project_specs_file_path}"
+            msg = f"unable to read specs files in {project_dir_path}"
             _LOGGER.fatal(msg)
             raise EsgvocDbError(msg) from e
 
-        project = Project(id=project_id, specs=project_json_specs, git_hash=git_hash)
+        project = Project(id=project_id, specs=project_specs, git_hash=git_hash)
         project_db_session.add(project)
 
         for collection_dir_path in project_dir_path.iterdir():

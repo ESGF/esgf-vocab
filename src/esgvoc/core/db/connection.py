@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import yaml
 from sqlalchemy import Engine
 from sqlmodel import Session, create_engine
 
@@ -31,3 +32,9 @@ class DBConnection:
 
 def read_json_file(json_file_path: Path) -> dict:
     return json.loads(json_file_path.read_text())
+
+
+def read_yaml_file(yaml_file_path: Path) -> dict:
+    with open(yaml_file_path, 'r') as file:
+        result = yaml.safe_load(file)
+    return result
