@@ -1,25 +1,35 @@
-import contextlib
 import json
+from dataclasses import dataclass
 from json import JSONEncoder
 from pathlib import Path
-from typing import Iterable
 
 from sqlmodel import Session
 
 from esgvoc.api import projects, search
-from esgvoc.api.project_specs import (
-    GlobalAttributeSpecBase,
-    GlobalAttributeSpecSpecific,
-    GlobalAttributeVisitor,
-)
+from esgvoc.api.project_specs import CatalogProperty
 from esgvoc.core.constants import DRS_SPECS_JSON_KEY, PATTERN_JSON_KEY
 from esgvoc.core.db.models.project import PCollection, TermKind
 from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocNotImplementedError
 
 KEY_SEPARATOR = ':'
 JSON_SCHEMA_TEMPLATE_DIR_PATH = Path(__file__).parent
-JSON_SCHEMA_TEMPLATE_FILE_NAME_TEMPLATE = '{project_id}_template.json'
+JSON_SCHEMA_TEMPLATE_FILE_NAME = 'template.json'
 JSON_INDENTATION = 2
+
+
+@dataclass
+class _CatalogProperty:
+    field_name: str
+    field_value: dict
+    is_required: bool
+
+
+class _SetEncoder(JSONEncoder):
+    def default(self, o):
+        if isinstance(o, set):
+            return list(o)
+        else:
+            return super().default(self, o)
 
 
 def _process_plain(collection: PCollection, selected_field: str) -> set[str]:
@@ -65,11 +75,7 @@ def _process_pattern(collection: PCollection) -> str:
         raise EsgvocNotImplementedError(msg)
 
 
-def _generate_attribute_key(project_id: str, attribute_name) -> str:
-    return f'{project_id}{KEY_SEPARATOR}{attribute_name}'
-
-
-class JsonPropertiesVisitor(GlobalAttributeVisitor, contextlib.AbstractContextManager):
+class CatalogPropertiesGenerator:
     def __init__(self, project_id: str) -> None:
         self.project_id = project_id
         # Project session can't be None here.
@@ -86,18 +92,19 @@ class JsonPropertiesVisitor(GlobalAttributeVisitor, contextlib.AbstractContextMa
             raise exception_value
         return True
 
-    def _generate_attribute_property(self, attribute_name: str, source_collection: str,
-                                     selected_field: str) -> tuple[str, str | set[str]]:
+    def _generate_property_value(self, source_collection: str, source_collection_key: str) \
+            -> tuple[str, str | set[str]]:
         property_value: str | set[str]
-        property_key: str
         if source_collection not in self.collections:
-            raise EsgvocNotFoundError(f"collection '{source_collection}' referenced by attribute " +
-                                      f"{attribute_name} is not found")
+            # DEBUG
+            # raise EsgvocNotFoundError(f"collection '{source_collection}' is not found")
+            print(f"collection '{source_collection}' is not found")
+            return 'enum', {}
         collection = self.collections[source_collection]
         match collection.term_kind:
             case TermKind.PLAIN:
                 property_value = _process_plain(collection=collection,
-                                                selected_field=selected_field)
+                                                selected_field=source_collection_key)
                 property_key = 'enum'
             case TermKind.COMPOSITE:
                 property_value = _process_composite(collection=collection,
@@ -108,53 +115,50 @@ class JsonPropertiesVisitor(GlobalAttributeVisitor, contextlib.AbstractContextMa
                 property_value = _process_pattern(collection)
                 property_key = 'pattern'
             case _:
-                msg = f"unsupported term kind '{collection.term_kind}' " + \
-                      f"for global attribute {attribute_name}"
+                msg = f"unsupported term kind '{collection.term_kind}'"
                 raise EsgvocNotImplementedError(msg)
         return property_key, property_value
 
-    def visit_base_attribute(self, attribute_name: str, attribute: GlobalAttributeSpecBase) \
-            -> tuple[str, dict[str, str | set[str]]]:
-        attribute_key = _generate_attribute_key(self.project_id, attribute_name)
-        attribute_properties: dict[str, str | set[str]] = dict()
-        attribute_properties['type'] = attribute.value_type.value
-        property_key, property_value = self._generate_attribute_property(attribute_name,
-                                                                         attribute.source_collection,
-                                                                         DRS_SPECS_JSON_KEY)
-        attribute_properties[property_key] = property_value
-        return attribute_key, attribute_properties
-
-    def visit_specific_attribute(self, attribute_name: str, attribute: GlobalAttributeSpecSpecific) \
-            -> tuple[str, dict[str, str | set[str]]]:
-        attribute_key = _generate_attribute_key(self.project_id, attribute_name)
-        attribute_properties: dict[str, str | set[str]] = dict()
-        attribute_properties['type'] = attribute.value_type.value
-        property_key, property_value = self._generate_attribute_property(attribute_name,
-                                                                         attribute.source_collection,
-                                                                         attribute.specific_key)
-        attribute_properties[property_key] = property_value
-        return attribute_key, attribute_properties
-
-
-def _inject_global_attributes(json_root: dict, project_id: str, attribute_names: Iterable[str]) -> None:
-    attribute_properties = list()
-    for attribute_name in attribute_names:
-        attribute_key = _generate_attribute_key(project_id, attribute_name)
-        attribute_properties.append({"required": [attribute_key]})
-    json_root['definitions']['require_any']['anyOf'] = attribute_properties
-
-
-def _inject_properties(json_root: dict, properties: list[tuple]) -> None:
-    for property in properties:
-        json_root['definitions']['fields']['properties'][property[0]] = property[1]
-
-
-class SetEncoder(JSONEncoder):
-    def default(self, o):
-        if isinstance(o, set):
-            return list(o)
+    def generate_property(self, catalog_property: CatalogProperty) -> _CatalogProperty:
+        if catalog_property.source_collection_key is None:
+            source_collection_key = DRS_SPECS_JSON_KEY
         else:
-            return super().default(self, o)
+            source_collection_key = catalog_property.source_collection_key
+        property_key, property_value = self._generate_property_value(catalog_property.source_collection,
+                                                                     source_collection_key)
+        field_value = dict()
+        if 'array' in catalog_property.catalog_field_value_type:
+            field_value['type'] = 'array'
+            root_property = dict()
+            field_value['items'] = root_property
+            root_property['type'] = catalog_property.catalog_field_value_type.split('_')[0]
+        else:
+            field_value['type'] = catalog_property.catalog_field_value_type
+            root_property = field_value
+
+        root_property[property_key] = property_value
+
+        if catalog_property.catalog_field_name is None:
+            attribute_name = catalog_property.source_collection
+        else:
+            attribute_name = catalog_property.catalog_field_name
+        field_name = CatalogPropertiesGenerator._generate_field_name(self.project_id, attribute_name)
+        return _CatalogProperty(field_name=field_name,
+                                field_value=field_value,
+                                is_required=catalog_property.is_required)
+
+    @staticmethod
+    def _generate_field_name(project_id: str, attribute_name) -> str:
+        return f'{project_id}{KEY_SEPARATOR}{attribute_name}'
+
+
+def _inject_catalog_properties(field_definitions_node: dict,
+                               catalog_properties: list[_CatalogProperty],
+                               required_field_declarations_node: list[dict]):
+    for catalog_property in catalog_properties:
+        if catalog_property.is_required:
+            required_field_declarations_node.append({"required": [catalog_property.field_name]})
+        field_definitions_node[catalog_property.field_name] = catalog_property.field_value
 
 
 def generate_json_schema(project_id: str) -> str:
@@ -168,27 +172,60 @@ def generate_json_schema(project_id: str) -> str:
     :raises EsgvocNotFoundError: On missing information
     :raises EsgvocNotImplementedError: On unexpected operations
     """
-    file_name = JSON_SCHEMA_TEMPLATE_FILE_NAME_TEMPLATE.format(project_id=project_id)
-    template_file_path = JSON_SCHEMA_TEMPLATE_DIR_PATH.joinpath(file_name)
+    template_file_path = JSON_SCHEMA_TEMPLATE_DIR_PATH.joinpath(JSON_SCHEMA_TEMPLATE_FILE_NAME)
     if template_file_path.exists():
         project_specs = projects.get_project(project_id)
-        if project_specs:
-            if project_specs.global_attributes_specs:
-                with open(file=template_file_path, mode='r') as file, \
-                     JsonPropertiesVisitor(project_id) as visitor:
-                    file_content = file.read()
-                    root = json.loads(file_content)
-                    properties: list[tuple[str, dict[str, str | set[str]]]] = list()
-                    for attribute_name, attribute in project_specs.global_attributes_specs.items():
-                        attribute_key, attribute_properties = attribute.accept(attribute_name, visitor)
-                        properties.append((attribute_key, attribute_properties))
-                _inject_properties(root, properties)
-                _inject_global_attributes(root, project_id, project_specs.global_attributes_specs.keys())
-                return json.dumps(root, indent=JSON_INDENTATION, cls=SetEncoder)
+        if project_specs is not None:
+            if project_specs.catalog_specs is not None:
+                with open(file=template_file_path, mode='r') as file:
+                    root = json.load(file)
+                property_generator = CatalogPropertiesGenerator(project_id)
+
+                # Generate id & collection common fields
+                # TODO
+
+                # Generate catalog dataset properties.
+                catalog_dataset_field_definitions_node = \
+                    root['definitions']['item_fields']['properties']
+                catalog_dataset_required_field_declarations_node = \
+                    root['definitions']['require_item_fields']['allOf']
+                catalog_dataset_properties: list[_CatalogProperty] = list()
+                for dataset_property_spec in project_specs.catalog_specs.dataset_properties:
+                    # DEBUG
+                    print(dataset_property_spec.source_collection)
+                    if dataset_property_spec.source_collection == 'member_id':
+                        continue
+                    ##
+                    catalog_property = property_generator.generate_property(dataset_property_spec)
+                    catalog_dataset_properties.append(catalog_property)
+                _inject_catalog_properties(
+                    field_definitions_node=catalog_dataset_field_definitions_node,
+                    catalog_properties=catalog_dataset_properties,
+                    required_field_declarations_node=catalog_dataset_required_field_declarations_node)
+
+                # Generate catalog file properties.
+                catalog_file_field_definitions_node = \
+                    root['definitions']['asset_fields']['properties']
+                catalog_file_required_field_declaration_node = \
+                    root['definitions']['require_asset_fields']['allOf']
+                catalog_file_properties = list()
+                for file_property in project_specs.catalog_specs.file_properties:
+                    catalog_file_properties.append(property_generator.generate_property(file_property))
+                _inject_catalog_properties(
+                    field_definitions_node=catalog_file_field_definitions_node,
+                    catalog_properties=catalog_file_properties,
+                    required_field_declarations_node=catalog_file_required_field_declaration_node)
+
+                # Generate title.
+                # Generate description.
+                # Generate catalog properties
+                # Generate pattern properties
+                # TODO
+                return json.dumps(root, indent=JSON_INDENTATION, cls=_SetEncoder)
             else:
-                raise EsgvocNotFoundError(f"global attributes for the project '{project_id}' " +
-                                          "are not provided")
+                raise EsgvocNotFoundError(f"catalog properties for the project '{project_id}' " +
+                                          "are missing")
         else:
-            raise EsgvocNotFoundError(f"specs of project '{project_id}' is not found")
+            raise EsgvocNotFoundError(f"unknown project '{project_id}'")
     else:
-        raise EsgvocNotFoundError(f"template for project '{project_id}' is not found")
+        raise EsgvocNotFoundError('missing json schema template')

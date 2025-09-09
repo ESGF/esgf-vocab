@@ -77,20 +77,7 @@ class DrsSpecification(BaseModel):
     """The parts of the DRS specification."""
 
 
-class FileProperty(BaseModel):
-    """
-    A file property described in a catalog.
-    """
-
-    source_collection: str
-    "The project collection that originated the property."
-    catalog_field_value_type: str
-    "The type of the field value."
-    is_required: bool
-    "Specifies if the property must be present in the file properties."
-
-
-class DatasetProperty(BaseModel):
+class CatalogProperty(BaseModel):
     """
     A dataset property described in a catalog.
     """
@@ -104,7 +91,9 @@ class DatasetProperty(BaseModel):
     source_collection_term: str | None = None
     "Specifies a specific term in the collection."
     catalog_field_name: str | None = None
-    "The field name of the collection referenced in the catalog."
+    "The name of the collection referenced in the catalog."
+    source_collection_key: str | None = None
+    "Specifies a key other than drs_name in the collection."
 
 
 class CatalogSpecification(BaseModel):
@@ -112,9 +101,9 @@ class CatalogSpecification(BaseModel):
     A catalog specifications.
     """
 
-    dataset_properties: list[DatasetProperty]
+    dataset_properties: list[CatalogProperty]
     "The properties of the dataset described in a catalog."
-    file_properties: list[FileProperty]
+    file_properties: list[CatalogProperty]
     "The properties of the files described in a catalog."
 
 

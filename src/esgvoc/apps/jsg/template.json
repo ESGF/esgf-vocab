@@ -1,0 +1,188 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://stac-extensions.github.io/cmip6/v2.0.0/schema.json#",
+  "description": "STAC {project_id_capital_letters} Extension for STAC Items and STAC Collection Summaries.",
+  "type": "object",
+  "required": [
+    "stac_extensions"
+  ],
+  "oneOf": [
+    {
+      "$comment": "This is the schema for STAC Items.",
+      "type": "object",
+      "required": [
+        "collection"
+      ],
+      "properties": {
+        "type": {
+          "const": "Feature"
+        },
+        "properties": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/require_item_fields"
+            },
+            {
+              "$ref": "#/definitions/item_fields"
+            }
+          ]
+        },
+        "assets": {
+          "type": "object",
+          "additionalProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/require_asset_fields"
+              },
+              {
+                "$ref": "https://stac-extensions.github.io/file/v2.1.0/schema.json#/definitions/fields"
+              },
+              {
+                "$ref": "#/definitions/asset_fields"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "$comment": "This is the schema for STAC Collections, or more specifically only Collection Summaries in this case. By default, only checks the existence of the properties, but not the schema of the summaries.",
+      "type": "object",
+      "required": [
+        "type",
+        "summaries"
+      ],
+      "properties": {
+        "type": {
+          "const": "Collection"
+        },
+        "summaries": {
+          "$ref": "#/definitions/require_any"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "require_any": {
+      "$comment": "Only used for Collection summarizes.",
+      "type": "object",
+      "minProperties": 1
+    },
+    "require_item_fields": {
+      "$comment": "Please list all fields here so that we can force the existence of one of them in other parts of the schemas.",
+      "allOf": [
+        {
+          "required": [
+            "created"
+          ]
+        },
+        {
+          "required": [
+            "end_datetime"
+          ]
+        },
+        {
+          "required": [
+            "latest"
+          ]
+        },
+        {
+          "required": [
+            "retracted"
+          ]
+        },
+        {
+          "required": [
+            "size"
+          ]
+        },
+        {
+          "required": [
+            "start_datetime"
+          ]
+        },
+        {
+          "required": [
+            "title"
+          ]
+        },
+        {
+          "required": [
+            "updated"
+          ]
+        }
+      ]
+    },
+    "require_asset_fields": {
+      "$comment": "Please list all fields here so that we can force the existence of one of them in other parts of the schemas.",
+      "allOf": [
+        {
+          "required": [
+            "created"
+          ]
+        },
+        {
+          "required": [
+            "file:checksum"
+          ]
+        },
+        {
+          "required": [
+            "file:size"
+          ]
+        },
+        {
+          "required": [
+            "protocol"
+          ]
+        },
+        {
+          "required": [
+            "updated"
+          ]
+        }
+      ]
+    },
+    "asset_fields": {
+      "$comment": " Don't require fields here, do that above in the corresponding schema.",
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "type": "string",
+          "enum": [
+            "http",
+            "https",
+            "globus",
+            "gridftp",
+            "kerchunk",
+            "netcdfsubset",
+            "opendap",
+            "wms",
+            "wps",
+            "s3"
+          ]
+        }
+      }
+    },
+    "item_fields": {
+      "$comment": " Don't require fields here, do that above in the corresponding schema.",
+      "type": "object",
+      "properties": {
+        "latest": {
+          "type": "boolean"
+        },
+        "retracted": {
+          "type": "boolean"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "patternProperties": {
+        "^(?!cmip6:)": {}
+      },
+      "additionalProperties": false
+    }
+  }
+}
