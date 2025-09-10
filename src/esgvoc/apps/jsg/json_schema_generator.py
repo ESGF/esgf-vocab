@@ -24,7 +24,7 @@ class _CatalogProperty:
     is_required: bool
 
 
-class _SetEncoder(JSONEncoder):
+class _SetJsonEncoder(JSONEncoder):
     def default(self, o):
         if isinstance(o, set):
             return list(o)
@@ -75,7 +75,7 @@ def _process_pattern(collection: PCollection) -> str:
         raise EsgvocNotImplementedError(msg)
 
 
-class CatalogPropertiesGenerator:
+class CatalogPropertiesJsonTranslator:
     def __init__(self, project_id: str) -> None:
         self.project_id = project_id
         # Project session can't be None here.
@@ -92,7 +92,7 @@ class CatalogPropertiesGenerator:
             raise exception_value
         return True
 
-    def _generate_property_value(self, source_collection: str, source_collection_key: str) \
+    def _translate_property_value(self, source_collection: str, source_collection_key: str) \
             -> tuple[str, str | set[str]]:
         property_value: str | set[str]
         if source_collection not in self.collections:
@@ -119,13 +119,13 @@ class CatalogPropertiesGenerator:
                 raise EsgvocNotImplementedError(msg)
         return property_key, property_value
 
-    def generate_property(self, catalog_property: CatalogProperty) -> _CatalogProperty:
+    def translate_property(self, catalog_property: CatalogProperty) -> _CatalogProperty:
         if catalog_property.source_collection_key is None:
             source_collection_key = DRS_SPECS_JSON_KEY
         else:
             source_collection_key = catalog_property.source_collection_key
-        property_key, property_value = self._generate_property_value(catalog_property.source_collection,
-                                                                     source_collection_key)
+        property_key, property_value = self._translate_property_value(catalog_property.source_collection,
+                                                                      source_collection_key)
         field_value = dict()
         if 'array' in catalog_property.catalog_field_value_type:
             field_value['type'] = 'array'
@@ -142,13 +142,13 @@ class CatalogPropertiesGenerator:
             attribute_name = catalog_property.source_collection
         else:
             attribute_name = catalog_property.catalog_field_name
-        field_name = CatalogPropertiesGenerator._generate_field_name(self.project_id, attribute_name)
+        field_name = CatalogPropertiesJsonTranslator._translate_field_name(self.project_id, attribute_name)
         return _CatalogProperty(field_name=field_name,
                                 field_value=field_value,
                                 is_required=catalog_property.is_required)
 
     @staticmethod
-    def _generate_field_name(project_id: str, attribute_name) -> str:
+    def _translate_field_name(project_id: str, attribute_name) -> str:
         return f'{project_id}{KEY_SEPARATOR}{attribute_name}'
 
 
@@ -159,6 +159,24 @@ def _inject_catalog_properties(field_definitions_node: dict,
         if catalog_property.is_required:
             required_field_declarations_node.append({"required": [catalog_property.field_name]})
         field_definitions_node[catalog_property.field_name] = catalog_property.field_value
+
+
+def _catalog_properties_json_processor(property_translator: CatalogPropertiesJsonTranslator,
+                                       properties: list[CatalogProperty],
+                                       field_definitions_node: dict,
+                                       required_field_declarations_node: list[dict]) -> None:
+    catalog_properties: list[_CatalogProperty] = list()
+    for dataset_property_spec in properties:
+        # DEBUG
+        if dataset_property_spec.source_collection == 'member_id':
+            continue
+        ##
+        catalog_property = property_translator.translate_property(dataset_property_spec)
+        catalog_properties.append(catalog_property)
+    _inject_catalog_properties(
+        field_definitions_node=field_definitions_node,
+        catalog_properties=catalog_properties,
+        required_field_declarations_node=required_field_declarations_node)
 
 
 def generate_json_schema(project_id: str) -> str:
@@ -179,49 +197,33 @@ def generate_json_schema(project_id: str) -> str:
             if project_specs.catalog_specs is not None:
                 with open(file=template_file_path, mode='r') as file:
                     root = json.load(file)
-                property_generator = CatalogPropertiesGenerator(project_id)
-
-                # Generate id & collection common fields
+                property_translator = CatalogPropertiesJsonTranslator(project_id)
                 # TODO
-
-                # Generate catalog dataset properties.
-                catalog_dataset_field_definitions_node = \
-                    root['definitions']['item_fields']['properties']
-                catalog_dataset_required_field_declarations_node = \
-                    root['definitions']['require_item_fields']['allOf']
-                catalog_dataset_properties: list[_CatalogProperty] = list()
-                for dataset_property_spec in project_specs.catalog_specs.dataset_properties:
-                    # DEBUG
-                    print(dataset_property_spec.source_collection)
-                    if dataset_property_spec.source_collection == 'member_id':
-                        continue
-                    ##
-                    catalog_property = property_generator.generate_property(dataset_property_spec)
-                    catalog_dataset_properties.append(catalog_property)
-                _inject_catalog_properties(
-                    field_definitions_node=catalog_dataset_field_definitions_node,
-                    catalog_properties=catalog_dataset_properties,
-                    required_field_declarations_node=catalog_dataset_required_field_declarations_node)
+                # Generate title.
+                # Generate description.
+                # Generate catalog properties
+                # Generate pattern properties
+                # Generate id & collection common fields
 
                 # Generate catalog file properties.
                 catalog_file_field_definitions_node = \
                     root['definitions']['asset_fields']['properties']
                 catalog_file_required_field_declaration_node = \
                     root['definitions']['require_asset_fields']['allOf']
-                catalog_file_properties = list()
-                for file_property in project_specs.catalog_specs.file_properties:
-                    catalog_file_properties.append(property_generator.generate_property(file_property))
-                _inject_catalog_properties(
-                    field_definitions_node=catalog_file_field_definitions_node,
-                    catalog_properties=catalog_file_properties,
-                    required_field_declarations_node=catalog_file_required_field_declaration_node)
-
-                # Generate title.
-                # Generate description.
-                # Generate catalog properties
-                # Generate pattern properties
-                # TODO
-                return json.dumps(root, indent=JSON_INDENTATION, cls=_SetEncoder)
+                _catalog_properties_json_processor(property_translator,
+                                                   project_specs.catalog_specs.file_properties,
+                                                   catalog_file_field_definitions_node,
+                                                   catalog_file_required_field_declaration_node)
+                # Generate catalog dataset properties.
+                catalog_dataset_field_definitions_node = \
+                    root['definitions']['item_fields']['properties']
+                catalog_dataset_required_field_declarations_node = \
+                    root['definitions']['require_item_fields']['allOf']
+                _catalog_properties_json_processor(property_translator,
+                                                   project_specs.catalog_specs.dataset_properties,
+                                                   catalog_dataset_field_definitions_node,
+                                                   catalog_dataset_required_field_declarations_node)
+                return json.dumps(root, indent=JSON_INDENTATION, cls=_SetJsonEncoder)
             else:
                 raise EsgvocNotFoundError(f"catalog properties for the project '{project_id}' " +
                                           "are missing")
