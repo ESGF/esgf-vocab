@@ -1,12 +1,29 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://stac-extensions.github.io/{project_id}/{catalog_version}/schema.json#",
-  "title": "{project_id} Extension",
-  "description": "STAC {project_id} Extension for STAC Items and STAC Collection Summaries.",
+  "$id": "https://stac-extensions.github.io/{{ project_id|lower }}/{{ catalog_version }}/schema.json#",
+  "title": "{{ project_id|upper }} Extension",
+  "description": "STAC {{ project_id|upper }} Extension for STAC Items and STAC Collection Summaries.",
   "type": "object",
   "required": [
     "stac_extensions"
   ],
+  "properties": {
+    "stac_extensions": {
+      "type": "array",
+      "allOf": [
+        {
+          "contains": {
+            "const": "https://stac-extensions.github.io/file/{{ file_extension_version }}/schema.json"
+          }
+        },
+        {
+          "contains": {
+            "const": "https://stac-extensions.github.io/{{ project_id|lower }}/{{ catalog_version }}/schema.json"
+          }
+        }
+      ]
+    }
+  },
   "oneOf": [
     {
       "$comment": "This is the schema for STAC Items.",
@@ -17,6 +34,13 @@
       "properties": {
         "type": {
           "const": "Feature"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "{{ drs_dataset_id_regex }}"
+        },
+        "collection": {
+          "const": "{{ project_id|upper }}"
         },
         "properties": {
           "allOf": [
@@ -36,7 +60,7 @@
                 "$ref": "#/definitions/require_asset_fields"
               },
               {
-                "$ref": "https://stac-extensions.github.io/file/v2.1.0/schema.json#/definitions/fields"
+                "$ref": "https://stac-extensions.github.io/file/{{ file_extension_version }}/schema.json#/definitions/fields"
               },
               {
                 "$ref": "#/definitions/asset_fields"
@@ -111,7 +135,17 @@
           "required": [
             "updated"
           ]
-        }
+        },
+        {% for dataset_property in catalog_dataset_properties|sort(attribute="field_name") %}
+          {% if dataset_property.is_required %}
+            {
+              "required": [
+                "{{ dataset_property.field_name }}"
+              ]
+            }
+            {% if not loop.last %},{% endif %}
+          {% endif %}
+        {% endfor %}
       ]
     },
     "require_asset_fields": {
@@ -141,7 +175,17 @@
           "required": [
             "updated"
           ]
-        }
+        },
+        {% for file_property in catalog_file_properties|sort(attribute="field_name") %}
+          {% if file_property.is_required %}
+            {
+              "required": [
+                "{{ file_property.field_name }}"
+              ]
+            }
+            {% if not loop.last %},{% endif %}
+          {% endif %}
+        {% endfor %}
       ]
     },
     "asset_fields": {
@@ -162,7 +206,15 @@
             "wps",
             "s3"
           ]
-        }
+        },
+        {% for file_property in catalog_file_properties|sort(attribute="field_name") %}
+          "{{ file_property.field_name }}": {
+          {% for key, value in file_property.field_value|dictsort(reverse=true) %}
+            "{{ key }}": {{ value|tojson }}
+            {% if not loop.last %},{% endif %}
+          {% endfor %}
+          }{% if not loop.last %},{% endif %}
+        {% endfor %}
       }
     },
     "item_fields": {
@@ -180,8 +232,16 @@
           "minimum": 0
         }
       },
+      {% for dataset_property in catalog_dataset_properties|sort(attribute="field_name") %}
+        "{{ dataset_property.field_name }}": {
+        {% for key, value in dataset_property.field_value|dictsort(reverse=true) %}
+          "{{ key }}": {{ value|tojson }}
+          {% if not loop.last %},{% endif %}
+        {% endfor %}
+        },
+      {% endfor %}
       "patternProperties": {
-        "^(?!{project_id}:)": {}
+        "^(?!{{ project_id|lower }}:)": {}
       },
       "additionalProperties": false
     }

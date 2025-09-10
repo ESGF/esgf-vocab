@@ -1,19 +1,20 @@
 import json
 from dataclasses import dataclass
-from json import JSONEncoder
 from pathlib import Path
 
+from jinja2 import Environment, FileSystemLoader
 from sqlmodel import Session
 
 from esgvoc.api import projects, search
 from esgvoc.api.project_specs import CatalogProperty
 from esgvoc.core.constants import DRS_SPECS_JSON_KEY, PATTERN_JSON_KEY
 from esgvoc.core.db.models.project import PCollection, TermKind
-from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocNotImplementedError
+from esgvoc.core.exceptions import EsgvocException, EsgvocNotFoundError, EsgvocNotImplementedError
 
 KEY_SEPARATOR = ':'
-JSON_SCHEMA_TEMPLATE_DIR_PATH = Path(__file__).parent
-JSON_SCHEMA_TEMPLATE_FILE_NAME = 'template.json'
+TEMPLATE_DIR_NAME = 'templates'
+TEMPLATE_DIR_PATH = Path(__file__).parent.joinpath(TEMPLATE_DIR_NAME)
+TEMPLATE_FILE_NAME = 'template.jinja'
 JSON_INDENTATION = 2
 
 
@@ -24,15 +25,7 @@ class _CatalogProperty:
     is_required: bool
 
 
-class _SetJsonEncoder(JSONEncoder):
-    def default(self, o):
-        if isinstance(o, set):
-            return list(o)
-        else:
-            return super().default(self, o)
-
-
-def _process_plain(collection: PCollection, selected_field: str) -> set[str]:
+def _process_plain(collection: PCollection, selected_field: str) -> list[str]:
     result: set[str] = set()
     for term in collection.terms:
         if selected_field in term.specs:
@@ -41,7 +34,7 @@ def _process_plain(collection: PCollection, selected_field: str) -> set[str]:
         else:
             raise EsgvocNotFoundError(f'missing key {selected_field} for term {term.id} in ' +
                                       f'collection {collection.id}')
-    return result
+    return list(result)
 
 
 def _process_composite(collection: PCollection, universe_session: Session,
@@ -93,8 +86,8 @@ class CatalogPropertiesJsonTranslator:
         return True
 
     def _translate_property_value(self, source_collection: str, source_collection_key: str) \
-            -> tuple[str, str | set[str]]:
-        property_value: str | set[str]
+            -> tuple[str, str | list[str]]:
+        property_value: str | list[str]
         if source_collection not in self.collections:
             # DEBUG
             # raise EsgvocNotFoundError(f"collection '{source_collection}' is not found")
@@ -152,44 +145,17 @@ class CatalogPropertiesJsonTranslator:
         return f'{project_id}{KEY_SEPARATOR}{attribute_name}'
 
 
-def _inject_catalog_properties(field_definitions_node: dict,
-                               catalog_properties: list[_CatalogProperty],
-                               required_field_declarations_node: list[dict]):
-    for catalog_property in catalog_properties:
-        if catalog_property.is_required:
-            required_field_declarations_node.append({"required": [catalog_property.field_name]})
-        field_definitions_node[catalog_property.field_name] = catalog_property.field_value
-
-
 def _catalog_properties_json_processor(property_translator: CatalogPropertiesJsonTranslator,
-                                       properties: list[CatalogProperty],
-                                       field_definitions_node: dict,
-                                       required_field_declarations_node: list[dict]) -> None:
-    catalog_properties: list[_CatalogProperty] = list()
+                                       properties: list[CatalogProperty]) -> list[_CatalogProperty]:
+    result: list[_CatalogProperty] = list()
     for dataset_property_spec in properties:
         # DEBUG
         if dataset_property_spec.source_collection == 'member_id':
             continue
         ##
         catalog_property = property_translator.translate_property(dataset_property_spec)
-        catalog_properties.append(catalog_property)
-    _inject_catalog_properties(
-        field_definitions_node=field_definitions_node,
-        catalog_properties=catalog_properties,
-        required_field_declarations_node=required_field_declarations_node)
-
-
-def _project_id_json_processor(node: dict, key: str, project_id, is_capital_letters: bool) -> None:
-    template = node[key]
-    node[key] = template.format(project_id=project_id.upper() if is_capital_letters else project_id)
-
-
-def _pattern_properties_json_processor(root_node: dict, project_id: str) -> None:
-    pattern_properties_node = root_node['definitions']['item_fields']
-    pattern_properties = pattern_properties_node['patternProperties']
-    key, value = list(pattern_properties.items())[0]
-    key = key.format(project_id=project_id)
-    pattern_properties_node['patternProperties'] = {key: value}
+        result.append(catalog_property)
+    return result
 
 
 def generate_json_schema(project_id: str) -> str:
@@ -203,57 +169,39 @@ def generate_json_schema(project_id: str) -> str:
     :raises EsgvocNotFoundError: On missing information
     :raises EsgvocNotImplementedError: On unexpected operations
     """
-    template_file_path = JSON_SCHEMA_TEMPLATE_DIR_PATH.joinpath(JSON_SCHEMA_TEMPLATE_FILE_NAME)
-    if template_file_path.exists():
-        project_specs = projects.get_project(project_id)
-        if project_specs is not None:
-            if project_specs.catalog_specs is not None:
-                with open(file=template_file_path, mode='r') as file:
-                    root_node = json.load(file)
-                property_translator = CatalogPropertiesJsonTranslator(project_id)
+    project_specs = projects.get_project(project_id)
+    if project_specs is not None:
+        catalog_specs = project_specs.catalog_specs
+        if catalog_specs is not None:
+            env = Environment(loader=FileSystemLoader(TEMPLATE_DIR_PATH))  # noqa: S701
+            template = env.get_template(TEMPLATE_FILE_NAME)
 
-                # Process title.
-                _project_id_json_processor(root_node, 'title', project_id, True)
-
-                # Process description.
-                _project_id_json_processor(root_node, 'description', project_id, True)
-
-                # Process schema id.
-                _project_id_json_processor(root_node, '$id', project_id, False)
-
-                # Process pattern properties.
-                _pattern_properties_json_processor(root_node, project_id)
-
-                # Process catalog properties.
-
-                # Process id & collection common fields.
-                # Process dataset id.
-
-                # Process catalog file properties.
-                catalog_file_field_definitions_node = \
-                    root_node['definitions']['asset_fields']['properties']
-                catalog_file_required_field_declaration_node = \
-                    root_node['definitions']['require_asset_fields']['allOf']
+            file_extension_version = catalog_specs.catalog_properties.extensions[0].version
+            drs_dataset_id_regex = project_specs.drs_specs[2].regex
+            property_translator = CatalogPropertiesJsonTranslator(project_id)
+            catalog_dataset_properties = \
                 _catalog_properties_json_processor(property_translator,
-                                                   project_specs.catalog_specs.file_properties,
-                                                   catalog_file_field_definitions_node,
-                                                   catalog_file_required_field_declaration_node)
-                # Process catalog dataset properties.
-                catalog_dataset_field_definitions_node = \
-                    root_node['definitions']['item_fields']['properties']
-                catalog_dataset_required_field_declarations_node = \
-                    root_node['definitions']['require_item_fields']['allOf']
-                _catalog_properties_json_processor(property_translator,
-                                                   project_specs.catalog_specs.dataset_properties,
-                                                   catalog_dataset_field_definitions_node,
-                                                   catalog_dataset_required_field_declarations_node)
-                del property_translator
+                                                   catalog_specs.dataset_properties)
 
-                return json.dumps(root_node, indent=JSON_INDENTATION, cls=_SetJsonEncoder)
-            else:
-                raise EsgvocNotFoundError(f"catalog properties for the project '{project_id}' " +
-                                          "are missing")
+            catalog_file_properties = \
+                _catalog_properties_json_processor(property_translator,
+                                                   catalog_specs.file_properties)
+            del property_translator
+            json_raw_str = template.render(project_id=project_id,
+                                           catalog_version=catalog_specs.version,
+                                           file_extension_version=file_extension_version,
+                                           drs_dataset_id_regex=drs_dataset_id_regex,
+                                           catalog_dataset_properties=catalog_dataset_properties,
+                                           catalog_file_properties=catalog_file_properties)
+            # Pretty print and json checking.
+            try:
+                json_obj = json.loads(json_raw_str)
+                result = json.dumps(json_obj, indent=JSON_INDENTATION)
+                return result
+            except Exception as e:
+                raise EsgvocException(f'unable to produce JSON compliant schema: {e}') from e
         else:
-            raise EsgvocNotFoundError(f"unknown project '{project_id}'")
+            raise EsgvocNotFoundError(f"catalog properties for the project '{project_id}' " +
+                                      "are missing")
     else:
-        raise EsgvocNotFoundError('missing json schema template')
+        raise EsgvocNotFoundError(f"unknown project '{project_id}'")
