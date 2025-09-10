@@ -69,6 +69,8 @@ class DrsSpecification(BaseModel):
 
     type: DrsType
     """The type of the specification."""
+    regex: str
+    """General pattern for simples checks"""
     separator: str
     """The textual separator string or character."""
     properties: dict | None = None
@@ -96,10 +98,32 @@ class CatalogProperty(BaseModel):
     "Specifies a key other than drs_name in the collection."
 
 
+class CatalogExtension(BaseModel):
+    name: str
+    """The name of the extension"""
+    version: str
+    """The version of the extension"""
+
+
+class CatalogProperties(BaseModel):
+    name: str
+    """The name of the catalog system."""
+    url_template: str
+    """The URI template of the catalog system."""
+    extensions: list[CatalogExtension]
+    """The extensions of the catalog."""
+
+
 class CatalogSpecification(BaseModel):
     """
     A catalog specifications.
     """
+
+    version: str
+    """The version of the catalog."""
+
+    catalog_properties: CatalogProperties
+    """The properties of the catalog."""
 
     dataset_properties: list[CatalogProperty]
     "The properties of the dataset described in a catalog."
