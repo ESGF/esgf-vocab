@@ -179,6 +179,19 @@ def _catalog_properties_json_processor(property_translator: CatalogPropertiesJso
         required_field_declarations_node=required_field_declarations_node)
 
 
+def _project_id_json_processor(node: dict, key: str, project_id, is_capital_letters: bool) -> None:
+    template = node[key]
+    node[key] = template.format(project_id=project_id.upper() if is_capital_letters else project_id)
+
+
+def _pattern_properties_json_processor(root_node: dict, project_id: str) -> None:
+    pattern_properties_node = root_node['definitions']['item_fields']
+    pattern_properties = pattern_properties_node['patternProperties']
+    key, value = list(pattern_properties.items())[0]
+    key = key.format(project_id=project_id)
+    pattern_properties_node['patternProperties'] = {key: value}
+
+
 def generate_json_schema(project_id: str) -> str:
     """
     Generate json schema for the given project.
@@ -196,34 +209,47 @@ def generate_json_schema(project_id: str) -> str:
         if project_specs is not None:
             if project_specs.catalog_specs is not None:
                 with open(file=template_file_path, mode='r') as file:
-                    root = json.load(file)
+                    root_node = json.load(file)
                 property_translator = CatalogPropertiesJsonTranslator(project_id)
-                # TODO
-                # Generate title.
-                # Generate description.
-                # Generate catalog properties
-                # Generate pattern properties
-                # Generate id & collection common fields
 
-                # Generate catalog file properties.
+                # Process title.
+                _project_id_json_processor(root_node, 'title', project_id, True)
+
+                # Process description.
+                _project_id_json_processor(root_node, 'description', project_id, True)
+
+                # Process schema id.
+                _project_id_json_processor(root_node, '$id', project_id, False)
+
+                # Process pattern properties.
+                _pattern_properties_json_processor(root_node, project_id)
+
+                # Process catalog properties.
+
+                # Process id & collection common fields.
+                # Process dataset id.
+
+                # Process catalog file properties.
                 catalog_file_field_definitions_node = \
-                    root['definitions']['asset_fields']['properties']
+                    root_node['definitions']['asset_fields']['properties']
                 catalog_file_required_field_declaration_node = \
-                    root['definitions']['require_asset_fields']['allOf']
+                    root_node['definitions']['require_asset_fields']['allOf']
                 _catalog_properties_json_processor(property_translator,
                                                    project_specs.catalog_specs.file_properties,
                                                    catalog_file_field_definitions_node,
                                                    catalog_file_required_field_declaration_node)
-                # Generate catalog dataset properties.
+                # Process catalog dataset properties.
                 catalog_dataset_field_definitions_node = \
-                    root['definitions']['item_fields']['properties']
+                    root_node['definitions']['item_fields']['properties']
                 catalog_dataset_required_field_declarations_node = \
-                    root['definitions']['require_item_fields']['allOf']
+                    root_node['definitions']['require_item_fields']['allOf']
                 _catalog_properties_json_processor(property_translator,
                                                    project_specs.catalog_specs.dataset_properties,
                                                    catalog_dataset_field_definitions_node,
                                                    catalog_dataset_required_field_declarations_node)
-                return json.dumps(root, indent=JSON_INDENTATION, cls=_SetJsonEncoder)
+                del property_translator
+
+                return json.dumps(root_node, indent=JSON_INDENTATION, cls=_SetJsonEncoder)
             else:
                 raise EsgvocNotFoundError(f"catalog properties for the project '{project_id}' " +
                                           "are missing")

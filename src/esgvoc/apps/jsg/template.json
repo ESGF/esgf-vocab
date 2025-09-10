@@ -1,7 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://stac-extensions.github.io/cmip6/v2.0.0/schema.json#",
-  "description": "STAC {project_id_capital_letters} Extension for STAC Items and STAC Collection Summaries.",
+  "$id": "https://stac-extensions.github.io/{project_id}/{catalog_version}/schema.json#",
+  "title": "{project_id} Extension",
+  "description": "STAC {project_id} Extension for STAC Items and STAC Collection Summaries.",
   "type": "object",
   "required": [
     "stac_extensions"
@@ -180,7 +181,7 @@
         }
       },
       "patternProperties": {
-        "^(?!cmip6:)": {}
+        "^(?!{project_id}:)": {}
       },
       "additionalProperties": false
     }
