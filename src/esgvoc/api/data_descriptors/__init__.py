@@ -94,4 +94,5 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "obs_type": ObsType,  # obs4Mips
     "regex": Regex,
     "citation_url": CitationUrl,
+    "archive": Archive,
 }
