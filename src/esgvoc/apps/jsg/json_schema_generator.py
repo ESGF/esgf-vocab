@@ -159,16 +159,17 @@ def _catalog_properties_json_processor(property_translator: CatalogPropertiesJso
     return result
 
 
-def generate_json_schema(project_id: str) -> str:
+def generate_json_schema(project_id: str) -> dict:
     """
     Generate json schema for the given project.
 
     :param project_id: The id of the given project.
     :type project_id: str
-    :returns: The content of a json schema
-    :rtype: str
+    :returns: The root node of a json schema
+    :rtype: dict
     :raises EsgvocNotFoundError: On missing information
     :raises EsgvocNotImplementedError: On unexpected operations
+    :raises EsgvocException: On json compliance error
     """
     project_specs = projects.get_project(project_id)
     if project_specs is not None:
@@ -194,15 +195,18 @@ def generate_json_schema(project_id: str) -> str:
                                            drs_dataset_id_regex=drs_dataset_id_regex,
                                            catalog_dataset_properties=catalog_dataset_properties,
                                            catalog_file_properties=catalog_file_properties)
-            # Pretty print and json checking.
+            # Json checking.
             try:
-                json_obj = json.loads(json_raw_str)
-                result = json.dumps(json_obj, indent=JSON_INDENTATION)
+                result = json.loads(json_raw_str)
                 return result
             except Exception as e:
-                raise EsgvocException(f'unable to produce JSON compliant schema: {e}') from e
+                raise EsgvocException(f'unable to produce schema compliant to JSON: {e}') from e
         else:
             raise EsgvocNotFoundError(f"catalog properties for the project '{project_id}' " +
                                       "are missing")
     else:
         raise EsgvocNotFoundError(f"unknown project '{project_id}'")
+
+
+def pretty_print_json_node(node: dict) -> str:
+    return json.dumps(node, indent=JSON_INDENTATION)
