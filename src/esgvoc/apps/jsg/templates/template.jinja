@@ -230,16 +230,16 @@
         "size": {
           "type": "integer",
           "minimum": 0
-        }
-      },
-      {% for dataset_property in catalog_dataset_properties|sort(attribute="field_name") %}
-        "{{ dataset_property.field_name }}": {
-        {% for key, value in dataset_property.field_value|dictsort(reverse=true) %}
-          "{{ key }}": {{ value|tojson }}
-          {% if not loop.last %},{% endif %}
-        {% endfor %}
         },
-      {% endfor %}
+        {% for dataset_property in catalog_dataset_properties|sort(attribute="field_name") %}
+          "{{ dataset_property.field_name }}": {
+          {% for key, value in dataset_property.field_value|dictsort(reverse=true) %}
+            "{{ key }}": {{ value|tojson }}
+            {% if not loop.last %},{% endif %}
+          {% endfor %}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+      },
       "patternProperties": {
         "^(?!{{ project_id|lower }}:)": {}
       },

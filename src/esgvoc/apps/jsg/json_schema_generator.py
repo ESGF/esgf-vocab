@@ -125,6 +125,7 @@ class CatalogPropertiesJsonTranslator:
             root_property = dict()
             field_value['items'] = root_property
             root_property['type'] = catalog_property.catalog_field_value_type.split('_')[0]
+            root_property['minItems'] = 1
         else:
             field_value['type'] = catalog_property.catalog_field_value_type
             root_property = field_value
