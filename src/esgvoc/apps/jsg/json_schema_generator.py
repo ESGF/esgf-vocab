@@ -165,11 +165,11 @@ def generate_json_schema(project_id: str) -> dict:
 
     :param project_id: The id of the given project.
     :type project_id: str
-    :returns: The root node of a json schema
+    :returns: The root node of a json schema.
     :rtype: dict
-    :raises EsgvocNotFoundError: On missing information
-    :raises EsgvocNotImplementedError: On unexpected operations
-    :raises EsgvocException: On json compliance error
+    :raises EsgvocNotFoundError: On missing information.
+    :raises EsgvocNotImplementedError: On unexpected operations.
+    :raises EsgvocException: On json compliance error.
     """
     project_specs = projects.get_project(project_id)
     if project_specs is not None:
@@ -208,5 +208,13 @@ def generate_json_schema(project_id: str) -> dict:
         raise EsgvocNotFoundError(f"unknown project '{project_id}'")
 
 
-def pretty_print_json_node(node: dict) -> str:
-    return json.dumps(node, indent=JSON_INDENTATION)
+def pretty_print_json_node(obj: dict) -> str:
+    """
+    Serialize a dictionary into json format.
+
+    :param obj: The dictionary.
+    :type obj: dict
+    :returns: a string that represents the dictionary in json format.
+    :rtype: str
+    """
+    return json.dumps(obj, indent=JSON_INDENTATION)
