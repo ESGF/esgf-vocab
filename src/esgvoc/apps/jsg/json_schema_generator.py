@@ -6,7 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from sqlmodel import Session
 
 from esgvoc.api import projects, search
-from esgvoc.api.project_specs import CatalogProperty
+from esgvoc.api.project_specs import CatalogProperty, DrsType
 from esgvoc.core.constants import DRS_SPECS_JSON_KEY, PATTERN_JSON_KEY
 from esgvoc.core.db.models.project import PCollection, TermKind
 from esgvoc.core.exceptions import EsgvocException, EsgvocNotFoundError, EsgvocNotImplementedError
@@ -179,7 +179,7 @@ def generate_json_schema(project_id: str) -> dict:
             template = env.get_template(TEMPLATE_FILE_NAME)
 
             file_extension_version = catalog_specs.catalog_properties.extensions[0].version
-            drs_dataset_id_regex = project_specs.drs_specs[2].regex
+            drs_dataset_id_regex = project_specs.drs_specs[DrsType.DATASET_ID].regex
             property_translator = CatalogPropertiesJsonTranslator(project_id)
             catalog_dataset_properties = \
                 _catalog_properties_json_processor(property_translator,

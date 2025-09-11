@@ -44,19 +44,12 @@ class DrsApplication:
         project_specs: ProjectSpecs | None = projects.get_project(project_id)
         if not project_specs:
             raise EsgvocNotFoundError(f"unable to find project '{project_id}'")
-        for specs in project_specs.drs_specs:
-            match specs.type:
-                case DrsType.DIRECTORY:
-                    self.directory_specs: DrsSpecification = specs
-                    """The DRS directory specs of the project."""
-                case DrsType.FILE_NAME:
-                    self.file_name_specs: DrsSpecification = specs
-                    """The DRS file name specs of the project."""
-                case DrsType.DATASET_ID:
-                    self.dataset_id_specs: DrsSpecification = specs
-                    """The DRS dataset id specs of the project."""
-                case _:
-                    raise EsgvocDbError(f"unsupported DRS specs type '{specs.type}'")
+        self.directory_specs: DrsSpecification = project_specs.drs_specs[DrsType.DIRECTORY]
+        """The DRS directory specs of the project."""
+        self.file_name_specs: DrsSpecification = project_specs.drs_specs[DrsType.FILE_NAME]
+        """The DRS file name specs of the project."""
+        self.dataset_id_specs: DrsSpecification = project_specs.drs_specs[DrsType.DATASET_ID]
+        """The DRS dataset id specs of the project."""
 
     def _get_full_file_name_extension(self) -> str:
         """
