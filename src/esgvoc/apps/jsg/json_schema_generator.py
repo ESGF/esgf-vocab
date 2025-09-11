@@ -209,8 +209,9 @@ def generate_json_schema(project_id: str) -> dict:
     :type project_id: str
     :returns: The root node of a json schema.
     :rtype: dict
-    :raises EsgvocNotFoundError: On missing information.
-    :raises EsgvocNotImplementedError: On unexpected operations.
+    :raises EsgvocValueError: On wrong information in catalog_specs.
+    :raises EsgvocNotFoundError: On missing information in catalog_specs.
+    :raises EsgvocNotImplementedError: On unexpected operations resulted in wrong information in catalog_specs).
     :raises EsgvocException: On json compliance error.
     """
     project_specs = projects.get_project(project_id)
