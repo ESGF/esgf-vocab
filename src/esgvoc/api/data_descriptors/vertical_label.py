@@ -1,7 +1,7 @@
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
-class VerticalLabel(PlainTermDataDescriptorTermDataDescriptor):
+class VerticalLabel(PlainTermDataDescriptor):
     """
     Vertical label.
 
