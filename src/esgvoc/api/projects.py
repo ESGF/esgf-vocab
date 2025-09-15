@@ -56,9 +56,8 @@ def _resolve_composite_term_part(composite_term_part: dict,
         # First find the term in the universe than in the current project
         term_id = composite_term_part[constants.TERM_ID_JSON_KEY]
         term_type = composite_term_part[constants.TERM_TYPE_JSON_KEY]
-        uterm = universe._get_term_in_data_descriptor(
-            data_descriptor_id=term_type, term_id=term_id, session=universe_session
-        )
+        uterm = universe._get_term_in_data_descriptor(data_descriptor_id=term_type,
+                                                      term_id=term_id, session=universe_session)
         if uterm:
             return uterm
         else:
