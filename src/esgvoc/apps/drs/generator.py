@@ -206,7 +206,7 @@ class DrsGenerator(DrsApplication):
 
             drs_expression += part_value + specs.separator
 
-        drs_expression = drs_expression[0 : len(drs_expression) - len(specs.separator)]
+        drs_expression = drs_expression[0: len(drs_expression) - len(specs.separator)]
         return drs_expression, errors, warnings
 
     def _generate_from_bag_of_terms(self, terms: Iterable[str], specs: DrsSpecification) -> DrsGenerationReport:  # noqa E127
@@ -329,7 +329,7 @@ class DrsGenerator(DrsApplication):
             wining_id_and_term_pairs: list[tuple[str, str]] = list()
             for collection_ids in conflicting_collection_ids_list:
                 for collection_index in range(0, len(collection_ids)):
-                    collection_set = collection_ids[collection_index + 1 :] + collection_ids[:collection_index]
+                    collection_set = collection_ids[collection_index + 1:] + collection_ids[:collection_index]
                     diff: set[str] = collection_terms_mapping[collection_ids[collection_index]].difference(
                         *[
                             collection_terms_mapping[index]  # noqa E127
