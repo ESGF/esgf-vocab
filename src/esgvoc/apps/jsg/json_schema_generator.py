@@ -118,7 +118,8 @@ def _process_composite_term(term: UTerm | PTerm, universe_session: Session,
         tmp = separator.join(combination)
         if has_pattern:
             tmp = f'^{tmp}$'
-        property_values.append({'pattern': tmp})
+            tmp = {'pattern': tmp}
+        property_values.append(tmp)
     property_key = 'anyOf' if has_pattern else 'enum'
     return property_key, property_values, has_pattern
 
