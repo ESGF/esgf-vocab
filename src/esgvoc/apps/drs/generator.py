@@ -1,7 +1,7 @@
 from typing import Any, Iterable, Mapping, cast
 
 import esgvoc.api.projects as projects
-from esgvoc.api.project_specs import DrsCollection, DrsConstant, DrsPartKind, DrsSpecification, DrsType
+from esgvoc.api.project_specs import DrsSpecification, DrsType
 from esgvoc.api.search import MatchingTerm
 from esgvoc.apps.drs.report import (
     AssignedTerm,
@@ -177,39 +177,34 @@ class DrsGenerator(DrsApplication):
         part_position: int = 0
         for part in specs.parts:
             part_position += 1
-            if part.kind == DrsPartKind.COLLECTION:
-                collection_part = cast(DrsCollection, part)
-                collection_id = collection_part.collection_id
-                if collection_id in mapping:
-                    part_value = mapping[collection_id]
-                    if has_to_valid_terms:
-                        if collection_part.source_collection_term is None:
-                            matching_terms = projects.valid_term_in_collection(part_value,
-                                                                               self.project_id,
-                                                                               collection_id)
-                        else:
-                            matching_terms = projects.valid_term(
-                                part_value,
-                                self.project_id,
-                                collection_id,
-                                collection_part.source_collection_term).validated
-                        if not matching_terms:
-                            issue = InvalidTerm(term=part_value,
-                                                term_position=part_position,
-                                                collection_id_or_constant_value=collection_id)
-                            errors.append(issue)
-                            part_value = DrsGenerationReport.INVALID_TAG
-                else:
-                    other_issue = MissingTerm(collection_id=collection_id, collection_position=part_position)
-                    if collection_part.is_required:
-                        errors.append(other_issue)
-                        part_value = DrsGenerationReport.MISSING_TAG
+            collection_id = part.collection_id
+            if collection_id in mapping:
+                part_value = mapping[collection_id]
+                if has_to_valid_terms:
+                    if part.source_collection_term is None:
+                        matching_terms = projects.valid_term_in_collection(part_value,
+                                                                           self.project_id,
+                                                                           collection_id)
                     else:
-                        warnings.append(other_issue)
-                        continue  # The for loop.
+                        matching_terms = projects.valid_term(
+                            part_value,
+                            self.project_id,
+                            collection_id,
+                            part.source_collection_term).validated
+                    if not matching_terms:
+                        issue = InvalidTerm(term=part_value,
+                                            term_position=part_position,
+                                            collection_id_or_constant_value=collection_id)
+                        errors.append(issue)
+                        part_value = DrsGenerationReport.INVALID_TAG
             else:
-                constant_part = cast(DrsConstant, part)
-                part_value = constant_part.value
+                other_issue = MissingTerm(collection_id=collection_id, collection_position=part_position)
+                if part.is_required:
+                    errors.append(other_issue)
+                    part_value = DrsGenerationReport.MISSING_TAG
+                else:
+                    warnings.append(other_issue)
+                    continue  # The for loop.
 
             drs_expression += part_value + specs.separator
 

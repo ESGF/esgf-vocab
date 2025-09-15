@@ -1,7 +1,6 @@
 from enum import Enum
-from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 
 
 class DrsType(str, Enum):
@@ -17,35 +16,8 @@ class DrsType(str, Enum):
     """The DRS dataset id specification type."""
 
 
-class DrsPartKind(str, Enum):
-    """
-    The kinds of DRS part (constant and collection).
-    """
-
-    CONSTANT = "constant"
-    """The constant part type."""
-    COLLECTION = "collection"
-    """The collection part type."""
-
-
-class DrsConstant(BaseModel):
-    """
-    A constant part of a DRS specification (e.g., cmip5).
-    """
-
-    value: str
-    """The value of the a constant part."""
-    kind: Literal[DrsPartKind.CONSTANT] = DrsPartKind.CONSTANT
-    """The DRS part kind."""
-
-    def __str__(self) -> str:
-        return self.value
-
-
-class DrsCollection(BaseModel):
-    """
-    A collection part of a DRS specification (e.g., institution_id for CMIP6).
-    """
+class DrsPart(BaseModel):
+    """A fragment of a DRS specification"""
 
     collection_id: str
     """The collection id."""
@@ -53,15 +25,9 @@ class DrsCollection(BaseModel):
     "Specifies a specific term in the collection."
     is_required: bool
     """Whether the collection is required for the DRS specification or not."""
-    kind: Literal[DrsPartKind.COLLECTION] = DrsPartKind.COLLECTION
-    """The DRS part kind."""
 
     def __str__(self) -> str:
         return self.collection_id
-
-
-DrsPart = Annotated[DrsConstant | DrsCollection, Field(discriminator="kind")]
-"""A fragment of a DRS specification"""
 
 
 class DrsSpecification(BaseModel):
