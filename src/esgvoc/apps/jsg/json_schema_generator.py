@@ -1,6 +1,8 @@
 import json
 from dataclasses import dataclass
+from itertools import product
 from pathlib import Path
+from typing import Sequence
 
 from jinja2 import Environment, FileSystemLoader
 from sqlmodel import Session
@@ -9,6 +11,7 @@ from esgvoc.api import projects, search
 from esgvoc.api.project_specs import CatalogProperty, DrsType
 from esgvoc.core.constants import DRS_SPECS_JSON_KEY, PATTERN_JSON_KEY
 from esgvoc.core.db.models.project import PCollection, PTerm, TermKind
+from esgvoc.core.db.models.universe import UTerm
 from esgvoc.core.exceptions import EsgvocException, EsgvocNotFoundError, EsgvocNotImplementedError, EsgvocValueError
 
 KEY_SEPARATOR = ':'
@@ -43,32 +46,81 @@ def _process_plain_term(term: PTerm, source_collection_key: str) -> tuple[str, s
 
 
 def _process_col_composite_terms(collection: PCollection, universe_session: Session,
-                                 project_session: Session) -> tuple[str, list[str]]:
-    result = set()
+                                 project_session: Session) -> tuple[str, list[str | dict], bool]:
+    result: list[str | dict] = list()
+    property_key = ""
+    has_pattern = False
     for term in collection.terms:
-        property_key, property_value = _process_composite_term(term, universe_session,
-                                                               project_session)
-        result.add(property_value)
-    return property_key, list(result)  # type: ignore
-
-
-def _process_composite_term(term: PTerm, universe_session: Session,
-                            project_session: Session) -> tuple[str, str]:
-    result = ""
-    _, parts = projects._get_composite_term_separator_parts(term)
-    for part in parts:
-        resolved_term = projects._resolve_term(part, universe_session, project_session)
-        if resolved_term.kind == TermKind.PATTERN:
-            result += resolved_term.specs[PATTERN_JSON_KEY]
+        property_key, property_value, _has_pattern = _process_composite_term(term, universe_session,
+                                                                             project_session)
+        if isinstance(property_value, list):
+            result.extend(property_value)
         else:
-            raise EsgvocNotImplementedError(f'{term.kind} term is not supported yet')
-    # Patterns terms are meant to be validated individually.
-    # So their regex are defined as a whole (begins by a ^, ends by a $).
-    # As the pattern is a concatenation of plain or regex, multiple ^ and $ can exist.
-    # The later, must be removed.
-    result = result.replace('^', '').replace('$', '')
-    result = f'^{result}$'
-    return 'pattern', result
+            result.append(property_value)
+        has_pattern |= _has_pattern
+    return property_key, result, has_pattern
+
+
+def _inner_process_composite_term(resolved_term: UTerm | PTerm,
+                                  universe_session: Session,
+                                  project_session: Session) -> tuple[str | list, bool]:
+    is_pattern = False
+    match resolved_term.kind:
+        case TermKind.PLAIN:
+            result = resolved_term.specs[DRS_SPECS_JSON_KEY]
+        case TermKind.PATTERN:
+            result = resolved_term.specs[PATTERN_JSON_KEY].replace('^', '').replace('$', '')
+            is_pattern = True
+        case TermKind.COMPOSITE:
+            _, result, is_pattern = _process_composite_term(resolved_term, universe_session,
+                                                            project_session)
+        case _:
+            msg = f"unsupported term kind '{resolved_term.kind}'"
+            raise EsgvocNotImplementedError(msg)
+    return result, is_pattern
+
+
+def _accumulate_resolved_part(resolved_part: list,
+                              resolved_term: UTerm | PTerm,
+                              universe_session: Session,
+                              project_session: Session) -> bool:
+    tmp, has_pattern = _inner_process_composite_term(resolved_term, universe_session,
+                                                     project_session)
+    if isinstance(tmp, list):
+        resolved_part.extend(tmp)
+    else:
+        resolved_part.append(tmp)
+    return has_pattern
+
+
+def _process_composite_term(term: UTerm | PTerm, universe_session: Session,
+                            project_session: Session) -> tuple[str, list[str | dict], bool]:
+    resolved_parts = list()
+    separator, parts = projects._get_composite_term_separator_parts(term)
+    has_pattern = False
+    for part in parts:
+        resolved_term = projects._resolve_composite_term_part(part, universe_session, project_session)
+        resolved_part = list()
+        if isinstance(resolved_term, Sequence):
+            for r_term in resolved_term:
+                has_pattern |= _accumulate_resolved_part(resolved_part, r_term, universe_session,
+                                                         project_session)
+        else:
+            has_pattern = _accumulate_resolved_part(resolved_part, resolved_term, universe_session,
+                                                    project_session)
+        resolved_parts.append(resolved_part)
+    property_values: list[str | dict] = list()
+    for combination in product(*resolved_parts):
+        # Patterns terms are meant to be validated individually.
+        # So their regex are defined as a whole (begins by a ^, ends by a $).
+        # As the pattern is a concatenation of plain or regex, multiple ^ and $ can exist.
+        # The later, must be removed.
+        tmp = separator.join(combination)
+        if has_pattern:
+            tmp = f'^{tmp}$'
+        property_values.append({'pattern': tmp})
+    property_key = 'anyOf' if has_pattern else 'enum'
+    return property_key, property_values, has_pattern
 
 
 def _process_col_pattern_terms(collection: PCollection) -> tuple[str, str]:
@@ -103,13 +155,11 @@ class CatalogPropertiesJsonTranslator:
             raise exception_value
         return True
 
-    def _translate_property_value(self, catalog_property: CatalogProperty) -> tuple[str, str | list[str]]:
-        property_value: str | list[str]
+    def _translate_property_value(self, catalog_property: CatalogProperty) \
+            -> tuple[str, str | list[str] | list[str | dict]]:
+        property_value: str | list[str] | list[str | dict]
         if catalog_property.source_collection not in self.collections:
-            # DEBUG
-            # raise EsgvocNotFoundError(f"collection '{source_collection}' is not found")
-            print(f"collection '{catalog_property.source_collection}' is not found")
-            return 'enum', {}
+            raise EsgvocNotFoundError(f"collection '{catalog_property.source_collection}' is not found")
 
         if catalog_property.source_collection_key is None:
             source_collection_key = DRS_SPECS_JSON_KEY
@@ -124,7 +174,7 @@ class CatalogPropertiesJsonTranslator:
                         collection=collection,
                         source_collection_key=source_collection_key)
                 case TermKind.COMPOSITE:
-                    property_key, property_value = _process_col_composite_terms(
+                    property_key, property_value, _ = _process_col_composite_terms(
                         collection=collection,
                         universe_session=self.universe_session,
                         project_session=self.project_session)
@@ -147,7 +197,7 @@ class CatalogPropertiesJsonTranslator:
                         term=pterm_found,
                         source_collection_key=source_collection_key)
                 case TermKind.COMPOSITE:
-                    property_key, property_value = _process_composite_term(
+                    property_key, property_value, _ = _process_composite_term(
                         term=pterm_found,
                         universe_session=self.universe_session,
                         project_session=self.project_session)
@@ -192,10 +242,6 @@ def _catalog_properties_json_processor(property_translator: CatalogPropertiesJso
                                        properties: list[CatalogProperty]) -> list[_CatalogProperty]:
     result: list[_CatalogProperty] = list()
     for dataset_property_spec in properties:
-        # DEBUG
-        if dataset_property_spec.source_collection == 'member_id':
-            continue
-        ##
         catalog_property = property_translator.translate_property(dataset_property_spec)
         result.append(catalog_property)
     return result
