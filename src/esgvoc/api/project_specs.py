@@ -49,6 +49,8 @@ class DrsCollection(BaseModel):
 
     collection_id: str
     """The collection id."""
+    source_collection_term: str | None = None
+    "Specifies a specific term in the collection."
     is_required: bool
     """Whether the collection is required for the DRS specification or not."""
     kind: Literal[DrsPartKind.COLLECTION] = DrsPartKind.COLLECTION

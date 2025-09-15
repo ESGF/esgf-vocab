@@ -183,13 +183,20 @@ class DrsGenerator(DrsApplication):
                 if collection_id in mapping:
                     part_value = mapping[collection_id]
                     if has_to_valid_terms:
-                        matching_terms = projects.valid_term_in_collection(part_value, self.project_id, collection_id)
+                        if collection_part.source_collection_term is None:
+                            matching_terms = projects.valid_term_in_collection(part_value,
+                                                                               self.project_id,
+                                                                               collection_id)
+                        else:
+                            matching_terms = projects.valid_term(
+                                part_value,
+                                self.project_id,
+                                collection_id,
+                                collection_part.source_collection_term).validated
                         if not matching_terms:
-                            issue = InvalidTerm(
-                                term=part_value,
-                                term_position=part_position,
-                                collection_id_or_constant_value=collection_id,
-                            )
+                            issue = InvalidTerm(term=part_value,
+                                                term_position=part_position,
+                                                collection_id_or_constant_value=collection_id)
                             errors.append(issue)
                             part_value = DrsGenerationReport.INVALID_TAG
                 else:
@@ -212,12 +219,17 @@ class DrsGenerator(DrsApplication):
     def _generate_from_bag_of_terms(self, terms: Iterable[str], specs: DrsSpecification) -> DrsGenerationReport:  # noqa E127
         collection_terms_mapping: dict[str, set[str]] = dict()
         for term in terms:
-            matching_terms: list[MatchingTerm] = []
-            for col in [part.collection_id for part in specs.parts if part.kind == DrsPartKind.COLLECTION]:
-                matching_terms_in_col = projects.valid_term_in_collection(term, self.project_id, col)
-                for mtic in matching_terms_in_col:
-                    matching_terms.append(mtic)
-            # matching_terms = projects.valid_term_in_project(term, self.project_id)
+            matching_terms: list[MatchingTerm] = list()
+            for part in specs.parts:
+                if part.source_collection_term is None:
+                    matching_terms.extend(projects.valid_term_in_collection(term, self.project_id,
+                                                                            part.collection_id))
+                else:
+                    if projects.valid_term(term, self.project_id, part.collection_id,
+                                           part.source_collection_term).validated:
+                        matching_terms.append(MatchingTerm(project_id=self.project_id,
+                                                           collection_id=part.collection_id,
+                                                           term_id=part.source_collection_term))
             for matching_term in matching_terms:
                 if matching_term.collection_id not in collection_terms_mapping:
                     collection_terms_mapping[matching_term.collection_id] = set()
@@ -230,15 +242,13 @@ class DrsGenerator(DrsApplication):
         if self.pedantic:
             errors.extend(warnings)
             warnings.clear()
-        return DrsGenerationReport(
-            project_id=self.project_id,
-            type=specs.type,
-            given_mapping_or_bag_of_terms=terms,
-            mapping_used=mapping,
-            generated_drs_expression=drs_expression,
-            errors=cast(list[GenerationError], errors),
-            warnings=cast(list[GenerationWarning], warnings),
-        )
+        return DrsGenerationReport(project_id=self.project_id,
+                                   type=specs.type,
+                                   given_mapping_or_bag_of_terms=terms,
+                                   mapping_used=mapping,
+                                   generated_drs_expression=drs_expression,
+                                   errors=cast(list[GenerationError], errors),
+                                   warnings=cast(list[GenerationWarning], warnings))
 
     @staticmethod
     def _resolve_conflicts(

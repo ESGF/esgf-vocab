@@ -225,13 +225,18 @@ class DrsValidator(DrsApplication):
         match part.kind:
             case DrsPartKind.COLLECTION:
                 casted_part: DrsCollection = cast(DrsCollection, part)
-                matching_terms = projects.valid_term_in_collection(term,
-                                                                   self.project_id,
-                                                                   casted_part.collection_id)
-                if len(matching_terms) > 0:
-                    return True
+                if part.source_collection_term is None:
+                    matching_terms = projects.valid_term_in_collection(
+                        term,
+                        self.project_id,
+                        casted_part.collection_id)
+                    if len(matching_terms) > 0:
+                        return True
+                    else:
+                        return False
                 else:
-                    return False
+                    return projects.valid_term(term, self.project_id, casted_part.collection_id,
+                                               part.source_collection_term).validated
             case DrsPartKind.CONSTANT:
                 part_casted: DrsConstant = cast(DrsConstant, part)
                 return part_casted.value != term
