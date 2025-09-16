@@ -19,7 +19,7 @@ class DrsType(str, Enum):
 class DrsPart(BaseModel):
     """A fragment of a DRS specification"""
 
-    collection_id: str
+    source_collection: str
     """The collection id."""
     source_collection_term: str | None = None
     "Specifies a specific term in the collection."
@@ -27,7 +27,7 @@ class DrsPart(BaseModel):
     """Whether the collection is required for the DRS specification or not."""
 
     def __str__(self) -> str:
-        return self.collection_id
+        return self.source_collection
 
 
 class DrsSpecification(BaseModel):

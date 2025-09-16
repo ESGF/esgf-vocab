@@ -223,13 +223,13 @@ class DrsValidator(DrsApplication):
             matching_terms = projects.valid_term_in_collection(
                 term,
                 self.project_id,
-                part.collection_id)
+                part.source_collection)
             if len(matching_terms) > 0:
                 return True
             else:
                 return False
         else:
-            return projects.valid_term(term, self.project_id, part.collection_id,
+            return projects.valid_term(term, self.project_id, part.source_collection,
                                        part.source_collection_term).validated
 
     def _create_report(self,

@@ -177,7 +177,7 @@ class DrsGenerator(DrsApplication):
         part_position: int = 0
         for part in specs.parts:
             part_position += 1
-            collection_id = part.collection_id
+            collection_id = part.source_collection
             if collection_id in mapping:
                 part_value = mapping[collection_id]
                 if has_to_valid_terms:
@@ -218,12 +218,12 @@ class DrsGenerator(DrsApplication):
             for part in specs.parts:
                 if part.source_collection_term is None:
                     matching_terms.extend(projects.valid_term_in_collection(term, self.project_id,
-                                                                            part.collection_id))
+                                                                            part.source_collection))
                 else:
-                    if projects.valid_term(term, self.project_id, part.collection_id,
+                    if projects.valid_term(term, self.project_id, part.source_collection,
                                            part.source_collection_term).validated:
                         matching_terms.append(MatchingTerm(project_id=self.project_id,
-                                                           collection_id=part.collection_id,
+                                                           collection_id=part.source_collection,
                                                            term_id=part.source_collection_term))
             for matching_term in matching_terms:
                 if matching_term.collection_id not in collection_terms_mapping:
