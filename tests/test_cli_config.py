@@ -326,7 +326,7 @@ class TestConfigCLI:
             assert "cmip6" in result.stdout
             assert "cmip6plus" in result.stdout
             assert "input4mip" in result.stdout
-            assert "obs4mip" in result.stdout
+            assert "obs4ref" in result.stdout
 
     def test_list_projects(self):
         """Test listing projects in active configuration."""
@@ -670,11 +670,11 @@ class TestConfigCLI:
     def test_config_add_multiple_projects(self):
         """Test adding multiple projects using the simple 'add' command."""
         with self._patch_service_calls():
-            result = self.runner.invoke(app, ["add", "input4mip", "obs4mip", "cordex-cmip6"])
+            result = self.runner.invoke(app, ["add", "input4mip", "obs4ref", "cordex-cmip6"])
 
             assert result.exit_code == 0
             assert "✓ Added project input4mip" in result.stdout
-            assert "✓ Added project obs4mip" in result.stdout
+            assert "✓ Added project obs4ref" in result.stdout
             assert "✓ Added project cordex-cmip6" in result.stdout
             assert "Successfully added 3 project(s)" in result.stdout
             assert "✓ Successfully installed CVs for all added projects" in result.stdout
@@ -685,7 +685,7 @@ class TestConfigCLI:
 
             project_names = [p["project_name"] for p in data["projects"]]
             assert "input4mip" in project_names
-            assert "obs4mip" in project_names
+            assert "obs4ref" in project_names
             assert "cordex-cmip6" in project_names
             assert len(data["projects"]) == 5  # Original 2 + 3 new
 
@@ -701,11 +701,11 @@ class TestConfigCLI:
     def test_config_add_mixed_valid_invalid(self):
         """Test adding a mix of valid, invalid, and existing projects."""
         with self._patch_service_calls():
-            result = self.runner.invoke(app, ["add", "input4mip", "cmip6", "invalid_project", "obs4mip"])
+            result = self.runner.invoke(app, ["add", "input4mip", "cmip6", "invalid_project", "obs4ref"])
 
             assert result.exit_code == 0
             assert "✓ Added project input4mip" in result.stdout
-            assert "✓ Added project obs4mip" in result.stdout
+            assert "✓ Added project obs4ref" in result.stdout
             assert "⚠ Project 'cmip6' already exists - skipping" in result.stdout
             assert "✗ Invalid project 'invalid_project'" in result.stdout
             assert "Successfully added 2 project(s)" in result.stdout
@@ -870,13 +870,13 @@ class TestConfigCLI:
             assert result.exit_code == 0
             assert "Available Projects (Configuration: default)" in result.stdout
             assert "✓ Active" in result.stdout  # cmip6 and cmip6plus should be active
-            assert "○ Available" in result.stdout  # input4mip, obs4mip should be available
+            assert "○ Available" in result.stdout  # input4mip, obs4ref should be available
 
             # Check specific projects
             assert "cmip6" in result.stdout
             assert "cmip6plus" in result.stdout
             assert "input4mip" in result.stdout
-            assert "obs4mip" in result.stdout
+            assert "obs4ref" in result.stdout
             assert "cordex-cmip6" in result.stdout
 
             # Check summary
@@ -974,7 +974,7 @@ class TestConfigCLI:
             result = self.runner.invoke(app, ["add-project", "input4mip"])
             assert result.exit_code == 0
 
-            result = self.runner.invoke(app, ["add-project", "obs4mip"])
+            result = self.runner.invoke(app, ["add-project", "obs4ref"])
             assert result.exit_code == 0
 
             # 3. Add custom project
@@ -988,7 +988,7 @@ class TestConfigCLI:
             assert "cmip6" in result.stdout
             assert "cmip6plus" in result.stdout
             assert "input4mip" in result.stdout
-            assert "obs4mip" in result.stdout
+            assert "obs4ref" in result.stdout
             assert "custom" in result.stdout
 
             # 5. Update a project
@@ -996,12 +996,12 @@ class TestConfigCLI:
             assert result.exit_code == 0
 
             # 6. Remove a project
-            result = self.runner.invoke(app, ["remove-project", "obs4mip", "--force"])
+            result = self.runner.invoke(app, ["remove-project", "obs4ref", "--force"])
             assert result.exit_code == 0
 
             # 7. Verify final state
             result = self.runner.invoke(app, ["list-projects"])
-            assert "obs4mip" not in result.stdout
+            assert "obs4ref" not in result.stdout
             assert "custom" in result.stdout
 
             # 8. Check config file directly
@@ -1010,7 +1010,7 @@ class TestConfigCLI:
                 data = toml.load(f)
 
             project_names = [p["project_name"] for p in data["projects"]]
-            assert "obs4mip" not in project_names
+            assert "obs4ref" not in project_names
             assert "custom" in project_names
 
             custom_project = next((p for p in data["projects"] if p["project_name"] == "custom"), None)
@@ -1033,9 +1033,9 @@ class TestConfigCLI:
             assert re.search(r"0/\d+ projects active", result.stdout)
 
             # 3. Add multiple projects at once
-            result = self.runner.invoke(app, ["add", "cmip6", "input4mip", "obs4mip"])
+            result = self.runner.invoke(app, ["add", "cmip6", "input4mip", "obs4ref"])
             assert result.exit_code == 0
-            assert "Successfully added 3 project(s): cmip6, input4mip, obs4mip" in result.stdout
+            assert "Successfully added 3 project(s): cmip6, input4mip, obs4ref" in result.stdout
 
             # 4. Check projects were added
             result = self.runner.invoke(app, ["avail"])
@@ -1052,9 +1052,9 @@ class TestConfigCLI:
             assert re.search(r"5/\d+ projects active", result.stdout)
 
             # 7. Remove some projects
-            result = self.runner.invoke(app, ["rm", "obs4mip", "cordex-cmip6", "--force"])
+            result = self.runner.invoke(app, ["rm", "obs4ref", "cordex-cmip6", "--force"])
             assert result.exit_code == 0
-            assert "Successfully removed 2 project(s): obs4mip, cordex-cmip6" in result.stdout
+            assert "Successfully removed 2 project(s): obs4ref, cordex-cmip6" in result.stdout
 
             # 8. Check final state
             result = self.runner.invoke(app, ["avail"])
@@ -1069,7 +1069,7 @@ class TestConfigCLI:
             assert "cmip6" in project_names
             assert "cmip6plus" in project_names
             assert "input4mip" in project_names
-            assert "obs4mip" not in project_names
+            assert "obs4ref" not in project_names
             assert "cordex-cmip6" not in project_names
             assert len(project_names) == 3
 

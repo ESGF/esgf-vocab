@@ -46,12 +46,12 @@ class ServiceSettings(BaseModel):
             "local_path": "repos/Input4MIP_CVs",
             "db_path": "dbs/input4mips.sqlite",
         },
-        "obs4mip": {
-            "project_name": "obs4mip",
-            "github_repo": "https://github.com/ltroussellier/obs4MIPs_CVs",
+        "obs4ref": {
+            "project_name": "obs4ref",
+            "github_repo": "https://github.com/Climate-REF/Obs4REF_CVs",
             "branch": "main",
-            "local_path": "repos/obs4MIPs_CVs",
-            "db_path": "dbs/obs4mips.sqlite",
+            "local_path": "repos/obs4REF_CVs",
+            "db_path": "dbs/obs4ref.sqlite",
         },
         "cordex-cmip6": {
             "project_name": "cordex-cmip6",
