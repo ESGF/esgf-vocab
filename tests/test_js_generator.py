@@ -161,7 +161,7 @@ json_example = json.loads(
 """)
 
 
-def test_compliance() -> None:
+def test_cmip6_compliance() -> None:
     json_schema = jsg.generate_json_schema('cmip6')
     validate(instance=json_example, schema=json_schema)
 
