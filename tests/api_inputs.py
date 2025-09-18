@@ -138,7 +138,7 @@ class GenerationIssueChecker:
 DEFAULT_DD = "variable"
 DEFAULT_PROJECT = "cmip6plus"
 DEFAULT_COLLECTION = "variable_id"
-PROJECT_IDS = ["cmip6plus", "cmip6"]
+PROJECT_IDS = ["cmip6plus", "cmip6", "obs4ref"]
 LEN_PROJECTS = len(PROJECT_IDS)
 LEN_COLLECTIONS: dict[str, dict[str, int]] = {
     "cmip6plus": {
