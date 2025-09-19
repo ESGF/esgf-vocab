@@ -29,7 +29,7 @@ from esgvoc.api.data_descriptors.model_new import Model
 from esgvoc.api.data_descriptors.native_horizontal_grid_new import \
     NativeHorizontalGrid
 from esgvoc.api.data_descriptors.native_vertical_grid_new import \
-    NativeVertivalGrid
+    NativeVerticalGrid
 from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.physic_index import PhysicIndex
 from esgvoc.api.data_descriptors.product import Product
@@ -94,7 +94,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "model_component_new": EMDModelComponent,
     "model_new": Model,
     "native_horizontal_grid_new": NativeHorizontalGrid,
-    "native_vertical_grid_new": NativeVertivalGrid,
+    "native_vertical_grid_new": NativeVerticalGrid,
     "reference_new": Reference,
     "resolution_new": EMDResolution,
     "unit_new": Unit,
