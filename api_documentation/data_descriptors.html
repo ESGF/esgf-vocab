@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -388,6 +388,13 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Activity.accept"><code class="docutils literal notranslate"><span class="pre">Activity.accept()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Archive"><code class="docutils literal notranslate"><span class="pre">Archive</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Archive.drs_name"><code class="docutils literal notranslate"><span class="pre">Archive.drs_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Archive.id"><code class="docutils literal notranslate"><span class="pre">Archive.id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Archive.type"><code class="docutils literal notranslate"><span class="pre">Archive.type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Archive.accept"><code class="docutils literal notranslate"><span class="pre">Archive.accept()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.AreaLabel"><code class="docutils literal notranslate"><span class="pre">AreaLabel</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.AreaLabel.description"><code class="docutils literal notranslate"><span class="pre">AreaLabel.description</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.AreaLabel.drs_name"><code class="docutils literal notranslate"><span class="pre">AreaLabel.drs_name</span></code></a></li>
@@ -413,6 +420,13 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.BrandedVariable.separator"><code class="docutils literal notranslate"><span class="pre">BrandedVariable.separator</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.BrandedVariable.type"><code class="docutils literal notranslate"><span class="pre">BrandedVariable.type</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.BrandedVariable.accept"><code class="docutils literal notranslate"><span class="pre">BrandedVariable.accept()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.CitationUrl"><code class="docutils literal notranslate"><span class="pre">CitationUrl</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.CitationUrl.id"><code class="docutils literal notranslate"><span class="pre">CitationUrl.id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.CitationUrl.regex"><code class="docutils literal notranslate"><span class="pre">CitationUrl.regex</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.CitationUrl.type"><code class="docutils literal notranslate"><span class="pre">CitationUrl.type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.CitationUrl.accept"><code class="docutils literal notranslate"><span class="pre">CitationUrl.accept()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Consortium"><code class="docutils literal notranslate"><span class="pre">Consortium</span></code></a><ul class="nav section-nav flex-column">
@@ -561,14 +575,27 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.area_label"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.area_label</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.bn_status"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.bn_status</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.branding_suffix_name"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.branding_suffix_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cell_measures"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.cell_measures</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cell_methods"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.cell_methods</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cf_sn_status"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.cf_sn_status</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cf_standard_name"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.cf_standard_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cf_units"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.cf_units</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.description"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.description</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.dimensions"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.dimensions</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.drs_name"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.drs_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.history"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.history</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.horizontal_label"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.horizontal_label</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.id"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.id</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.label"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.label</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.positive_direction"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.positive_direction</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.realm"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.realm</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.temporal_label"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.temporal_label</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.type"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.type</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.variable"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.variable</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.var_def_qualifier"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.var_def_qualifier</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.variable_root_name"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.variable_root_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.vertical_label"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.vertical_label</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.accept"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.accept()</span></code></a></li>
 </ul>
 </li>
@@ -667,6 +694,13 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Realm.name"><code class="docutils literal notranslate"><span class="pre">Realm.name</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Realm.type"><code class="docutils literal notranslate"><span class="pre">Realm.type</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Realm.accept"><code class="docutils literal notranslate"><span class="pre">Realm.accept()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Regex"><code class="docutils literal notranslate"><span class="pre">Regex</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Regex.id"><code class="docutils literal notranslate"><span class="pre">Regex.id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Regex.regex"><code class="docutils literal notranslate"><span class="pre">Regex.regex</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Regex.type"><code class="docutils literal notranslate"><span class="pre">Regex.type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Regex.accept"><code class="docutils literal notranslate"><span class="pre">Regex.accept()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Region"><code class="docutils literal notranslate"><span class="pre">Region</span></code></a><ul class="nav section-nav flex-column">
@@ -781,8 +815,8 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.VerticalLabel"><code class="docutils literal notranslate"><span class="pre">VerticalLabel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.VerticalLabel.drs_name"><code class="docutils literal notranslate"><span class="pre">VerticalLabel.drs_name</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.VerticalLabel.id"><code class="docutils literal notranslate"><span class="pre">VerticalLabel.id</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.VerticalLabel.regex"><code class="docutils literal notranslate"><span class="pre">VerticalLabel.regex</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.VerticalLabel.type"><code class="docutils literal notranslate"><span class="pre">VerticalLabel.type</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.VerticalLabel.accept"><code class="docutils literal notranslate"><span class="pre">VerticalLabel.accept()</span></code></a></li>
 </ul>
@@ -946,6 +980,73 @@ document.write(`
 <dl class="py method">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Activity.accept">
 <span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><span class="pre">DataDescriptorVisitor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Activity.accept" title="Link to this definition">#</a></dt>
+<dd><p>Accept an term visitor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>visitor</strong> (<a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><em>DataDescriptorVisitor</em></a>) – The term visitor.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Depending on the visitor.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Archive">
+<em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">Archive</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Archive" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlainTermDataDescriptor</span></code></a></p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Archive&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;drs_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Drs Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;drs_name&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Archive.drs_name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">drs_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Archive.drs_name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Archive.id">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Archive.id" title="Link to this definition">#</a></dt>
+<dd><p>The identifier of the terms.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Archive.type">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Archive.type" title="Link to this definition">#</a></dt>
+<dd><p>The data descriptor to which the term belongs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Archive.accept">
+<span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><span class="pre">DataDescriptorVisitor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Archive.accept" title="Link to this definition">#</a></dt>
 <dd><p>Accept an term visitor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1332,6 +1433,74 @@ see [this paper draft](<a class="reference external" href="https://docs.google.c
 <dl class="py method">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.BrandedVariable.accept">
 <span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><span class="pre">DataDescriptorVisitor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.BrandedVariable.accept" title="Link to this definition">#</a></dt>
+<dd><p>Accept an term visitor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>visitor</strong> (<a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><em>DataDescriptorVisitor</em></a>) – The term visitor.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Depending on the visitor.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.CitationUrl">
+<em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">CitationUrl</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.CitationUrl" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatternTermDataDescriptor</span></code></a></p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CitationUrl&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;regex&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Regex&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;regex&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.CitationUrl.id">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.CitationUrl.id" title="Link to this definition">#</a></dt>
+<dd><p>The identifier of the terms.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.CitationUrl.regex">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">regex</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.CitationUrl.regex" title="Link to this definition">#</a></dt>
+<dd><p>The regular expression.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.CitationUrl.type">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.CitationUrl.type" title="Link to this definition">#</a></dt>
+<dd><p>The data descriptor to which the term belongs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.CitationUrl.accept">
+<span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><span class="pre">DataDescriptorVisitor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.CitationUrl.accept" title="Link to this definition">#</a></dt>
 <dd><p>Accept an term visitor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2097,6 +2266,9 @@ see [this paper draft](<a class="reference external" href="https://docs.google.c
 <span class="w">      </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="p">{</span>
@@ -2107,6 +2279,9 @@ see [this paper draft](<a class="reference external" href="https://docs.google.c
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
 <span class="w">            </span><span class="p">},</span>
@@ -2198,7 +2373,7 @@ see [this paper draft](<a class="reference external" href="https://docs.google.c
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Experiment.end_year">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">end_year</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Experiment.end_year" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">end_year</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Experiment.end_year" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -2239,7 +2414,7 @@ see [this paper draft](<a class="reference external" href="https://docs.google.c
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Experiment.start_year">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_year</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Experiment.start_year" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_year</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Experiment.start_year" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -2992,11 +3167,44 @@ see [this paper draft](<a class="reference external" href="https://docs.google.c
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Drs Name&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;cf_standard_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CF standard name, e.g., &#39;air_temperature&#39;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cf Standard Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;cf_units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CF standard units, e.g., &#39;K&#39;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cf Units&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;cf_sn_status&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CF standard name status, e.g., &#39;approved&#39;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cf Sn Status&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;variable_root_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Variable root name, e.g., &#39;ta&#39;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Variable Root Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;var_def_qualifier&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Variable definition qualifier&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Var Def Qualifier&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;branding_suffix_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Branding suffix, e.g., &#39;tavg-p19-hxy-air&#39;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Branding Suffix Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Human-readable description&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Description&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;dimensions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NetCDF dimensions&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">         </span><span class="p">},</span>
@@ -3004,15 +3212,57 @@ see [this paper draft](<a class="reference external" href="https://docs.google.c
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;cell_methods&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CF cell_methods attribute&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cell Methods&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;variable&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Variable&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;cell_measures&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CF cell_measures attribute&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cell Measures&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Label&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;history&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Processing history&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;History&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;realm&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Earth system realm, e.g., &#39;atmos&#39;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Realm&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;temporal_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Temporal label, e.g., &#39;tavg&#39;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Temporal Label&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;vertical_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Vertical label, e.g., &#39;p19&#39;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Vertical Label&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;horizontal_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Horizontal label, e.g., &#39;hxy&#39;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Horizontal Label&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;area_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Area label, e.g., &#39;air&#39;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Area Label&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;bn_status&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Branded variable status, e.g., &#39;accepted&#39;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bn Status&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;positive_direction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Positive direction for the variable&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Positive Direction&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
@@ -3021,33 +3271,99 @@ see [this paper draft](<a class="reference external" href="https://docs.google.c
 <span class="w">      </span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="s2">&quot;drs_name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;cf_standard_name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;cf_units&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;cf_sn_status&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;variable_root_name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;branding_suffix_name&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="s2">&quot;description&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="s2">&quot;cell_methods&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="s2">&quot;variable&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="s2">&quot;label&quot;</span>
+<span class="w">      </span><span class="s2">&quot;dimensions&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;realm&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;temporal_label&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;vertical_label&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;horizontal_label&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;area_label&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;bn_status&quot;</span>
 <span class="w">   </span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.area_label">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">area_label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.area_label" title="Link to this definition">#</a></dt>
+<dd><p>Area label, e.g., ‘air’</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.bn_status">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bn_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.bn_status" title="Link to this definition">#</a></dt>
+<dd><p>Branded variable status, e.g., ‘accepted’</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.branding_suffix_name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">branding_suffix_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.branding_suffix_name" title="Link to this definition">#</a></dt>
+<dd><p>Branding suffix, e.g., ‘tavg-p19-hxy-air’</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.cell_measures">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cell_measures</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cell_measures" title="Link to this definition">#</a></dt>
+<dd><p>CF cell_measures attribute</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.cell_methods">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cell_methods</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cell_methods" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cell_methods</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cell_methods" title="Link to this definition">#</a></dt>
+<dd><p>CF cell_methods attribute</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.cf_sn_status">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cf_sn_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cf_sn_status" title="Link to this definition">#</a></dt>
+<dd><p>CF standard name status, e.g., ‘approved’</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.cf_standard_name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cf_standard_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cf_standard_name" title="Link to this definition">#</a></dt>
+<dd><p>CF standard name, e.g., ‘air_temperature’</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.cf_units">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cf_units</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cf_units" title="Link to this definition">#</a></dt>
+<dd><p>CF standard units, e.g., ‘K’</p>
+</dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.description">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.description" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Human-readable description</p>
+</dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.dimensions">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dimensions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.dimensions" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dimensions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.dimensions" title="Link to this definition">#</a></dt>
+<dd><p>NetCDF dimensions</p>
+</dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.drs_name">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">drs_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.drs_name" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.history">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">history</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.history" title="Link to this definition">#</a></dt>
+<dd><p>Processing history</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.horizontal_label">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">horizontal_label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.horizontal_label" title="Link to this definition">#</a></dt>
+<dd><p>Horizontal label, e.g., ‘hxy’</p>
+</dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.id">
@@ -3056,9 +3372,22 @@ see [this paper draft](<a class="reference external" href="https://docs.google.c
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.label">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.label" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.positive_direction">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">positive_direction</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.positive_direction" title="Link to this definition">#</a></dt>
+<dd><p>Positive direction for the variable</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.realm">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">realm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.realm" title="Link to this definition">#</a></dt>
+<dd><p>Earth system realm, e.g., ‘atmos’</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.temporal_label">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">temporal_label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.temporal_label" title="Link to this definition">#</a></dt>
+<dd><p>Temporal label, e.g., ‘tavg’</p>
+</dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.type">
@@ -3067,9 +3396,22 @@ see [this paper draft](<a class="reference external" href="https://docs.google.c
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.variable">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.variable" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.var_def_qualifier">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">var_def_qualifier</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.var_def_qualifier" title="Link to this definition">#</a></dt>
+<dd><p>Variable definition qualifier</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.variable_root_name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variable_root_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.variable_root_name" title="Link to this definition">#</a></dt>
+<dd><p>Variable root name, e.g., ‘ta’</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.vertical_label">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vertical_label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.vertical_label" title="Link to this definition">#</a></dt>
+<dd><p>Vertical label, e.g., ‘p19’</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.KnownBrandedVariable.accept">
@@ -4076,6 +4418,74 @@ see [this paper draft](<a class="reference external" href="https://docs.google.c
 <dl class="py method">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Realm.accept">
 <span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><span class="pre">DataDescriptorVisitor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Realm.accept" title="Link to this definition">#</a></dt>
+<dd><p>Accept an term visitor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>visitor</strong> (<a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><em>DataDescriptorVisitor</em></a>) – The term visitor.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Depending on the visitor.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Regex">
+<em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">Regex</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Regex" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatternTermDataDescriptor</span></code></a></p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Regex&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;regex&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Regex&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;regex&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Regex.id">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Regex.id" title="Link to this definition">#</a></dt>
+<dd><p>The identifier of the terms.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Regex.regex">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">regex</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Regex.regex" title="Link to this definition">#</a></dt>
+<dd><p>The regular expression.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Regex.type">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Regex.type" title="Link to this definition">#</a></dt>
+<dd><p>The data descriptor to which the term belongs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Regex.accept">
+<span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><span class="pre">DataDescriptorVisitor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Regex.accept" title="Link to this definition">#</a></dt>
 <dd><p>Accept an term visitor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -5270,7 +5680,7 @@ For details, see <a class="reference internal" href="#esgvoc.api.data_descriptor
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.VerticalLabel">
 <em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">VerticalLabel</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.VerticalLabel" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatternTermDataDescriptor</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlainTermDataDescriptor</span></code></a></p>
 <p>Vertical label.</p>
 <p>This label provides information about the vertical sampling of a given dataset.
 For a list of allowed values, see
@@ -5294,8 +5704,8 @@ Vertical labels must not contain the separator used when constructing the brande
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;regex&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Regex&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;drs_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Drs Name&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
@@ -5303,21 +5713,20 @@ Vertical labels must not contain the separator used when constructing the brande
 <span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="s2">&quot;regex&quot;</span>
+<span class="w">      </span><span class="s2">&quot;drs_name&quot;</span>
 <span class="w">   </span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.VerticalLabel.drs_name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">drs_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.VerticalLabel.drs_name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.VerticalLabel.id">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.VerticalLabel.id" title="Link to this definition">#</a></dt>
 <dd><p>The identifier of the terms.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.VerticalLabel.regex">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">regex</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.VerticalLabel.regex" title="Link to this definition">#</a></dt>
-<dd><p>The regular expression.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -5906,6 +6315,13 @@ Vertical labels must not contain the separator used when constructing the brande
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Activity.accept"><code class="docutils literal notranslate"><span class="pre">Activity.accept()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Archive"><code class="docutils literal notranslate"><span class="pre">Archive</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Archive.drs_name"><code class="docutils literal notranslate"><span class="pre">Archive.drs_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Archive.id"><code class="docutils literal notranslate"><span class="pre">Archive.id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Archive.type"><code class="docutils literal notranslate"><span class="pre">Archive.type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Archive.accept"><code class="docutils literal notranslate"><span class="pre">Archive.accept()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.AreaLabel"><code class="docutils literal notranslate"><span class="pre">AreaLabel</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.AreaLabel.description"><code class="docutils literal notranslate"><span class="pre">AreaLabel.description</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.AreaLabel.drs_name"><code class="docutils literal notranslate"><span class="pre">AreaLabel.drs_name</span></code></a></li>
@@ -5931,6 +6347,13 @@ Vertical labels must not contain the separator used when constructing the brande
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.BrandedVariable.separator"><code class="docutils literal notranslate"><span class="pre">BrandedVariable.separator</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.BrandedVariable.type"><code class="docutils literal notranslate"><span class="pre">BrandedVariable.type</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.BrandedVariable.accept"><code class="docutils literal notranslate"><span class="pre">BrandedVariable.accept()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.CitationUrl"><code class="docutils literal notranslate"><span class="pre">CitationUrl</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.CitationUrl.id"><code class="docutils literal notranslate"><span class="pre">CitationUrl.id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.CitationUrl.regex"><code class="docutils literal notranslate"><span class="pre">CitationUrl.regex</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.CitationUrl.type"><code class="docutils literal notranslate"><span class="pre">CitationUrl.type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.CitationUrl.accept"><code class="docutils literal notranslate"><span class="pre">CitationUrl.accept()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Consortium"><code class="docutils literal notranslate"><span class="pre">Consortium</span></code></a><ul class="nav section-nav flex-column">
@@ -6079,14 +6502,27 @@ Vertical labels must not contain the separator used when constructing the brande
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.area_label"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.area_label</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.bn_status"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.bn_status</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.branding_suffix_name"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.branding_suffix_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cell_measures"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.cell_measures</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cell_methods"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.cell_methods</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cf_sn_status"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.cf_sn_status</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cf_standard_name"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.cf_standard_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.cf_units"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.cf_units</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.description"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.description</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.dimensions"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.dimensions</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.drs_name"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.drs_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.history"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.history</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.horizontal_label"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.horizontal_label</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.id"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.id</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.label"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.label</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.positive_direction"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.positive_direction</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.realm"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.realm</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.temporal_label"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.temporal_label</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.type"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.type</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.variable"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.variable</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.var_def_qualifier"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.var_def_qualifier</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.variable_root_name"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.variable_root_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.vertical_label"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.vertical_label</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.KnownBrandedVariable.accept"><code class="docutils literal notranslate"><span class="pre">KnownBrandedVariable.accept()</span></code></a></li>
 </ul>
 </li>
@@ -6185,6 +6621,13 @@ Vertical labels must not contain the separator used when constructing the brande
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Realm.name"><code class="docutils literal notranslate"><span class="pre">Realm.name</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Realm.type"><code class="docutils literal notranslate"><span class="pre">Realm.type</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Realm.accept"><code class="docutils literal notranslate"><span class="pre">Realm.accept()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Regex"><code class="docutils literal notranslate"><span class="pre">Regex</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Regex.id"><code class="docutils literal notranslate"><span class="pre">Regex.id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Regex.regex"><code class="docutils literal notranslate"><span class="pre">Regex.regex</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Regex.type"><code class="docutils literal notranslate"><span class="pre">Regex.type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Regex.accept"><code class="docutils literal notranslate"><span class="pre">Regex.accept()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Region"><code class="docutils literal notranslate"><span class="pre">Region</span></code></a><ul class="nav section-nav flex-column">
@@ -6299,8 +6742,8 @@ Vertical labels must not contain the separator used when constructing the brande
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.VerticalLabel"><code class="docutils literal notranslate"><span class="pre">VerticalLabel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.VerticalLabel.drs_name"><code class="docutils literal notranslate"><span class="pre">VerticalLabel.drs_name</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.VerticalLabel.id"><code class="docutils literal notranslate"><span class="pre">VerticalLabel.id</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.VerticalLabel.regex"><code class="docutils literal notranslate"><span class="pre">VerticalLabel.regex</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.VerticalLabel.type"><code class="docutils literal notranslate"><span class="pre">VerticalLabel.type</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.VerticalLabel.accept"><code class="docutils literal notranslate"><span class="pre">VerticalLabel.accept()</span></code></a></li>
 </ul>

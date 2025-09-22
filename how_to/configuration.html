@@ -1,0 +1,812 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Configuration &#8212; ESGVOC  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how_to/configuration';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">ESGVOC  documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Welcome</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/terms.html">Controlled vocabulary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/cached_database.html">Database and functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/api.html">ESGVOC API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/cli.html">Command Line Interface (CLI)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">How to</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="get.html">Get</a></li>
+<li class="toctree-l1"><a class="reference internal" href="valid.html">Valid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validate_drs.html">Valid DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generate_drs.html">Generate DRS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../guides/basics_esgvoc.html">ESGVOC library tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/basics_drs.html">DRS applications tutorial</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/universe.html">Universe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/projects.html">Projects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/project_specs.html">Project specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/data_descriptors.html">Data descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/drs.html">DRS applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/jsg.html">Json schema generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_documentation/miscellaneous.html">Miscellaneous</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/ESGF/esgf-vocab" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/ESGF/esgf-vocab/issues/new?title=Issue%20on%20page%20%2Fhow_to/configuration.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/how_to/configuration.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Configuration</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-configurations">Understanding Configurations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#default-projects-available">Default Projects Available</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-configuration-commands">Basic Configuration Commands</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-available-projects">Viewing Available Projects</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-empty-configurations">Creating Empty Configurations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-projects">Adding Projects</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-projects">Removing Projects</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-configuration-management">Advanced Configuration Management</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listing-configurations">Listing Configurations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-new-configurations">Creating New Configurations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#switching-configurations">Switching Configurations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-project-settings">Managing Project Settings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-configuration-editing">Manual Configuration Editing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-configurations">Removing Configurations</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-workflows">Configuration Workflows</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-a-development-environment">Setting Up a Development Environment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-multiple-project-environments">Setting Up Multiple Project Environments</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cleaning-up-old-projects">Cleaning Up Old Projects</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-file-location">Configuration File Location</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-not-found">Configuration Not Found</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#project-already-exists">Project Already Exists</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reset-to-clean-state">Reset to Clean State</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h1>
+<p>The configuration system allows you to manage different project setups and easily switch between them. Each configuration defines which projects are active and where their repositories and databases are stored.</p>
+<section id="understanding-configurations">
+<h2>Understanding Configurations<a class="headerlink" href="#understanding-configurations" title="Link to this heading">#</a></h2>
+<p>A configuration contains:</p>
+<ul class="simple">
+<li><p><strong>Universe settings</strong>: Global WCRP vocabulary repository settings</p></li>
+<li><p><strong>Project settings</strong>: Individual project repositories (CMIP6, Input4MIPs, etc.)</p></li>
+</ul>
+</section>
+<section id="default-projects-available">
+<h2>Default Projects Available<a class="headerlink" href="#default-projects-available" title="Link to this heading">#</a></h2>
+<p>ESGVoc comes with several pre-configured projects that can be easily added:</p>
+<ul class="simple">
+<li><p><strong>cmip6</strong>: CMIP6 Controlled Vocabularies</p></li>
+<li><p><strong>cmip6plus</strong>: CMIP6Plus Controlled Vocabularies</p></li>
+<li><p><strong>input4mip</strong>: Input4MIPs Controlled Vocabularies</p></li>
+<li><p><strong>obs4mip</strong>: Obs4MIPs Controlled Vocabularies</p></li>
+<li><p><strong>cordex-cmip6</strong>: CORDEX-CMIP6 Controlled Vocabularies</p></li>
+</ul>
+</section>
+<section id="basic-configuration-commands">
+<h2>Basic Configuration Commands<a class="headerlink" href="#basic-configuration-commands" title="Link to this heading">#</a></h2>
+<section id="viewing-available-projects">
+<h3>Viewing Available Projects<a class="headerlink" href="#viewing-available-projects" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Show all available projects and their status in current config</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>avail
+
+<span class="c1"># Check projects in a specific configuration</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>avail<span class="w"> </span>--config<span class="w"> </span>my_config
+</pre></div>
+</div>
+<p>This displays a table showing which projects are active (✓) and which are available to add (○).</p>
+</section>
+<section id="creating-empty-configurations">
+<h3>Creating Empty Configurations<a class="headerlink" href="#creating-empty-configurations" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create empty configuration and switch to it</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>init<span class="w"> </span>minimal_setup
+
+<span class="c1"># Create empty configuration but stay on current one</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>init<span class="w"> </span>test_config<span class="w"> </span>--no-switch
+</pre></div>
+</div>
+<p>An empty configuration contains only universe settings with no projects, allowing you to add projects selectively.</p>
+</section>
+<section id="adding-projects">
+<h3>Adding Projects<a class="headerlink" href="#adding-projects" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add single project to current configuration</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>add<span class="w"> </span>input4mip
+
+<span class="c1"># Add multiple projects at once</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>add<span class="w"> </span>input4mip<span class="w"> </span>obs4mip<span class="w"> </span>cordex-cmip6
+
+<span class="c1"># Add projects to specific configuration</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>add<span class="w"> </span>cmip6<span class="w"> </span>--config<span class="w"> </span>production
+</pre></div>
+</div>
+<p>When you add projects:</p>
+<ol class="arabic simple">
+<li><p>The project is added to the configuration using default settings</p></li>
+<li><p>The project’s controlled vocabularies are automatically downloaded</p></li>
+<li><p>Local repositories and databases are set up</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Projects that already exist in the configuration will be skipped with a warning.</p>
+</div>
+</section>
+<section id="removing-projects">
+<h3>Removing Projects<a class="headerlink" href="#removing-projects" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Remove single project (with confirmation)</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>rm<span class="w"> </span>input4mip
+
+<span class="c1"># Remove multiple projects at once</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>rm<span class="w"> </span>input4mip<span class="w"> </span>obs4mip<span class="w"> </span>cordex-cmip6
+
+<span class="c1"># Remove without confirmation prompt</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>rm<span class="w"> </span>input4mip<span class="w"> </span>--force
+
+<span class="c1"># Remove from configuration but keep local files</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>rm<span class="w"> </span>input4mip<span class="w"> </span>--keep-files
+</pre></div>
+</div>
+<p>When you remove projects:</p>
+<ol class="arabic simple">
+<li><p>The project is removed from the configuration</p></li>
+<li><p>Local repository directory is deleted (unless <code class="docutils literal notranslate"><span class="pre">--keep-files</span></code>)</p></li>
+<li><p>Database file is deleted (unless <code class="docutils literal notranslate"><span class="pre">--keep-files</span></code>)</p></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>By default, removing a project deletes all its local files. Use <code class="docutils literal notranslate"><span class="pre">--keep-files</span></code> if you want to preserve the downloaded data.</p>
+</div>
+</section>
+</section>
+<section id="advanced-configuration-management">
+<h2>Advanced Configuration Management<a class="headerlink" href="#advanced-configuration-management" title="Link to this heading">#</a></h2>
+<section id="listing-configurations">
+<h3>Listing Configurations<a class="headerlink" href="#listing-configurations" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List all available configurations</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>list
+
+<span class="c1"># Show current configuration content</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>show
+
+<span class="c1"># Show specific configuration content</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>show<span class="w"> </span>my_config
+</pre></div>
+</div>
+</section>
+<section id="creating-new-configurations">
+<h3>Creating New Configurations<a class="headerlink" href="#creating-new-configurations" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create configuration based on default settings</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>create<span class="w"> </span>production
+
+<span class="c1"># Create configuration based on existing one</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>create<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--base<span class="w"> </span>production
+
+<span class="c1"># Create and immediately switch to it</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>create<span class="w"> </span>development<span class="w"> </span>--switch
+</pre></div>
+</div>
+</section>
+<section id="switching-configurations">
+<h3>Switching Configurations<a class="headerlink" href="#switching-configurations" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Switch to different configuration</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>switch<span class="w"> </span>production
+
+<span class="c1"># Check which configuration is currently active</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>list
+</pre></div>
+</div>
+</section>
+<section id="managing-project-settings">
+<h3>Managing Project Settings<a class="headerlink" href="#managing-project-settings" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List projects in current configuration</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>list-projects
+
+<span class="c1"># List projects in specific configuration</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>list-projects<span class="w"> </span>--config<span class="w"> </span>production
+
+<span class="c1"># Update project repository URL</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>update-project<span class="w"> </span>cmip6<span class="w"> </span>--repo<span class="w"> </span>https://github.com/new/repo
+
+<span class="c1"># Update project branch</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>update-project<span class="w"> </span>cmip6<span class="w"> </span>--branch<span class="w"> </span>new_branch
+
+<span class="c1"># Update multiple settings at once</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>update-project<span class="w"> </span>cmip6<span class="w"> </span>--repo<span class="w"> </span>https://github.com/new/repo<span class="w"> </span>--branch<span class="w"> </span>main
+</pre></div>
+</div>
+</section>
+<section id="manual-configuration-editing">
+<h3>Manual Configuration Editing<a class="headerlink" href="#manual-configuration-editing" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Edit current configuration in default editor</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>edit
+
+<span class="c1"># Edit specific configuration</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>edit<span class="w"> </span>production
+
+<span class="c1"># Use specific editor</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>edit<span class="w"> </span>--editor<span class="w"> </span>nano
+
+<span class="c1"># Modify settings via command line</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="s1">&#39;universe:branch=esgvoc_dev&#39;</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="s1">&#39;cmip6:github_repo=https://github.com/new/cmip6&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="removing-configurations">
+<h3>Removing Configurations<a class="headerlink" href="#removing-configurations" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Remove configuration (with confirmation)</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>remove<span class="w"> </span>test_config
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You cannot remove the “default” configuration, and removing the active configuration will automatically switch you to the default one.</p>
+</div>
+</section>
+</section>
+<section id="configuration-workflows">
+<h2>Configuration Workflows<a class="headerlink" href="#configuration-workflows" title="Link to this heading">#</a></h2>
+<section id="setting-up-a-development-environment">
+<h3>Setting Up a Development Environment<a class="headerlink" href="#setting-up-a-development-environment" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create empty development configuration</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>init<span class="w"> </span>dev
+
+<span class="c1"># Add only the projects you need</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>add<span class="w"> </span>cmip6<span class="w"> </span>input4mip
+
+<span class="c1"># Check what&#39;s active</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>avail
+</pre></div>
+</div>
+</section>
+<section id="setting-up-multiple-project-environments">
+<h3>Setting Up Multiple Project Environments<a class="headerlink" href="#setting-up-multiple-project-environments" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create minimal configuration for CMIP6 only</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>init<span class="w"> </span>cmip6_only
+esgvoc<span class="w"> </span>config<span class="w"> </span>add<span class="w"> </span>cmip6
+
+<span class="c1"># Create full configuration with all projects</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>init<span class="w"> </span>full_setup
+esgvoc<span class="w"> </span>config<span class="w"> </span>add<span class="w"> </span>cmip6<span class="w"> </span>cmip6plus<span class="w"> </span>input4mip<span class="w"> </span>obs4mip<span class="w"> </span>cordex-cmip6
+
+<span class="c1"># Switch between them as needed</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>switch<span class="w"> </span>cmip6_only
+esgvoc<span class="w"> </span>config<span class="w"> </span>switch<span class="w"> </span>full_setup
+</pre></div>
+</div>
+</section>
+<section id="cleaning-up-old-projects">
+<h3>Cleaning Up Old Projects<a class="headerlink" href="#cleaning-up-old-projects" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check what projects are currently active</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>avail
+
+<span class="c1"># Remove projects no longer needed (keeps files)</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>rm<span class="w"> </span>obs4mip<span class="w"> </span>cordex-cmip6<span class="w"> </span>--keep-files
+
+<span class="c1"># Or remove completely including files</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>rm<span class="w"> </span>obs4mip<span class="w"> </span>cordex-cmip6
+</pre></div>
+</div>
+</section>
+</section>
+<section id="configuration-file-location">
+<h2>Configuration File Location<a class="headerlink" href="#configuration-file-location" title="Link to this heading">#</a></h2>
+<p>Configuration files are stored in platform-specific directories:</p>
+<ul class="simple">
+<li><p><strong>Linux</strong>: <code class="docutils literal notranslate"><span class="pre">~/.config/esgvoc/</span></code></p></li>
+<li><p><strong>macOS</strong>: <code class="docutils literal notranslate"><span class="pre">~/Library/Application</span> <span class="pre">Support/esgvoc/</span></code></p></li>
+<li><p><strong>Windows</strong>: <code class="docutils literal notranslate"><span class="pre">%APPDATA%\\esgvoc\\</span></code></p></li>
+</ul>
+<p>The main registry file (<code class="docutils literal notranslate"><span class="pre">config_registry.toml</span></code>) tracks all configurations and which one is active.</p>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
+<section id="configuration-not-found">
+<h3>Configuration Not Found<a class="headerlink" href="#configuration-not-found" title="Link to this heading">#</a></h3>
+<p>If you get “Configuration not found” errors:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List available configurations</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>list
+
+<span class="c1"># Switch to default if needed</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>switch<span class="w"> </span>default
+</pre></div>
+</div>
+</section>
+<section id="project-already-exists">
+<h3>Project Already Exists<a class="headerlink" href="#project-already-exists" title="Link to this heading">#</a></h3>
+<p>When adding projects that already exist:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check current projects</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>list-projects
+
+<span class="c1"># Check all available projects and their status</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>avail
+</pre></div>
+</div>
+</section>
+<section id="reset-to-clean-state">
+<h3>Reset to Clean State<a class="headerlink" href="#reset-to-clean-state" title="Link to this heading">#</a></h3>
+<p>To start fresh:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create new empty configuration</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>init<span class="w"> </span>fresh<span class="w"> </span>--no-switch
+
+<span class="c1"># Remove old configuration</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>remove<span class="w"> </span>old_config
+
+<span class="c1"># Switch to clean setup</span>
+esgvoc<span class="w"> </span>config<span class="w"> </span>switch<span class="w"> </span>fresh
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-configurations">Understanding Configurations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#default-projects-available">Default Projects Available</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-configuration-commands">Basic Configuration Commands</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-available-projects">Viewing Available Projects</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-empty-configurations">Creating Empty Configurations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-projects">Adding Projects</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-projects">Removing Projects</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-configuration-management">Advanced Configuration Management</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listing-configurations">Listing Configurations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-new-configurations">Creating New Configurations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#switching-configurations">Switching Configurations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-project-settings">Managing Project Settings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-configuration-editing">Manual Configuration Editing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-configurations">Removing Configurations</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-workflows">Configuration Workflows</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-a-development-environment">Setting Up a Development Environment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-multiple-project-environments">Setting Up Multiple Project Environments</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cleaning-up-old-projects">Cleaning Up Old Projects</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-file-location">Configuration File Location</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-not-found">Configuration Not Found</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#project-already-exists">Project Already Exists</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reset-to-clean-state">Reset to Clean State</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By S. Gardoll, G. Levavasseur, L. Troussellier.
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, CNRS (IPSL/ESPRI).
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
