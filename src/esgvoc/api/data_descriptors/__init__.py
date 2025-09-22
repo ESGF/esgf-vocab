@@ -1,7 +1,9 @@
 from esgvoc.api.data_descriptors.activity import Activity
+from esgvoc.api.data_descriptors.archive import Archive
 from esgvoc.api.data_descriptors.area_label import AreaLabel
 from esgvoc.api.data_descriptors.branded_suffix import BrandedSuffix
 from esgvoc.api.data_descriptors.branded_variable import BrandedVariable
+from esgvoc.api.data_descriptors.citation_url import CitationUrl
 from esgvoc.api.data_descriptors.consortium import Consortium
 from esgvoc.api.data_descriptors.contact import Contact
 from esgvoc.api.data_descriptors.conventions import Convention
@@ -30,6 +32,7 @@ from esgvoc.api.data_descriptors.product import Product
 from esgvoc.api.data_descriptors.publication_status import PublicationStatus
 from esgvoc.api.data_descriptors.realisation_index import RealisationIndex
 from esgvoc.api.data_descriptors.realm import Realm
+from esgvoc.api.data_descriptors.regex import Regex
 from esgvoc.api.data_descriptors.region import Region
 from esgvoc.api.data_descriptors.resolution import Resolution
 from esgvoc.api.data_descriptors.source import Source
@@ -90,4 +93,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "region": Region,
     "member_id": MemberId,
     "obs_type": ObsType,  # obs4Mips
+    "regex": Regex,
+    "citation_url": CitationUrl,
+    "archive": Archive,
 }

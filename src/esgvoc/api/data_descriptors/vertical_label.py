@@ -1,7 +1,7 @@
-from esgvoc.api.data_descriptors.data_descriptor import PatternTermDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
-class VerticalLabel(PatternTermDataDescriptor):
+class VerticalLabel(PlainTermDataDescriptor):
     """
     Vertical label.
 

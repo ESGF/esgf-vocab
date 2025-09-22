@@ -2,7 +2,7 @@
 
 ```{eval-rst}
 .. automodule:: esgvoc.api.search
-   :members: Item
+   :members: Item, MatchingTerm
    :imported-members:
    :member-order: groupwise
 .. autoclass:: esgvoc.api.search.ItemKind

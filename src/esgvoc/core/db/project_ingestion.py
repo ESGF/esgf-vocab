@@ -8,7 +8,7 @@ import esgvoc.core.constants
 import esgvoc.core.db.connection as db
 import esgvoc.core.service as service
 from esgvoc.core.data_handler import JsonLdResource
-from esgvoc.core.db.connection import DBConnection, read_json_file
+from esgvoc.core.db.connection import DBConnection, read_json_file, read_yaml_file
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import PCollection, Project, PTerm
 from esgvoc.core.exceptions import EsgvocDbError
@@ -88,7 +88,10 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                     term_kind_collection = term_kind
 
             except Exception as e:
-                _LOGGER.warning(f"Unable to read term {term_file_path}. Skip.\n{str(e)}")
+                _LOGGER.warning(
+                    f"Unable to read term file {term_file_path} in collection '{collection_id}' "
+                    + f"of project '{project.id}'. Skip.\n{str(e)}"
+                )
                 continue
             try:
                 term = PTerm(
@@ -99,14 +102,28 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                 )
                 project_db_session.add(term)
             except Exception as e:
+                # Enhanced error reporting for term validation failures
                 _LOGGER.error(
-                    f"fail to find term {term_id} in data descriptor {data_descriptor_id} "
-                    + f"for the collection {collection_id} of the project {project.id}. Skip {term_id}.\n{str(e)}"
+                    f"Failed to create term '{term_id}' in collection '{collection_id}' "
+                    + f"of project '{project.id}' from file '{term_file_path}': {str(e)}"
                 )
                 continue
     if term_kind_collection:
         collection.term_kind = term_kind_collection
-    project_db_session.add(collection)
+    else:
+        # If we couldn't determine a term kind, use PLAIN as default and log warning
+        _LOGGER.warning(
+            f"No term kind determined for collection '{collection_id}' in project '{project.id}'. "
+            + "Using PLAIN as default. This might indicate empty collection or processing errors."
+        )
+        collection.term_kind = TermKind.PLAIN
+
+    try:
+        project_db_session.add(collection)
+    except Exception as e:
+        error_context = f"Failed to add collection '{collection_id}' to project '{project.id}'"
+        _LOGGER.error(f"{error_context}: {str(e)}")
+        raise EsgvocDbError(f"{error_context}: {str(e)}") from e
 
 
 def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash: str):
@@ -119,15 +136,23 @@ def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash:
 
     with project_connection.create_session() as project_db_session:
         project_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.PROJECT_SPECS_FILENAME)
+        drs_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.DRS_SPECS_FILENAME)
+        catalog_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.CATALOG_SPECS_FILENAME)
         try:
-            project_json_specs = read_json_file(project_specs_file_path)
-            project_id = project_json_specs[esgvoc.core.constants.PROJECT_ID_JSON_KEY]
+            raw_project_specs = read_yaml_file(project_specs_file_path)
+            project_id = raw_project_specs[esgvoc.core.constants.PROJECT_ID_JSON_KEY]
+            raw_drs_specs = read_yaml_file(drs_specs_file_path)
+            project_specs = raw_project_specs
+            project_specs['drs_specs'] = raw_drs_specs
+            if catalog_specs_file_path.exists():
+                raw_catalog_specs = read_yaml_file(catalog_specs_file_path)
+                project_specs['catalog_specs'] = raw_catalog_specs
         except Exception as e:
-            msg = f"unable to read project specs file  {project_specs_file_path}"
+            msg = f"unable to read specs files in {project_dir_path}"
             _LOGGER.fatal(msg)
             raise EsgvocDbError(msg) from e
 
-        project = Project(id=project_id, specs=project_json_specs, git_hash=git_hash)
+        project = Project(id=project_id, specs=project_specs, git_hash=git_hash)
         project_db_session.add(project)
 
         for collection_dir_path in project_dir_path.iterdir():

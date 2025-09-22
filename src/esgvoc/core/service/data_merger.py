@@ -72,8 +72,8 @@ class DataMerger:
                 current_data = next_data_instance
             return result_list
         except Exception as e:
+            print("ERROR when merging", e)
             print(self.data)
-            print(e)
 
 
 if __name__ == "__main__":
