@@ -1,6 +1,6 @@
 import itertools
 import re
-from typing import Iterable, Sequence
+from typing import Iterable, Sequence, cast
 
 from sqlalchemy import text
 from sqlmodel import Session, and_, col, select
@@ -49,22 +49,36 @@ def _get_project_session_with_exception(project_id: str) -> Session:
         raise EsgvocNotFoundError(f"unable to find project '{project_id}'")
 
 
-def _resolve_term(composite_term_part: dict, universe_session: Session, project_session: Session) -> UTerm | PTerm:
-    # First find the term in the universe than in the current project
-    term_id = composite_term_part[constants.TERM_ID_JSON_KEY]
-    term_type = composite_term_part[constants.TERM_TYPE_JSON_KEY]
-    uterm = universe._get_term_in_data_descriptor(
-        data_descriptor_id=term_type, term_id=term_id, session=universe_session
-    )
-    if uterm:
-        return uterm
+def _resolve_composite_term_part(composite_term_part: dict,
+                                 universe_session: Session,
+                                 project_session: Session) -> UTerm | PTerm | Sequence[UTerm | PTerm]:
+    if constants.TERM_ID_JSON_KEY in composite_term_part:
+        # First find the term in the universe than in the current project
+        term_id = composite_term_part[constants.TERM_ID_JSON_KEY]
+        term_type = composite_term_part[constants.TERM_TYPE_JSON_KEY]
+        uterm = universe._get_term_in_data_descriptor(data_descriptor_id=term_type,
+                                                      term_id=term_id, session=universe_session)
+        if uterm:
+            return uterm
+        else:
+            pterm = _get_term_in_collection(collection_id=term_type, term_id=term_id, session=project_session)
+        if pterm:
+            return pterm
+        else:
+            msg = f"unable to find the term '{term_id}' in '{term_type}'"
+            raise EsgvocNotFoundError(msg)
     else:
-        pterm = _get_term_in_collection(collection_id=term_type, term_id=term_id, session=project_session)
-    if pterm:
-        return pterm
-    else:
-        msg = f"unable to find the term '{term_id}' in '{term_type}'"
-        raise EsgvocNotFoundError(msg)
+        term_type = composite_term_part[constants.TERM_TYPE_JSON_KEY]
+        data_descriptor = universe._get_data_descriptor_in_universe(term_type, universe_session)
+        if data_descriptor is not None:
+            return data_descriptor.terms
+        else:
+            collection = _get_collection_in_project(term_type, project_session)
+            if collection is not None:
+                return collection.terms
+            else:
+                msg = f"unable to find the terms of '{term_type}'"
+                raise EsgvocNotFoundError(msg)
 
 
 def _get_composite_term_separator_parts(term: UTerm | PTerm) -> tuple[str, list]:
@@ -76,7 +90,6 @@ def _get_composite_term_separator_parts(term: UTerm | PTerm) -> tuple[str, list]
 def _valid_value_composite_term_with_separator(
     value: str, term: UTerm | PTerm, universe_session: Session, project_session: Session
 ) -> list[UniverseTermError | ProjectTermError]:
-    result = []
     separator, parts = _get_composite_term_separator_parts(term)
     required_indices = {i for i, p in enumerate(parts) if p.get("is_required", False)}
 
@@ -135,7 +148,9 @@ def _valid_value_composite_term_with_separator(
             for id in part["id"]:
                 part_copy = dict(part)
                 part_copy["id"] = id
-                resolved_term = _resolve_term(part_copy, universe_session, project_session)
+                resolved_term = _resolve_composite_term_part(part_copy, universe_session, project_session)
+                # resolved_term can't be a list of terms here.
+                resolved_term = cast(UTerm | PTerm, resolved_term)
                 errors = _valid_value(given_value, resolved_term, universe_session, project_session)
                 if not errors:
                     valid_for_this_part = True
@@ -148,44 +163,6 @@ def _valid_value_composite_term_with_separator(
             return []  # At least one valid combination found
 
     return [_create_term_error(value, term)]  # No valid combination found
-
-
-# TODO: support optionality of parts of composite.
-# It is backtrack possible for more than one missing parts.
-def _valid_value_composite_term_with_separator2(
-    value: str, term: UTerm | PTerm, universe_session: Session, project_session: Session
-) -> list[UniverseTermError | ProjectTermError]:
-    result = list()
-    separator, parts = _get_composite_term_separator_parts(term)
-    if separator in value:
-        splits = value.split(separator)
-        if len(splits) == len(parts):
-            for index in range(0, len(splits)):
-                given_value = splits[index]
-                if "id" not in parts[index].keys():
-                    terms = universe.get_all_terms_in_data_descriptor(parts[index]["type"], None)
-                    parts[index]["id"] = [term.id for term in terms]
-                if type(parts[index]["id"]) is str:
-                    parts[index]["id"] = [parts[index]["id"]]
-
-                errors_list = list()
-                for id in parts[index]["id"]:
-                    part_parts = dict(parts[index])
-                    part_parts["id"] = id
-                    resolved_term = _resolve_term(part_parts, universe_session, project_session)
-                    errors = _valid_value(given_value, resolved_term, universe_session, project_session)
-                    if len(errors) == 0:
-                        errors_list = errors
-                        break
-                    else:
-                        errors_list.extend(errors)
-                else:
-                    result.append(_create_term_error(value, term))
-        else:
-            result.append(_create_term_error(value, term))
-    else:
-        result.append(_create_term_error(value, term))
-    return result
 
 
 def _transform_to_pattern(term: UTerm | PTerm, universe_session: Session, project_session: Session) -> str:
@@ -201,8 +178,13 @@ def _transform_to_pattern(term: UTerm | PTerm, universe_session: Session, projec
             separator, parts = _get_composite_term_separator_parts(term)
             result = ""
             for part in parts:
-                resolved_term = _resolve_term(part, universe_session, project_session)
-                pattern = _transform_to_pattern(resolved_term, universe_session, project_session)
+                resolved_term = _resolve_composite_term_part(part, universe_session, project_session)
+                if isinstance(resolved_term, Sequence):
+                    pattern = ""
+                    for r_term in resolved_term:
+                        pattern += _transform_to_pattern(r_term, universe_session, project_session)
+                else:
+                    pattern = _transform_to_pattern(resolved_term, universe_session, project_session)
                 result = f"{result}{pattern}{separator}"
             result = result.rstrip(separator)
         case _:
@@ -530,7 +512,52 @@ def get_all_terms_in_collection(
 def _get_all_collections_in_project(session: Session) -> list[PCollection]:
     project = session.get(Project, constants.SQLITE_FIRST_PK)
     # Project can't be missing if session exists.
-    return project.collections  # type: ignore
+    try:
+        return project.collections  # type: ignore
+    except Exception as e:
+        # Enhanced error context for collection retrieval failures
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to retrieve collections for project '{project.id}': {str(e)}")
+
+        # Use raw SQL to inspect collections without Pydantic validation
+        from sqlalchemy import text
+        try:
+            # Query raw data to identify problematic collections
+            raw_query = text("""
+                SELECT id, term_kind, data_descriptor_id
+                FROM pcollections
+                WHERE project_pk = :project_pk
+            """)
+            result = session.execute(raw_query, {"project_pk": project.pk})
+
+            problematic_collections = []
+
+            for row in result:
+                collection_id, term_kind_value, data_descriptor_id = row
+
+                # Only empty string is invalid - indicates ingestion couldn't determine termkind
+                if term_kind_value == '' or term_kind_value is None:
+                    problematic_collections.append((collection_id, term_kind_value, data_descriptor_id))
+                    msg = f"Collection '{collection_id}' has empty term_kind (data_descriptor: " + \
+                          f"{data_descriptor_id}) - CV ingestion failed to determine termkind"
+                    logger.error(msg)
+
+            if problematic_collections:
+                error_details = []
+                for col_id, _, data_desc in problematic_collections:
+                    error_details.append(f"  • Collection '{col_id}' (data_descriptor: {data_desc}): EMPTY termkind")
+
+                error_msg = (
+                    f"Found {len(problematic_collections)} collections with empty term_kind:\n" +
+                    "\n".join(error_details)
+                )
+                raise ValueError(error_msg) from e
+
+        except Exception as inner_e:
+            logger.error(f"Failed to analyze problematic collections using raw SQL: {inner_e}")
+
+        raise e
 
 
 def get_all_collections_in_project(project_id: str) -> list[str]:
@@ -547,10 +574,24 @@ def get_all_collections_in_project(project_id: str) -> list[str]:
     """
     result = list()
     if connection := _get_project_connection(project_id):
-        with connection.create_session() as session:
-            collections = _get_all_collections_in_project(session)
-            for collection in collections:
-                result.append(collection.id)
+        try:
+            with connection.create_session() as session:
+                collections = _get_all_collections_in_project(session)
+                for collection in collections:
+                    result.append(collection.id)
+        except Exception as e:
+            # Enhanced error context for project collection retrieval
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to get collections for project '{project_id}': {str(e)}")
+
+            # Re-raise with enhanced context
+            raise ValueError(
+                f"Failed to retrieve collections for project '{project_id}'. "
+                f"This may be due to invalid termkind values in the database. "
+                f"Check the project database for collections with empty or invalid termkind values. "
+                f"Original error: {str(e)}"
+            ) from e
     return result
 
 

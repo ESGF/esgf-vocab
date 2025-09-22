@@ -20,8 +20,8 @@ class Experiment(PlainTermDataDescriptor):
     experiment: str
     required_model_components: list[str] | None
     additional_allowed_model_components: list[str] = Field(default_factory=list)
-    start_year: int | None
-    end_year: int | None
+    start_year: str | int | None
+    end_year: str | int | None
     min_number_yrs_per_sim: int | None
     parent_activity_id: list[str] | None
     parent_experiment_id: list[str] | None
