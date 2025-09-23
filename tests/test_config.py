@@ -7,7 +7,7 @@ from esgvoc.core.service.configuration.config_manager import ConfigManager
 from esgvoc.core.service.configuration.setting import ServiceSettings
 
 config_manager = ConfigManager(
-    ServiceSettings, app_name="esgvoc", app_author="ipsl", default_settings=ServiceSettings.DEFAULT_SETTINGS
+    ServiceSettings, app_name="esgvoc", app_author="ipsl", default_settings=ServiceSettings._get_default_settings()
 )
 
 CONFIG_DIR = config_manager.dirs.user_config_path
@@ -72,7 +72,7 @@ def test_init_and_update_default():
     remove_config_dir()
     config_manager._init_registry()
     config = config_manager.get_active_config()
-    assert config.dump() == ServiceSettings.DEFAULT_SETTINGS
+    assert config.dump() == ServiceSettings._get_default_settings()
 
 
 # Test2: Change something and make it the active config

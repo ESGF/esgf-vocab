@@ -20,7 +20,7 @@ def get_config_manager():
     global config_manager
     if config_manager is None:
 
-        config_manager = ConfigManager(ServiceSettings, app_name="esgvoc", app_author="ipsl", default_settings=ServiceSettings.DEFAULT_SETTINGS)
+        config_manager = ConfigManager(ServiceSettings, app_name="esgvoc", app_author="ipsl", default_settings=ServiceSettings._get_default_settings())
         active_config_name= config_manager.get_active_config_name()
         config_manager.data_config_dir = config_manager.data_dir / active_config_name
         config_manager.data_config_dir.mkdir(parents=True, exist_ok=True)

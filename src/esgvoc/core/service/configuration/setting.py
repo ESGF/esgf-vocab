@@ -1,7 +1,9 @@
 from typing import ClassVar, Dict, Optional
+from pathlib import Path
 
 import toml
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+from platformdirs import PlatformDirs
 
 
 class ProjectSettings(BaseModel):
@@ -11,6 +13,24 @@ class ProjectSettings(BaseModel):
     local_path: Optional[str] = None
     db_path: Optional[str] = None
 
+    @field_validator('local_path', 'db_path', mode='before')
+    @classmethod
+    def validate_absolute_path(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
+        path_obj = Path(v)
+
+        if not path_obj.is_absolute():
+            # Handle dot-relative paths (./... or ../..) relative to current working directory
+            if v.startswith('.'):
+                return str((Path.cwd() / v).resolve())
+
+            # Handle plain relative paths using PlatformDirs (default behavior)
+            dirs = PlatformDirs("esgvoc", "ipsl")
+            base_path = Path(dirs.user_data_path).expanduser().resolve()
+            return str(base_path / v)
+        return str(path_obj.resolve())
+
 
 class UniverseSettings(BaseModel):
     github_repo: str
@@ -18,70 +38,110 @@ class UniverseSettings(BaseModel):
     local_path: Optional[str] = None
     db_path: Optional[str] = None
 
+    @field_validator('local_path', 'db_path', mode='before')
+    @classmethod
+    def validate_absolute_path(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
+        path_obj = Path(v)
+
+        if not path_obj.is_absolute():
+            # Handle dot-relative paths (./... or ../..) relative to current working directory
+            if v.startswith('.'):
+                return str((Path.cwd() / v).resolve())
+
+            # Handle plain relative paths using PlatformDirs (default behavior)
+            dirs = PlatformDirs("esgvoc", "ipsl")
+            base_path = Path(dirs.user_data_path).expanduser().resolve()
+            return str(base_path / v)
+        return str(path_obj.resolve())
+
 
 class ServiceSettings(BaseModel):
     universe: UniverseSettings
     projects: Dict[str, ProjectSettings] = Field(default_factory=dict)
 
-    # 🔹 Centralized default project configurations
-    DEFAULT_PROJECT_CONFIGS: ClassVar[Dict[str, dict]] = {
-        "cmip6": {
-            "project_name": "cmip6",
-            "github_repo": "https://github.com/WCRP-CMIP/CMIP6_CVs",
-            "branch": "esgvoc",
-            "local_path": "repos/CMIP6_CVs",
-            "db_path": "dbs/cmip6.sqlite",
-        },
-        "cmip6plus": {
-            "project_name": "cmip6plus",
-            "github_repo": "https://github.com/WCRP-CMIP/CMIP6Plus_CVs",
-            "branch": "esgvoc",
-            "local_path": "repos/CMIP6Plus_CVs",
-            "db_path": "dbs/cmip6plus.sqlite",
-        },
-        "input4mip": {
-            "project_name": "input4mip",
-            "github_repo": "https://github.com/PCMDI/input4MIPs_CVs",
-            "branch": "esgvoc",
-            "local_path": "repos/Input4MIP_CVs",
-            "db_path": "dbs/input4mips.sqlite",
-        },
-        "obs4ref": {
-            "project_name": "obs4ref",
-            "github_repo": "https://github.com/Climate-REF/Obs4REF_CVs",
-            "branch": "main",
-            "local_path": "repos/obs4REF_CVs",
-            "db_path": "dbs/obs4ref.sqlite",
-        },
-        "cordex-cmip6": {
-            "project_name": "cordex-cmip6",
-            "github_repo": "https://github.com/WCRP-CORDEX/cordex-cmip6-cv",
-            "branch": "esgvoc",
-            "local_path": "repos/cordex-cmip6-cv",
-            "db_path": "dbs/cordex-cmip6.sqlite",
-        },
-        "cmip7": {
-            "project_name": "cmip7",
-            "github_repo": "https://github.com/WCRP-CMIP/CMIP7-CVs",
-            "branch": "esgvoc",
-            "local_path": "repos/CMIP7-CVs",
-            "db_path": "dbs/cmip7.sqlite",
-        },
-    }
+    @staticmethod
+    def _get_default_base_path() -> Path:
+        """Get the default base path for data storage using PlatformDirs."""
+        dirs = PlatformDirs("esgvoc", "ipsl")
+        return Path(dirs.user_data_path).expanduser().resolve()
 
-    # 🔹 Default settings - only includes cmip6 and cmip6plus by default
-    DEFAULT_SETTINGS: ClassVar[dict] = {
-        "universe": {
-            "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
-            "branch": "esgvoc",
-            "local_path": "repos/WCRP-universe",
-            "db_path": "dbs/universe.sqlite",
-        },
-        "projects": [
-            DEFAULT_PROJECT_CONFIGS["cmip6"],
-            DEFAULT_PROJECT_CONFIGS["cmip6plus"],
-        ],
-    }
+    @classmethod
+    def _get_default_project_configs(cls) -> Dict[str, dict]:
+        """Generate default project configurations with absolute paths."""
+        base_path = cls._get_default_base_path()
+        return {
+            "cmip6": {
+                "project_name": "cmip6",
+                "github_repo": "https://github.com/WCRP-CMIP/CMIP6_CVs",
+                "branch": "esgvoc",
+                "local_path": str(base_path / "repos" / "CMIP6_CVs"),
+                "db_path": str(base_path / "dbs" / "cmip6.sqlite"),
+            },
+            "cmip6plus": {
+                "project_name": "cmip6plus",
+                "github_repo": "https://github.com/WCRP-CMIP/CMIP6Plus_CVs",
+                "branch": "esgvoc",
+                "local_path": str(base_path / "repos" / "CMIP6Plus_CVs"),
+                "db_path": str(base_path / "dbs" / "cmip6plus.sqlite"),
+            },
+            "input4mip": {
+                "project_name": "input4mip",
+                "github_repo": "https://github.com/PCMDI/input4MIPs_CVs",
+                "branch": "esgvoc",
+                "local_path": str(base_path / "repos" / "Input4MIP_CVs"),
+                "db_path": str(base_path / "dbs" / "input4mips.sqlite"),
+            },
+            "obs4ref": {
+                "project_name": "obs4ref",
+                "github_repo": "https://github.com/Climate-REF/Obs4REF_CVs",
+                "branch": "main",
+                "local_path": str(base_path / "repos" / "obs4REF_CVs"),
+                "db_path": str(base_path / "dbs" / "obs4ref.sqlite"),
+            },
+            "cordex-cmip6": {
+                "project_name": "cordex-cmip6",
+                "github_repo": "https://github.com/WCRP-CORDEX/cordex-cmip6-cv",
+                "branch": "esgvoc",
+                "local_path": str(base_path / "repos" / "cordex-cmip6-cv"),
+                "db_path": str(base_path / "dbs" / "cordex-cmip6.sqlite"),
+            },
+            "cmip7": {
+                "project_name": "cmip7",
+                "github_repo": "https://github.com/WCRP-CMIP/CMIP7-CVs",
+                "branch": "esgvoc",
+                "local_path": str(base_path / "repos" / "CMIP7-CVs"),
+                "db_path": str(base_path / "dbs" / "cmip7.sqlite"),
+            },
+        }
+
+    @classmethod
+    def _get_default_settings(cls) -> dict:
+        """Generate default settings with absolute paths."""
+        base_path = cls._get_default_base_path()
+        project_configs = cls._get_default_project_configs()
+        return {
+            "universe": {
+                "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
+                "branch": "esgvoc",
+                "local_path": str(base_path / "repos" / "WCRP-universe"),
+                "db_path": str(base_path / "dbs" / "universe.sqlite"),
+            },
+            "projects": [
+                project_configs["cmip6"],
+                project_configs["cmip6plus"],
+            ],
+        }
+
+    # 🔹 Properties that provide access to the dynamic configurations
+    @property
+    def DEFAULT_PROJECT_CONFIGS(self) -> Dict[str, dict]:
+        return self._get_default_project_configs()
+
+    @property
+    def DEFAULT_SETTINGS(self) -> dict:
+        return self._get_default_settings()
 
     @classmethod
     def load_from_file(cls, file_path: str) -> "ServiceSettings":
@@ -89,7 +149,7 @@ class ServiceSettings(BaseModel):
         try:
             data = toml.load(file_path)
         except FileNotFoundError:
-            data = cls.DEFAULT_SETTINGS.copy()  # Use defaults if the file is missing
+            data = cls._get_default_settings().copy()  # Use defaults if the file is missing
 
         projects = {p["project_name"]: ProjectSettings(**p) for p in data.pop("projects", [])}
         return cls(universe=UniverseSettings(**data["universe"]), projects=projects)
@@ -97,7 +157,7 @@ class ServiceSettings(BaseModel):
     @classmethod
     def load_default(cls) -> "ServiceSettings":
         """Load default settings."""
-        return cls.load_from_dict(cls.DEFAULT_SETTINGS)
+        return cls.load_from_dict(cls._get_default_settings())
 
     @classmethod
     def load_from_dict(cls, config_data: dict) -> "ServiceSettings":
@@ -136,12 +196,13 @@ class ServiceSettings(BaseModel):
         if project_name in self.projects:
             return False  # Project already exists
 
-        if project_name not in self.DEFAULT_PROJECT_CONFIGS:
+        default_configs = self._get_default_project_configs()
+        if project_name not in default_configs:
             raise ValueError(
-                f"Unknown project '{project_name}'. Available defaults: {list(self.DEFAULT_PROJECT_CONFIGS.keys())}"
+                f"Unknown project '{project_name}'. Available defaults: {list(default_configs.keys())}"
             )
 
-        config = self.DEFAULT_PROJECT_CONFIGS[project_name].copy()
+        config = default_configs[project_name].copy()
         self.projects[project_name] = ProjectSettings(**config)
         return True
 
@@ -203,7 +264,7 @@ class ServiceSettings(BaseModel):
 
     def get_available_default_projects(self) -> list[str]:
         """Return list of available default project names."""
-        return list(self.DEFAULT_PROJECT_CONFIGS.keys())
+        return list(self._get_default_project_configs().keys())
 
     def has_project(self, project_name: str) -> bool:
         """Check if a project exists in the current configuration."""
@@ -218,11 +279,13 @@ class ServiceSettings(BaseModel):
 def main():
     # Create default settings (only cmip6 and cmip6plus)
     settings = ServiceSettings.load_default()
-    print(f"Default projects: {list(settings.projects.keys())}")  # ['cmip6', 'cmip6plus']
+    # ['cmip6', 'cmip6plus']
+    print(f"Default projects: {list(settings.projects.keys())}")
 
     # See what other projects are available to add
     available = settings.get_available_default_projects()
-    print(f"Available default projects: {available}")  # ['cmip6', 'cmip6plus', 'input4mip', 'obs4mip']
+    # ['cmip6', 'cmip6plus', 'input4mip', 'obs4mip']
+    print(f"Available default projects: {available}")
 
     # Add optional projects when needed
     added_input4mip = settings.add_project_from_default("input4mip")

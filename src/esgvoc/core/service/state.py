@@ -11,9 +11,7 @@ from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.project import Project
 from esgvoc.core.db.models.universe import Universe
 from esgvoc.core.repo_fetcher import RepoFetcher
-from esgvoc.core.service.configuration.setting import (ProjectSettings,
-                                                       ServiceSettings,
-                                                       UniverseSettings)
+from esgvoc.core.service.configuration.setting import ProjectSettings, ServiceSettings, UniverseSettings
 
 logger = logging.getLogger(__name__)
 
@@ -28,14 +26,15 @@ class BaseState:
 
         self.github_repo: str = github_repo
         self.branch: str = branch
-        self.github_access: bool = True  # False if we dont have internet and some other cases
+        # False if we dont have internet and some other cases
+        self.github_access: bool = True
         self.github_version: str | None = None
 
-        self.local_path: str | None = self._get_absolute_path(str(self.base_dir), local_path)
+        self.local_path: str | None = self._validate_absolute_path(local_path, "local_path")
         self.local_access: bool = True  # False if we dont have cloned the remote repo yet
         self.local_version: str | None = None
 
-        self.db_path: str | None = self._get_absolute_path(str(self.base_dir), db_path)
+        self.db_path: str | None = self._validate_absolute_path(db_path, "db_path")
         self.db_access: bool = True  # False if we cant access the db for some reason
         self.db_version: str | None = None
 
@@ -43,11 +42,27 @@ class BaseState:
         self.db_connection: DBConnection | None = None
         self.db_sqlmodel: Universe | Project | None = None
 
-    def _get_absolute_path(self, base_dir: str, path: str | None) -> str | None:
-        if base_dir != "" and path is not None:
-            return base_dir + "/" + path
-        if base_dir == "":
-            return path
+    def _validate_absolute_path(self, path: str | None, field_name: str) -> str | None:
+        """Validate and resolve the provided path, if provided."""
+        if path is None:
+            return None
+
+        from pathlib import Path
+        from platformdirs import PlatformDirs
+
+        path_obj = Path(path)
+
+        if not path_obj.is_absolute():
+            # Handle dot-relative paths (./... or ../..) relative to current working directory
+            if path.startswith('.'):
+                return str((Path.cwd() / path).resolve())
+
+            # Handle plain relative paths using PlatformDirs (default behavior)
+            dirs = PlatformDirs("esgvoc", "ipsl")
+            base_path = Path(dirs.user_data_path).expanduser().resolve()
+            return str(base_path / path)
+
+        return str(path_obj.resolve())
 
     def fetch_version_local(self):
         if self.local_path:
@@ -72,7 +87,9 @@ class BaseState:
                 self.github_access = False
             except Exception as e:
                 logger.exception(
-                    f"Failed to fetch GitHub version: {e} ,for {self.github_repo},owner : {owner}, repo : {repo},branch : {self.branch}"
+                    f"Failed to fetch GitHub version: {e} ,for {self.github_repo},owner : {owner}, repo : {
+                        repo
+                    },branch : {self.branch}"
                 )
                 self.github_access = False
 
@@ -138,8 +155,7 @@ class BaseState:
         from esgvoc.core.db.models.project import project_create_db
         from esgvoc.core.db.models.universe import universe_create_db
         from esgvoc.core.db.project_ingestion import ingest_project
-        from esgvoc.core.db.universe_ingestion import (
-            ingest_metadata_universe, ingest_universe)
+        from esgvoc.core.db.universe_ingestion import ingest_metadata_universe, ingest_universe
 
         if self.db_path:
             if os.path.exists(self.db_path):
@@ -248,10 +264,11 @@ class StateService:
             if universe_updated and not project_updated:
                 project.build_db()
         self.connect_db()
-        
+
         # Display state table after synchronization
         table = self.table()
         from rich.console import Console
+
         console = Console()
         console.print(table)
 
