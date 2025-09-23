@@ -393,7 +393,6 @@ class CVTester:
 
         # Import constants and YAML handling
         try:
-            import yaml
             from esgvoc.core.constants import (
                 PROJECT_SPECS_FILENAME,
                 DRS_SPECS_FILENAME,
@@ -401,12 +400,20 @@ class CVTester:
                 ATTRIBUTES_SPECS_FILENAME
             )
         except ImportError as e:
-            errors.append(f"❌ Missing required dependencies: {e}")
+            errors.append(f"❌ Missing required esgvoc constants: {e}")
+            return errors
+
+        try:
+            import yaml
+        except ImportError:
+            errors.append(f"❌ PyYAML not installed. Install with: pip install PyYAML")
             return errors
 
         # Get existing collections for validation
         existing_collections = {d.name for d in collection_directories}
         source_collections = set()
+        # Track which files contain each collection reference for better error reporting
+        collection_file_mapping = {}  # collection_name -> set of files that reference it
         files_tested = 0
 
         # Test project_specs.yaml
@@ -442,6 +449,9 @@ class CVTester:
                                 collection_ref = part.get("collection_id") or part.get("source_collection")
                                 if collection_ref:
                                     source_collections.add(collection_ref)
+                                    if collection_ref not in collection_file_mapping:
+                                        collection_file_mapping[collection_ref] = set()
+                                    collection_file_mapping[collection_ref].add(DRS_SPECS_FILENAME)
 
                 console.print(f"   [green]✅ {DRS_SPECS_FILENAME} parsed successfully[/green]")
                 files_tested += 1
@@ -467,7 +477,11 @@ class CVTester:
                         if prop_type in catalog_specs and isinstance(catalog_specs[prop_type], list):
                             for prop in catalog_specs[prop_type]:
                                 if isinstance(prop, dict) and "source_collection" in prop:
-                                    source_collections.add(prop["source_collection"])
+                                    collection_ref = prop["source_collection"]
+                                    source_collections.add(collection_ref)
+                                    if collection_ref not in collection_file_mapping:
+                                        collection_file_mapping[collection_ref] = set()
+                                    collection_file_mapping[collection_ref].add(CATALOG_SPECS_FILENAME)
 
                 console.print(f"   [green]✅ {CATALOG_SPECS_FILENAME} parsed successfully[/green]")
                 files_tested += 1
@@ -478,26 +492,46 @@ class CVTester:
         else:
             console.print(f"   [yellow]⚠️  Optional file {CATALOG_SPECS_FILENAME} not found[/yellow]")
 
-        # Test attr_specs.yaml (currently not ingested by esgvoc, but test for syntax)
+        # Test attr_specs.yaml (now ingested by esgvoc)
         attr_specs_file = repo_dir / ATTRIBUTES_SPECS_FILENAME
         if attr_specs_file.exists():
-            console.print(f"📄 Testing {ATTRIBUTES_SPECS_FILENAME} (syntax only - not ingested by esgvoc)...")
+            console.print(f"📄 Testing {ATTRIBUTES_SPECS_FILENAME}...")
             try:
                 with open(attr_specs_file, "r", encoding="utf-8") as f:
                     attr_specs = yaml.safe_load(f)
 
-                # Extract collection references from attribute specs if they exist
-                if isinstance(attr_specs, dict):
-                    # Check for global_attributes_specs or similar structures
+                # Extract collection references from attribute specs
+                if isinstance(attr_specs, list):
+                    # New format: list of AttributeProperty objects
+                    for attr_spec in attr_specs:
+                        if isinstance(attr_spec, dict) and "source_collection" in attr_spec:
+                            collection_ref = attr_spec["source_collection"]
+                            source_collections.add(collection_ref)
+                            if collection_ref not in collection_file_mapping:
+                                collection_file_mapping[collection_ref] = set()
+                            collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
+                elif isinstance(attr_specs, dict):
+                    # Legacy format: nested structure with "specs" key
                     if "specs" in attr_specs:
                         specs = attr_specs["specs"]
                         if isinstance(specs, dict):
                             for attr_name, attr_spec in specs.items():
                                 if isinstance(attr_spec, dict) and "source_collection" in attr_spec:
-                                    source_collections.add(attr_spec["source_collection"])
+                                    collection_ref = attr_spec["source_collection"]
+                                    source_collections.add(collection_ref)
+                                    if collection_ref not in collection_file_mapping:
+                                        collection_file_mapping[collection_ref] = set()
+                                    collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
+                        elif isinstance(specs, list):
+                            for attr_spec in specs:
+                                if isinstance(attr_spec, dict) and "source_collection" in attr_spec:
+                                    collection_ref = attr_spec["source_collection"]
+                                    source_collections.add(collection_ref)
+                                    if collection_ref not in collection_file_mapping:
+                                        collection_file_mapping[collection_ref] = set()
+                                    collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
 
                 console.print(f"   [green]✅ {ATTRIBUTES_SPECS_FILENAME} parsed successfully[/green]")
-                console.print(f"   [yellow]⚠️  Note: {ATTRIBUTES_SPECS_FILENAME} is not currently ingested by esgvoc[/yellow]")
                 files_tested += 1
             except yaml.YAMLError as e:
                 errors.append(f"❌ {ATTRIBUTES_SPECS_FILENAME}: Invalid YAML syntax - {e}")
@@ -512,7 +546,10 @@ class CVTester:
 
             for collection in source_collections:
                 if collection not in existing_collections:
-                    errors.append(f"❌ YAML specs reference non-existent collection: '{collection}'")
+                    # Enhanced error message showing which files contain the reference
+                    referencing_files = collection_file_mapping.get(collection, set())
+                    files_list = ", ".join(sorted(referencing_files))
+                    errors.append(f"❌ YAML specs reference non-existent collection: '{collection}' (referenced in: {files_list})")
                 else:
                     console.print(f"   [green]✅ Reference '{collection}' exists[/green]")
         else:
@@ -522,6 +559,113 @@ class CVTester:
             errors.append("❌ No YAML specification files found")
         else:
             console.print(f"   [blue]📊 Successfully tested {files_tested} YAML specification files[/blue]")
+
+        return errors
+
+    def _test_esgvoc_specs_ingestion(self, project_name: str, repo_dir: Path) -> List[str]:
+        """Test that YAML specs are properly ingested into esgvoc and accessible via API"""
+        errors = []
+
+        try:
+            # Import esgvoc API and constants
+            import esgvoc.api as ev
+            from esgvoc.core.constants import ATTRIBUTES_SPECS_FILENAME
+        except ImportError as e:
+            errors.append(f"❌ Cannot import esgvoc modules for ingestion testing: {e}")
+            return errors
+
+        try:
+            import yaml
+        except ImportError:
+            errors.append(f"❌ PyYAML not installed. Install with: pip install PyYAML")
+            return errors
+
+        console.print(f"🔍 Testing esgvoc ingestion compatibility for {project_name}...")
+
+        # Get the project specs from esgvoc
+        try:
+            project = ev.get_project(project_name)
+            console.print(f"   [green]✅ Project '{project_name}' found in esgvoc[/green]")
+
+            if hasattr(project, 'attr_specs') and hasattr(project, 'drs_specs'):
+                # Project is properly loaded with specs - convert to dict format for compatibility
+                specs = {}
+                if hasattr(project, 'attr_specs') and project.attr_specs:
+                    specs["attr_specs"] = project.attr_specs
+                if hasattr(project, 'drs_specs') and project.drs_specs:
+                    specs["drs_specs"] = project.drs_specs
+                if hasattr(project, 'catalog_specs') and project.catalog_specs:
+                    specs["catalog_specs"] = project.catalog_specs
+
+                console.print(f"   [blue]📊 Project specs loaded with keys: {list(specs.keys())}[/blue]")
+
+                # Test attr_specs ingestion specifically
+                attr_specs_file = repo_dir / ATTRIBUTES_SPECS_FILENAME
+                if attr_specs_file.exists() and "attr_specs" in specs:
+                    console.print(f"   [green]✅ attr_specs found in ingested project data[/green]")
+
+                    # Load the original YAML for comparison
+                    with open(attr_specs_file, "r", encoding="utf-8") as f:
+                        original_attr_specs = yaml.safe_load(f)
+
+                    ingested_attr_specs = specs["attr_specs"]
+
+                    # Validate structure compatibility
+                    if isinstance(original_attr_specs, list) and isinstance(ingested_attr_specs, list):
+                        console.print(f"   [green]✅ attr_specs structure matches: {len(original_attr_specs)} items in YAML, {len(ingested_attr_specs)} items ingested[/green]")
+
+                        # Check for source_collection fields
+                        yaml_collections = set()
+                        ingested_collections = set()
+
+                        for item in original_attr_specs:
+                            if isinstance(item, dict) and "source_collection" in item:
+                                yaml_collections.add(item["source_collection"])
+
+                        for item in ingested_attr_specs:
+                            if isinstance(item, dict) and "source_collection" in item:
+                                ingested_collections.add(item["source_collection"])
+                            elif hasattr(item, "source_collection"):
+                                # Handle Pydantic model objects
+                                ingested_collections.add(item.source_collection)
+
+                        if yaml_collections == ingested_collections:
+                            console.print(f"   [green]✅ Collection references preserved: {sorted(yaml_collections)}[/green]")
+                        else:
+                            errors.append(f"❌ Collection reference mismatch - YAML: {sorted(yaml_collections)}, Ingested: {sorted(ingested_collections)}")
+                    else:
+                        console.print(f"   [yellow]⚠️  Structure difference: YAML type={type(original_attr_specs)}, Ingested type={type(ingested_attr_specs)}[/yellow]")
+
+                elif attr_specs_file.exists():
+                    errors.append(f"❌ attr_specs.yaml exists but not found in ingested project specs")
+
+                # Test drs_specs ingestion
+                if "drs_specs" in specs:
+                    console.print(f"   [green]✅ drs_specs found in ingested project data[/green]")
+                else:
+                    errors.append(f"❌ drs_specs not found in ingested project data")
+
+                # Test catalog_specs ingestion
+                if "catalog_specs" in specs:
+                    console.print(f"   [green]✅ catalog_specs found in ingested project data[/green]")
+                else:
+                    console.print(f"   [yellow]⚠️  catalog_specs not found in ingested project data (may be optional)[/yellow]")
+
+            else:
+                # More detailed error message about missing specs
+                expected_specs = ["project_specs", "attr_specs", "drs_specs", "catalog_specs (optional)"]
+                if hasattr(project, 'attr_specs') or hasattr(project, 'drs_specs'):
+                    missing_specs = []
+                    if not hasattr(project, 'attr_specs') or not project.attr_specs:
+                        missing_specs.append("attr_specs")
+                    if not hasattr(project, 'drs_specs') or not project.drs_specs:
+                        missing_specs.append("drs_specs")
+                    errors.append(f"❌ Project '{project_name}' missing required specs: {missing_specs}. Expected specs: {', '.join(expected_specs)}")
+                else:
+                    errors.append(f"❌ Project '{project_name}' has no specs attributes. Expected specs: {', '.join(expected_specs)}")
+
+        except Exception as e:
+            errors.append(f"❌ Failed to retrieve project '{project_name}' from esgvoc: {e}")
 
         return errors
 
@@ -1238,7 +1382,18 @@ class CVTester:
         current_active = service.get_config_manager().get_active_config_name()
         console.print(f"[dim]Debug: Active config before API test: {current_active}[/dim]")
 
-        # Step 4: Test esgvoc API access
+        # Step 4: Test YAML specs ingestion compatibility
+        console.print(f"[blue]Testing YAML specs ingestion compatibility...[/blue]")
+        ingestion_errors = self._test_esgvoc_specs_ingestion(project_name, Path(repo_path))
+        if ingestion_errors:
+            console.print(f"[red]❌ YAML specs ingestion test failed with {len(ingestion_errors)} errors:[/red]")
+            for error in ingestion_errors:
+                console.print(f"   {error}")
+            success = False
+        else:
+            console.print(f"[green]✅ YAML specs ingestion test passed![/green]")
+
+        # Step 5: Test esgvoc API access
         if not self.test_esgvoc_api_access(project_name, repo_path):
             success = False
 
