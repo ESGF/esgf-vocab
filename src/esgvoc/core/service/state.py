@@ -11,9 +11,7 @@ from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.project import Project
 from esgvoc.core.db.models.universe import Universe
 from esgvoc.core.repo_fetcher import RepoFetcher
-from esgvoc.core.service.configuration.setting import (ProjectSettings,
-                                                       ServiceSettings,
-                                                       UniverseSettings)
+from esgvoc.core.service.configuration.setting import ProjectSettings, ServiceSettings, UniverseSettings
 
 logger = logging.getLogger(__name__)
 
@@ -138,8 +136,7 @@ class BaseState:
         from esgvoc.core.db.models.project import project_create_db
         from esgvoc.core.db.models.universe import universe_create_db
         from esgvoc.core.db.project_ingestion import ingest_project
-        from esgvoc.core.db.universe_ingestion import (
-            ingest_metadata_universe, ingest_universe)
+        from esgvoc.core.db.universe_ingestion import ingest_metadata_universe, ingest_universe
 
         if self.db_path:
             if os.path.exists(self.db_path):
@@ -248,10 +245,11 @@ class StateService:
             if universe_updated and not project_updated:
                 project.build_db()
         self.connect_db()
-        
+
         # Display state table after synchronization
         table = self.table()
         from rich.console import Console
+
         console = Console()
         console.print(table)
 
