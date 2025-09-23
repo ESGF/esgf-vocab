@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import pytest
 import toml
@@ -104,23 +104,23 @@ class TestConfigCLI:
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "repos/WCRP-universe",
-                "db_path": "dbs/universe.sqlite",
+                "local_path": "./test_repos/WCRP-universe",
+                "db_path": "./test_dbs/universe.sqlite",
             },
             "projects": [
                 {
                     "project_name": "cmip6",
                     "github_repo": "https://github.com/WCRP-CMIP/CMIP6_CVs",
                     "branch": "esgvoc",
-                    "local_path": "repos/CMIP6_CVs",
-                    "db_path": "dbs/cmip6.sqlite",
+                    "local_path": "./test_repos/CMIP6_CVs",
+                    "db_path": "./test_dbs/cmip6.sqlite",
                 },
                 {
                     "project_name": "cmip6plus",
                     "github_repo": "https://github.com/WCRP-CMIP/CMIP6Plus_CVs",
                     "branch": "esgvoc",
-                    "local_path": "repos/CMIP6Plus_CVs",
-                    "db_path": "dbs/cmip6plus.sqlite",
+                    "local_path": "./test_repos/CMIP6Plus_CVs",
+                    "db_path": "./test_dbs/cmip6plus.sqlite",
                 },
             ],
         }
@@ -147,12 +147,14 @@ class TestConfigCLI:
         # Create a mock state object with synchronize_all method
         mock_state = type("MockState", (), {"synchronize_all": lambda *args, **kwargs: None})()
 
-        return patch.multiple(
-            "esgvoc.cli.config.service",  # Adjust this import path
-            get_config_manager=lambda *args, **kwargs: self.mock_config_manager,
-            current_state=mock_state,
-            get_state=lambda *args, **kwargs: mock_state,
-        )
+        # Create a mock service module
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = self.mock_config_manager
+        mock_service.current_state = mock_state
+        mock_service.get_state.return_value = mock_state
+
+        # Mock the get_service function to return our mock service
+        return patch("esgvoc.cli.config.get_service", return_value=mock_service)
 
     # Configuration Management Tests
     def test_list_configs(self):
@@ -355,8 +357,8 @@ class TestConfigCLI:
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "repos/WCRP-universe",
-                "db_path": "dbs/universe.sqlite",
+                "local_path": "./test_repos/WCRP-universe",
+                "db_path": "./test_dbs/universe.sqlite",
             },
             "projects": [],
         }
@@ -419,8 +421,8 @@ class TestConfigCLI:
             assert custom_project is not None
             assert custom_project["github_repo"] == "https://github.com/test/custom"
             assert custom_project["branch"] == "main"
-            assert custom_project["local_path"] == "repos/custom"
-            assert custom_project["db_path"] == "dbs/custom.sqlite"
+            assert custom_project["local_path"] == "/home/ltroussellier/.local/share/esgvoc/repos/custom"
+            assert custom_project["db_path"] == "/home/ltroussellier/.local/share/esgvoc/dbs/custom.sqlite"
 
     def test_add_project_custom_minimal(self):
         """Test adding a custom project with minimal parameters."""
@@ -438,8 +440,8 @@ class TestConfigCLI:
 
             project = next((p for p in data["projects"] if p["project_name"] == "minimal_project"), None)
             assert project is not None
-            assert project["local_path"] == "repos/minimal_project"
-            assert project["db_path"] == "dbs/minimal_project.sqlite"
+            assert project["local_path"] == "/home/ltroussellier/.local/share/esgvoc/repos/minimal_project"
+            assert project["db_path"] == "/home/ltroussellier/.local/share/esgvoc/dbs/minimal_project.sqlite"
             assert project["branch"] == "main"
 
     def test_add_project_already_exists(self):
@@ -553,8 +555,8 @@ class TestConfigCLI:
             assert project is not None
             assert project["github_repo"] == "https://github.com/new/repo"
             assert project["branch"] == "new_branch"
-            assert project["local_path"] == "repos/new_path"
-            assert project["db_path"] == "dbs/new.sqlite"
+            assert project["local_path"] == "/home/ltroussellier/.local/share/esgvoc/repos/new_path"
+            assert project["db_path"] == "/home/ltroussellier/.local/share/esgvoc/dbs/new.sqlite"
 
     def test_update_project_partial(self):
         """Test updating only some project settings."""
@@ -570,7 +572,8 @@ class TestConfigCLI:
 
             project = next((p for p in data["projects"] if p["project_name"] == "cmip6"), None)
             assert project["branch"] == "develop"
-            assert project["github_repo"] == "https://github.com/WCRP-CMIP/CMIP6_CVs"  # Unchanged
+            # Unchanged
+            assert project["github_repo"] == "https://github.com/WCRP-CMIP/CMIP6_CVs"
 
     def test_update_nonexistent_project(self):
         """Test updating a project that doesn't exist."""
@@ -622,7 +625,7 @@ class TestConfigCLI:
 
             project = next((p for p in data["projects"] if p["project_name"] == "cmip6"), None)
             assert project["branch"] == "test_branch"
-            assert project["local_path"] == "repos/test"
+            assert project["local_path"] == "/home/ltroussellier/.local/share/esgvoc/repos/test"
 
     def test_set_invalid_format(self):
         """Test set command with invalid format."""
@@ -902,8 +905,8 @@ class TestConfigCLI:
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "repos/WCRP-universe",
-                "db_path": "dbs/universe.sqlite",
+                "local_path": "./test_repos/WCRP-universe",
+                "db_path": "./test_dbs/universe.sqlite",
             },
             "projects": [],
         }
@@ -1089,8 +1092,8 @@ class TestEdgeCases:
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "repos/WCRP-universe",
-                "db_path": "dbs/universe.sqlite",
+                "local_path": "./test_repos/WCRP-universe",
+                "db_path": "./test_dbs/universe.sqlite",
             },
             "projects": [],
         }
@@ -1122,12 +1125,12 @@ class TestEdgeCases:
         with open(config_path, "w") as f:
             f.write("invalid toml content [[[")
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             result = runner.invoke(app, ["show", "isolated"])
             # Should handle the error gracefully
             assert result.exit_code == 0
@@ -1145,8 +1148,8 @@ class TestEdgeCases:
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "repos/WCRP-universe",
-                "db_path": "dbs/universe.sqlite",
+                "local_path": "./test_repos/WCRP-universe",
+                "db_path": "./test_dbs/universe.sqlite",
             },
             "projects": [
                 {
@@ -1163,12 +1166,12 @@ class TestEdgeCases:
         with open(config_path, "w") as f:
             toml.dump(large_config, f)
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             # Test that listing projects works with many entries
             result = runner.invoke(app, ["list-projects", "--config", "isolated"])
             assert result.exit_code == 0
@@ -1181,12 +1184,12 @@ class TestEdgeCases:
         runner = test_data["runner"]
         mock_manager = test_data["mock_manager"]
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             # Test add with nonexistent config
             result = runner.invoke(app, ["add", "cmip6", "--config", "nonexistent"])
             assert result.exit_code == 1
@@ -1214,16 +1217,16 @@ class TestEdgeCases:
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "repos/WCRP-universe",
-                "db_path": "dbs/universe.sqlite",
+                "local_path": "./test_repos/WCRP-universe",
+                "db_path": "./test_dbs/universe.sqlite",
             },
             "projects": [
                 {
                     "project_name": "test_project",
                     "github_repo": "https://github.com/test/project",
                     "branch": "main",
-                    "local_path": "repos/test_project",
-                    "db_path": "dbs/test_project.sqlite",
+                    "local_path": "./test_repos/test_project",
+                    "db_path": "./test_dbs/test_project.sqlite",
                 }
             ],
         }
@@ -1231,12 +1234,12 @@ class TestEdgeCases:
         with open(config_path, "w") as f:
             toml.dump(config_data, f)
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             # Mock the config manager data_config_dir to avoid actual file operations
             mock_manager.data_config_dir = str(test_data["temp_dir"])
 
@@ -1259,16 +1262,16 @@ class TestEdgeCases:
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "repos/WCRP-universe",
-                "db_path": "dbs/universe.sqlite",
+                "local_path": "./test_repos/WCRP-universe",
+                "db_path": "./test_dbs/universe.sqlite",
             },
             "projects": [
                 {
                     "project_name": "cmip6",
                     "github_repo": "https://github.com/WCRP-CMIP/CMIP6_CVs",
                     "branch": "esgvoc",
-                    "local_path": "repos/CMIP6_CVs",
-                    "db_path": "dbs/cmip6.sqlite",
+                    "local_path": "./test_repos/CMIP6_CVs",
+                    "db_path": "./test_dbs/cmip6.sqlite",
                 }
             ],
         }
@@ -1276,12 +1279,12 @@ class TestEdgeCases:
         with open(config_path, "w") as f:
             toml.dump(config_data, f)
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             # Test adding empty list (edge case)
             result = runner.invoke(app, ["add"])
             assert result.exit_code == 2  # Typer error for missing argument
@@ -1308,8 +1311,8 @@ def create_test_config(config_dir: Path, name: str, projects: list = None) -> Pa
                 "project_name": "cmip6",
                 "github_repo": "https://github.com/WCRP-CMIP/CMIP6_CVs",
                 "branch": "esgvoc",
-                "local_path": "repos/CMIP6_CVs",
-                "db_path": "dbs/cmip6.sqlite",
+                "local_path": "./test_repos/CMIP6_CVs",
+                "db_path": "./test_dbs/cmip6.sqlite",
             }
         ]
 
@@ -1317,8 +1320,8 @@ def create_test_config(config_dir: Path, name: str, projects: list = None) -> Pa
         "universe": {
             "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
             "branch": "esgvoc",
-            "local_path": "repos/WCRP-universe",
-            "db_path": "dbs/universe.sqlite",
+            "local_path": "./test_repos/WCRP-universe",
+            "db_path": "./test_dbs/universe.sqlite",
         },
         "projects": projects,
     }
