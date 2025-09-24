@@ -93,8 +93,13 @@ class ConfigManager(Generic[T]):
     def get_active_config(self) -> T:
         """Load the active configuration as an instance of the given config schema."""
         active_config_path = self._get_active_config_path()
+        active_config_name = self.get_active_config_name()
 
-        return self.config_cls.load_from_file(str(active_config_path))
+        settings = self.config_cls.load_from_file(str(active_config_path))
+        # Set the config name if the settings support it (duck typing)
+        if hasattr(settings, 'set_config_name'):
+            settings.set_config_name(active_config_name)
+        return settings
 
     def get_active_config_name(self) -> str:
         """Retrieve the config name from the registry"""

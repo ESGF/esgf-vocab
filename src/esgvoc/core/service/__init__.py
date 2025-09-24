@@ -29,9 +29,10 @@ def get_config_manager():
 
 
 def get_state():
-    global current_state 
+    global current_state
     if config_manager is not None:
-        current_state = StateService(config_manager.get_active_config())
+        service_settings = config_manager.get_active_config()
+        current_state = StateService(service_settings)
     return current_state
 
 # Singleton Access Function

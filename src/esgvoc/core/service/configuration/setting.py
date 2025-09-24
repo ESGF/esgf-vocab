@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from platformdirs import PlatformDirs
 
 
-def resolve_path_to_absolute(relative_path: Optional[str]) -> Optional[str]:
+def resolve_path_to_absolute(relative_path: Optional[str], config_name: Optional[str] = None) -> Optional[str]:
     """
     Convert a relative path to an absolute path without modifying the original.
     This is used for internal path resolution only.
@@ -23,9 +23,11 @@ def resolve_path_to_absolute(relative_path: Optional[str]) -> Optional[str]:
     if relative_path.startswith('.'):
         return str((Path.cwd() / relative_path).resolve())
 
-    # Handle plain relative paths using PlatformDirs (default behavior)
+    # Handle plain relative paths using PlatformDirs with config name (default behavior)
     dirs = PlatformDirs("esgvoc", "ipsl")
     base_path = Path(dirs.user_data_path).expanduser().resolve()
+    if config_name:
+        base_path = base_path / config_name
     return str(base_path / relative_path)
 
 
@@ -35,14 +37,19 @@ class ProjectSettings(BaseModel):
     branch: Optional[str] = "main"
     local_path: Optional[str] = None
     db_path: Optional[str] = None
+    _config_name: Optional[str] = None
+
+    def set_config_name(self, config_name: str):
+        """Set the config name for path resolution."""
+        self._config_name = config_name
 
     def get_absolute_local_path(self) -> Optional[str]:
         """Get the absolute local path without modifying the stored value."""
-        return resolve_path_to_absolute(self.local_path)
+        return resolve_path_to_absolute(self.local_path, self._config_name)
 
     def get_absolute_db_path(self) -> Optional[str]:
         """Get the absolute db path without modifying the stored value."""
-        return resolve_path_to_absolute(self.db_path)
+        return resolve_path_to_absolute(self.db_path, self._config_name)
 
 
 class UniverseSettings(BaseModel):
@@ -50,19 +57,30 @@ class UniverseSettings(BaseModel):
     branch: Optional[str] = None
     local_path: Optional[str] = None
     db_path: Optional[str] = None
+    _config_name: Optional[str] = None
+
+    def set_config_name(self, config_name: str):
+        """Set the config name for path resolution."""
+        self._config_name = config_name
 
     def get_absolute_local_path(self) -> Optional[str]:
         """Get the absolute local path without modifying the stored value."""
-        return resolve_path_to_absolute(self.local_path)
+        return resolve_path_to_absolute(self.local_path, self._config_name)
 
     def get_absolute_db_path(self) -> Optional[str]:
         """Get the absolute db path without modifying the stored value."""
-        return resolve_path_to_absolute(self.db_path)
+        return resolve_path_to_absolute(self.db_path, self._config_name)
 
 
 class ServiceSettings(BaseModel):
     universe: UniverseSettings
     projects: Dict[str, ProjectSettings] = Field(default_factory=dict)
+
+    def set_config_name(self, config_name: str):
+        """Set the config name for all settings components."""
+        self.universe.set_config_name(config_name)
+        for project_settings in self.projects.values():
+            project_settings.set_config_name(config_name)
 
     @staticmethod
     def _get_default_base_path() -> Path:

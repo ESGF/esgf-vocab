@@ -157,18 +157,21 @@ class RepoFetcher:
         files = [item["name"] for item in contents if item["type"] == "file"]
         return files
 
-    def clone_repository(self, owner: str, repo: str, branch: Optional[str] = None, local_path: str | None = None):
+    def clone_repository(self, owner: str, repo: str, branch: Optional[str] = None, local_path: str | None = None, shallow: bool = True):
         """
         Clone a GitHub repository to a target directory.
         :param owner: Repository owner
         :param repo: Repository name
         :param target_dir: The directory where the repository should be cloned.
         :param branch: (Optional) The branch to clone. Clones the default branch if None.
+        :param shallow: (Optional) If True, performs a shallow clone with --depth 1. Default is True.
         """
         repo_url = f"https://github.com/{owner}/{repo}.git"
         destination = local_path if local_path else f"{self.repo_dir}/{repo}"
 
         command = ["git", "clone", repo_url, destination]
+        if shallow:
+            command.extend(["--depth", "1"])
         if branch:
             command.extend(["--branch", branch])
         with redirect_stdout_to_log():
@@ -179,8 +182,63 @@ class RepoFetcher:
                 else:
                     current_work_dir = os.getcwd()
                     os.chdir(f"{destination}")
-                    command = ["git", "pull"]
-                    subprocess.run(command, check=True)
+
+                    # Clean up any conflicted state first
+                    try:
+                        subprocess.run(["git", "reset", "--hard"], capture_output=True, check=False)
+                        subprocess.run(["git", "clean", "-fd"], capture_output=True, check=False)
+                    except Exception:
+                        pass
+
+                    # Check if the requested branch exists locally
+                    try:
+                        result = subprocess.run(
+                            ["git", "rev-parse", "--verify", f"refs/heads/{branch}"],
+                            capture_output=True,
+                            check=False
+                        )
+                        branch_exists_locally = result.returncode == 0
+                    except Exception:
+                        branch_exists_locally = False
+
+                    if not branch_exists_locally and branch:
+                        # If branch doesn't exist locally, we need to fetch it
+                        # For shallow repos, we need to unshallow first or fetch the specific branch
+                        try:
+                            # Try to fetch the specific branch
+                            subprocess.run(["git", "fetch", "origin", f"{branch}:{branch}"], check=True)
+                            _LOGGER.debug(f"Fetched new branch {branch}")
+                        except subprocess.CalledProcessError:
+                            # If that fails, unshallow and try again
+                            subprocess.run(["git", "fetch", "--unshallow"], check=True)
+                            subprocess.run(["git", "fetch", "origin", f"{branch}:{branch}"], check=True)
+                            _LOGGER.debug(f"Unshallowed repo and fetched branch {branch}")
+
+                    # Switch to the requested branch if specified
+                    if branch:
+                        subprocess.run(["git", "checkout", branch], check=True)
+                        _LOGGER.debug(f"Switched to branch {branch}")
+
+                    # For shallow repos that switched branches, just ensure we have latest
+                    # to avoid merge conflicts from different commit histories
+                    if branch and not branch_exists_locally:
+                        # We already fetched the branch, no need for additional reset
+                        _LOGGER.debug(f"Switched to newly fetched branch {branch}")
+                    else:
+                        # Pull latest changes for normal updates
+                        try:
+                            subprocess.run(["git", "pull"], check=True)
+                        except subprocess.CalledProcessError:
+                            # If pull fails, try to fetch and reset
+                            subprocess.run(["git", "fetch"], check=True)
+                            # Check if remote tracking branch exists
+                            try:
+                                subprocess.run(["git", "rev-parse", f"origin/{branch}"], capture_output=True, check=True)
+                                subprocess.run(["git", "reset", "--hard", f"origin/{branch}"], check=True)
+                                _LOGGER.debug(f"Reset to origin/{branch} after pull failure")
+                            except subprocess.CalledProcessError:
+                                # Remote tracking branch doesn't exist, just continue
+                                _LOGGER.debug(f"No remote tracking branch for {branch}, continuing")
                     os.chdir(current_work_dir)
 
             except Exception as e:
