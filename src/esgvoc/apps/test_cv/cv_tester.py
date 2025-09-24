@@ -82,7 +82,7 @@ class CVTester:
 
     def get_available_projects(self) -> List[str]:
         """Get list of all available project CVs"""
-        return list(ServiceSettings.DEFAULT_PROJECT_CONFIGS.keys())
+        return list(ServiceSettings._get_default_project_configs().keys())
 
     def configure_for_testing(
         self,
@@ -121,7 +121,7 @@ class CVTester:
             # Use custom repo/branch if provided, otherwise use defaults
             if repo_url or branch:
                 # Custom configuration
-                default_config = ServiceSettings.DEFAULT_PROJECT_CONFIGS[project_name]
+                default_config = ServiceSettings._get_default_project_configs()[project_name]
                 project_config = {
                     "project_name": project_name,
                     "github_repo": repo_url or default_config["github_repo"],
@@ -134,7 +134,7 @@ class CVTester:
                 console.print(f"  Branch: {project_config['branch']}")
             else:
                 # Default configuration
-                project_config = ServiceSettings.DEFAULT_PROJECT_CONFIGS[project_name].copy()
+                project_config = ServiceSettings._get_default_project_configs()[project_name].copy()
                 console.print(f"[blue]Using default configuration for {project_name}[/blue]")
 
             # Create temporary test configuration with universe and single project
@@ -391,6 +391,10 @@ class CVTester:
         """Test YAML specification files (project_specs.yaml, drs_specs.yaml, catalog_spec.yaml, attr_specs.yaml)"""
         errors = []
 
+        # Add clear section header
+        console.print(f"\n[bold blue]📋 Testing YAML Specification Files[/bold blue]")
+        console.print(f"[dim]Repository path: {repo_dir}[/dim]")
+
         # Import constants and YAML handling
         try:
             import yaml
@@ -401,7 +405,9 @@ class CVTester:
                 ATTRIBUTES_SPECS_FILENAME
             )
         except ImportError as e:
-            errors.append(f"❌ Missing required dependencies: {e}")
+            error_msg = f"❌ Missing required dependencies: {e}"
+            errors.append(error_msg)
+            console.print(f"[red]{error_msg}[/red]")
             return errors
 
         # Get existing collections for validation
@@ -419,11 +425,17 @@ class CVTester:
                 console.print(f"   [green]✅ {PROJECT_SPECS_FILENAME} parsed successfully[/green]")
                 files_tested += 1
             except yaml.YAMLError as e:
-                errors.append(f"❌ {PROJECT_SPECS_FILENAME}: Invalid YAML syntax - {e}")
+                error_msg = f"❌ {PROJECT_SPECS_FILENAME}: Invalid YAML syntax - {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
             except Exception as e:
-                errors.append(f"❌ Error reading {PROJECT_SPECS_FILENAME}: {e}")
+                error_msg = f"❌ Error reading {PROJECT_SPECS_FILENAME}: {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
         else:
-            errors.append(f"❌ Required file {PROJECT_SPECS_FILENAME} not found")
+            error_msg = f"❌ Required file {PROJECT_SPECS_FILENAME} not found"
+            errors.append(error_msg)
+            console.print(f"📄 [red]{error_msg}[/red]")
 
         # Test drs_specs.yaml
         drs_specs_file = repo_dir / DRS_SPECS_FILENAME
@@ -446,11 +458,17 @@ class CVTester:
                 console.print(f"   [green]✅ {DRS_SPECS_FILENAME} parsed successfully[/green]")
                 files_tested += 1
             except yaml.YAMLError as e:
-                errors.append(f"❌ {DRS_SPECS_FILENAME}: Invalid YAML syntax - {e}")
+                error_msg = f"❌ {DRS_SPECS_FILENAME}: Invalid YAML syntax - {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
             except Exception as e:
-                errors.append(f"❌ Error reading {DRS_SPECS_FILENAME}: {e}")
+                error_msg = f"❌ Error reading {DRS_SPECS_FILENAME}: {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
         else:
-            errors.append(f"❌ Required file {DRS_SPECS_FILENAME} not found")
+            error_msg = f"❌ Required file {DRS_SPECS_FILENAME} not found"
+            errors.append(error_msg)
+            console.print(f"📄 [red]{error_msg}[/red]")
 
         # Test catalog_spec.yaml (optional)
         catalog_specs_file = repo_dir / CATALOG_SPECS_FILENAME
@@ -472,9 +490,13 @@ class CVTester:
                 console.print(f"   [green]✅ {CATALOG_SPECS_FILENAME} parsed successfully[/green]")
                 files_tested += 1
             except yaml.YAMLError as e:
-                errors.append(f"❌ {CATALOG_SPECS_FILENAME}: Invalid YAML syntax - {e}")
+                error_msg = f"❌ {CATALOG_SPECS_FILENAME}: Invalid YAML syntax - {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
             except Exception as e:
-                errors.append(f"❌ Error reading {CATALOG_SPECS_FILENAME}: {e}")
+                error_msg = f"❌ Error reading {CATALOG_SPECS_FILENAME}: {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
         else:
             console.print(f"   [yellow]⚠️  Optional file {CATALOG_SPECS_FILENAME} not found[/yellow]")
 
@@ -500,28 +522,44 @@ class CVTester:
                 console.print(f"   [yellow]⚠️  Note: {ATTRIBUTES_SPECS_FILENAME} is not currently ingested by esgvoc[/yellow]")
                 files_tested += 1
             except yaml.YAMLError as e:
-                errors.append(f"❌ {ATTRIBUTES_SPECS_FILENAME}: Invalid YAML syntax - {e}")
+                error_msg = f"❌ {ATTRIBUTES_SPECS_FILENAME}: Invalid YAML syntax - {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
             except Exception as e:
-                errors.append(f"❌ Error reading {ATTRIBUTES_SPECS_FILENAME}: {e}")
+                error_msg = f"❌ Error reading {ATTRIBUTES_SPECS_FILENAME}: {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
         else:
             console.print(f"   [yellow]⚠️  Optional file {ATTRIBUTES_SPECS_FILENAME} not found[/yellow]")
 
         # Validate collection references
+        console.print(f"\n📂 Validating collection references...")
         if source_collections:
             console.print(f"   Found {len(source_collections)} source_collection references")
 
             for collection in source_collections:
                 if collection not in existing_collections:
-                    errors.append(f"❌ YAML specs reference non-existent collection: '{collection}'")
+                    error_msg = f"❌ YAML specs reference non-existent collection: '{collection}'"
+                    errors.append(error_msg)
+                    console.print(f"   [red]{error_msg}[/red]")
                 else:
                     console.print(f"   [green]✅ Reference '{collection}' exists[/green]")
         else:
             console.print("   [yellow]⚠️  No collection references found in YAML specs[/yellow]")
 
+        # Final YAML validation summary
+        console.print(f"\n📊 YAML Validation Summary:")
         if files_tested == 0:
-            errors.append("❌ No YAML specification files found")
+            error_msg = "❌ No YAML specification files found"
+            errors.append(error_msg)
+            console.print(f"   [red]{error_msg}[/red]")
         else:
-            console.print(f"   [blue]📊 Successfully tested {files_tested} YAML specification files[/blue]")
+            if errors:
+                console.print(f"   [red]❌ {len(errors)} errors found in YAML files[/red]")
+            else:
+                console.print(f"   [green]✅ All {files_tested} YAML specification files are valid[/green]")
+
+            console.print(f"   [blue]Files tested: {files_tested}[/blue]")
 
         return errors
 
@@ -1198,8 +1236,9 @@ class CVTester:
                 try:
                     from esgvoc.core.service.configuration.setting import ServiceSettings
 
-                    if project_name in ServiceSettings.DEFAULT_PROJECT_CONFIGS:
-                        default_local_path = ServiceSettings.DEFAULT_PROJECT_CONFIGS[project_name]["local_path"]
+                    default_configs = ServiceSettings._get_default_project_configs()
+                    if project_name in default_configs:
+                        default_local_path = default_configs[project_name]["local_path"]
                         config_manager = service.get_config_manager()
 
                         # Try different path constructions to find where the repository actually is
@@ -1231,7 +1270,12 @@ class CVTester:
                 console.print("[yellow]⚠️  Could not determine CV repository path, using current directory[/yellow]")
 
         # Step 3: Test repository structure
-        if not self.test_repository_structure(repo_path):
+        console.print(f"[dim]Debug: About to test repository structure with path: {repo_path}[/dim]")
+        try:
+            if not self.test_repository_structure(repo_path):
+                success = False
+        except Exception as e:
+            console.print(f"[red]❌ Repository structure test failed with exception: {e}[/red]")
             success = False
 
         # Debug: Check what configuration is active before API test
@@ -1306,7 +1350,7 @@ def main():
             projects = tester.get_available_projects()
             console.print(f"[blue]Available projects ({len(projects)}):[/blue]")
             for project in projects:
-                config = ServiceSettings.DEFAULT_PROJECT_CONFIGS[project]
+                config = ServiceSettings._get_default_project_configs()[project]
                 console.print(f"  [cyan]{project}[/cyan] - {config['github_repo']} (branch: {config['branch']})")
 
         elif command == "configure":
