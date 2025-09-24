@@ -7,10 +7,12 @@ from unittest.mock import patch, MagicMock
 import pytest
 import toml
 from typer.testing import CliRunner
+from platformdirs import PlatformDirs
 
 # Import your actual CLI app - adjust this import path
 from esgvoc.cli.config import app  # Replace with your actual CLI module path
 from esgvoc.core.service.configuration.setting import ServiceSettings
+
 
 
 class MockConfigManager:
@@ -100,27 +102,28 @@ class TestConfigCLI:
         self.test_config_path = self.config_dir / "test.toml"
 
         # Create default configuration with only the default projects (cmip6, cmip6plus)
+        # Using relative paths that will be automatically converted to absolute by ServiceSettings
         default_config_data = {
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "./test_repos/WCRP-universe",
-                "db_path": "./test_dbs/universe.sqlite",
+                "local_path": "repos/WCRP-universe",
+                "db_path": "dbs/universe.sqlite",
             },
             "projects": [
                 {
                     "project_name": "cmip6",
                     "github_repo": "https://github.com/WCRP-CMIP/CMIP6_CVs",
                     "branch": "esgvoc",
-                    "local_path": "./test_repos/CMIP6_CVs",
-                    "db_path": "./test_dbs/cmip6.sqlite",
+                    "local_path": "repos/CMIP6_CVs",
+                    "db_path": "dbs/cmip6.sqlite",
                 },
                 {
                     "project_name": "cmip6plus",
                     "github_repo": "https://github.com/WCRP-CMIP/CMIP6Plus_CVs",
                     "branch": "esgvoc",
-                    "local_path": "./test_repos/CMIP6Plus_CVs",
-                    "db_path": "./test_dbs/cmip6plus.sqlite",
+                    "local_path": "repos/CMIP6Plus_CVs",
+                    "db_path": "dbs/cmip6plus.sqlite",
                 },
             ],
         }
@@ -357,8 +360,8 @@ class TestConfigCLI:
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "./test_repos/WCRP-universe",
-                "db_path": "./test_dbs/universe.sqlite",
+                "local_path": "repos/WCRP-universe",
+                "db_path": "dbs/universe.sqlite",
             },
             "projects": [],
         }
@@ -421,8 +424,8 @@ class TestConfigCLI:
             assert custom_project is not None
             assert custom_project["github_repo"] == "https://github.com/test/custom"
             assert custom_project["branch"] == "main"
-            assert custom_project["local_path"] == "/home/ltroussellier/.local/share/esgvoc/repos/custom"
-            assert custom_project["db_path"] == "/home/ltroussellier/.local/share/esgvoc/dbs/custom.sqlite"
+            assert custom_project["local_path"] == "repos/custom"
+            assert custom_project["db_path"] == "dbs/custom.sqlite"
 
     def test_add_project_custom_minimal(self):
         """Test adding a custom project with minimal parameters."""
@@ -440,8 +443,8 @@ class TestConfigCLI:
 
             project = next((p for p in data["projects"] if p["project_name"] == "minimal_project"), None)
             assert project is not None
-            assert project["local_path"] == "/home/ltroussellier/.local/share/esgvoc/repos/minimal_project"
-            assert project["db_path"] == "/home/ltroussellier/.local/share/esgvoc/dbs/minimal_project.sqlite"
+            assert project["local_path"] == "repos/minimal_project"
+            assert project["db_path"] == "dbs/minimal_project.sqlite"
             assert project["branch"] == "main"
 
     def test_add_project_already_exists(self):
@@ -555,8 +558,8 @@ class TestConfigCLI:
             assert project is not None
             assert project["github_repo"] == "https://github.com/new/repo"
             assert project["branch"] == "new_branch"
-            assert project["local_path"] == "/home/ltroussellier/.local/share/esgvoc/repos/new_path"
-            assert project["db_path"] == "/home/ltroussellier/.local/share/esgvoc/dbs/new.sqlite"
+            assert project["local_path"] == "repos/new_path"
+            assert project["db_path"] == "dbs/new.sqlite"
 
     def test_update_project_partial(self):
         """Test updating only some project settings."""
@@ -625,7 +628,7 @@ class TestConfigCLI:
 
             project = next((p for p in data["projects"] if p["project_name"] == "cmip6"), None)
             assert project["branch"] == "test_branch"
-            assert project["local_path"] == "/home/ltroussellier/.local/share/esgvoc/repos/test"
+            assert project["local_path"] == "repos/test"
 
     def test_set_invalid_format(self):
         """Test set command with invalid format."""
@@ -905,8 +908,8 @@ class TestConfigCLI:
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "./test_repos/WCRP-universe",
-                "db_path": "./test_dbs/universe.sqlite",
+                "local_path": "repos/WCRP-universe",
+                "db_path": "dbs/universe.sqlite",
             },
             "projects": [],
         }
@@ -1092,8 +1095,8 @@ class TestEdgeCases:
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "./test_repos/WCRP-universe",
-                "db_path": "./test_dbs/universe.sqlite",
+                "local_path": "repos/WCRP-universe",
+                "db_path": "dbs/universe.sqlite",
             },
             "projects": [],
         }
@@ -1148,8 +1151,8 @@ class TestEdgeCases:
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "./test_repos/WCRP-universe",
-                "db_path": "./test_dbs/universe.sqlite",
+                "local_path": "repos/WCRP-universe",
+                "db_path": "dbs/universe.sqlite",
             },
             "projects": [
                 {
@@ -1217,16 +1220,16 @@ class TestEdgeCases:
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "./test_repos/WCRP-universe",
-                "db_path": "./test_dbs/universe.sqlite",
+                "local_path": "repos/WCRP-universe",
+                "db_path": "dbs/universe.sqlite",
             },
             "projects": [
                 {
                     "project_name": "test_project",
                     "github_repo": "https://github.com/test/project",
                     "branch": "main",
-                    "local_path": "./test_repos/test_project",
-                    "db_path": "./test_dbs/test_project.sqlite",
+                    "local_path": "repos/test_project",
+                    "db_path": "dbs/test_project.sqlite",
                 }
             ],
         }
@@ -1262,16 +1265,16 @@ class TestEdgeCases:
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": "./test_repos/WCRP-universe",
-                "db_path": "./test_dbs/universe.sqlite",
+                "local_path": "repos/WCRP-universe",
+                "db_path": "dbs/universe.sqlite",
             },
             "projects": [
                 {
                     "project_name": "cmip6",
                     "github_repo": "https://github.com/WCRP-CMIP/CMIP6_CVs",
                     "branch": "esgvoc",
-                    "local_path": "./test_repos/CMIP6_CVs",
-                    "db_path": "./test_dbs/cmip6.sqlite",
+                    "local_path": "repos/CMIP6_CVs",
+                    "db_path": "dbs/cmip6.sqlite",
                 }
             ],
         }
@@ -1311,8 +1314,8 @@ def create_test_config(config_dir: Path, name: str, projects: list = None) -> Pa
                 "project_name": "cmip6",
                 "github_repo": "https://github.com/WCRP-CMIP/CMIP6_CVs",
                 "branch": "esgvoc",
-                "local_path": "./test_repos/CMIP6_CVs",
-                "db_path": "./test_dbs/cmip6.sqlite",
+                "local_path": "repos/CMIP6_CVs",
+                "db_path": "dbs/cmip6.sqlite",
             }
         ]
 
@@ -1320,8 +1323,8 @@ def create_test_config(config_dir: Path, name: str, projects: list = None) -> Pa
         "universe": {
             "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
             "branch": "esgvoc",
-            "local_path": "./test_repos/WCRP-universe",
-            "db_path": "./test_dbs/universe.sqlite",
+            "local_path": "repos/WCRP-universe",
+            "db_path": "dbs/universe.sqlite",
         },
         "projects": projects,
     }

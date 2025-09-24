@@ -2,8 +2,31 @@ from typing import ClassVar, Dict, Optional
 from pathlib import Path
 
 import toml
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 from platformdirs import PlatformDirs
+
+
+def resolve_path_to_absolute(relative_path: Optional[str]) -> Optional[str]:
+    """
+    Convert a relative path to an absolute path without modifying the original.
+    This is used for internal path resolution only.
+    """
+    if relative_path is None:
+        return None
+
+    path_obj = Path(relative_path)
+
+    if path_obj.is_absolute():
+        return str(path_obj.resolve())
+
+    # Handle dot-relative paths (./... or ../..) relative to current working directory
+    if relative_path.startswith('.'):
+        return str((Path.cwd() / relative_path).resolve())
+
+    # Handle plain relative paths using PlatformDirs (default behavior)
+    dirs = PlatformDirs("esgvoc", "ipsl")
+    base_path = Path(dirs.user_data_path).expanduser().resolve()
+    return str(base_path / relative_path)
 
 
 class ProjectSettings(BaseModel):
@@ -13,23 +36,13 @@ class ProjectSettings(BaseModel):
     local_path: Optional[str] = None
     db_path: Optional[str] = None
 
-    @field_validator('local_path', 'db_path', mode='before')
-    @classmethod
-    def validate_absolute_path(cls, v: Optional[str]) -> Optional[str]:
-        if v is None:
-            return v
-        path_obj = Path(v)
+    def get_absolute_local_path(self) -> Optional[str]:
+        """Get the absolute local path without modifying the stored value."""
+        return resolve_path_to_absolute(self.local_path)
 
-        if not path_obj.is_absolute():
-            # Handle dot-relative paths (./... or ../..) relative to current working directory
-            if v.startswith('.'):
-                return str((Path.cwd() / v).resolve())
-
-            # Handle plain relative paths using PlatformDirs (default behavior)
-            dirs = PlatformDirs("esgvoc", "ipsl")
-            base_path = Path(dirs.user_data_path).expanduser().resolve()
-            return str(base_path / v)
-        return str(path_obj.resolve())
+    def get_absolute_db_path(self) -> Optional[str]:
+        """Get the absolute db path without modifying the stored value."""
+        return resolve_path_to_absolute(self.db_path)
 
 
 class UniverseSettings(BaseModel):
@@ -38,23 +51,13 @@ class UniverseSettings(BaseModel):
     local_path: Optional[str] = None
     db_path: Optional[str] = None
 
-    @field_validator('local_path', 'db_path', mode='before')
-    @classmethod
-    def validate_absolute_path(cls, v: Optional[str]) -> Optional[str]:
-        if v is None:
-            return v
-        path_obj = Path(v)
+    def get_absolute_local_path(self) -> Optional[str]:
+        """Get the absolute local path without modifying the stored value."""
+        return resolve_path_to_absolute(self.local_path)
 
-        if not path_obj.is_absolute():
-            # Handle dot-relative paths (./... or ../..) relative to current working directory
-            if v.startswith('.'):
-                return str((Path.cwd() / v).resolve())
-
-            # Handle plain relative paths using PlatformDirs (default behavior)
-            dirs = PlatformDirs("esgvoc", "ipsl")
-            base_path = Path(dirs.user_data_path).expanduser().resolve()
-            return str(base_path / v)
-        return str(path_obj.resolve())
+    def get_absolute_db_path(self) -> Optional[str]:
+        """Get the absolute db path without modifying the stored value."""
+        return resolve_path_to_absolute(self.db_path)
 
 
 class ServiceSettings(BaseModel):
