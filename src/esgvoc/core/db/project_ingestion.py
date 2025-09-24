@@ -138,15 +138,19 @@ def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash:
         project_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.PROJECT_SPECS_FILENAME)
         drs_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.DRS_SPECS_FILENAME)
         catalog_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.CATALOG_SPECS_FILENAME)
+        attr_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.ATTRIBUTES_SPECS_FILENAME)
         try:
             raw_project_specs = read_yaml_file(project_specs_file_path)
             project_id = raw_project_specs[esgvoc.core.constants.PROJECT_ID_JSON_KEY]
             raw_drs_specs = read_yaml_file(drs_specs_file_path)
             project_specs = raw_project_specs
-            project_specs['drs_specs'] = raw_drs_specs
+            project_specs["drs_specs"] = raw_drs_specs
             if catalog_specs_file_path.exists():
                 raw_catalog_specs = read_yaml_file(catalog_specs_file_path)
-                project_specs['catalog_specs'] = raw_catalog_specs
+                project_specs["catalog_specs"] = raw_catalog_specs
+            if attr_specs_file_path.exists():
+                raw_attr_specs = read_yaml_file(attr_specs_file_path)
+                project_specs["attr_specs"] = raw_attr_specs
         except Exception as e:
             msg = f"unable to read specs files in {project_dir_path}"
             _LOGGER.fatal(msg)
