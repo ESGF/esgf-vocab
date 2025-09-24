@@ -247,13 +247,6 @@ class StateService:
                 project.build_db()
         self.connect_db()
 
-        # Display state table after synchronization
-        table = self.table()
-        from rich.console import Console
-
-        console = Console()
-        console.print(table)
-
     def table(self):
         table = Table(show_header=False, show_lines=True)
         table.add_row("", "Remote github repo", "Local repository", "Cache Database")
