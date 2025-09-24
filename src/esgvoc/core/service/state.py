@@ -30,11 +30,11 @@ class BaseState:
         self.github_access: bool = True
         self.github_version: str | None = None
 
-        self.local_path: str | None = self._validate_absolute_path(local_path, "local_path")
+        self.local_path: str | None = local_path
         self.local_access: bool = True  # False if we dont have cloned the remote repo yet
         self.local_version: str | None = None
 
-        self.db_path: str | None = self._validate_absolute_path(db_path, "db_path")
+        self.db_path: str | None = db_path
         self.db_access: bool = True  # False if we cant access the db for some reason
         self.db_version: str | None = None
 
@@ -42,27 +42,6 @@ class BaseState:
         self.db_connection: DBConnection | None = None
         self.db_sqlmodel: Universe | Project | None = None
 
-    def _validate_absolute_path(self, path: str | None, field_name: str) -> str | None:
-        """Validate and resolve the provided path, if provided."""
-        if path is None:
-            return None
-
-        from pathlib import Path
-        from platformdirs import PlatformDirs
-
-        path_obj = Path(path)
-
-        if not path_obj.is_absolute():
-            # Handle dot-relative paths (./... or ../..) relative to current working directory
-            if path.startswith('.'):
-                return str((Path.cwd() / path).resolve())
-
-            # Handle plain relative paths using PlatformDirs (default behavior)
-            dirs = PlatformDirs("esgvoc", "ipsl")
-            base_path = Path(dirs.user_data_path).expanduser().resolve()
-            return str(base_path / path)
-
-        return str(path_obj.resolve())
 
     def fetch_version_local(self):
         if self.local_path:
@@ -87,9 +66,7 @@ class BaseState:
                 self.github_access = False
             except Exception as e:
                 logger.exception(
-                    f"Failed to fetch GitHub version: {e} ,for {self.github_repo},owner : {owner}, repo : {
-                        repo
-                    },branch : {self.branch}"
+                    f"Failed to fetch GitHub version: {e} ,for {self.github_repo},owner : {owner}, repo : {repo},branch : {self.branch}"
                 )
                 self.github_access = False
 
@@ -222,7 +199,10 @@ class BaseState:
 
 class StateUniverse(BaseState):
     def __init__(self, settings: UniverseSettings):
-        super().__init__(**settings.model_dump())
+        params = settings.model_dump()
+        params['local_path'] = settings.get_absolute_local_path()
+        params['db_path'] = settings.get_absolute_db_path()
+        super().__init__(**params)
         self.db_sqlmodel = Universe
 
 
@@ -230,6 +210,8 @@ class StateProject(BaseState):
     def __init__(self, settings: ProjectSettings):
         mdict = settings.model_dump()
         self.project_name = mdict.pop("project_name")
+        mdict['local_path'] = settings.get_absolute_local_path()
+        mdict['db_path'] = settings.get_absolute_db_path()
         super().__init__(**mdict)
         self.db_sqlmodel = Project
 

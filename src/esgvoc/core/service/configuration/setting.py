@@ -72,64 +72,62 @@ class ServiceSettings(BaseModel):
 
     @classmethod
     def _get_default_project_configs(cls) -> Dict[str, dict]:
-        """Generate default project configurations with absolute paths."""
-        base_path = cls._get_default_base_path()
+        """Generate default project configurations with relative paths."""
         return {
             "cmip6": {
                 "project_name": "cmip6",
                 "github_repo": "https://github.com/WCRP-CMIP/CMIP6_CVs",
                 "branch": "esgvoc",
-                "local_path": str(base_path / "repos" / "CMIP6_CVs"),
-                "db_path": str(base_path / "dbs" / "cmip6.sqlite"),
+                "local_path": "repos/CMIP6_CVs",
+                "db_path": "dbs/cmip6.sqlite",
             },
             "cmip6plus": {
                 "project_name": "cmip6plus",
                 "github_repo": "https://github.com/WCRP-CMIP/CMIP6Plus_CVs",
                 "branch": "esgvoc",
-                "local_path": str(base_path / "repos" / "CMIP6Plus_CVs"),
-                "db_path": str(base_path / "dbs" / "cmip6plus.sqlite"),
+                "local_path": "repos/CMIP6Plus_CVs",
+                "db_path": "dbs/cmip6plus.sqlite",
             },
             "input4mip": {
                 "project_name": "input4mip",
                 "github_repo": "https://github.com/PCMDI/input4MIPs_CVs",
                 "branch": "esgvoc",
-                "local_path": str(base_path / "repos" / "Input4MIP_CVs"),
-                "db_path": str(base_path / "dbs" / "input4mips.sqlite"),
+                "local_path": "repos/Input4MIP_CVs",
+                "db_path": "dbs/input4mips.sqlite",
             },
             "obs4ref": {
                 "project_name": "obs4ref",
                 "github_repo": "https://github.com/Climate-REF/Obs4REF_CVs",
                 "branch": "main",
-                "local_path": str(base_path / "repos" / "obs4REF_CVs"),
-                "db_path": str(base_path / "dbs" / "obs4ref.sqlite"),
+                "local_path": "repos/obs4REF_CVs",
+                "db_path": "dbs/obs4ref.sqlite",
             },
             "cordex-cmip6": {
                 "project_name": "cordex-cmip6",
                 "github_repo": "https://github.com/WCRP-CORDEX/cordex-cmip6-cv",
                 "branch": "esgvoc",
-                "local_path": str(base_path / "repos" / "cordex-cmip6-cv"),
-                "db_path": str(base_path / "dbs" / "cordex-cmip6.sqlite"),
+                "local_path": "repos/cordex-cmip6-cv",
+                "db_path": "dbs/cordex-cmip6.sqlite",
             },
             "cmip7": {
                 "project_name": "cmip7",
                 "github_repo": "https://github.com/WCRP-CMIP/CMIP7-CVs",
                 "branch": "esgvoc",
-                "local_path": str(base_path / "repos" / "CMIP7-CVs"),
-                "db_path": str(base_path / "dbs" / "cmip7.sqlite"),
+                "local_path": "repos/CMIP7-CVs",
+                "db_path": "dbs/cmip7.sqlite",
             },
         }
 
     @classmethod
     def _get_default_settings(cls) -> dict:
-        """Generate default settings with absolute paths."""
-        base_path = cls._get_default_base_path()
+        """Generate default settings with relative paths."""
         project_configs = cls._get_default_project_configs()
         return {
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
                 "branch": "esgvoc",
-                "local_path": str(base_path / "repos" / "WCRP-universe"),
-                "db_path": str(base_path / "dbs" / "universe.sqlite"),
+                "local_path": "repos/WCRP-universe",
+                "db_path": "dbs/universe.sqlite",
             },
             "projects": [
                 project_configs["cmip6"],
