@@ -124,18 +124,17 @@ def _process_composite_term(term: UTerm | PTerm, universe_session: Session,
     return property_key, property_values, has_pattern
 
 
-def _process_col_pattern_terms(collection: PCollection) -> tuple[str, list[str | dict]]:
-    property_values = list()
+def _process_col_pattern_terms(collection: PCollection) -> tuple[str, str | list[dict]]:
     if len(collection.terms) == 1:
         term = collection.terms[0]
-        property_key, pvalue = _process_pattern_term(term)
-        property_values.append(pvalue)
+        property_key, property_value = _process_pattern_term(term)
     else:
         property_key = 'anyOf'
+        property_value = list()
         for term in collection.terms:
             pkey, pvalue = _process_pattern_term(term)
-            property_values.append({pkey: pvalue})
-    return property_key, property_values
+            property_value.append({pkey: pvalue})
+    return property_key, property_value
 
 
 def _process_pattern_term(term: PTerm) -> tuple[str, str]:
