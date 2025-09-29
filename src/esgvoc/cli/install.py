@@ -8,6 +8,19 @@ def install():
     """Initialize default config and apply settings"""
     try:
         typer.echo("Initialized default configuration")
+
+        # Check if any components are in offline mode
+        offline_components = []
+        if current_state.universe.offline_mode:
+            offline_components.append("universe")
+        for project_name, project in current_state.projects.items():
+            if project.offline_mode:
+                offline_components.append(project_name)
+
+        if offline_components:
+            typer.echo(f"Note: The following components are in offline mode: {', '.join(offline_components)}")
+            typer.echo("Only local repositories and databases will be used.")
+
         current_state.synchronize_all()
 
         # Ensure versions are properly fetched after synchronization
