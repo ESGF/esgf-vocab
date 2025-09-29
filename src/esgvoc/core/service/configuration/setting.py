@@ -37,6 +37,7 @@ class ProjectSettings(BaseModel):
     branch: Optional[str] = "main"
     local_path: Optional[str] = None
     db_path: Optional[str] = None
+    offline_mode: bool = False
     _config_name: Optional[str] = None
 
     def set_config_name(self, config_name: str):
@@ -57,6 +58,7 @@ class UniverseSettings(BaseModel):
     branch: Optional[str] = None
     local_path: Optional[str] = None
     db_path: Optional[str] = None
+    offline_mode: bool = False
     _config_name: Optional[str] = None
 
     def set_config_name(self, config_name: str):
@@ -98,6 +100,7 @@ class ServiceSettings(BaseModel):
                 "branch": "esgvoc",
                 "local_path": "repos/CMIP6_CVs",
                 "db_path": "dbs/cmip6.sqlite",
+                "offline_mode": False,
             },
             "cmip6plus": {
                 "project_name": "cmip6plus",
@@ -105,6 +108,7 @@ class ServiceSettings(BaseModel):
                 "branch": "esgvoc",
                 "local_path": "repos/CMIP6Plus_CVs",
                 "db_path": "dbs/cmip6plus.sqlite",
+                "offline_mode": False,
             },
             "input4mip": {
                 "project_name": "input4mip",
@@ -112,6 +116,7 @@ class ServiceSettings(BaseModel):
                 "branch": "esgvoc",
                 "local_path": "repos/Input4MIP_CVs",
                 "db_path": "dbs/input4mips.sqlite",
+                "offline_mode": False,
             },
             "obs4ref": {
                 "project_name": "obs4ref",
@@ -119,6 +124,7 @@ class ServiceSettings(BaseModel):
                 "branch": "main",
                 "local_path": "repos/obs4REF_CVs",
                 "db_path": "dbs/obs4ref.sqlite",
+                "offline_mode": False,
             },
             "cordex-cmip6": {
                 "project_name": "cordex-cmip6",
@@ -126,6 +132,7 @@ class ServiceSettings(BaseModel):
                 "branch": "esgvoc",
                 "local_path": "repos/cordex-cmip6-cv",
                 "db_path": "dbs/cordex-cmip6.sqlite",
+                "offline_mode": False,
             },
             "cmip7": {
                 "project_name": "cmip7",
@@ -133,6 +140,7 @@ class ServiceSettings(BaseModel):
                 "branch": "esgvoc",
                 "local_path": "repos/CMIP7-CVs",
                 "db_path": "dbs/cmip7.sqlite",
+                "offline_mode": False,
             },
         }
 
@@ -146,6 +154,7 @@ class ServiceSettings(BaseModel):
                 "branch": "esgvoc",
                 "local_path": "repos/WCRP-universe",
                 "db_path": "dbs/universe.sqlite",
+                "offline_mode": False,
             },
             "projects": [
                 project_configs["cmip6"],
@@ -272,6 +281,11 @@ class ServiceSettings(BaseModel):
         """
         if project_name not in self.projects:
             return False
+
+        # Handle boolean conversion for offline_mode if present
+        if 'offline_mode' in kwargs:
+            if isinstance(kwargs['offline_mode'], str):
+                kwargs['offline_mode'] = kwargs['offline_mode'].lower() in ("true", "1", "yes", "on")
 
         # Get current config and update with new values
         current_config = self.projects[project_name].model_dump()

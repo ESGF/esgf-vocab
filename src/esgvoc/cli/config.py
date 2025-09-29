@@ -326,16 +326,22 @@ def set(
 
     Examples:
         # Change the universe branch in the active configuration
-        esgvoc set 'universe:branch=esgvoc_dev'
+        esgvoc config set 'universe:branch=esgvoc_dev'
+
+        # Enable offline mode for universe
+        esgvoc config set 'universe:offline_mode=true'
+
+        # Enable offline mode for a specific project
+        esgvoc config set 'cmip6:offline_mode=true'
 
         # Change multiple components at once
-        esgvoc set 'universe:branch=esgvoc_dev' 'cmip6:branch=esgvoc_dev'
+        esgvoc config set 'universe:branch=esgvoc_dev' 'cmip6:branch=esgvoc_dev'
 
         # Change settings in a specific configuration
-        esgvoc set 'universe:local_path=repos/prod/universe' --config prod
+        esgvoc config set 'universe:local_path=repos/prod/universe' --config prod
 
         # Change the GitHub repository URL for a project
-        esgvoc set 'cmip6:github_repo=https://github.com/WCRP-CMIP/CMIP6_CVs_new'
+        esgvoc config set 'cmip6:github_repo=https://github.com/WCRP-CMIP/CMIP6_CVs_new'
     """
     service = get_service()
     config_manager = service.get_config_manager()
@@ -373,6 +379,9 @@ def set(
                         modified = True
                     elif setting_key == "db_path":
                         config.universe.db_path = setting_value
+                        modified = True
+                    elif setting_key == "offline_mode":
+                        config.universe.offline_mode = setting_value.lower() in ("true", "1", "yes", "on")
                         modified = True
                     else:
                         console.print(f"[yellow]Warning: Unknown universe setting '{setting_key}'. Skipping.[/yellow]")
@@ -1148,6 +1157,78 @@ def migrate(
         # Disable migration mode
         if 'ESGVOC_MIGRATION_MODE' in os.environ:
             del os.environ['ESGVOC_MIGRATION_MODE']
+
+
+@app.command()
+def offline(
+    enable: Optional[bool] = typer.Option(
+        None, "--enable/--disable", help="Enable or disable offline mode. If not specified, shows current status."
+    ),
+    component: Optional[str] = typer.Option(
+        "universe", "--component", "-c", help="Component to modify: 'universe' or project name (default: universe)"
+    ),
+    config_name: Optional[str] = typer.Option(
+        None, "--config", help="Configuration name. Uses active configuration if not specified."
+    ),
+):
+    """
+    Enable, disable, or show offline mode status.
+
+    Examples:
+        esgvoc config offline --enable               # Enable offline mode for universe
+        esgvoc config offline --disable              # Disable offline mode for universe
+        esgvoc config offline --enable -c cmip6      # Enable offline mode for cmip6 project
+        esgvoc config offline                        # Show current offline mode status
+    """
+    service = get_service()
+    config_manager = service.get_config_manager()
+
+    if config_name is None:
+        config_name = config_manager.get_active_config_name()
+
+    configs = config_manager.list_configs()
+    if config_name not in configs:
+        console.print(f"[red]Error: Configuration '{config_name}' not found.[/red]")
+        raise typer.Exit(1)
+
+    try:
+        config = config_manager.get_config(config_name)
+
+        if enable is None:
+            # Show current status
+            if component == "universe":
+                status = "enabled" if config.universe.offline_mode else "disabled"
+                console.print(f"Universe offline mode is [cyan]{status}[/cyan] in configuration '{config_name}'")
+            elif component in config.projects:
+                status = "enabled" if config.projects[component].offline_mode else "disabled"
+                console.print(f"Project '{component}' offline mode is [cyan]{status}[/cyan] in configuration '{config_name}'")
+            else:
+                console.print(f"[red]Error: Component '{component}' not found.[/red]")
+                raise typer.Exit(1)
+        else:
+            # Update offline mode
+            if component == "universe":
+                config.universe.offline_mode = enable
+                status = "enabled" if enable else "disabled"
+                console.print(f"[green]Universe offline mode {status} in configuration '{config_name}'[/green]")
+            elif component in config.projects:
+                config.projects[component].offline_mode = enable
+                status = "enabled" if enable else "disabled"
+                console.print(f"[green]Project '{component}' offline mode {status} in configuration '{config_name}'[/green]")
+            else:
+                console.print(f"[red]Error: Component '{component}' not found.[/red]")
+                raise typer.Exit(1)
+
+            # Save the configuration
+            config_manager.save_active_config(config)
+
+            # Reset the state if we modified the active configuration
+            if config_name == config_manager.get_active_config_name():
+                service.current_state = service.get_state()
+
+    except Exception as e:
+        console.print(f"[red]Error managing offline mode: {str(e)}[/red]")
+        raise typer.Exit(1)
 
 
 @app.command()

@@ -64,9 +64,10 @@ class RepoFetcher:
     DataFetcher is responsible for fetching data from external sources such as GitHub.
     """
 
-    def __init__(self, base_url: str = "https://api.github.com", local_path: str = ".cache/repos"):
+    def __init__(self, base_url: str = "https://api.github.com", local_path: str = ".cache/repos", offline_mode: bool = False):
         self.base_url = base_url
         self.repo_dir = local_path
+        self.offline_mode = offline_mode
 
     def fetch_repositories(self, user: str) -> List[GitHubRepository]:
         """
@@ -74,6 +75,9 @@ class RepoFetcher:
         :param user: GitHub username
         :return: List of GitHubRepository objects
         """
+        if self.offline_mode:
+            raise Exception("Cannot fetch repositories in offline mode")
+
         url = f"{self.base_url}/users/{user}/repos"
         response = requests.get(url)
 
@@ -93,6 +97,9 @@ class RepoFetcher:
         :param repo: Repository name
         :return: GitHubRepository object
         """
+        if self.offline_mode:
+            raise Exception("Cannot fetch repository details in offline mode")
+
         url = f"{self.base_url}/repos/{owner}/{repo}"
         response = requests.get(url)
 
@@ -113,6 +120,9 @@ class RepoFetcher:
         :param branch: Branch name
         :return: GitHubBranch object
         """
+        if self.offline_mode:
+            raise Exception("Cannot fetch branch details in offline mode")
+
         url = f"{self.base_url}/repos/{owner}/{repo}/branches/{branch}"
         response = requests.get(url)
 
@@ -133,6 +143,9 @@ class RepoFetcher:
         :param branch: Branch name (default: 'main').
         :return: List of directories in the repository.
         """
+        if self.offline_mode:
+            raise Exception("Cannot list directories in offline mode")
+
         url = f"https://api.github.com/repos/{owner}/{repo}/contents/?ref={branch}"
         response = requests.get(url)
         response.raise_for_status()  # Raise an error for bad responses
@@ -150,6 +163,9 @@ class RepoFetcher:
         :param branch: Branch name (default: 'main').
         :return: List of files in the specified directory.
         """
+        if self.offline_mode:
+            raise Exception("Cannot list files in offline mode")
+
         url = f"https://api.github.com/repos/{owner}/{repo}/contents/{directory}?ref={branch}"
         response = requests.get(url)
         response.raise_for_status()  # Raise an error for bad responses
@@ -166,6 +182,9 @@ class RepoFetcher:
         :param branch: (Optional) The branch to clone. Clones the default branch if None.
         :param shallow: (Optional) If True, performs a shallow clone with --depth 1. Default is True.
         """
+        if self.offline_mode:
+            raise Exception("Cannot clone repository in offline mode")
+
         repo_url = f"https://github.com/{owner}/{repo}.git"
         destination = local_path if local_path else f"{self.repo_dir}/{repo}"
 
@@ -246,11 +265,17 @@ class RepoFetcher:
 
     def get_github_version_with_api(self, owner: str, repo: str, branch: str = "main"):
         """Fetch the latest commit version (or any other versioning scheme) from GitHub."""
+        if self.offline_mode:
+            raise Exception("Cannot get GitHub version in offline mode")
         details = self.fetch_branch_details(owner, repo, branch)
         return details.commit.get("sha")
 
     def get_github_version(self, owner: str, repo: str, branch: str = "main"):
         """Fetch the latest commit version (or any other versioning scheme) from GitHub. with command git fetch"""
+        if self.offline_mode:
+            _LOGGER.debug("Cannot get GitHub version in offline mode")
+            return None
+
         repo_url = f"https://github.com/{owner}/{repo}.git"
         command = ["git", "ls-remote", repo_url, f"{self.repo_dir}/{repo}"]
         if branch:
