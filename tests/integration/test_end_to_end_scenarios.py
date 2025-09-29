@@ -61,7 +61,8 @@ class TestEndToEndScenariosWithDefaultConfig:
             assert current_state is not None
 
             universe_path = absolute_config.universe.get_absolute_local_path()
-            assert universe_path == "/tmp/test_absolute/repos/WCRP-universe"
+            expected_universe_path = str(Path("/tmp/test_absolute/repos/WCRP-universe").resolve())
+            assert universe_path == expected_universe_path
 
             # Test platform-relative path workflow
             platform_config = create_test_config_variant(
@@ -97,7 +98,8 @@ class TestEndToEndScenariosWithDefaultConfig:
             # Test switching between configs
             config_manager.switch_config("switch_test_1")
             current_config = config_manager.get_active_config()
-            assert current_config.universe.get_absolute_local_path() == "/tmp/test_absolute/repos/WCRP-universe"
+            expected_path = str(Path("/tmp/test_absolute/repos/WCRP-universe").resolve())
+            assert current_config.universe.get_absolute_local_path() == expected_path
 
             config_manager.switch_config("switch_test_2")
             current_config = config_manager.get_active_config()
@@ -286,7 +288,8 @@ class TestMixedPathTypeWorkflowWithDefaultConfig:
                 universe_local = mixed_config.universe.get_absolute_local_path()
                 universe_db = mixed_config.universe.get_absolute_db_path()
 
-                assert universe_local == "/tmp/mixed_workflow/universe"
+                expected_universe_local = str(Path("/tmp/mixed_workflow/universe").resolve())
+                assert universe_local == expected_universe_local
                 assert str(temp_path) in universe_db
                 assert "workflow_dbs/universe.sqlite" in universe_db
 
