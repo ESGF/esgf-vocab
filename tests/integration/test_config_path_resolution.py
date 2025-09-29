@@ -111,15 +111,21 @@ class TestConfigPathResolutionWithDefaultConfig:
                 sample_config_modifications
             )
 
-            # Check universe paths
-            assert config.universe.get_absolute_local_path() == "/tmp/test_absolute/repos/WCRP-universe"
-            assert config.universe.get_absolute_db_path() == "/tmp/test_absolute/dbs/universe.sqlite"
+            # Check universe paths - use Path.resolve() to get consistent cross-platform paths
+            expected_universe_local = str(Path("/tmp/test_absolute/repos/WCRP-universe").resolve())
+            expected_universe_db = str(Path("/tmp/test_absolute/dbs/universe.sqlite").resolve())
+
+            assert config.universe.get_absolute_local_path() == expected_universe_local
+            assert config.universe.get_absolute_db_path() == expected_universe_db
 
             # Check project paths (if projects exist)
             if config.projects:
                 first_project = list(config.projects.values())[0]
-                assert first_project.get_absolute_local_path() == "/tmp/test_absolute/repos/CMIP6_CVs"
-                assert first_project.get_absolute_db_path() == "/tmp/test_absolute/dbs/cmip6.sqlite"
+                expected_project_local = str(Path("/tmp/test_absolute/repos/CMIP6_CVs").resolve())
+                expected_project_db = str(Path("/tmp/test_absolute/dbs/cmip6.sqlite").resolve())
+
+                assert first_project.get_absolute_local_path() == expected_project_local
+                assert first_project.get_absolute_db_path() == expected_project_db
 
         finally:
             # Clean up test config
@@ -230,9 +236,11 @@ class TestConfigPathResolutionWithDefaultConfig:
 
                 updated_config = config_manager.get_active_config()
 
-                # Check universe paths
-                assert updated_config.universe.get_absolute_local_path() == "/tmp/absolute/universe"
+                # Check universe paths - use Path.resolve() for cross-platform compatibility
+                expected_universe_local = str(Path("/tmp/absolute/universe").resolve())
                 expected_db = str((temp_path / "relative_dbs" / "universe.sqlite").resolve())
+
+                assert updated_config.universe.get_absolute_local_path() == expected_universe_local
                 assert updated_config.universe.get_absolute_db_path() == expected_db
 
                 # Check project paths (if projects exist)
@@ -241,7 +249,9 @@ class TestConfigPathResolutionWithDefaultConfig:
                     project_path = first_project.get_absolute_local_path()
                     assert "mixed_test" in project_path
                     assert "repos/CMIP6_CVs" in project_path
-                    assert first_project.get_absolute_db_path() == "/tmp/absolute/cmip6.sqlite"
+
+                    expected_project_db = str(Path("/tmp/absolute/cmip6.sqlite").resolve())
+                    assert first_project.get_absolute_db_path() == expected_project_db
 
         finally:
             # Restore working directory and clean up
@@ -262,10 +272,11 @@ class TestConfigPathResolutionWithDefaultConfig:
                 config_manager, "platform_config", "platform_relative_paths", sample_config_modifications
             )
 
-            # Test switching to absolute config
+            # Test switching to absolute config - use Path.resolve() for cross-platform compatibility
             config_manager.switch_config("absolute_config")
             config = config_manager.get_active_config()
-            assert config.universe.get_absolute_local_path() == "/tmp/test_absolute/repos/WCRP-universe"
+            expected_absolute_path = str(Path("/tmp/test_absolute/repos/WCRP-universe").resolve())
+            assert config.universe.get_absolute_local_path() == expected_absolute_path
 
             # Test switching to platform config
             config_manager.switch_config("platform_config")
@@ -277,7 +288,7 @@ class TestConfigPathResolutionWithDefaultConfig:
             # Switch back to absolute config
             config_manager.switch_config("absolute_config")
             config = config_manager.get_active_config()
-            assert config.universe.get_absolute_local_path() == "/tmp/test_absolute/repos/WCRP-universe"
+            assert config.universe.get_absolute_local_path() == expected_absolute_path
 
         finally:
             # Clean up test configs
