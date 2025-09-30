@@ -12,3 +12,4 @@ class Activity(PlainTermDataDescriptor):
     name: str
     long_name: str
     url: str | None
+    description: str
