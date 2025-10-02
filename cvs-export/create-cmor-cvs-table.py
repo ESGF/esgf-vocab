@@ -216,6 +216,11 @@ class CMORCVsTable(BaseModel):
     Grid label options
     """
 
+    horizontal_label: AllowedDict
+    """
+    Horizontal label options
+    """
+
     # TODO: switch to using esgvoc's model once it is clear what key we should use for 'value'
     mip_era: str
     """
@@ -446,6 +451,9 @@ def main():
     grid_label_esgvoc = ev.get_all_terms_in_data_descriptor("grid")
     grid_label = {v.drs_name: v.description for v in grid_label_esgvoc}
 
+    horizontal_label_esgvoc = ev.get_all_terms_in_data_descriptor("horizontal_label")
+    horizontal_label = {v.drs_name: v.description for v in horizontal_label_esgvoc}
+
     drs = get_drs()
 
     cmor_cvs_table = CMORCVsTable(
@@ -458,6 +466,7 @@ def main():
         experiment_id=experiment_id,
         frequency=frequency,
         grid_label=grid_label,
+        horizontal_label=horizontal_label,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",
         mip_era=mip_era,

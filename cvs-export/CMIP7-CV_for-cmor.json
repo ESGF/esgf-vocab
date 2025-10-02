@@ -9891,6 +9891,14 @@
             "grg": "regridded data in the region of Greenland reported on the data provider's preferred target grid",
             "grz": "regridded zonal mean data reported on the data provider's preferred latitude target grid"
         },
+        "horizontal_label": {
+            "hm": "the variable represents a spatial mean over the entire domain spanned by the recorded data (as recorded in the dataRegionDD) or is independent of spatial position.  In this case, there should be no horizontal spatial coordinates.",
+            "ht": "the variable represents a horizontal transport or a stream function in the vertical plane computed by averaging or summing along a transect not constrained to coincide with a latitude circle.  (If the transect is along a latitude circle, 'hy' or 'hys' would apply.)",
+            "hxy": "the variable is carried on a (roughly) horizontal (spatially two-dimensional) grid covering the domain reported.",
+            "hxys": "the variable is a function of longitude and latitude, but is reported only at selected sites.  This differs from 'hms' in that each reported value should be representative of an area about the size of an original grid cell (e.g., data reported from a subset of cells extracted from a grid).  For observations each value should be from measurements made at a single site (not an average of a collection of sites).",
+            "hy": "the values reported are zonal means or sums over all longitudes in the domain, which means the variable is a function of latitude, but not longitude.",
+            "hys": "the variable is a function of latitude alone but may represent selected transects or means (or sums) over sub-domains (e.g., a mean over longitude for different ocean basins as a function of latitude)"
+        },
         "mip_era": "CMIP7"
     }
 }
