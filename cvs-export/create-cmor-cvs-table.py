@@ -275,6 +275,15 @@ class CMORCVsTable(BaseModel):
     """
     # Validation(?): must be equal to CMIP7
 
+    # TODO: add to esgvoc?
+    nominal_resolution: RegularExpressionValidators
+    """
+    Nominal resolution options
+
+    TODO: link to tool which can be used for calculating this
+    if people don't know how to figure this out
+    """
+
     def to_json(self) -> dict[str, dict[str, str, AllowedDict, RegularExpressionValidators]]:
         md = self.model_dump()
 
@@ -521,6 +530,26 @@ def main():
         },
         license_template="<license_id>; CMIP7 data produced by <institution_id> is licensed under a <license_type> License (<license_url>). Consult https://pcmdi.llnl.gov/CMIP7/TermsOfUse for terms of use governing CMIP7 output, including citation requirements and proper acknowledgment. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.",
     )
+
+    # Not  sure if we can get this from elsewhere, it's not in esgvoc
+    nominal_resolution = [
+        "0.5 km",
+        "1 km",
+        "10 km",
+        "100 km",
+        "1000 km",
+        "10000 km",
+        "1x1 degree",
+        "2.5 km",
+        "25 km",
+        "250 km",
+        "2500 km",
+        "5 km",
+        "50 km",
+        "500 km",
+        "5000 km",
+    ]
+
     drs = get_drs()
 
     cmor_cvs_table = CMORCVsTable(
@@ -536,6 +565,7 @@ def main():
         horizontal_label=horizontal_label,
         institution_id=institution_id,
         license=license,
+        nominal_resolution=nominal_resolution,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",
         mip_era=mip_era,
