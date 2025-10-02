@@ -289,6 +289,21 @@ class CMORCVsTable(BaseModel):
     Options for rough description of the kind of data product
     """
 
+    realm: AllowedDict
+    """
+    Options for the data realm (TODO: check this)
+    """
+
+    region: AllowedDict
+    """
+    Options for the data region (this is just a rough description, not unambiguous in all cases)
+    """
+
+    required_global_attributes: list[str]
+    """
+    Required global attributes
+    """
+
     def to_json(self) -> dict[str, dict[str, str, AllowedDict, RegularExpressionValidators]]:
         md = self.model_dump()
 
@@ -558,6 +573,23 @@ def main():
     product_esgvoc = ev.get_all_terms_in_data_descriptor("product")
     product = [v.drs_name for v in product_esgvoc]
 
+    realm_esgvoc = ev.get_all_terms_in_data_descriptor("realm")
+    realm = {v.drs_name: v.description for v in realm_esgvoc}
+
+    # These values do not look correct
+    region_esgvoc = ev.get_all_terms_in_data_descriptor("region")
+    region = {v.drs_name: v.description for v in region_esgvoc}
+
+    required_global_attributes = []
+    for v in ev.get_project(project).attr_specs:
+        if v.is_required:
+            # Really don't like needing this `if` statement,
+            # can we just have an `attribute_name` on esgvoc terms?
+            if v.field_name is None:
+                required_global_attributes.append(v.source_collection)
+            else:
+                required_global_attributes.append(v.field_name)
+
     drs = get_drs()
 
     cmor_cvs_table = CMORCVsTable(
@@ -575,6 +607,9 @@ def main():
         license=license,
         nominal_resolution=nominal_resolution,
         product=product,
+        realm=realm,
+        region=region,
+        required_global_attributes=required_global_attributes,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",
         mip_era=mip_era,
