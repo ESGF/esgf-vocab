@@ -8,6 +8,9 @@
             "filename-path-sub-experiment-example": "",
             "filename-path-template": "<variable>_<branding_suffix>_<reportingInterval>_<region>_<gridLabel>_<source>_<experiment>_<datasetVariant>[_<timeRange>].nc"
         },
+        "archive_id": {
+            "WCRP": "TODO: description in esgvoc (or learn how to use ev to get the description)"
+        },
         "data_specs_version": "placeholder",
         "mip_era": "CMIP7"
     }

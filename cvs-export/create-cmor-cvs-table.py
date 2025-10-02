@@ -80,6 +80,11 @@ class CMORCVsTable(BaseModel):
     or their interactions with this table at the moment.
     """
 
+    archive_id: AllowedDict
+    """
+    Identifier(s) of the archive(s) to which data can belong
+    """
+
     # Switch to DataSpecsVersion when it has attributes we can use
     # data_specs_version: DataSpecsVersion
     data_specs_version: str
@@ -125,16 +130,11 @@ class CMORCVsTable(BaseModel):
         return cvs_json
 
 
-def main():
-    """
-    Create the CMOR CVs table
-    """
-    OUT_FILE = Path(".") / "CMIP7-CV_for-cmor.json"
+def get_drs() -> DataReferenceSyntax:
+    # Hard-coded as there are hard-coded examples below specific to CMIP7
+    project = "cmip7"
 
-    # Fine to hard-code I think?
-    mip_era = "CMIP7"
-
-    cmip7_drs_specs = ev.get_project("cmip7").drs_specs
+    cmip7_drs_specs = ev.get_project(project).drs_specs
     directory_path_template_l = []
     directory_path_example_l = []
     # Note: this doesn't generate a valid example
@@ -236,7 +236,30 @@ def main():
         filename_path_sub_experiment_example="",
     )
 
+    return drs
+
+
+def main():
+    """
+    Create the CMOR CVs table
+    """
+    OUT_FILE = Path(".") / "CMIP7-CV_for-cmor.json"
+
+    # Fine to hard-code I think?
+    project = "cmip7"
+
+    archive_id_esgvoc = ev.get_all_terms_in_collection("cmip7", "archive")
+    archive_id = {
+        v.drs_name: "TODO: description in esgvoc (or learn how to use ev to get the description)"
+        for v in archive_id_esgvoc
+    }
+
+    drs = get_drs()
+
+    mip_era = project.upper()
+
     cmor_cvs_table = CMORCVsTable(
+        archive_id=archive_id,
         drs=drs,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",
