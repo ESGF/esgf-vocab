@@ -155,6 +155,43 @@ class ExperimentID(BaseModel):
     """
 
 
+# TODO: check if same or different as esgvoc model
+class LicenseDefinition(BaseModel):
+    """
+    License definition
+    """
+
+    license_type: str
+    """
+    Type of the license
+    """
+    # TODO: validation, should be SPDX identifier
+    # http://spdx.org/licenses
+
+    license_url: str
+    """
+    URL that describes the license
+    """
+    # TODO: redundant with SPDX identifiers but ok
+
+
+class License(BaseModel):
+    """
+    License ID definitions
+    """
+
+    license_id: dict[str, LicenseDefinition]
+    """
+    Supported licenses
+    """
+
+    # (rightfully) not in esgvoc
+    license_template: str
+    """
+    Template for writing license strings
+    """
+
+
 class CMORCVsTable(BaseModel):
     """
     Representation of the JSON table required by CMOR for CVs
@@ -224,6 +261,11 @@ class CMORCVsTable(BaseModel):
     institution_id: AllowedDict
     """
     Known institution IDs
+    """
+
+    license: License
+    """
+    License definitions
     """
 
     # TODO: switch to using esgvoc's model once it is clear what key we should use for 'value'
@@ -466,6 +508,19 @@ def main():
     # TODO: lots of the values need checking
     institution_id = {v.drs_name: v.name for v in institution_id_esgvoc}
 
+    license = License(
+        license_id={
+            "CC BY 4.0": LicenseDefinition(
+                license_type="Creative Commons Attribution 4.0 International",
+                license_url="https://creativecommons.org/licenses/by/4.0/",
+            ),
+            "CC0 1.0": LicenseDefinition(
+                license_type="Creative Commons CC0 1.0 Universal Public Domain Dedication",
+                license_url="https://creativecommons.org/publicdomain/zero/1.0/",
+            ),
+        },
+        license_template="<license_id>; CMIP7 data produced by <institution_id> is licensed under a <license_type> License (<license_url>). Consult https://pcmdi.llnl.gov/CMIP7/TermsOfUse for terms of use governing CMIP7 output, including citation requirements and proper acknowledgment. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.",
+    )
     drs = get_drs()
 
     cmor_cvs_table = CMORCVsTable(
@@ -480,6 +535,7 @@ def main():
         grid_label=grid_label,
         horizontal_label=horizontal_label,
         institution_id=institution_id,
+        license=license,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",
         mip_era=mip_era,
