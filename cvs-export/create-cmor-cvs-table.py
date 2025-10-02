@@ -206,6 +206,11 @@ class CMORCVsTable(BaseModel):
     Experiment ID definitions
     """
 
+    frequency: AllowedDict
+    """
+    Frequency options
+    """
+
     # TODO: switch to using esgvoc's model once it is clear what key we should use for 'value'
     mip_era: str
     """
@@ -394,6 +399,43 @@ def main():
         }
     )
 
+    # TOOD: put in esgvoc?
+    def get_approx_interval(frequency: str) -> float:
+        if frequency.startswith("1hr"):
+            return 1.0 / 24.0
+
+        if frequency.startswith("subhr"):
+            return 1.0 / 24.0
+
+        if frequency.startswith("3hr"):
+            return 3.0 / 24.0
+
+        if frequency.startswith("6hr"):
+            return 6.0 / 24.0
+
+        if frequency.startswith("day"):
+            return 1.0
+
+        if frequency.startswith("dec"):
+            return 365.0 * 10.0
+
+        if frequency.startswith("mon"):
+            return 30.0
+
+        if frequency.startswith("yr"):
+            return 365.0
+
+        raise NotImplementedError(frequency)
+
+    frequency_esgvoc = ev.get_all_terms_in_data_descriptor("frequency")
+    frequency = {
+        v.drs_name: {"description": v.description, "approx_interval": get_approx_interval(v.drs_name)}
+        if v.drs_name != "fx"
+        # I'm still not convinced that it wouldn't be simpler to use the same schema for all types
+        else "fixed (time invariant) field"
+        for v in frequency_esgvoc
+    }
+
     drs = get_drs()
 
     cmor_cvs_table = CMORCVsTable(
@@ -404,6 +446,7 @@ def main():
         branding_suffix="<temporal_label><vertical_label><horizontal_label><area_label>",
         drs=drs,
         experiment_id=experiment_id,
+        frequency=frequency,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",
         mip_era=mip_era,

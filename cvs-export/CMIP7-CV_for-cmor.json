@@ -9781,6 +9781,69 @@
                 "tier": 3
             }
         },
+        "frequency": {
+            "1hr": {
+                "approx_interval": 0.041666666666666664,
+                "description": "sampled hourly"
+            },
+            "1hrCM": {
+                "approx_interval": 0.041666666666666664,
+                "description": "monthly-mean diurnal cycle resolving each day into 1-hour means"
+            },
+            "1hrPt": {
+                "approx_interval": 0.041666666666666664,
+                "description": "sampled hourly, at specified time point within an hour"
+            },
+            "3hr": {
+                "approx_interval": 0.125,
+                "description": "3 hourly mean samples"
+            },
+            "3hrPt": {
+                "approx_interval": 0.125,
+                "description": "sampled 3 hourly, at specified time point within the time period"
+            },
+            "6hr": {
+                "approx_interval": 0.25,
+                "description": "6 hourly mean samples"
+            },
+            "6hrPt": {
+                "approx_interval": 0.25,
+                "description": "sampled 6 hourly, at specified time point within the time period"
+            },
+            "day": {
+                "approx_interval": 1.0,
+                "description": "daily mean samples"
+            },
+            "dec": {
+                "approx_interval": 3650.0,
+                "description": "decadal mean samples"
+            },
+            "fx": "fixed (time invariant) field",
+            "mon": {
+                "approx_interval": 30.0,
+                "description": "monthly mean samples"
+            },
+            "monC": {
+                "approx_interval": 30.0,
+                "description": "monthly climatology computed from monthly mean samples"
+            },
+            "monPt": {
+                "approx_interval": 30.0,
+                "description": "sampled monthly, at specified time point within the time period"
+            },
+            "subhrPt": {
+                "approx_interval": 0.041666666666666664,
+                "description": "sampled sub-hourly, at specified time point within an hour"
+            },
+            "yr": {
+                "approx_interval": 365.0,
+                "description": "annual mean samples"
+            },
+            "yrPt": {
+                "approx_interval": 365.0,
+                "description": "sampled yearly, at specified time point within the time period"
+            }
+        },
         "mip_era": "CMIP7"
     }
 }
