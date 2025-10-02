@@ -40,6 +40,7 @@
             "wl": "in cell_methods : wetland",
             "x": "'where' directive not included in cell_method"
         },
+        "branding_suffix": "<temporal_label><vertical_label><horizontal_label><area_label>",
         "data_specs_version": "placeholder",
         "mip_era": "CMIP7"
     }

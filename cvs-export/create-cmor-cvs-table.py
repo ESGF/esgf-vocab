@@ -90,6 +90,11 @@ class CMORCVsTable(BaseModel):
     Identifier(s) of the area label(s)
     """
 
+    branding_suffix: str
+    """
+    Template for branding suffix
+    """
+
     # Switch to DataSpecsVersion when it has attributes we can use
     # data_specs_version: DataSpecsVersion
     data_specs_version: str
@@ -271,6 +276,9 @@ def main():
     cmor_cvs_table = CMORCVsTable(
         archive_id=archive_id,
         area_label=area_label,
+        # Hard-code, fine?
+        # Maybe possible to get from esgvoc...
+        branding_suffix="<temporal_label><vertical_label><horizontal_label><area_label>",
         drs=drs,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",
