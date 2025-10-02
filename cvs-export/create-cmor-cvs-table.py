@@ -304,6 +304,13 @@ class CMORCVsTable(BaseModel):
     Required global attributes
     """
 
+    # source_id
+
+    source_type: AllowedDict
+    """
+    Known source types e.g. GCM, aerosol scheme, radiation scheme
+    """
+
     def to_json(self) -> dict[str, dict[str, str, AllowedDict, RegularExpressionValidators]]:
         md = self.model_dump()
 
@@ -590,6 +597,14 @@ def main():
             else:
                 required_global_attributes.append(v.field_name)
 
+    # Come back to this
+    # source_esgvoc = ev.get_all_terms_in_data_descriptor("source")
+    # breakpoint()
+    # source_id = {v.drs_name: v.description for v in source_esgvoc}
+
+    source_type_esgvoc = ev.get_all_terms_in_data_descriptor("source_type")
+    source_type = {v.drs_name: v.description for v in source_type_esgvoc}
+
     drs = get_drs()
 
     cmor_cvs_table = CMORCVsTable(
@@ -610,6 +625,9 @@ def main():
         realm=realm,
         region=region,
         required_global_attributes=required_global_attributes,
+        source_type=source_type,
+        # # Come back to this
+        # source_id=source_id,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",
         mip_era=mip_era,
