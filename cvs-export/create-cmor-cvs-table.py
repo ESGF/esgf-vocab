@@ -13,7 +13,7 @@ import json
 from pathlib import Path
 from typing import Any, TypeAlias
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 import esgvoc.api as ev
 
@@ -70,6 +70,91 @@ class DataReferenceSyntax(BaseModel):
     """
 
 
+class ExperimentDefinition(BaseModel):
+    """
+    Single experiment definition
+    """
+
+    activity_id: RegularExpressionValidators
+    """
+    Activity ID to which this experiment belongs
+    """
+    # Validation, only one allowed value
+
+    required_model_components: RegularExpressionValidators
+    """
+    Required model components to run this experiment
+    """
+
+    additional_allowed_model_components: RegularExpressionValidators
+    """
+    Additional model components that can be included when running this experiment
+    """
+
+    description: str
+    """
+    Experiment description
+    """
+
+    start_year: int | None
+    """Start year of the experiment"""
+
+    end_year: int | None
+    """End year of the experiment"""
+
+    min_number_yrs_per_sim: int
+    """Minimum number of years of simulation required"""
+
+    experiment_id: str
+    """
+    Experiment ID
+
+    TODO: discuss whether `_id` should be kept or dropped
+    or whether there is some way to know when it should be `_id` vs `DD` vs no difference
+    """
+
+    host_collection: str
+    """
+    Host collection of this experiment
+    """
+
+    parent_activity_id: list[str] = Field(default_factory=list)
+    """Activity ID for the parent of this experiment"""
+    # TODO: validation, only one value
+
+    parent_experiment_id: list[str] = Field(default_factory=list)
+    """Experiment ID for the parent of this experiment"""
+    # TODO: validation, only one value
+
+    tier: int
+    """
+    Tier i.e. priority of this experiment
+
+    Lower is higher priority i.e. 1 is the highest priority
+    """
+
+    def to_json(self) -> dict[str, str | int | RegularExpressionValidators]:
+        # make experiment the same as description, no idea why there are two fields
+        res = self.model_dump()
+
+        # Unclear if we should also be making model components capitals too
+        # i.e. additional_allowed_model_components and required_model_components
+        res["experiment"] = res["description"]
+
+        return res
+
+
+class ExperimentID(BaseModel):
+    """
+    Experiment ID definitions
+    """
+
+    experiments: dict[str, ExperimentDefinition]
+    """
+    Experiment definitions
+    """
+
+
 class CMORCVsTable(BaseModel):
     """
     Representation of the JSON table required by CMOR for CVs
@@ -116,6 +201,11 @@ class CMORCVsTable(BaseModel):
     Data reference syntax definition
     """
 
+    experiment_id: ExperimentID
+    """
+    Experiment ID definitions
+    """
+
     # TODO: switch to using esgvoc's model once it is clear what key we should use for 'value'
     mip_era: str
     """
@@ -132,6 +222,7 @@ class CMORCVsTable(BaseModel):
         for k in to_hyphenise:
             md["drs"][k.replace("_", "-")] = md["drs"].pop(k)
 
+        md["experiment_id"] = {k: v.to_json() for k, v in self.experiment_id.experiments.items()}
         # More fun
         md["DRS"] = md.pop("drs")
 
@@ -258,6 +349,8 @@ def main():
     # Fine to hard-code I think?
     project = "cmip7"
 
+    mip_era = project.upper()
+
     archive_id_esgvoc = ev.get_all_terms_in_collection(project, "archive")
     archive_id = {
         v.drs_name: "TODO: description in esgvoc (or learn how to use ev to get the description)"
@@ -269,9 +362,39 @@ def main():
     area_label_esgvoc = ev.get_all_terms_in_data_descriptor("area_label")
     area_label = {v.drs_name: v.description for v in area_label_esgvoc}
 
-    drs = get_drs()
+    experiment_esgvoc = ev.get_all_terms_in_data_descriptor("experiment")
 
-    mip_era = project.upper()
+    def get_min_number_yrs_per_sim(inv):
+        if isinstance(inv, str):
+            return int(int)
+
+        if inv is None:
+            # This shouldn't be needed, data errors in definition
+            return 1
+
+        return inv
+
+    experiment_id = ExperimentID(
+        experiments={
+            v.drs_name: ExperimentDefinition(
+                activity_id=v.activity,
+                required_model_components=v.required_model_components,
+                additional_allowed_model_components=v.additional_allowed_model_components,
+                description=v.description,
+                start_year=v.start_year if not isinstance(v.start_year, str) else int(v.start_year),
+                end_year=v.end_year if not isinstance(v.end_year, str) else int(v.end_year),
+                min_number_yrs_per_sim=get_min_number_yrs_per_sim(v.min_number_yrs_per_sim),
+                experiment_id=v.experiment_id,
+                host_collection=mip_era,  # yuck - should be in esgvoc?
+                parent_activity_id=v.parent_activity_id,
+                parent_experiment_id=v.parent_experiment_id,
+                tier=v.tier,
+            )
+            for v in experiment_esgvoc
+        }
+    )
+
+    drs = get_drs()
 
     cmor_cvs_table = CMORCVsTable(
         archive_id=archive_id,
@@ -280,6 +403,7 @@ def main():
         # Maybe possible to get from esgvoc...
         branding_suffix="<temporal_label><vertical_label><horizontal_label><area_label>",
         drs=drs,
+        experiment_id=experiment_id,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",
         mip_era=mip_era,
