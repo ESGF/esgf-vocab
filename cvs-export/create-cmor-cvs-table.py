@@ -42,6 +42,8 @@ class CMORCVsTable(BaseModel):
     or their interactions with this table at the moment.
     """
 
+    # Switch to DataSpecsVersion when it has attributes we can use
+    # data_specs_version: DataSpecsVersion
     data_specs_version: str
     """
     Version of the data specification used to generate the CVs
@@ -52,6 +54,7 @@ class CMORCVsTable(BaseModel):
     """
     # Validation(?): must be a version of the form X.Y.Z[.alpha[0-9]*]
 
+    # TODO: switch to using esgvoc's model once it is clear what key we should use for 'value'
     mip_era: str
     """
     MIP era to which the data applies
