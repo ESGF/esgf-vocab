@@ -5,7 +5,7 @@ from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 class Institution(PlainTermDataDescriptor):
     """
-    An registered institution for WCRP modelisation MIP.
+    A registered institution.
     """
 
     acronyms: list[str] = Field(default_factory=list)

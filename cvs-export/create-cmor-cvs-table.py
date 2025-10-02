@@ -221,6 +221,11 @@ class CMORCVsTable(BaseModel):
     Horizontal label options
     """
 
+    institution_id: AllowedDict
+    """
+    Known institution IDs
+    """
+
     # TODO: switch to using esgvoc's model once it is clear what key we should use for 'value'
     mip_era: str
     """
@@ -448,11 +453,18 @@ def main():
 
     # TODO: clear all these out in preparation for the conclusion of
     # https://github.com/WCRP-CMIP/CMIP7-CVs/issues/202
+    # TODO: Annoying differences between grid and grid_label.
+    # TODO: Unify across sources or at least write down logic.
     grid_label_esgvoc = ev.get_all_terms_in_data_descriptor("grid")
     grid_label = {v.drs_name: v.description for v in grid_label_esgvoc}
 
     horizontal_label_esgvoc = ev.get_all_terms_in_data_descriptor("horizontal_label")
     horizontal_label = {v.drs_name: v.description for v in horizontal_label_esgvoc}
+
+    institution_id_esgvoc = ev.get_all_terms_in_data_descriptor("institution")
+    # TODO: name seems the wrong key?
+    # TODO: lots of the values need checking
+    institution_id = {v.drs_name: v.name for v in institution_id_esgvoc}
 
     drs = get_drs()
 
@@ -467,6 +479,7 @@ def main():
         frequency=frequency,
         grid_label=grid_label,
         horizontal_label=horizontal_label,
+        institution_id=institution_id,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",
         mip_era=mip_era,
