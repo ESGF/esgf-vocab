@@ -85,6 +85,11 @@ class CMORCVsTable(BaseModel):
     Identifier(s) of the archive(s) to which data can belong
     """
 
+    area_label: AllowedDict
+    """
+    Identifier(s) of the area label(s)
+    """
+
     # Switch to DataSpecsVersion when it has attributes we can use
     # data_specs_version: DataSpecsVersion
     data_specs_version: str
@@ -248,11 +253,16 @@ def main():
     # Fine to hard-code I think?
     project = "cmip7"
 
-    archive_id_esgvoc = ev.get_all_terms_in_collection("cmip7", "archive")
+    archive_id_esgvoc = ev.get_all_terms_in_collection(project, "archive")
     archive_id = {
         v.drs_name: "TODO: description in esgvoc (or learn how to use ev to get the description)"
         for v in archive_id_esgvoc
     }
+
+    # Bit annoying that we have to jump back and forth
+    # between collection and data descriptor
+    area_label_esgvoc = ev.get_all_terms_in_data_descriptor("area_label")
+    area_label = {v.drs_name: v.description for v in area_label_esgvoc}
 
     drs = get_drs()
 
@@ -260,6 +270,7 @@ def main():
 
     cmor_cvs_table = CMORCVsTable(
         archive_id=archive_id,
+        area_label=area_label,
         drs=drs,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",

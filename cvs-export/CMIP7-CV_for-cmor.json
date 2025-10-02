@@ -11,6 +11,35 @@
         "archive_id": {
             "WCRP": "TODO: description in esgvoc (or learn how to use ev to get the description)"
         },
+        "area_label": {
+            "air": "in cell_methods : cloud",
+            "ccl": "in cell_methods : convective_cloud",
+            "cl": "in cell_methods : cloud",
+            "crp": "in cell_methods : crops",
+            "fis": "in cell_methods : floating_ice_shelf",
+            "gis": "in cell_methods : grounding_ice_sheet",
+            "ifs": "in cell_methods : ice_free_sea",
+            "is": "in cell_methods : ice_sheet",
+            "li": "in cell_methods : land_ice",
+            "lnd": "in cell_methods : land",
+            "lus": "in cell_methods : sector (auxiliary coordinate for land-use erea types)",
+            "multi": "in cell_methods : sector (auxiliary coordinate for land-use or vegetation1 area types)",
+            "ng": "in cell_methods : natural_grasses",
+            "pst": "in cell_methods : pastures",
+            "scl": "in cell_methods : stratiform_soil",
+            "sea": "in cell_methods : sea",
+            "shb": "in cell_methods : shrubs",
+            "si": "in cell_methods : sea_ice",
+            "simp": "in cell_methods : sea_ice_melt_pond",
+            "sir": "in cell_methods : sea_ice_ridges",
+            "sn": "in cell_methods : snow",
+            "tree": "in cell_methods : trees",
+            "u": "in cell_methods : unmasked (no 'where' directive included in the cell_methods)",
+            "ufs": "in cell_methods : unfrozen_soil",
+            "veg": "in cell_methods : vegetation",
+            "wl": "in cell_methods : wetland",
+            "x": "'where' directive not included in cell_method"
+        },
         "data_specs_version": "placeholder",
         "mip_era": "CMIP7"
     }
