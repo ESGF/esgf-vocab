@@ -192,6 +192,72 @@ class License(BaseModel):
     """
 
 
+class SourceDefinition(BaseModel):
+    """
+    Definition of a known source
+
+    The meaning of 'source' is a bit fuzzy across projects,
+    but for CMIP phases it refers to the model which provided the simulation.
+    """
+
+    activity_participation: RegularExpressionValidators
+    """
+    Activities in which this source has participated
+    """
+
+    cohort: RegularExpressionValidators
+    """
+    Cohort to which this source belongs
+
+    TODO: clarify what this means
+    """
+
+    # Doesn't match esgvoc model
+    institution_id: RegularExpressionValidators
+    """
+    Institution ID for this source
+    """
+    # TODO: validation that there is only one ?
+
+    label: str
+    """
+    Label to use for this source ID
+
+    TODO: check, does this mean in graphs/plots?
+    """
+
+    label_extended: str
+    """
+    Extended label to use for this source ID
+
+    TODO: check, does this mean in graphs/plots?
+    """
+
+    # TODO: | None ? Components only applies to models,
+    # but we have other kinds of sources
+    model_component: dict[str, dict[str, str | None]]
+    """
+    Model components of this source
+    """
+
+    release_year: int | None
+    """
+    Release year of the model/source
+
+    `None` if the release concept does not apply to this source
+    """
+
+    source: str
+    """
+    TODO: figure out what this is meant to be
+    """
+
+    source_id: str
+    """
+    Source ID for `self`
+    """
+
+
 class CMORCVsTable(BaseModel):
     """
     Representation of the JSON table required by CMOR for CVs
@@ -304,7 +370,12 @@ class CMORCVsTable(BaseModel):
     Required global attributes
     """
 
-    # source_id
+    source_id: dict[str, SourceDefinition]
+    """
+    Known source IDs
+
+    Each key should be the source ID, values are instances of [SourceDefinition][].
+    """
 
     source_type: AllowedDict
     """
@@ -619,10 +690,32 @@ def main():
             else:
                 required_global_attributes.append(v.field_name)
 
-    # Come back to this
-    # source_esgvoc = ev.get_all_terms_in_data_descriptor("source")
-    # breakpoint()
-    # source_id = {v.drs_name: v.description for v in source_esgvoc}
+    source_esgvoc = ev.get_all_terms_in_data_descriptor("source")
+    source_id = {
+        v.drs_name: SourceDefinition(
+            activity_participation=v.activity_participation,
+            cohort=v.cohort,
+            institution_id=v.organisation_id,
+            label=v.label,
+            label_extended=v.label_extended if v.label_extended is not None else "TODO in source data",
+            model_component={
+                kk: {
+                    # TODO: this isn't really correct as well.
+                    # Right now this is component names, not descriptions
+                    "description": vv,
+                    # Do we need to update esgvoc to ensure that this key is there?
+                    "native_nominal_resolution": None,
+                }
+                for kk, vv in v.model_component.items()
+            }
+            if v.model_component is not None
+            else {},
+            release_year=v.release_year,
+            source="Placeholder - unclear from the example what this is meant to be",
+            source_id=v.drs_name,
+        )
+        for v in source_esgvoc
+    }
 
     source_type_esgvoc = ev.get_all_terms_in_data_descriptor("source_type")
     source_type = {v.drs_name: v.description for v in source_type_esgvoc}
@@ -664,8 +757,7 @@ def main():
         tracking_id=tracking_id,
         variant_label=variant_label,
         vertical_label=vertical_label,
-        # # Come back to this
-        # source_id=source_id,
+        source_id=source_id,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",
         mip_era=mip_era,
