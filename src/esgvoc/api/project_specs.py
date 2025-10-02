@@ -30,6 +30,7 @@ class DrsPart(BaseModel):
         return self.source_collection
 
 
+# To discuss: doesn't match the CMOR's idea of what this is
 class DrsSpecification(BaseModel):
     """
     A DRS specification.

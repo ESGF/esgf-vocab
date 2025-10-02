@@ -1,5 +1,13 @@
 {
     "CV": {
+        "DRS": {
+            "directory-path-example": "MIP-DRS7/PMIP/BCC/CanESM6-MR/G7-1p5K-SAI/r1i1p1f1/global/tas/tavg-h2m-hxy-u/gr3g/20251011",
+            "directory-path-sub-experiment-example": "",
+            "directory-path-template": "<drsSpecs>/<activity>/<institution>/<source>/<experiment>/<datasetVariant>/<region>/<variable>/<branding_suffix>/<gridLabel>/<datasetVersion>",
+            "filename-path-example": "tas_tavg-h2m-hxy-u_1hrCM_global_gr3g_CanESM6-MR_G7-1p5K-SAI_r1i1p1f1_20250101-21001231.nc",
+            "filename-path-sub-experiment-example": "",
+            "filename-path-template": "<variable>_<branding_suffix>_<reportingInterval>_<region>_<gridLabel>_<source>_<experiment>_<datasetVariant>[_<timeRange>].nc"
+        },
         "data_specs_version": "placeholder",
         "mip_era": "CMIP7"
     }
