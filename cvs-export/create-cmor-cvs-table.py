@@ -211,6 +211,11 @@ class CMORCVsTable(BaseModel):
     Frequency options
     """
 
+    grid_label: AllowedDict
+    """
+    Grid label options
+    """
+
     # TODO: switch to using esgvoc's model once it is clear what key we should use for 'value'
     mip_era: str
     """
@@ -436,6 +441,11 @@ def main():
         for v in frequency_esgvoc
     }
 
+    # TODO: clear all these out in preparation for the conclusion of
+    # https://github.com/WCRP-CMIP/CMIP7-CVs/issues/202
+    grid_label_esgvoc = ev.get_all_terms_in_data_descriptor("grid")
+    grid_label = {v.drs_name: v.description for v in grid_label_esgvoc}
+
     drs = get_drs()
 
     cmor_cvs_table = CMORCVsTable(
@@ -447,6 +457,7 @@ def main():
         drs=drs,
         experiment_id=experiment_id,
         frequency=frequency,
+        grid_label=grid_label,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",
         mip_era=mip_era,
