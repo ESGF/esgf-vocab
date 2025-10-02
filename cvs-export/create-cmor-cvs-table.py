@@ -284,6 +284,11 @@ class CMORCVsTable(BaseModel):
     if people don't know how to figure this out
     """
 
+    product: RegularExpressionValidators
+    """
+    Options for rough description of the kind of data product
+    """
+
     def to_json(self) -> dict[str, dict[str, str, AllowedDict, RegularExpressionValidators]]:
         md = self.model_dump()
 
@@ -550,6 +555,9 @@ def main():
         "5000 km",
     ]
 
+    product_esgvoc = ev.get_all_terms_in_data_descriptor("product")
+    product = [v.drs_name for v in product_esgvoc]
+
     drs = get_drs()
 
     cmor_cvs_table = CMORCVsTable(
@@ -566,6 +574,7 @@ def main():
         institution_id=institution_id,
         license=license,
         nominal_resolution=nominal_resolution,
+        product=product,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?
         data_specs_version="placeholder",
         mip_era=mip_era,

@@ -10050,6 +10050,14 @@
             "50 km",
             "500 km",
             "5000 km"
+        ],
+        "product": [
+            "forcing-dataset",
+            "model-output",
+            "derived",
+            "site-observations",
+            "reanalysis",
+            "observations"
         ]
     }
 }
