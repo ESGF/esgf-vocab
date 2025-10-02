@@ -311,6 +311,28 @@ class CMORCVsTable(BaseModel):
     Known source types e.g. GCM, aerosol scheme, radiation scheme
     """
 
+    temporal_label: AllowedDict
+    """
+    Temporal label options
+    """
+
+    tracking_id: RegularExpressionValidators
+    """
+    Form that can be used for tracking IDs
+    """
+    # TODO: validation that there is only one value
+
+    variant_label: RegularExpressionValidators
+    """
+    Form that can be used for variant label
+    """
+    # TODO: validation that there is only one value
+
+    vertical_label: AllowedDict
+    """
+    Vertical label options
+    """
+
     def to_json(self) -> dict[str, dict[str, str, AllowedDict, RegularExpressionValidators]]:
         md = self.model_dump()
 
@@ -605,6 +627,18 @@ def main():
     source_type_esgvoc = ev.get_all_terms_in_data_descriptor("source_type")
     source_type = {v.drs_name: v.description for v in source_type_esgvoc}
 
+    temporal_label_esgvoc = ev.get_all_terms_in_data_descriptor("temporal_label")
+    temporal_label = {v.drs_name: v.description for v in temporal_label_esgvoc}
+
+    # Can be more precise with the regex, but maybe not worth it
+    tracking_id = ["hdl:21.14107/.*"]
+
+    # TODO: double check if this is still correct or needs updating
+    variant_label = ["r[[:digit:]]\\{1,\\}i[[:digit:]]\\{1,\\}p[[:digit:]]\\{1,\\}f[[:digit:]]\\{1,\\}$"]
+
+    vertical_label_esgvoc = ev.get_all_terms_in_data_descriptor("vertical_label")
+    vertical_label = {v.drs_name: v.description for v in vertical_label_esgvoc}
+
     drs = get_drs()
 
     cmor_cvs_table = CMORCVsTable(
@@ -626,6 +660,10 @@ def main():
         region=region,
         required_global_attributes=required_global_attributes,
         source_type=source_type,
+        temporal_label=temporal_label,
+        tracking_id=tracking_id,
+        variant_label=variant_label,
+        vertical_label=vertical_label,
         # # Come back to this
         # source_id=source_id,
         # Hard-coded values, no need to/can't be retrieved from esgvoc ?

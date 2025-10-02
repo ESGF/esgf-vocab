@@ -2,4 +2,8 @@ from esgvoc.api.data_descriptors.data_descriptor import PatternTermDataDescripto
 
 
 class TrackingId(PatternTermDataDescriptor):
+    """
+    Form that can be used for tracking IDs
+    """
+
     description: str
