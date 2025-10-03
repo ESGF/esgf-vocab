@@ -1,7 +1,6 @@
-import logging
 from typing import Dict, List, Set
-
 from esgvoc.core.data_handler import JsonLdResource
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +9,10 @@ def merge_dicts(original: list, custom: list) -> dict:
     """Shallow merge: Overwrites original data with custom data."""
     b = original[0]
     a = custom[0]
-    merged = {**{k: v for k, v in a.items() if k != "@id"}, **{k: v for k, v in b.items() if k != "@id"}}
+    merged = {
+        **{k: v for k, v in a.items() if k != "@id"},
+        **{k: v for k, v in b.items() if k != "@id"},
+    }
     return merged
 
 
@@ -23,7 +25,8 @@ class DataMerger:
     def __init__(
         self,
         data: JsonLdResource,
-        allowed_base_uris: Set[str] = {"https://espri-mod.github.io/mip-cmor-tables"},
+        allowed_base_uris: Set[str] = {
+            "https://espri-mod.github.io/mip-cmor-tables"},
         locally_available: dict = {},
     ):
         self.data = data
@@ -32,10 +35,12 @@ class DataMerger:
 
     def _should_resolve(self, uri: str) -> bool:
         """Check if a given URI should be resolved based on allowed URIs."""
+        print("sould_resolve")
         return any(uri.startswith(base) for base in self.allowed_base_uris)
 
     def _get_next_id(self, data: dict) -> str | None:
         """Extract the next @id from the data if it is a valid customization reference."""
+        print("_get_next_id")
         if isinstance(data, list):
             data = data[0]
         if "@id" in data and self._should_resolve(data["@id"]):
@@ -44,50 +49,46 @@ class DataMerger:
 
     def merge_linked_json(self) -> List[Dict]:
         """Fetch and merge data recursively, returning a list of progressively merged Data json instances."""
-        result_list = [self.data.json_dict]  # Start with the original json object
+        print("merge_linked_json")
+        print(self.data.expanded)
+        if "atest_source1" in str(self.data.uri):
+            print(
+                "OLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+
+        # Start with the original json object
+        result_list = [self.data.json_dict]
         visited = set(self.data.uri)  # Track visited URIs to prevent cycles
         current_data = self.data
-        # print(current_data.expanded)
-        if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-            print("Dans Merge :", current_data)
-        while True:
-            next_id = self._get_next_id(current_data.expanded[0])
-            if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-                print("Dans Merge 2:", next_id)
+        if "atest_source1" in str(self.data.uri):
+            print("OLEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
 
+        while True:
+            print("COUCOU")
+            next_id = self._get_next_id(current_data.expanded[0])
+            if "atest_source1" in str(self.data.uri):
+                print("OLA:::next_id:", next_id)
             if not next_id or next_id in visited or not self._should_resolve(next_id):
                 break
-            if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-                print("Dans Merge 3:")
-
             visited.add(next_id)
-
+            print("il faut resolve ? sure ?")
             # Fetch and merge the next customization
             # do we have it in local ? if so use it instead of remote
+            print([(k, v) for k, v in self.locally_available.items()])
             for local_repo in self.locally_available.keys():
                 if next_id.startswith(local_repo):
-                    next_id = next_id.replace(local_repo, self.locally_available[local_repo])
-            if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-                print("Dans Merge 4:", next_id)
-
+                    next_id = next_id.replace(
+                        local_repo, self.locally_available[local_repo])
+            print("après vision des local repos : next_id = ", next_id)
             next_data_instance = JsonLdResource(uri=next_id)
-            if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-                print("Dans Merge 5:", next_data_instance)
-                print("5.1")
-                print(current_data.info)
-                print("5.2")
-                print(next_data_instance.info)
-            merged_json_data = merge_dicts([current_data.json_dict], [next_data_instance.json_dict])
-            if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-                print("Dans Merge 6:", merged_json_data)
+            merged_json_data = merge_dicts([current_data.json_dict], [
+                                           next_data_instance.json_dict])
 
             next_data_instance.json_dict = merged_json_data
 
             # Add the merged instance to the result list
             result_list.append(merged_json_data)
             current_data = next_data_instance
-        if "cVeg_tavg-z0-hxy-lnd" in self.data.uri:
-            print("Dans Merge 10 :", result_list)
+        print("OLA", result_list)
         return result_list
 
 
