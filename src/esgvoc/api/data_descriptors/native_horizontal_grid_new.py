@@ -97,7 +97,7 @@ class NativeHorizontalGrid(PlainTermDataDescriptor):
     )
     description: Optional[str] = Field(
         default=None,
-        description="A free-text description of the grid. A description is only required if there is information that is not covered by any of the other properties."
+        description="A free-text description of the grid. A description is only required if there is information that is not covered by any of the other properties.",
     )
     grid_mapping: str = Field(
         description="The name of the coordinate reference system of the horizontal coordinates. Taken from a standardised list: 7.4 grid_mapping CV."
@@ -114,85 +114,81 @@ class NativeHorizontalGrid(PlainTermDataDescriptor):
     resolution_x: Optional[float] = Field(
         default=None,
         description="The size of grid cells in the X direction. The value's physical units are given by the horizontal_units property. Report only when cell sizes are identical or else reasonably uniform.",
-        gt=0
+        gt=0,
     )
     resolution_y: Optional[float] = Field(
         default=None,
         description="The size of grid cells in the Y direction. The value's physical units are given by the horizontal_units property. Report only when cell sizes are identical or else reasonably uniform.",
-        gt=0
+        gt=0,
     )
     horizontal_units: Optional[str] = Field(
         default=None,
-        description="The physical units of the resolution_x and resolution_y property values. Taken from a standardised list: 7.8 horizontal_units CV."
+        description="The physical units of the resolution_x and resolution_y property values. Taken from a standardised list: 7.8 horizontal_units CV.",
     )
     n_cells: int = Field(
-        description="The total number of cells in the horizontal grid.",
-        ge=1
-    )
+        description="The total number of cells in the horizontal grid.", ge=1)
     n_sides: Optional[int] = Field(
-        default=None,
-        description="For unstructured horizontal grids only, the total number of unique cell sides.",
-        ge=1
+        default=None, description="For unstructured horizontal grids only, the total number of unique cell sides.", ge=1
     )
     n_vertices: Optional[int] = Field(
-        default=None,
-        description="For unstructured horizontal grids only, the number of unique cell vertices.",
-        ge=1
+        default=None, description="For unstructured horizontal grids only, the number of unique cell vertices.", ge=1
     )
     truncation_method: Optional[str] = Field(
         default=None,
-        description="The method for truncating the spherical harmonic representation of a spectral model. Taken from a standardised list: 7.9 truncation_method CV."
+        description="The method for truncating the spherical harmonic representation of a spectral model. Taken from a standardised list: 7.9 truncation_method CV.",
     )
     truncation_number: Optional[int] = Field(
-        default=None,
-        description="The zonal (east-west) wave number at which a spectral model is truncated.",
-        ge=1
+        default=None, description="The zonal (east-west) wave number at which a spectral model is truncated.", ge=1
     )
     resolution_range_km: List[float] = Field(
         description="The minimum and maximum resolution (in km) of cells of the horizontal grid.",
         min_items=2,
-        max_items=2
+        max_items=2,
     )
     mean_resolution_km: float = Field(
-        description="The mean resolution (in km) of cells of the horizontal grid.",
-        gt=0
-    )
+        description="The mean resolution (in km) of cells of the horizontal grid.", gt=0)
     nominal_resolution: str = Field(
         description="The nominal resolution characterises the approximate resolution of a horizontal grid. Taken from a standardised list: 7.10 nominal_resolution CV."
     )
 
-    @validator('grid', 'grid_mapping', 'region', 'temporal_refinement', 'arrangement', 'nominal_resolution')
+    @validator("grid", "grid_mapping", "region", "temporal_refinement", "arrangement", "nominal_resolution")
     def validate_required_strings(cls, v):
         """Validate that required string fields are not empty."""
         if not v.strip():
-            raise ValueError('Field cannot be empty')
+            raise ValueError("Field cannot be empty")
         return v.strip()
 
-    @validator('horizontal_units')
+    @validator("horizontal_units")
     def validate_units_requirement(cls, v, values):
         """Validate that horizontal_units is provided when resolution values are set."""
-        has_resolution = any(values.get(field) is not None for field in ['resolution_x', 'resolution_y'])
+        has_resolution = any(values.get(field) is not None for field in [
+                             "resolution_x", "resolution_y"])
 
         if has_resolution and not v:
-            raise ValueError('horizontal_units is required when resolution_x or resolution_y are set')
+            raise ValueError(
+                "horizontal_units is required when resolution_x or resolution_y are set")
         return v
 
-    @validator('resolution_range_km')
+    @validator("resolution_range_km")
     def validate_resolution_range(cls, v):
         """Validate that resolution range has exactly 2 values and min <= max."""
         if len(v) != 2:
-            raise ValueError('resolution_range_km must contain exactly 2 values [min, max]')
+            raise ValueError(
+                "resolution_range_km must contain exactly 2 values [min, max]")
         if v[0] > v[1]:
-            raise ValueError('resolution_range_km: minimum must be <= maximum')
+            raise ValueError("resolution_range_km: minimum must be <= maximum")
         if any(val <= 0 for val in v):
-            raise ValueError('resolution_range_km values must be > 0')
+            raise ValueError("resolution_range_km values must be > 0")
         return v
 
-    @validator('mean_resolution_km')
+    @validator("mean_resolution_km")
     def validate_mean_resolution_in_range(cls, v, values):
         """Validate that mean resolution is within the resolution range."""
-        if 'resolution_range_km' in values and values['resolution_range_km']:
-            range_km = values['resolution_range_km']
+        if "resolution_range_km" in values and values["resolution_range_km"]:
+            range_km = values["resolution_range_km"]
             if not (range_km[0] <= v <= range_km[1]):
-                raise ValueError(f'mean_resolution_km ({v}) must be between resolution_range_km min ({range_km[0]}) and max ({range_km[1]})')
+                raise ValueError(
+                    f"mean_resolution_km ({v}) must be between resolution_range_km min ({
+                        range_km[0]}) and max ({range_km[1]})"
+                )
         return v

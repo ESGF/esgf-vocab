@@ -60,70 +60,75 @@ class NativeVerticalGrid(PlainTermDataDescriptor):
     )
     description: Optional[str] = Field(
         default=None,
-        description="A free-text description of the vertical grid. A description is only required if there is information that is not covered by any of the other properties."
+        description="A free-text description of the vertical grid. A description is only required if there is information that is not covered by any of the other properties.",
     )
     n_z: Optional[int] = Field(
         default=None,
         description="The number of layers (i.e. grid cells) in the Z direction. Omit when not applicable or not constant. If the number of layers varies in time or across the horizontal grid, then the n_z_range property may be used instead.",
-        ge=1
+        ge=1,
     )
     n_z_range: Optional[List[int]] = Field(
         default=None,
         description="The minimum and maximum number of layers for vertical grids with a time- or space-varying number of layers. Omit if the n_z property has been set.",
         min_items=2,
-        max_items=2
+        max_items=2,
     )
     bottom_layer_thickness: Optional[float] = Field(
         default=None,
         description="The thickness of the bottom model layer (i.e. the layer closest to the centre of the Earth). The value should be reported as a dimensional (as opposed to parametric) quantity. The value's physical units are given by the vertical_units property.",
-        gt=0
+        gt=0,
     )
     top_layer_thickness: Optional[float] = Field(
         default=None,
         description="The thickness of the top model layer (i.e. the layer furthest away from the centre of the Earth). The value should be reported as a dimensional (as opposed to parametric) quantity. The value's physical units are given by the vertical_units property.",
-        gt=0
+        gt=0,
     )
     top_of_model: Optional[float] = Field(
         default=None,
-        description="The upper boundary of the top model layer (i.e. the upper boundary of the layer that is furthest away from the centre of the Earth). The value should be relative to the lower boundary of the bottom layer of the model, or an appropriate datum (such as mean sea level). The value's physical units are given by the vertical_units property."
+        description="The upper boundary of the top model layer (i.e. the upper boundary of the layer that is furthest away from the centre of the Earth). The value should be relative to the lower boundary of the bottom layer of the model, or an appropriate datum (such as mean sea level). The value's physical units are given by the vertical_units property.",
     )
     vertical_units: Optional[str] = Field(
         default=None,
-        description="The physical units of the bottom_layer_thickness, top_layer_thickness, and top_of_model property values. Taken from a standardised list: 7.12 vertical_units CV."
+        description="The physical units of the bottom_layer_thickness, top_layer_thickness, and top_of_model property values. Taken from a standardised list: 7.12 vertical_units CV.",
     )
 
-    @validator('coordinate')
+    @validator("coordinate")
     def validate_coordinate(cls, v):
         """Validate that coordinate is not empty."""
         if not v.strip():
-            raise ValueError('Coordinate cannot be empty')
+            raise ValueError("Coordinate cannot be empty")
         return v.strip()
 
-    @validator('n_z_range')
+    @validator("n_z_range")
     def validate_n_z_range(cls, v):
         """Validate that n_z_range has exactly 2 values and min <= max."""
         if v is not None:
             if len(v) != 2:
-                raise ValueError('n_z_range must contain exactly 2 values [min, max]')
+                raise ValueError(
+                    "n_z_range must contain exactly 2 values [min, max]")
             if v[0] > v[1]:
-                raise ValueError('n_z_range: minimum must be <= maximum')
+                raise ValueError("n_z_range: minimum must be <= maximum")
             if any(val < 1 for val in v):
-                raise ValueError('n_z_range values must be >= 1')
+                raise ValueError("n_z_range values must be >= 1")
         return v
 
-    @validator('vertical_units')
+    @validator("vertical_units")
     def validate_units_requirement(cls, v, values):
         """Validate that vertical_units is provided when thickness/top_of_model values are set."""
-        thickness_fields = ['bottom_layer_thickness', 'top_layer_thickness', 'top_of_model']
-        has_thickness_values = any(values.get(field) is not None for field in thickness_fields)
+        thickness_fields = ["bottom_layer_thickness",
+                            "top_layer_thickness", "top_of_model"]
+        has_thickness_values = any(values.get(
+            field) is not None for field in thickness_fields)
 
         if has_thickness_values and not v:
-            raise ValueError('vertical_units is required when bottom_layer_thickness, top_layer_thickness, or top_of_model are set')
+            raise ValueError(
+                "vertical_units is required when bottom_layer_thickness, top_layer_thickness, or top_of_model are set"
+            )
         return v
 
-    @validator('n_z')
+    @validator("n_z")
     def validate_n_z_exclusivity(cls, v, values):
         """Validate that n_z and n_z_range are mutually exclusive."""
-        if v is not None and values.get('n_z_range') is not None:
-            raise ValueError('n_z and n_z_range cannot both be set')
+        if v is not None and values.get("n_z_range") is not None:
+            raise ValueError("n_z and n_z_range cannot both be set")
         return v

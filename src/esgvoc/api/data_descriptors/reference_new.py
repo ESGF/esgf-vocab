@@ -1,8 +1,8 @@
-from pydantic import Field, validator
-from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from pydantic import BaseModel, Field, validator
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, PlainTermDataDescriptor
 
 
-class Reference(PlainTermDataDescriptor):
+class Reference(BaseModel):
     """
     The top-level model and its model components must each have at least one reference, defined by the following properties:
 
@@ -16,26 +16,24 @@ class Reference(PlainTermDataDescriptor):
     """
 
     citation: str = Field(
-        description="A human-readable citation for the work.",
-        min_length=1
-    )
+        description="A human-readable citation for the work.", min_length=1)
     doi: str = Field(
-        description="The persistent identifier (DOI) used to identify the work. Must be a valid DOI URL.",
-        min_length=1
+        description="The persistent identifier (DOI) used to identify the work. Must be a valid DOI URL.", min_length=1
     )
 
-    @validator('doi')
+    @validator("doi")
     def validate_doi(cls, v):
         """Validate that DOI follows proper format."""
-        if not v.startswith('https://doi.org/'):
+        if not v.startswith("https://doi.org/"):
             raise ValueError('DOI must start with "https://doi.org/"')
-        if len(v) <= len('https://doi.org/'):
-            raise ValueError('DOI must contain identifier after "https://doi.org/"')
+        if len(v) <= len("https://doi.org/"):
+            raise ValueError(
+                'DOI must contain identifier after "https://doi.org/"')
         return v
 
-    @validator('citation')
+    @validator("citation")
     def validate_citation(cls, v):
         """Validate that citation is not empty."""
         if not v.strip():
-            raise ValueError('Citation cannot be empty')
+            raise ValueError("Citation cannot be empty")
         return v.strip()

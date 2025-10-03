@@ -64,32 +64,29 @@ class EMDModelComponent(PlainTermDataDescriptor):
         description="The type of the model component. Taken from a standardised list: 7.1 component CV."
     )
     name: str = Field(
-        description="The name of the model component.",
-        min_length=1
-    )
+        description="The name of the model component.", min_length=1)
     family: str = Field(
         description="The model component's 'family' name. Use 'none' to indicate that there is no such family.",
-        min_length=1
+        min_length=1,
     )
     description: str = Field(
         description="A scientific overview of the model component. The description should summarise the key processes simulated by the model component.",
-        min_length=1
+        min_length=1,
     )
     references: List[Reference] = Field(
-        description="One or more references to published work for the model component.",
-        min_items=1
+        description="One or more references to published work for the model component.", min_items=1
     )
     code_base: str = Field(
         description="A URL (preferably for a DOI) for the source code for the model component. Set to 'private' if not publicly available.",
-        min_length=1
+        min_length=1,
     )
     embedded_in: Optional[str] = Field(
         default=None,
-        description="The host model component (identified by its component property) in which this component is 'embedded'. Taken from a standardised list: 7.1 component CV. Omit when this component is coupled with other components."
+        description="The host model component (identified by its component property) in which this component is 'embedded'. Taken from a standardised list: 7.1 component CV. Omit when this component is coupled with other components.",
     )
     coupled_with: Optional[List[str]] = Field(
         default=None,
-        description="The model components (identified by their component properties) with which this component is 'coupled'. Taken from a standardised list: 7.1 component CV. Omit when this component is embedded in another component."
+        description="The model components (identified by their component properties) with which this component is 'coupled'. Taken from a standardised list: 7.1 component CV. Omit when this component is embedded in another component.",
     )
     native_horizontal_grid: NativeHorizontalGrid = Field(
         description="A standardised description of the model component's horizontal grid."
@@ -98,31 +95,36 @@ class EMDModelComponent(PlainTermDataDescriptor):
         description="A standardised description of the model component's vertical grid."
     )
 
-    @validator('component', 'name', 'family', 'description', 'code_base')
+    @validator("component", "name", "family", "description", "code_base")
     def validate_non_empty_strings(cls, v):
         """Validate that string fields are not empty."""
         if not v.strip():
-            raise ValueError('Field cannot be empty')
+            raise ValueError("Field cannot be empty")
         return v.strip()
 
-    @validator('coupled_with')
+    @validator("coupled_with")
     def validate_coupling_exclusivity(cls, v, values):
         """Validate that a component cannot be both embedded and coupled."""
-        if v is not None and values.get('embedded_in') is not None:
-            raise ValueError('A component cannot be both embedded_in another component and coupled_with other components')
+        if v is not None and values.get("embedded_in") is not None:
+            raise ValueError(
+                "A component cannot be both embedded_in another component and coupled_with other components"
+            )
         return v
 
-    @validator('embedded_in')
+    @validator("embedded_in")
     def validate_embedding_exclusivity(cls, v, values):
         """Validate that a component cannot be both embedded and coupled."""
-        if v is not None and values.get('coupled_with') is not None:
-            raise ValueError('A component cannot be both embedded_in another component and coupled_with other components')
+        if v is not None and values.get("coupled_with") is not None:
+            raise ValueError(
+                "A component cannot be both embedded_in another component and coupled_with other components"
+            )
         return v
 
-    @validator('code_base')
+    @validator("code_base")
     def validate_code_base_format(cls, v):
         """Validate code_base is either 'private' or a URL."""
         v = v.strip()
-        if v.lower() != 'private' and not (v.startswith('http://') or v.startswith('https://')):
-            raise ValueError('code_base must be either "private" or a valid URL starting with http:// or https://')
+        if v.lower() != "private" and not (v.startswith("http://") or v.startswith("https://")):
+            raise ValueError(
+                'code_base must be either "private" or a valid URL starting with http:// or https://')
         return v
