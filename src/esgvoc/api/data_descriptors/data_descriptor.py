@@ -26,48 +26,34 @@ class ConfiguredBaseModel(BaseModel):
     )
 
 
-# [TODO; clean up and refine this to start a discussion
-# and make reasons for concern clearer]
-# I'm still extremely skeptical
-# that the complexity of the visitor pattern is worth it.
-# Looking at the type hints reinforces this skepticism:
-# they have to be super weird to accept the range of potential behaviours,
-# which makes me suspect that this abstraction just adds layers
-# without helping much.
-# I will keep reading to see, but writing this now
-# in case there is any chance to discuss or change course
-# before the entire community has to try and learn the visitor pattern
-# in order to contribute to esgvoc (which I can't see happening).
-# Given that a lot of these visitor methods aren't even used at present,
-# this feels even more like speculative generality to me.
-# Also, as I understand it, the key use case for the visitor
-# is when you can't/don't want to really change the class you want to visit.
-# However, we are developing all of these in the same place,
-# hence I really can't see how to justify this pattern and its extra complexity.
-# Just edit the class instead,
-# don't add all this in/mis/redirection
-# 'just in case' some plugin wants to use this pattern.
-# Like, is the plugin pattern really that important
-# that including this mechanism is essential?
-# I guess maybe the idea is that you put this in there
-# just in case some external plugin wants to add behaviour
-# without altering the classes themselves.
-# Maybe that makes sense,
-# and if we're not using the visitor stuff internally,
-# then it doesn't matter so much
-# (although, if we're not testing it, I would argue we don't really care about it
-# so why is it there...).
-# [Ok I think I see more now why this is here.
-# Feels like speculative generality to me,
-# but if its not used internally and provides a potential hook,
-# then I can probably live with it.
-# I would just add a developer note to that effect though
-# so devs know that they don't need to/shouldn't
-# rely on this pattern internally
-# because it adds major headaches and that's not needed
-# if you can edit the classes directly, which devs can.]
-# Reading e.g. https://refactoring.guru/design-patterns/visitor/python/example
-# does not change that feeling.
+# Discussion point:
+# As I understand it,
+# and from reading e.g. https://refactoring.guru/design-patterns/visitor/python/example,
+# the point of the visitor pattern
+# is basically to allow adding extra behaviour to a class without altering the class itself.
+# In other words, it's plugin support.
+# This impression is reinforced by the fact
+# that the visitor architecture is not used anywhere internally.
+#
+# Question 1: is the above impression correct?
+# Question 2: do we have any examples yet of external plugins
+# or is this just there 'just in case'?
+#
+# To me, this seems like speculative generality.
+# If we do think such plug-in behaviour is super important,
+# then surely there should at least be some tests around it?
+#
+# My other thought is this: in the Python world,
+# you can litearlly add whatever behaviour you want to any other class
+# at runtime if you want.
+# Hence, is there any need for this pattern?
+# I ask this particularly because the visitor pattern
+# has a very high level of in/mis/redirection,
+# which makes it particularly prone to encouraging over-engineered solutions
+# and confusion.
+# I am struggling to see how this level of abstraction and complexity
+# is actually worth it in the esgvoc context,
+# while removing it definitely means there is one less thing to maintain.
 class DataDescriptorVisitor(Protocol):
     """
     The specifications for a data descriptor visitor
