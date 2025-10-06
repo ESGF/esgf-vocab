@@ -12,6 +12,7 @@ class Activity(PlainTermDataDescriptor):
     scenarios, and model configurations.
     """
 
+    # test
     name: str
     long_name: str
     url: str | None
