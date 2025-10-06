@@ -1,3 +1,4 @@
+# TO DISCUSS
 from pydantic import Field
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
@@ -25,3 +26,6 @@ class Experiment(PlainTermDataDescriptor):
     min_number_yrs_per_sim: int | None
     parent_activity_id: list[str] | None
     parent_experiment_id: list[str] | None
+
+
+# TO DISCUSS
