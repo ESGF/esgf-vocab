@@ -21,6 +21,20 @@ def merge(uri: str) -> Dict:
     return mdm.merge_linked_json()[-1]
 
 
+def resolve_nested_ids_in_dict(data: dict, merger: "DataMerger") -> dict:
+    """
+    Resolve all nested @id references in a dictionary using a DataMerger instance.
+
+    Args:
+        data: The dictionary containing potential @id references
+        merger: The DataMerger instance to use for resolution
+
+    Returns:
+        Dictionary with all @id references resolved to full objects
+    """
+    return merger.resolve_nested_ids(data)
+
+
 class DataMerger:
     def __init__(
         self,
@@ -90,6 +104,147 @@ class DataMerger:
             current_data = next_data_instance
         print("OLA", result_list)
         return result_list
+
+    def resolve_nested_ids(self, data, expanded_data=None, visited: Set[str] = None) -> dict | list:
+        """
+        Recursively resolve all @id references in nested structures.
+
+        Uses the expanded JSON-LD to find full URIs, fetches referenced terms,
+        and replaces references with full objects.
+
+        Args:
+            data: The compact JSON data to process (dict, list, or primitive)
+            expanded_data: The expanded JSON-LD version (with full URIs)
+            visited: Set of URIs already visited to prevent circular references
+
+        Returns:
+            The data structure with all @id references resolved
+        """
+        if visited is None:
+            visited = set()
+
+        # On first call, get the expanded data
+        if expanded_data is None:
+            expanded_data = self.data.expanded
+            if isinstance(expanded_data, list) and len(expanded_data) > 0:
+                expanded_data = expanded_data[0]
+
+        # Handle the case where expanded_data is a list with a single dict
+        if isinstance(expanded_data, list) and len(expanded_data) == 1:
+            expanded_data = expanded_data[0]
+
+        if isinstance(data, dict):
+            # Check if this dict is a simple @id reference (like {"@id": "hadgem3_gc31_atmos_100km"})
+            if "@id" in data and len(data) == 1:
+                id_value = data["@id"]
+
+                try:
+                    # The expanded_data should have the full URI
+                    uri = expanded_data.get("@id", id_value) if isinstance(expanded_data, dict) else id_value
+
+                    # Only resolve if it's in our allowed URIs
+                    if not self._should_resolve(uri):
+                        return data
+
+                    # Ensure it has .json extension
+                    if not uri.endswith(".json"):
+                        uri += ".json"
+
+                    # Prevent circular references (only within the current resolution chain)
+                    if uri in visited:
+                        logger.warning(f"Circular reference detected: {uri}")
+                        return data
+
+                    # Add to visited for this branch only
+                    new_visited = visited.copy()
+                    new_visited.add(uri)
+
+                    # Fetch the referenced term
+                    resolved = self._fetch_referenced_term(uri)
+
+                    # Recursively resolve any nested references in the resolved data
+                    # Use new_visited so other branches can still resolve this same URI
+                    return self.resolve_nested_ids(resolved, None, new_visited)
+
+                except Exception as e:
+                    logger.error(f"Failed to resolve reference {id_value}: {e}")
+                    return data
+
+            # Otherwise, recursively process all values in the dict
+            result = {}
+            for key, value in data.items():
+                # Find corresponding expanded value
+                # Map compact key to expanded key (e.g., "model_components" -> "http://schema.org/model_components")
+                expanded_key = key
+                if isinstance(expanded_data, dict):
+                    # Try to find the key in expanded data
+                    # It might be under a full URI
+                    for exp_key in expanded_data.keys():
+                        if exp_key.endswith("/" + key) or exp_key.endswith("#" + key) or exp_key == key:
+                            expanded_key = exp_key
+                            break
+
+                expanded_value = expanded_data.get(expanded_key) if isinstance(expanded_data, dict) else None
+                result[key] = self.resolve_nested_ids(value, expanded_value, visited)
+            return result
+
+        elif isinstance(data, list) and isinstance(expanded_data, list):
+            # Recursively process each item in the list with corresponding expanded item
+            # Each list item gets its own visited set to allow reusing the same references
+            result = []
+            for i, item in enumerate(data):
+                expanded_item = expanded_data[i] if i < len(expanded_data) else None
+                # Create a fresh visited set for each list item
+                result.append(self.resolve_nested_ids(item, expanded_item, set()))
+            return result
+
+        elif isinstance(data, list):
+            # List but no corresponding expanded list, process without expanded data
+            # Each list item gets its own visited set
+            return [self.resolve_nested_ids(item, None, set()) for item in data]
+
+        else:
+            # Primitive values are returned as-is
+            return data
+
+    def _fetch_referenced_term(self, uri: str) -> dict:
+        """
+        Fetch a term from URI and return its data.
+        Tries multiple paths if the direct path doesn't exist.
+        """
+        # Check locally_available for path substitution
+        resolved_uri = uri
+        for local_repo, local_path in self.locally_available.items():
+            if uri.startswith(local_repo):
+                resolved_uri = uri.replace(local_repo, local_path)
+                break
+
+        # Try to fetch the resource
+        import os
+        from pathlib import Path
+
+        if os.path.exists(resolved_uri):
+            resource = JsonLdResource(uri=resolved_uri)
+            return resource.json_dict
+
+        # File doesn't exist at the expanded path
+        # Try to find it in other data descriptor directories
+        filename = Path(resolved_uri).name
+        parts = Path(resolved_uri).parts
+        if len(parts) >= 3:
+            base_dir = Path(*parts[:-2])  # Remove data_descriptor and filename
+
+            # Try common data descriptor directories for grids
+            alternate_dirs = ['horizontal_grid', 'vertical_grid', 'grid']
+            for alt_dir in alternate_dirs:
+                alt_path = base_dir / alt_dir / filename
+                if os.path.exists(alt_path):
+                    resource = JsonLdResource(uri=str(alt_path))
+                    return resource.json_dict
+
+        # If still not found, try the original URI (might be remote)
+        resource = JsonLdResource(uri=resolved_uri)
+        return resource.json_dict
 
 
 if __name__ == "__main__":
