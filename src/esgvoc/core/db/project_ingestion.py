@@ -76,11 +76,15 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                 locally_avail = {
                     "https://espri-mod.github.io/mip-cmor-tables": service.current_state.universe.local_path
                 }
-                json_specs = DataMerger(
+                merger = DataMerger(
                     data=JsonLdResource(uri=str(term_file_path)),
-                    # locally_available={"https://espri-mod.github.io/mip-cmor-tables":".cache/repos/WCRP-universe"}).merge_linked_json()[-1]
                     locally_available=locally_avail,
-                ).merge_linked_json()[-1]
+                    allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables"}
+                )
+                merged_data = merger.merge_linked_json()[-1]
+                # Resolve all nested @id references to full objects
+                json_specs = merger.resolve_nested_ids(merged_data)
+
                 term_kind = infer_term_kind(json_specs)
                 term_id = json_specs["id"]
 

@@ -49,12 +49,10 @@ class DataMerger:
 
     def _should_resolve(self, uri: str) -> bool:
         """Check if a given URI should be resolved based on allowed URIs."""
-        print("sould_resolve")
         return any(uri.startswith(base) for base in self.allowed_base_uris)
 
     def _get_next_id(self, data: dict) -> str | None:
         """Extract the next @id from the data if it is a valid customization reference."""
-        print("_get_next_id")
         if isinstance(data, list):
             data = data[0]
         if "@id" in data and self._should_resolve(data["@id"]):
@@ -63,36 +61,22 @@ class DataMerger:
 
     def merge_linked_json(self) -> List[Dict]:
         """Fetch and merge data recursively, returning a list of progressively merged Data json instances."""
-        print("merge_linked_json")
-        print(self.data.expanded)
-        if "atest_source1" in str(self.data.uri):
-            print(
-                "OLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-
         # Start with the original json object
         result_list = [self.data.json_dict]
         visited = set(self.data.uri)  # Track visited URIs to prevent cycles
         current_data = self.data
-        if "atest_source1" in str(self.data.uri):
-            print("OLEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
 
         while True:
-            print("COUCOU")
             next_id = self._get_next_id(current_data.expanded[0])
-            if "atest_source1" in str(self.data.uri):
-                print("OLA:::next_id:", next_id)
             if not next_id or next_id in visited or not self._should_resolve(next_id):
                 break
             visited.add(next_id)
-            print("il faut resolve ? sure ?")
             # Fetch and merge the next customization
             # do we have it in local ? if so use it instead of remote
-            print([(k, v) for k, v in self.locally_available.items()])
             for local_repo in self.locally_available.keys():
                 if next_id.startswith(local_repo):
                     next_id = next_id.replace(
                         local_repo, self.locally_available[local_repo])
-            print("après vision des local repos : next_id = ", next_id)
             next_data_instance = JsonLdResource(uri=next_id)
             merged_json_data = merge_dicts([current_data.json_dict], [
                                            next_data_instance.json_dict])
@@ -102,7 +86,6 @@ class DataMerger:
             # Add the merged instance to the result list
             result_list.append(merged_json_data)
             current_data = next_data_instance
-        print("OLA", result_list)
         return result_list
 
     def resolve_nested_ids(self, data, expanded_data=None, visited: Set[str] = None) -> dict | list:
@@ -123,8 +106,9 @@ class DataMerger:
         if visited is None:
             visited = set()
 
-        # On first call, get the expanded data
-        if expanded_data is None:
+        # On first call (when visited is empty), get the expanded data
+        # But NOT when we're resolving a fetched term recursively
+        if expanded_data is None and len(visited) == 0:
             expanded_data = self.data.expanded
             if isinstance(expanded_data, list) and len(expanded_data) > 0:
                 expanded_data = expanded_data[0]
@@ -159,12 +143,26 @@ class DataMerger:
                     new_visited = visited.copy()
                     new_visited.add(uri)
 
-                    # Fetch the referenced term
+                    # Convert remote URI to local path
+                    local_uri = uri
+                    for local_repo, local_path in self.locally_available.items():
+                        if uri.startswith(local_repo):
+                            local_uri = uri.replace(local_repo, local_path)
+                            break
+
+                    # Fetch the referenced term (raw JSON)
                     resolved = self._fetch_referenced_term(uri)
 
+                    # Create a temporary resource to get proper expansion for this term
+                    # Use the local path so it can find the context file
+                    temp_resource = JsonLdResource(uri=local_uri)
+                    temp_expanded = temp_resource.expanded
+                    if isinstance(temp_expanded, list) and len(temp_expanded) > 0:
+                        temp_expanded = temp_expanded[0]
+
                     # Recursively resolve any nested references in the resolved data
-                    # Use new_visited so other branches can still resolve this same URI
-                    return self.resolve_nested_ids(resolved, None, new_visited)
+                    # Pass the expanded data for this specific term
+                    return self.resolve_nested_ids(resolved, temp_expanded, new_visited)
 
                 except Exception as e:
                     logger.error(f"Failed to resolve reference {id_value}: {e}")
@@ -211,7 +209,15 @@ class DataMerger:
         """
         Fetch a term from URI and return its data.
         Tries multiple paths if the direct path doesn't exist.
+
+        IMPORTANT: This method reads the JSON file directly without creating
+        a JsonLdResource to avoid triggering expansion which could cause
+        infinite recursion during nested ID resolution.
         """
+        import os
+        import json
+        from pathlib import Path
+
         # Check locally_available for path substitution
         resolved_uri = uri
         for local_repo, local_path in self.locally_available.items():
@@ -219,13 +225,10 @@ class DataMerger:
                 resolved_uri = uri.replace(local_repo, local_path)
                 break
 
-        # Try to fetch the resource
-        import os
-        from pathlib import Path
-
+        # Try to read the file directly
         if os.path.exists(resolved_uri):
-            resource = JsonLdResource(uri=resolved_uri)
-            return resource.json_dict
+            with open(resolved_uri, 'r') as f:
+                return json.load(f)
 
         # File doesn't exist at the expanded path
         # Try to find it in other data descriptor directories
@@ -239,12 +242,21 @@ class DataMerger:
             for alt_dir in alternate_dirs:
                 alt_path = base_dir / alt_dir / filename
                 if os.path.exists(alt_path):
-                    resource = JsonLdResource(uri=str(alt_path))
-                    return resource.json_dict
+                    with open(alt_path, 'r') as f:
+                        return json.load(f)
 
         # If still not found, try the original URI (might be remote)
-        resource = JsonLdResource(uri=resolved_uri)
-        return resource.json_dict
+        if os.path.exists(resolved_uri):
+            with open(resolved_uri, 'r') as f:
+                return json.load(f)
+        else:
+            # Last resort: try to fetch remotely
+            import requests
+            response = requests.get(uri, headers={"accept": "application/json"}, verify=False)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                raise FileNotFoundError(f"Could not find or fetch term at {uri}")
 
 
 if __name__ == "__main__":

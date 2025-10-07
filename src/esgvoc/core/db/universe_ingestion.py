@@ -108,36 +108,25 @@ def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnecti
             _LOGGER.debug(f"found term path : {term_file_path}, {
                           term_file_path.suffix}")
             if term_file_path.is_file() and term_file_path.suffix == ".json":
-                debug_str = "atest_source1"
-                if "atest_source1" in str(term_file_path):
-                    print("ON EST LA : 'atest_source1'")
                 try:
                     locally_available = {
                         "https://espri-mod.github.io/mip-cmor-tables": service.current_state.universe.local_path
                     }
 
-                    if "atest_source1" in str(term_file_path):
-                        json_data = JsonLdResource(uri=str(term_file_path))
-                        print(json_data)
-                        print(json_data.info)
-                        json_spec = DataMerger(
-                            data=json_data, locally_available=locally_available)
-                        print(json_spec)
-                        print(json_spec.merge_linked_json())
+                    merger = DataMerger(
+                        data=JsonLdResource(uri=str(term_file_path)),
+                        locally_available=locally_available,
+                        allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables"}
+                    )
+                    merged_data = merger.merge_linked_json()[-1]
+                    # Resolve all nested @id references to full objects
+                    json_specs = merger.resolve_nested_ids(merged_data)
 
-                    json_specs = DataMerger(
-                        data=JsonLdResource(uri=str(term_file_path)), locally_available=locally_available
-                    ).merge_linked_json()[-1]
-
-                    if "atest_source1" in str(term_file_path):
-                        print("ON EST LA : 'atest_source1'")
                     term_kind = infer_term_kind(json_specs)
                     term_id = json_specs["id"]
 
                     if term_kind_dd is None:
                         term_kind_dd = term_kind
-                    if "atest_source1" in str(term_file_path):
-                        print("BON CA l AIR BIEN", term_id)
                 except Exception as e:
                     _LOGGER.warning(
                         f"Unable to read term {
@@ -153,9 +142,6 @@ def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnecti
                         data_descriptor=data_descriptor,
                         kind=term_kind,
                     )
-                    if "atest_source1" in str(term_file_path):
-                        print("DU COUP LE TERM ", term)
-
                     session.add(term)
         if term_kind_dd is not None:
             data_descriptor.term_kind = term_kind_dd
