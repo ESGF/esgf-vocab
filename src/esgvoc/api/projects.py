@@ -1,5 +1,6 @@
+import itertools
 import re
-from typing import Iterable, Sequence
+from typing import Iterable, Sequence, cast
 
 from sqlalchemy import text
 from sqlmodel import Session, and_, col, select
@@ -9,23 +10,24 @@ import esgvoc.core.constants as constants
 import esgvoc.core.service as service
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import ProjectSpecs
-from esgvoc.api.report import (ProjectTermError, UniverseTermError,
-                               ValidationReport)
-from esgvoc.api.search import (Item, MatchingTerm,
-                               execute_find_item_statements,
-                               execute_match_statement,
-                               generate_matching_condition,
-                               get_universe_session, handle_rank_limit_offset,
-                               instantiate_pydantic_term,
-                               instantiate_pydantic_terms)
+from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
+from esgvoc.api.search import (
+    Item,
+    MatchingTerm,
+    execute_find_item_statements,
+    execute_match_statement,
+    generate_matching_condition,
+    get_universe_session,
+    handle_rank_limit_offset,
+    instantiate_pydantic_term,
+    instantiate_pydantic_terms,
+    process_expression,
+)
 from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
-from esgvoc.core.db.models.project import (Collection, PCollectionFTS5,
-                                           Project, PTerm, PTermFTS5)
+from esgvoc.core.db.models.project import PCollection, PCollectionFTS5, Project, PTerm, PTermFTS5
 from esgvoc.core.db.models.universe import UTerm
-from esgvoc.core.exceptions import (EsgvocDbError, EsgvocNotFoundError,
-                                    EsgvocNotImplementedError,
-                                    EsgvocValueError)
+from esgvoc.core.exceptions import EsgvocDbError, EsgvocNotFoundError, EsgvocNotImplementedError, EsgvocValueError
 
 # [OPTIMIZATION]
 _VALID_TERM_IN_COLLECTION_CACHE: dict[str, list[MatchingTerm]] = dict()
@@ -47,22 +49,36 @@ def _get_project_session_with_exception(project_id: str) -> Session:
         raise EsgvocNotFoundError(f"unable to find project '{project_id}'")
 
 
-def _resolve_term(composite_term_part: dict, universe_session: Session, project_session: Session) -> UTerm | PTerm:
-    # First find the term in the universe than in the current project
-    term_id = composite_term_part[constants.TERM_ID_JSON_KEY]
-    term_type = composite_term_part[constants.TERM_TYPE_JSON_KEY]
-    uterm = universe._get_term_in_data_descriptor(
-        data_descriptor_id=term_type, term_id=term_id, session=universe_session
-    )
-    if uterm:
-        return uterm
+def _resolve_composite_term_part(composite_term_part: dict,
+                                 universe_session: Session,
+                                 project_session: Session) -> UTerm | PTerm | Sequence[UTerm | PTerm]:
+    if constants.TERM_ID_JSON_KEY in composite_term_part:
+        # First find the term in the universe than in the current project
+        term_id = composite_term_part[constants.TERM_ID_JSON_KEY]
+        term_type = composite_term_part[constants.TERM_TYPE_JSON_KEY]
+        uterm = universe._get_term_in_data_descriptor(data_descriptor_id=term_type,
+                                                      term_id=term_id, session=universe_session)
+        if uterm:
+            return uterm
+        else:
+            pterm = _get_term_in_collection(collection_id=term_type, term_id=term_id, session=project_session)
+        if pterm:
+            return pterm
+        else:
+            msg = f"unable to find the term '{term_id}' in '{term_type}'"
+            raise EsgvocNotFoundError(msg)
     else:
-        pterm = _get_term_in_collection(collection_id=term_type, term_id=term_id, session=project_session)
-    if pterm:
-        return pterm
-    else:
-        msg = f"unable to find the term '{term_id}' in '{term_type}'"
-        raise EsgvocNotFoundError(msg)
+        term_type = composite_term_part[constants.TERM_TYPE_JSON_KEY]
+        data_descriptor = universe._get_data_descriptor_in_universe(term_type, universe_session)
+        if data_descriptor is not None:
+            return data_descriptor.terms
+        else:
+            collection = _get_collection_in_project(term_type, project_session)
+            if collection is not None:
+                return collection.terms
+            else:
+                msg = f"unable to find the terms of '{term_type}'"
+                raise EsgvocNotFoundError(msg)
 
 
 def _get_composite_term_separator_parts(term: UTerm | PTerm) -> tuple[str, list]:
@@ -71,48 +87,82 @@ def _get_composite_term_separator_parts(term: UTerm | PTerm) -> tuple[str, list]
     return separator, parts
 
 
-# TODO: support optionality of parts of composite.
-# It is backtrack possible for more than one missing parts.
 def _valid_value_composite_term_with_separator(
     value: str, term: UTerm | PTerm, universe_session: Session, project_session: Session
 ) -> list[UniverseTermError | ProjectTermError]:
-    result = list()
     separator, parts = _get_composite_term_separator_parts(term)
-    if separator in value:
-        splits = value.split(separator)
-        if len(splits) == len(parts):
-            for index in range(0, len(splits)):
-                given_value = splits[index]
-                if "id" not in parts[index].keys():
-                    terms = universe.get_all_terms_in_data_descriptor(parts[index]["type"], None)
-                    parts[index]["id"] = [term.id for term in terms]
+    required_indices = {i for i, p in enumerate(parts) if p.get("is_required", False)}
 
-                if type(parts[index]["id"]) is str:
-                    parts[index]["id"] = [parts[index]["id"]]
+    splits = value.split(separator)
+    nb_splits = len(splits)
+    nb_parts = len(parts)
 
-                errors_list = list()
-                for id in parts[index]["id"]:
-                    part_parts = dict(parts[index])
-                    part_parts["id"] = id
-                    # print(part_parts)
+    if nb_splits > nb_parts:
+        return [_create_term_error(value, term)]
 
-                    resolved_term = _resolve_term(part_parts, universe_session, project_session)
-                    errors = _valid_value(given_value, resolved_term, universe_session, project_session)
-                    if len(errors) == 0:
-                        errors_list = errors
-                        break
-                    else:
-                        errors_list.extend(errors)
-                    # print(errors)
+    # Generate all possible assignments of split values into parts
+    # Only keep those that include all required parts
+    all_positions = [i for i in range(nb_parts)]
+    valid_combinations = [
+        comb for comb in itertools.combinations(all_positions, nb_splits) if required_indices.issubset(comb)
+    ]
 
-                else:
-                    # result.extend(errors_list)
-                    result.append(_create_term_error(value, term))
-        else:
-            result.append(_create_term_error(value, term))
-    else:
-        result.append(_create_term_error(value, term))
-    return result
+    for positions in valid_combinations:
+        candidate = [None] * nb_parts
+        for idx, pos in enumerate(positions):
+            candidate[pos] = splits[idx]
+
+        # Separator structure validation:
+        # - No leading separator if the first part is None
+        # - No trailing separator if the last part is None
+        # - No double separators where two adjacent optional parts are missing
+        if candidate[0] is None and value.startswith(separator):
+            continue
+        if candidate[-1] is None and value.endswith(separator):
+            continue
+        if any(
+            candidate[i] is None and candidate[i + 1] is None and separator * 2 in value for i in range(nb_parts - 1)
+        ):
+            continue  # invalid double separator between two missing parts
+
+        # Validate each filled part value
+        all_valid = True
+        for i, given_value in enumerate(candidate):
+            if given_value is None:
+                if parts[i].get("is_required", False):
+                    all_valid = False
+                    break
+                continue  # optional and missing part is allowed
+
+            part = parts[i]
+
+            # Resolve term ID list if not present
+            if "id" not in part:
+                terms = universe.get_all_terms_in_data_descriptor(part["type"], None)
+                part["id"] = [term.id for term in terms]
+            if isinstance(part["id"], str):
+                part["id"] = [part["id"]]
+
+            # Try all possible term IDs to find a valid match
+            valid_for_this_part = False
+            for id in part["id"]:
+                part_copy = dict(part)
+                part_copy["id"] = id
+                resolved_term = _resolve_composite_term_part(part_copy, universe_session, project_session)
+                # resolved_term can't be a list of terms here.
+                resolved_term = cast(UTerm | PTerm, resolved_term)
+                errors = _valid_value(given_value, resolved_term, universe_session, project_session)
+                if not errors:
+                    valid_for_this_part = True
+                    break
+            if not valid_for_this_part:
+                all_valid = False
+                break
+
+        if all_valid:
+            return []  # At least one valid combination found
+
+    return [_create_term_error(value, term)]  # No valid combination found
 
 
 def _transform_to_pattern(term: UTerm | PTerm, universe_session: Session, project_session: Session) -> str:
@@ -128,8 +178,13 @@ def _transform_to_pattern(term: UTerm | PTerm, universe_session: Session, projec
             separator, parts = _get_composite_term_separator_parts(term)
             result = ""
             for part in parts:
-                resolved_term = _resolve_term(part, universe_session, project_session)
-                pattern = _transform_to_pattern(resolved_term, universe_session, project_session)
+                resolved_term = _resolve_composite_term_part(part, universe_session, project_session)
+                if isinstance(resolved_term, Sequence):
+                    pattern = ""
+                    for r_term in resolved_term:
+                        pattern += _transform_to_pattern(r_term, universe_session, project_session)
+                else:
+                    pattern = _transform_to_pattern(resolved_term, universe_session, project_session)
                 result = f"{result}{pattern}{separator}"
             result = result.rstrip(separator)
         case _:
@@ -217,14 +272,14 @@ def _check_value(value: str) -> str:
 
 
 def _search_plain_term_and_valid_value(value: str, collection_id: str, project_session: Session) -> str | None:
-    where_expression = and_(Collection.id == collection_id, PTerm.specs[constants.DRS_SPECS_JSON_KEY] == f'"{value}"')
-    statement = select(PTerm).join(Collection).where(where_expression)
+    where_expression = and_(PCollection.id == collection_id, PTerm.specs[constants.DRS_SPECS_JSON_KEY] == f'"{value}"')
+    statement = select(PTerm).join(PCollection).where(where_expression)
     term = project_session.exec(statement).one_or_none()
     return term.id if term else None
 
 
 def _valid_value_against_all_terms_of_collection(
-    value: str, collection: Collection, universe_session: Session, project_session: Session
+    value: str, collection: PCollection, universe_session: Session, project_session: Session
 ) -> list[str]:
     if collection.terms:
         result = list()
@@ -454,10 +509,55 @@ def get_all_terms_in_collection(
     return result
 
 
-def _get_all_collections_in_project(session: Session) -> list[Collection]:
+def _get_all_collections_in_project(session: Session) -> list[PCollection]:
     project = session.get(Project, constants.SQLITE_FIRST_PK)
     # Project can't be missing if session exists.
-    return project.collections  # type: ignore
+    try:
+        return project.collections  # type: ignore
+    except Exception as e:
+        # Enhanced error context for collection retrieval failures
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to retrieve collections for project '{project.id}': {str(e)}")
+
+        # Use raw SQL to inspect collections without Pydantic validation
+        from sqlalchemy import text
+        try:
+            # Query raw data to identify problematic collections
+            raw_query = text("""
+                SELECT id, term_kind, data_descriptor_id
+                FROM pcollections
+                WHERE project_pk = :project_pk
+            """)
+            result = session.execute(raw_query, {"project_pk": project.pk})
+
+            problematic_collections = []
+
+            for row in result:
+                collection_id, term_kind_value, data_descriptor_id = row
+
+                # Only empty string is invalid - indicates ingestion couldn't determine termkind
+                if term_kind_value == '' or term_kind_value is None:
+                    problematic_collections.append((collection_id, term_kind_value, data_descriptor_id))
+                    msg = f"Collection '{collection_id}' has empty term_kind (data_descriptor: " + \
+                          f"{data_descriptor_id}) - CV ingestion failed to determine termkind"
+                    logger.error(msg)
+
+            if problematic_collections:
+                error_details = []
+                for col_id, _, data_desc in problematic_collections:
+                    error_details.append(f"  • Collection '{col_id}' (data_descriptor: {data_desc}): EMPTY termkind")
+
+                error_msg = (
+                    f"Found {len(problematic_collections)} collections with empty term_kind:\n" +
+                    "\n".join(error_details)
+                )
+                raise ValueError(error_msg) from e
+
+        except Exception as inner_e:
+            logger.error(f"Failed to analyze problematic collections using raw SQL: {inner_e}")
+
+        raise e
 
 
 def get_all_collections_in_project(project_id: str) -> list[str]:
@@ -474,15 +574,29 @@ def get_all_collections_in_project(project_id: str) -> list[str]:
     """
     result = list()
     if connection := _get_project_connection(project_id):
-        with connection.create_session() as session:
-            collections = _get_all_collections_in_project(session)
-            for collection in collections:
-                result.append(collection.id)
+        try:
+            with connection.create_session() as session:
+                collections = _get_all_collections_in_project(session)
+                for collection in collections:
+                    result.append(collection.id)
+        except Exception as e:
+            # Enhanced error context for project collection retrieval
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to get collections for project '{project_id}': {str(e)}")
+
+            # Re-raise with enhanced context
+            raise ValueError(
+                f"Failed to retrieve collections for project '{project_id}'. "
+                f"This may be due to invalid termkind values in the database. "
+                f"Check the project database for collections with empty or invalid termkind values. "
+                f"Original error: {str(e)}"
+            ) from e
     return result
 
 
 def _get_all_terms_in_collection(
-    collection: Collection, selected_term_fields: Iterable[str] | None
+    collection: PCollection, selected_term_fields: Iterable[str] | None
 ) -> list[DataDescriptor]:
     result: list[DataDescriptor] = list()
     instantiate_pydantic_terms(collection.terms, result, selected_term_fields)
@@ -586,7 +700,7 @@ def get_term_in_project(
 
 
 def _get_term_in_collection(collection_id: str, term_id: str, session: Session) -> PTerm | None:
-    statement = select(PTerm).join(Collection).where(Collection.id == collection_id, PTerm.id == term_id)
+    statement = select(PTerm).join(PCollection).where(PCollection.id == collection_id, PTerm.id == term_id)
     results = session.exec(statement)
     result = results.one_or_none()
     return result
@@ -624,8 +738,8 @@ def get_term_in_collection(
     return result
 
 
-def _get_collection_in_project(collection_id: str, session: Session) -> Collection | None:
-    statement = select(Collection).where(Collection.id == collection_id)
+def _get_collection_in_project(collection_id: str, session: Session) -> PCollection | None:
+    statement = select(PCollection).where(PCollection.id == collection_id)
     results = session.exec(statement)
     result = results.one_or_none()
     return result
@@ -681,8 +795,8 @@ def get_project(project_id: str) -> ProjectSpecs | None:
     return result
 
 
-def _get_collection_from_data_descriptor_in_project(data_descriptor_id: str, session: Session) -> Collection | None:
-    statement = select(Collection).where(Collection.data_descriptor_id == data_descriptor_id)
+def _get_collection_from_data_descriptor_in_project(data_descriptor_id: str, session: Session) -> PCollection | None:
+    statement = select(PCollection).where(PCollection.data_descriptor_id == data_descriptor_id)
     result = session.exec(statement).one_or_none()
     return result
 
@@ -742,8 +856,8 @@ def _get_term_from_universe_term_id_in_project(
 ) -> PTerm | None:
     statement = (
         select(PTerm)
-        .join(Collection)
-        .where(Collection.data_descriptor_id == data_descriptor_id, PTerm.id == universe_term_id)
+        .join(PCollection)
+        .where(PCollection.data_descriptor_id == data_descriptor_id, PTerm.id == universe_term_id)
     )
     results = project_session.exec(statement)
     result = results.one_or_none()
@@ -818,10 +932,10 @@ def get_term_from_universe_term_id_in_all_projects(
 
 def _find_collections_in_project(
     expression: str, session: Session, only_id: bool = False, limit: int | None = None, offset: int | None = None
-) -> Sequence[Collection]:
+) -> Sequence[PCollection]:
     matching_condition = generate_matching_condition(PCollectionFTS5, expression, only_id)
     tmp_statement = select(PCollectionFTS5).where(matching_condition)
-    statement = select(Collection).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
+    statement = select(PCollection).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
     return execute_match_statement(expression, statement, session)
 
 
@@ -830,12 +944,15 @@ def find_collections_in_project(
 ) -> list[tuple[str, dict]]:
     """
     Find collections in the given project based on a full text search defined by the given `expression`.
-    The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of collection ids and contexts, sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     This function performs an exact match on the `project_id`,
@@ -881,8 +998,8 @@ def _find_terms_in_collection(
     offset: int | None = None,
 ) -> Sequence[PTerm]:
     matching_condition = generate_matching_condition(PTermFTS5, expression, only_id)
-    where_condition = Collection.id == collection_id, matching_condition
-    tmp_statement = select(PTermFTS5).join(Collection).where(*where_condition)
+    where_condition = PCollection.id == collection_id, matching_condition
+    tmp_statement = select(PTermFTS5).join(PCollection).where(*where_condition)
     statement = select(PTerm).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
     return execute_match_statement(expression, statement, session)
 
@@ -907,12 +1024,16 @@ def find_terms_in_collection(
 ) -> list[DataDescriptor]:
     """
     Find terms in the given project and collection based on a full text search defined by the given
-    `expression`. The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    `expression`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of term instances, sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     This function performs an exact match on the `project_id` and `collection_id`,
@@ -961,13 +1082,16 @@ def find_terms_in_project(
     selected_term_fields: Iterable[str] | None = None,
 ) -> list[DataDescriptor]:
     """
-    Find terms in the given project on a full text search defined by the given
-    `expression`. The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    Find terms in the given project based on a full text search defined by the given `expression`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of term instances, sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     This function performs an exact match on the `project_id`,
@@ -1013,13 +1137,16 @@ def find_terms_in_all_projects(
     selected_term_fields: Iterable[str] | None = None,
 ) -> list[tuple[str, list[DataDescriptor]]]:
     """
-    Find terms in the all projects on a full text search defined by the given
-    `expression`. The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    Find terms in all projects based on a full text search defined by the given `expression`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of project ids and term instances, sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     If the provided `expression` does not hit any term, the function returns an empty list.
@@ -1058,12 +1185,16 @@ def find_items_in_project(
 ) -> list[Item]:
     """
     Find items, at the moment terms and collections, in the given project based on a full-text
-    search defined by the given `expression`. The `expression` comes from the powerful
-    `SQLite FTS extension <https://sqlite.org/fts5.html#full_text_query_syntax>`_
-    and corresponds to the expression of the `MATCH` operator.
-    It can be composed of one or multiple keywords combined with boolean
-    operators (`NOT`, `AND`, `^`, etc. default is `OR`). Keywords can define prefixes or postfixes
-    with the wildcard `*`.
+    search defined by the given `expression`.
+    The `expression` can be composed of one or multiple keywords.
+    The keywords can combined with boolean operators: `AND`,
+    `OR` and `NOT` (case sensitive). The keywords are separated by whitespaces,
+    if no boolean operators is provided, whitespaces are handled as if there were
+    an implicit AND operator between each pair of keywords. Note that this
+    function does not provide any priority operator (parenthesis).
+    Keywords can define prefixes when adding a `*` at the end of them.
+    If the expression is composed of only one keyword, the function
+    automatically defines it as a prefix.
     The function returns a list of item instances sorted according to the
     bm25 ranking metric (list index `0` has the highest rank).
     This function performs an exact match on the `project_id`,
@@ -1093,23 +1224,24 @@ def find_items_in_project(
     result = list()
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
+            processed_expression = process_expression(expression)
             if only_id:
                 collection_column = col(PCollectionFTS5.id)
                 term_column = col(PTermFTS5.id)
             else:
                 collection_column = col(PCollectionFTS5.id)  # TODO: use specs when implemented!
                 term_column = col(PTermFTS5.specs)  # type: ignore
-            collection_where_condition = collection_column.match(expression)
+            collection_where_condition = collection_column.match(processed_expression)
             collection_statement = select(
                 PCollectionFTS5.id, text("'collection' AS TYPE"), text(f"'{project_id}' AS TYPE"), text("rank")
             ).where(collection_where_condition)
-            term_where_condition = term_column.match(expression)
+            term_where_condition = term_column.match(processed_expression)
             term_statement = (
-                select(PTermFTS5.id, text("'term' AS TYPE"), Collection.id, text("rank"))
-                .join(Collection)
+                select(PTermFTS5.id, text("'term' AS TYPE"), PCollection.id, text("rank"))
+                .join(PCollection)
                 .where(term_where_condition)
             )
             result = execute_find_item_statements(
-                session, expression, collection_statement, term_statement, limit, offset
+                session, processed_expression, collection_statement, term_statement, limit, offset
             )
     return result

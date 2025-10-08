@@ -1,28 +1,22 @@
+import logging
 import re
-from typing import Any
+from typing import Any, List, Optional
 
 import typer
 from pydantic import BaseModel
-from requests import logging
 from rich.console import Console
 from rich.json import JSON
 from rich.table import Table
 
-from esgvoc.api.projects import (
-    get_all_collections_in_project,
-    get_all_projects,
-    get_all_terms_in_collection,
-    get_term_in_collection,
-    get_term_in_project,
-)
-from esgvoc.api.universe import (
-    find_terms_in_data_descriptor,
-    find_terms_in_universe,
-    get_all_data_descriptors_in_universe,
-    get_all_terms_in_data_descriptor,
-    get_term_in_data_descriptor,
-    get_term_in_universe,
-)
+from esgvoc.api.projects import (get_all_collections_in_project,
+                                 get_all_projects, get_all_terms_in_collection,
+                                 get_term_in_collection, get_term_in_project)
+from esgvoc.api.universe import (find_terms_in_data_descriptor,
+                                 find_terms_in_universe,
+                                 get_all_data_descriptors_in_universe,
+                                 get_all_terms_in_data_descriptor,
+                                 get_term_in_data_descriptor,
+                                 get_term_in_universe)
 
 app = typer.Typer()
 console = Console()
@@ -41,7 +35,6 @@ def validate_key_format(key: str):
 
 def handle_universe(data_descriptor_id: str | None, term_id: str | None, options=None):
     _LOGGER.debug(f"Handling universe with data_descriptor_id={data_descriptor_id}, term_id={term_id}")
-
     if data_descriptor_id and term_id:
         return get_term_in_data_descriptor(data_descriptor_id, term_id, options)
         # BaseModel|dict[str: BaseModel]|None:
@@ -51,7 +44,7 @@ def handle_universe(data_descriptor_id: str | None, term_id: str | None, options
         # dict[str, BaseModel] | dict[str, dict[str, BaseModel]] | None:
 
     elif data_descriptor_id:
-        return get_all_terms_in_data_descriptor(data_descriptor_id)
+        return get_all_terms_in_data_descriptor(data_descriptor_id, options)
         # dict[str, BaseModel]|None:
 
     else:
@@ -71,7 +64,7 @@ def handle_project(project_id: str, collection_id: str | None, term_id: str | No
         # dict[str, BaseModel] | dict[str, dict[str, BaseModel]] | None:
 
     elif collection_id:
-        return get_all_terms_in_collection(project_id, collection_id)
+        return get_all_terms_in_collection(project_id, collection_id, options)
         # dict[str, BaseModel]|None:
 
     else:
@@ -108,7 +101,10 @@ def display(data: Any):
 
 
 @app.command()
-def get(keys: list[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZZZ format")):
+def get(
+    keys: List[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZZZ format"),
+    select: Optional[List[str]] = typer.Option(None, "--select", help="keys selected for the result"),
+):
     """
     Retrieve a specific value from the database system.\n
     This command allows you to fetch a value by specifying the universe/project, data_descriptor/collection,
@@ -146,9 +142,9 @@ def get(keys: list[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZ
         what = what if what != "" else None
         who = who if who != "" else None
         if where == "" or where == "universe":
-            res = handle_universe(what, who)
+            res = handle_universe(what, who, select)
         elif where in known_projects:
-            res = handle_project(where, what, who, None)
+            res = handle_project(where, what, who, select)
         else:
             res = handle_unknown(where, what, who)
 

@@ -8,13 +8,13 @@ import esgvoc.core.constants
 import esgvoc.core.db.connection as db
 import esgvoc.core.service as service
 from esgvoc.core.data_handler import JsonLdResource
-from esgvoc.core.db.connection import DBConnection, read_json_file
+from esgvoc.core.db.connection import DBConnection, read_json_file, read_yaml_file
 from esgvoc.core.db.models.mixins import TermKind
-from esgvoc.core.db.models.project import Collection, Project, PTerm
+from esgvoc.core.db.models.project import PCollection, Project, PTerm
 from esgvoc.core.exceptions import EsgvocDbError
 from esgvoc.core.service.data_merger import DataMerger
 
-_LOGGER = logging.getLogger("project_ingestion")
+_LOGGER = logging.getLogger(__name__)
 
 
 def infer_term_kind(json_specs: dict) -> TermKind:
@@ -59,7 +59,7 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
         _LOGGER.fatal(msg)
         raise EsgvocDbError(msg) from e
     # [KEEP]
-    collection = Collection(
+    collection = PCollection(
         id=collection_id,
         context=collection_context,
         project=project,
@@ -92,7 +92,10 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                     term_kind_collection = term_kind
 
             except Exception as e:
-                _LOGGER.warning(f"Unable to read term {term_file_path}. Skip.\n{str(e)}")
+                _LOGGER.warning(
+                    f"Unable to read term file {term_file_path} in collection '{collection_id}' "
+                    + f"of project '{project.id}'. Skip.\n{str(e)}"
+                )
                 continue
             try:
                 term = PTerm(
@@ -103,9 +106,10 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                 )
                 project_db_session.add(term)
             except Exception as e:
+                # Enhanced error reporting for term validation failures
                 _LOGGER.error(
-                    f"fail to find term {term_id} in data descriptor {data_descriptor_id} "
-                    + f"for the collection {collection_id} of the project {project.id}. Skip {term_id}.\n{str(e)}"
+                    f"Failed to create term '{term_id}' in collection '{collection_id}' "
+                    + f"of project '{project.id}' from file '{term_file_path}': {str(e)}"
                 )
                 continue
     if term_kind_collection is not None:
@@ -130,15 +134,27 @@ def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash:
 
     with project_connection.create_session() as project_db_session:
         project_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.PROJECT_SPECS_FILENAME)
+        drs_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.DRS_SPECS_FILENAME)
+        catalog_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.CATALOG_SPECS_FILENAME)
+        attr_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.ATTRIBUTES_SPECS_FILENAME)
         try:
-            project_json_specs = read_json_file(project_specs_file_path)
-            project_id = project_json_specs[esgvoc.core.constants.PROJECT_ID_JSON_KEY]
+            raw_project_specs = read_yaml_file(project_specs_file_path)
+            project_id = raw_project_specs[esgvoc.core.constants.PROJECT_ID_JSON_KEY]
+            raw_drs_specs = read_yaml_file(drs_specs_file_path)
+            project_specs = raw_project_specs
+            project_specs["drs_specs"] = raw_drs_specs
+            if catalog_specs_file_path.exists():
+                raw_catalog_specs = read_yaml_file(catalog_specs_file_path)
+                project_specs["catalog_specs"] = raw_catalog_specs
+            if attr_specs_file_path.exists():
+                raw_attr_specs = read_yaml_file(attr_specs_file_path)
+                project_specs["attr_specs"] = raw_attr_specs
         except Exception as e:
-            msg = f"unable to read project specs file  {project_specs_file_path}"
+            msg = f"unable to read specs files in {project_dir_path}"
             _LOGGER.fatal(msg)
             raise EsgvocDbError(msg) from e
 
-        project = Project(id=project_id, specs=project_json_specs, git_hash=git_hash)
+        project = Project(id=project_id, specs=project_specs, git_hash=git_hash)
         project_db_session.add(project)
 
         for collection_dir_path in project_dir_path.iterdir():
@@ -157,9 +173,9 @@ def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash:
         # Read: https://sqlite.org/fts5.html
         try:
             sql_query = (
-                "INSERT INTO pterms_fts5(pk, id, specs, kind, collection_pk) "
+                "INSERT INTO pterms_fts5(pk, id, specs, kind, collection_pk) "  # noqa: S608
                 + "SELECT pk, id, specs, kind, collection_pk FROM pterms;"
-            )  # noqa: S608
+            )
             project_db_session.exec(text(sql_query))  # type: ignore
         except Exception as e:
             msg = f"unable to insert rows into pterms_fts5 table for {project_db_file_path}"
@@ -168,10 +184,10 @@ def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash:
         project_db_session.commit()
         try:
             sql_query = (
-                "INSERT INTO pcollections_fts5(pk, id, data_descriptor_id, context, "
+                "INSERT INTO pcollections_fts5(pk, id, data_descriptor_id, context, "  # noqa: S608
                 + "project_pk, term_kind) SELECT pk, id, data_descriptor_id, context, "
-                + "project_pk, term_kind FROM collections;"
-            )  # noqa: S608
+                + "project_pk, term_kind FROM pcollections;"
+            )
             project_db_session.exec(text(sql_query))  # type: ignore
         except Exception as e:
             msg = f"unable to insert rows into pcollections_fts5 table for {project_db_file_path}"

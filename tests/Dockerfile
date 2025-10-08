@@ -1,8 +1,8 @@
 FROM python:3.12-alpine
 
-RUN apk update && apk upgrade && apk add git
+RUN apk --no-cache update && apk --no-cache upgrade && apk --no-cache add git
 
-RUN pip install esgvoc pytest
+RUN pip --no-cache-dir install esgvoc pytest
 
 RUN esgvoc install
 

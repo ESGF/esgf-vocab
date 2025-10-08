@@ -15,6 +15,7 @@ from esgvoc.core.exceptions import EsgvocDbError
 from esgvoc.core.service.data_merger import DataMerger
 
 _LOGGER = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 
 def infer_term_kind(json_specs: dict) -> TermKind:
@@ -81,7 +82,6 @@ def ingest_metadata_universe(connection, git_hash):
 
 def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnection) -> None:
     data_descriptor_id = data_descriptor_path.name
-
     context_file_path = data_descriptor_path.joinpath(esgvoc.core.constants.CONTEXT_FILENAME)
     try:
         context = read_json_file(context_file_path)
@@ -126,13 +126,14 @@ def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnecti
                     )
                     continue
                 if term_id and json_specs and data_descriptor and term_kind:
-                    _LOGGER.debug("adding {term_id}")
+                    _LOGGER.debug(f"adding {term_id}")
                     term = UTerm(
                         id=term_id,
                         specs=json_specs,
                         data_descriptor=data_descriptor,
                         kind=term_kind,
                     )
+
                     session.add(term)
         if term_kind_dd is not None:
             data_descriptor.term_kind = term_kind_dd

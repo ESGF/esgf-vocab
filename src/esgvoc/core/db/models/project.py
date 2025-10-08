@@ -10,18 +10,18 @@ import esgvoc.core.db.connection as db
 from esgvoc.core.db.models.mixins import IdMixin, PkMixin, TermKind
 from esgvoc.core.exceptions import EsgvocDbError
 
-_LOGGER = logging.getLogger("project_db_creation")
+_LOGGER = logging.getLogger(__name__)
 
 
 class Project(SQLModel, PkMixin, IdMixin, table=True):
     __tablename__ = "projects"
     specs: dict = Field(sa_column=sa.Column(JSON))
     git_hash: str
-    collections: list["Collection"] = Relationship(back_populates="project")
+    collections: list["PCollection"] = Relationship(back_populates="project")
 
 
-class Collection(SQLModel, PkMixin, IdMixin, table=True):
-    __tablename__ = "collections"
+class PCollection(SQLModel, PkMixin, IdMixin, table=True):
+    __tablename__ = "pcollections"
     data_descriptor_id: str = Field(index=True)
     context: dict = Field(sa_column=sa.Column(JSON))
     project_pk: int | None = Field(default=None, foreign_key="projects.pk")
@@ -44,8 +44,8 @@ class PTerm(SQLModel, PkMixin, IdMixin, table=True):
     __tablename__ = "pterms"
     specs: dict = Field(sa_column=sa.Column(JSON))
     kind: TermKind = Field(sa_column=Column(sa.Enum(TermKind)))
-    collection_pk: int | None = Field(default=None, foreign_key="collections.pk")
-    collection: Collection = Relationship(back_populates="terms")
+    collection_pk: int | None = Field(default=None, foreign_key="pcollections.pk")
+    collection: PCollection = Relationship(back_populates="terms")
     __table_args__ = (sa.Index("drs_name_index", specs.sa_column["drs_name"]), )  # type: ignore
 
 
@@ -55,7 +55,7 @@ class PTermFTS5(SQLModel, PkMixin, IdMixin, table=True):
     __tablename__ = "pterms_fts5"
     specs: dict = Field(sa_column=sa.Column(JSON))
     kind: TermKind = Field(sa_column=Column(sa.Enum(TermKind)))
-    collection_pk: int | None = Field(default=None, foreign_key="collections.pk")
+    collection_pk: int | None = Field(default=None, foreign_key="pcollections.pk")
 
 
 def project_create_db(db_file_path: Path):
@@ -68,7 +68,7 @@ def project_create_db(db_file_path: Path):
     try:
         # Do not include pterms_fts5 table: it is build from a raw SQL query.
         tables_to_be_created = [SQLModel.metadata.tables['projects'],
-                                SQLModel.metadata.tables['collections'],
+                                SQLModel.metadata.tables['pcollections'],
                                 SQLModel.metadata.tables['pterms']]
         SQLModel.metadata.create_all(connection.get_engine(), tables=tables_to_be_created)
     except Exception as e:
@@ -77,8 +77,8 @@ def project_create_db(db_file_path: Path):
         raise EsgvocDbError(msg) from e
     try:
         with connection.create_session() as session:
-            sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS pterms_fts5 USING ' + \
-                        'fts5(pk, id, specs, kind, collection_pk, content=pterms, content_rowid=pk);'
+            sql_query = "CREATE VIRTUAL TABLE IF NOT EXISTS pterms_fts5 USING " + \
+                        "fts5(pk, id, specs, kind, collection_pk, content=pterms, content_rowid=pk, prefix=3);"
             session.exec(text(sql_query))  # type: ignore
             session.commit()
     except Exception as e:
@@ -89,7 +89,7 @@ def project_create_db(db_file_path: Path):
         with connection.create_session() as session:
             sql_query = 'CREATE VIRTUAL TABLE IF NOT EXISTS pcollections_fts5 USING ' + \
                         'fts5(pk, id, data_descriptor_id, context, project_pk, ' + \
-                        'term_kind, content=collections, content_rowid=pk);'
+                        'term_kind, content=pcollections, content_rowid=pk, prefix=3);'
             session.exec(text(sql_query))  # type: ignore
             session.commit()
     except Exception as e:

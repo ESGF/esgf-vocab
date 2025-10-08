@@ -16,11 +16,11 @@ app = typer.Typer()
 console = Console()
 
 
-
 # Predefined list of projects and DRS types
 # projects = ["cmip5", "cmip6","cmip6plus", "cmip7"]
 projects = ev.get_all_projects()
 drs_types = ["filename", "directory", "dataset"]
+
 
 def display(table):
     """
@@ -34,15 +34,26 @@ def display(table):
 
 @app.command()
 def drsvalid(
-    drs_entries: Optional[List[str]] = typer.Argument(None, help="List of DRS validation inputs in the form <project> <drstype> <string>"),
-    file: Optional[typer.FileText] = typer.Option(None, "--file", "-f", help="File containing DRS validation inputs, one per line in the form <project> <drstype> <string>"),
+    drs_entries: Optional[List[str]] = typer.Argument(
+        None, help="List of DRS validation inputs in the form <project> <drstype> <string>"
+    ),
+    file: Optional[typer.FileText] = typer.Option(
+        None,
+        "--file",
+        "-f",
+        help="File containing DRS validation inputs, one per line in the form <project> <drstype> <string>",
+    ),
     verbose: bool = typer.Option(False, "-v", "--verbose", help="Provide detailed validation results"),
     output: Optional[str] = typer.Option(None, "-o", "--output", help="File to save the DRS entries validation"),
-    rm_prefix: Optional[str] = typer.Option(None,"-p","--prefix", help="Remove given prefix from all checked directory"),
-    pedantic: Optional[bool] = typer.Option(False,"-e","--enforce", help="Enable pedantic mode, enforcing strict compliance, mean that warnings are now errors.")
-
-
-
+    rm_prefix: Optional[str] = typer.Option(
+        None, "-p", "--prefix", help="Remove given prefix from all checked directory"
+    ),
+    pedantic: Optional[bool] = typer.Option(
+        False,
+        "-e",
+        "--enforce",
+        help="Enable pedantic mode, enforcing strict compliance, mean that warnings are now errors.",
+    ),
 ) -> List[DrsValidationReport]:
     """
     Validates DRS strings for a specific project and type.
@@ -68,14 +79,13 @@ def drsvalid(
     if not sys.stdin.isatty():  # Check if input is being piped via stdin
         entries.extend(el for line in sys.stdin for el in shlex.split(line))
 
-
     if file:
         entries.extend(el for line in file for el in line.strip().split(" "))
 
     i = 0
     while i < len(entries):
-        if entries[i] in [""," "]:
-            i+=1
+        if entries[i] in ["", " "]:
+            i += 1
             continue
 
         if entries[i] in projects:
@@ -102,9 +112,9 @@ def drsvalid(
                 report = validator.validate_file_name(string)
             case "directory":
                 if rm_prefix:
-                    prefix = rm_prefix+"/" if rm_prefix[-1]!="/" else ""
+                    prefix = rm_prefix + "/" if rm_prefix[-1] != "/" else ""
                 else:
-                    prefix=None
+                    prefix = None
                 report = validator.validate_directory(string, prefix)
             case "dataset":
                 report = validator.validate_dataset_id(string)
@@ -127,8 +137,8 @@ def drsvalid(
             errors = "\n".join(["⚠️ " + str(error) for error in report.errors])
             valid = "✅ Valid" if report else "❌ Invalid"
 
-            table.add_row("-"*4,"-"*4,"-"*4,"-"*4,"-"*4)
-            table.add_row(entry,proj_and_type, warnings, errors, valid)
+            table.add_row("-" * 4, "-" * 4, "-" * 4, "-" * 4, "-" * 4)
+            table.add_row(entry, proj_and_type, warnings, errors, valid)
 
         console.print(table)
     elif output:
@@ -136,7 +146,6 @@ def drsvalid(
             for report in reports:
                 f.write(str(report) + "\n")
         console.print(f"DRS validation entries saved to [green]{output}[/green]")
-
 
     else:
         for report in reports:
@@ -147,8 +156,15 @@ def drsvalid(
 
 @app.command()
 def drsgen(
-    drs_entries: Optional[List[str]] = typer.Argument(None, help="List of inputs to generate DRS in the form <project> <drstype> <bag_of_terms>"),
-    file: Optional[typer.FileText] = typer.Option(None, "--file", "-f", help="File containing DRS generation inputs, one per line in the form <project> <drstype> <bag_of_terms>"),
+    drs_entries: Optional[List[str]] = typer.Argument(
+        None, help="List of inputs to generate DRS in the form <project> <drstype> <bag_of_terms>"
+    ),
+    file: Optional[typer.FileText] = typer.Option(
+        None,
+        "--file",
+        "-f",
+        help="File containing DRS generation inputs, one per line in the form <project> <drstype> <bag_of_terms>",
+    ),
     verbose: bool = typer.Option(False, "-v", "--verbose", help="Provide detailed generation results"),
     output: Optional[str] = typer.Option(None, "-o", "--output", help="File to save the generated DRS entries"),
 ) -> List[DrsGenerationReport]:
@@ -182,8 +198,8 @@ def drsgen(
 
     i = 0
     while i < len(entries):
-        if entries[i] in [""," "]:
-            i+=1
+        if entries[i] in ["", " "]:
+            i += 1
             continue
         if entries[i] in projects:
             current_project = entries[i]
@@ -231,7 +247,7 @@ def drsgen(
             table.add_row(entry, warnings, errors, result)
             table.add_row("----", "----", "----", "----")
             if table.columns[3].width is not None and len(result) > table.columns[3].width:
-                table.columns[3].width = len(result)+1
+                table.columns[3].width = len(result) + 1
         console.print(table)
 
     elif output:
@@ -245,5 +261,7 @@ def drsgen(
             console.print(str(report))
 
     return generated_reports
+
+
 if __name__ == "__main__":
     app()

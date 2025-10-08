@@ -30,4 +30,3 @@ class Variable(PlainTermDataDescriptor):
     long_name: str
     standard_name: str | None
     units: str | None
-
