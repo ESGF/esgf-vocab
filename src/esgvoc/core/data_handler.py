@@ -18,13 +18,11 @@ mapping = DATA_DESCRIPTOR_CLASS_MAPPING
 def unified_document_loader(uri: str) -> Dict:
     """Load a document from a local file or a remote URI."""
     if uri.startswith(("http://", "https://")):
-        response = requests.get(
-            uri, headers={"accept": "application/json"}, verify=False)
+        response = requests.get(uri, headers={"accept": "application/json"}, verify=False)
         if response.status_code == 200:
             return response.json()
         else:
-            _LOGGER.error(f"Failed to fetch remote document: {
-                          response.status_code} - {response.text}")
+            _LOGGER.error(f"Failed to fetch remote document: {response.status_code} - {response.text}")
             return {}
     else:
         with open(uri, "r") as f:
@@ -101,13 +99,11 @@ class JsonLdResource(BaseModel):
                     result[key] = []
                     for item in value:
                         if isinstance(item, dict):
-                            result[key].append(
-                                self._preprocess_nested_contexts(item, context))
+                            result[key].append(self._preprocess_nested_contexts(item, context))
                         else:
                             result[key].append(item)
                 elif isinstance(value, dict):
-                    result[key] = self._preprocess_nested_contexts(
-                        value, context)
+                    result[key] = self._preprocess_nested_contexts(value, context)
                 else:
                     result[key] = value
             elif isinstance(value, list):
@@ -115,8 +111,7 @@ class JsonLdResource(BaseModel):
                 result[key] = []
                 for item in value:
                     if isinstance(item, dict):
-                        result[key].append(
-                            self._preprocess_nested_contexts(item, context))
+                        result[key].append(self._preprocess_nested_contexts(item, context))
                     else:
                         result[key].append(item)
             elif isinstance(value, dict):
@@ -149,12 +144,11 @@ class JsonLdResource(BaseModel):
         # Expand the preprocessed data
         return jsonld.expand(preprocessed, options={"base": self.uri})
 
-   @cached_property
-   def context(self) -> Dict:
+    @cached_property
+    def context(self) -> Dict:
         """Fetch and return the JSON content of the '@context'."""
 
-        context_data = JsonLdResource(
-            uri="/".join(self.uri.split("/")[:-1]) + "/" + self.json_dict["@context"])
+        context_data = JsonLdResource(uri="/".join(self.uri.split("/")[:-1]) + "/" + self.json_dict["@context"])
         # Works only in relative path declaration
 
         context_value = context_data.json_dict
@@ -209,14 +203,14 @@ class JsonLdResource(BaseModel):
 
 
 if __name__ == "__main__":
-  ## For Universe
-  # online
-  # d = Data(uri = "https://espri-mod.github.io/mip-cmor-tables/activity/cmip.json")
-  # print(d.info)
-  # offline
-  # print(Data(uri = ".cache/repos/mip-cmor-tables/activity/cmip.json").info)
-  ## for Project
-  # d = Data(uri = "https://espri-mod.github.io/CMIP6Plus_CVs/activity_id/cmip.json")
-  # print(d.info)
-  # offline
-  print(JsonLdResource(uri=".cache/repos/CMIP6Plus_CVs/activity_id/cmip.json").info)
+    # For Universe
+    # online
+    # d = Data(uri = "https://espri-mod.github.io/mip-cmor-tables/activity/cmip.json")
+    # print(d.info)
+    # offline
+    # print(Data(uri = ".cache/repos/mip-cmor-tables/activity/cmip.json").info)
+    # for Project
+    # d = Data(uri = "https://espri-mod.github.io/CMIP6Plus_CVs/activity_id/cmip.json")
+    # print(d.info)
+    # offline
+    print(JsonLdResource(uri=".cache/repos/CMIP6Plus_CVs/activity_id/cmip.json").info)
