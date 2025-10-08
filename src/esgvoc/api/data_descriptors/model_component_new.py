@@ -1,5 +1,5 @@
 from typing import Optional, List
-from pydantic import Field, validator
+from pydantic import Field, field_validator
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.reference_new import Reference
 from esgvoc.api.data_descriptors.native_horizontal_grid_new import NativeHorizontalGrid
@@ -74,7 +74,7 @@ class EMDModelComponent(PlainTermDataDescriptor):
         min_length=1,
     )
     references: List[Reference] = Field(
-        description="One or more references to published work for the model component.", min_items=1
+        description="One or more references to published work for the model component.", min_length=1
     )
     code_base: str = Field(
         description="A URL (preferably for a DOI) for the source code for the model component. Set to 'private' if not publicly available.",
@@ -95,32 +95,36 @@ class EMDModelComponent(PlainTermDataDescriptor):
         description="A standardised description of the model component's vertical grid."
     )
 
-    @validator("component", "name", "family", "description", "code_base")
+    @field_validator("component", "name", "family", "description", "code_base")
+    @classmethod
     def validate_non_empty_strings(cls, v):
         """Validate that string fields are not empty."""
         if not v.strip():
             raise ValueError("Field cannot be empty")
         return v.strip()
 
-    @validator("coupled_with")
-    def validate_coupling_exclusivity(cls, v, values):
+    @field_validator("coupled_with")
+    @classmethod
+    def validate_coupling_exclusivity(cls, v, info):
         """Validate that a component cannot be both embedded and coupled."""
-        if v is not None and values.get("embedded_in") is not None:
+        if v is not None and info.data.get("embedded_in") is not None:
             raise ValueError(
                 "A component cannot be both embedded_in another component and coupled_with other components"
             )
         return v
 
-    @validator("embedded_in")
-    def validate_embedding_exclusivity(cls, v, values):
+    @field_validator("embedded_in")
+    @classmethod
+    def validate_embedding_exclusivity(cls, v, info):
         """Validate that a component cannot be both embedded and coupled."""
-        if v is not None and values.get("coupled_with") is not None:
+        if v is not None and info.data.get("coupled_with") is not None:
             raise ValueError(
                 "A component cannot be both embedded_in another component and coupled_with other components"
             )
         return v
 
-    @validator("code_base")
+    @field_validator("code_base")
+    @classmethod
     def validate_code_base_format(cls, v):
         """Validate code_base is either 'private' or a URL."""
         v = v.strip()

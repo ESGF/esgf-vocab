@@ -1,5 +1,5 @@
 from typing import Optional, List
-from pydantic import Field, validator
+from pydantic import Field, field_validator
 
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, PlainTermDataDescriptor
 
@@ -142,8 +142,8 @@ class NativeHorizontalGrid(PlainTermDataDescriptor):
     )
     resolution_range_km: List[float] = Field(
         description="The minimum and maximum resolution (in km) of cells of the horizontal grid.",
-        min_items=2,
-        max_items=2,
+        min_length=2,
+        max_length=2,
     )
     mean_resolution_km: float = Field(
         description="The mean resolution (in km) of cells of the horizontal grid.", gt=0)
@@ -151,17 +151,19 @@ class NativeHorizontalGrid(PlainTermDataDescriptor):
         description="The nominal resolution characterises the approximate resolution of a horizontal grid. Taken from a standardised list: 7.10 nominal_resolution CV."
     )
 
-    @validator("grid", "grid_mapping", "region", "temporal_refinement", "arrangement", "nominal_resolution")
+    @field_validator("grid", "grid_mapping", "region", "temporal_refinement", "arrangement", "nominal_resolution")
+    @classmethod
     def validate_required_strings(cls, v):
         """Validate that required string fields are not empty."""
         if not v.strip():
             raise ValueError("Field cannot be empty")
         return v.strip()
 
-    @validator("horizontal_units")
-    def validate_units_requirement(cls, v, values):
+    @field_validator("horizontal_units")
+    @classmethod
+    def validate_units_requirement(cls, v, info):
         """Validate that horizontal_units is provided when resolution values are set."""
-        has_resolution = any(values.get(field) is not None for field in [
+        has_resolution = any(info.data.get(field) is not None for field in [
                              "resolution_x", "resolution_y"])
 
         if has_resolution and not v:
@@ -169,7 +171,8 @@ class NativeHorizontalGrid(PlainTermDataDescriptor):
                 "horizontal_units is required when resolution_x or resolution_y are set")
         return v
 
-    @validator("resolution_range_km")
+    @field_validator("resolution_range_km")
+    @classmethod
     def validate_resolution_range(cls, v):
         """Validate that resolution range has exactly 2 values and min <= max."""
         if len(v) != 2:
@@ -181,11 +184,12 @@ class NativeHorizontalGrid(PlainTermDataDescriptor):
             raise ValueError("resolution_range_km values must be > 0")
         return v
 
-    @validator("mean_resolution_km")
-    def validate_mean_resolution_in_range(cls, v, values):
+    @field_validator("mean_resolution_km")
+    @classmethod
+    def validate_mean_resolution_in_range(cls, v, info):
         """Validate that mean resolution is within the resolution range."""
-        if "resolution_range_km" in values and values["resolution_range_km"]:
-            range_km = values["resolution_range_km"]
+        if "resolution_range_km" in info.data and info.data["resolution_range_km"]:
+            range_km = info.data["resolution_range_km"]
             if not (range_km[0] <= v <= range_km[1]):
                 raise ValueError(
                     f"mean_resolution_km ({v}) must be between resolution_range_km min ({

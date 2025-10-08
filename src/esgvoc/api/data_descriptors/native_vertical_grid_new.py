@@ -1,5 +1,5 @@
 from typing import Any, Optional, List
-from pydantic import Field, validator
+from pydantic import Field, field_validator
 
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorVisitor
 
@@ -70,8 +70,8 @@ class NativeVerticalGrid(DataDescriptor):
     n_z_range: Optional[List[int]] = Field(
         default=None,
         description="The minimum and maximum number of layers for vertical grids with a time- or space-varying number of layers. Omit if the n_z property has been set.",
-        min_items=2,
-        max_items=2,
+        min_length=2,
+        max_length=2,
     )
     bottom_layer_thickness: Optional[float] = Field(
         default=None,
@@ -92,14 +92,16 @@ class NativeVerticalGrid(DataDescriptor):
         description="The physical units of the bottom_layer_thickness, top_layer_thickness, and top_of_model property values. Taken from a standardised list: 7.12 vertical_units CV.",
     )
 
-    @validator("coordinate")
+    @field_validator("coordinate")
+    @classmethod
     def validate_coordinate(cls, v):
         """Validate that coordinate is not empty."""
         if not v.strip():
             raise ValueError("Coordinate cannot be empty")
         return v.strip()
 
-    @validator("n_z_range")
+    @field_validator("n_z_range")
+    @classmethod
     def validate_n_z_range(cls, v):
         """Validate that n_z_range has exactly 2 values and min <= max."""
         if v is not None:
@@ -111,11 +113,12 @@ class NativeVerticalGrid(DataDescriptor):
                 raise ValueError("n_z_range values must be >= 1")
         return v
 
-    @validator("vertical_units")
-    def validate_units_requirement(cls, v, values):
+    @field_validator("vertical_units")
+    @classmethod
+    def validate_units_requirement(cls, v, info):
         """Validate that vertical_units is provided when thickness/top_of_model values are set."""
         thickness_fields = ["bottom_layer_thickness", "top_layer_thickness", "top_of_model"]
-        has_thickness_values = any(values.get(field) is not None for field in thickness_fields)
+        has_thickness_values = any(info.data.get(field) is not None for field in thickness_fields)
 
         if has_thickness_values and not v:
             raise ValueError(
@@ -123,10 +126,11 @@ class NativeVerticalGrid(DataDescriptor):
             )
         return v
 
-    @validator("n_z")
-    def validate_n_z_exclusivity(cls, v, values):
+    @field_validator("n_z")
+    @classmethod
+    def validate_n_z_exclusivity(cls, v, info):
         """Validate that n_z and n_z_range are mutually exclusive."""
-        if v is not None and values.get("n_z_range") is not None:
+        if v is not None and info.data.get("n_z_range") is not None:
             raise ValueError("n_z and n_z_range cannot both be set")
         return v
 

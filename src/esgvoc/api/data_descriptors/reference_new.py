@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, PlainTermDataDescriptor
 
 
@@ -21,7 +21,8 @@ class Reference(BaseModel):
         description="The persistent identifier (DOI) used to identify the work. Must be a valid DOI URL.", min_length=1
     )
 
-    @validator("doi")
+    @field_validator("doi")
+    @classmethod
     def validate_doi(cls, v):
         """Validate that DOI follows proper format."""
         if not v.startswith("https://doi.org/"):
@@ -31,7 +32,8 @@ class Reference(BaseModel):
                 'DOI must contain identifier after "https://doi.org/"')
         return v
 
-    @validator("citation")
+    @field_validator("citation")
+    @classmethod
     def validate_citation(cls, v):
         """Validate that citation is not empty."""
         if not v.strip():
