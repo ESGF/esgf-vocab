@@ -79,7 +79,7 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                 merger = DataMerger(
                     data=JsonLdResource(uri=str(term_file_path)),
                     locally_available=locally_avail,
-                    allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables"}
+                    allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables"},
                 )
                 merged_data = merger.merge_linked_json()[-1]
                 # Resolve all nested @id references to full objects
@@ -108,8 +108,15 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                     + f"for the collection {collection_id} of the project {project.id}. Skip {term_id}.\n{str(e)}"
                 )
                 continue
-    if term_kind_collection:
+    if term_kind_collection is not None:
         collection.term_kind = term_kind_collection
+    else:
+        # If no terms were found, default to PLAIN
+        _LOGGER.warning(
+            f"TermKind was not auto-detected for collection '{collection_id}' in project '{project.id}'. "
+            f"No terms were successfully ingested. Defaulting to PLAIN."
+        )
+        collection.term_kind = TermKind.PLAIN
     project_db_session.add(collection)
 
 

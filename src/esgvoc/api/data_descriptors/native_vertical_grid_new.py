@@ -1,10 +1,10 @@
-from typing import Optional, List
+from typing import Any, Optional, List
 from pydantic import Field, validator
 
-from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorVisitor
 
 
-class NativeVerticalGrid(PlainTermDataDescriptor):
+class NativeVerticalGrid(DataDescriptor):
     """
     4.2. Vertical grid
     The model component's native vertical grid is described by a subset of the following properties:
@@ -104,8 +104,7 @@ class NativeVerticalGrid(PlainTermDataDescriptor):
         """Validate that n_z_range has exactly 2 values and min <= max."""
         if v is not None:
             if len(v) != 2:
-                raise ValueError(
-                    "n_z_range must contain exactly 2 values [min, max]")
+                raise ValueError("n_z_range must contain exactly 2 values [min, max]")
             if v[0] > v[1]:
                 raise ValueError("n_z_range: minimum must be <= maximum")
             if any(val < 1 for val in v):
@@ -115,10 +114,8 @@ class NativeVerticalGrid(PlainTermDataDescriptor):
     @validator("vertical_units")
     def validate_units_requirement(cls, v, values):
         """Validate that vertical_units is provided when thickness/top_of_model values are set."""
-        thickness_fields = ["bottom_layer_thickness",
-                            "top_layer_thickness", "top_of_model"]
-        has_thickness_values = any(values.get(
-            field) is not None for field in thickness_fields)
+        thickness_fields = ["bottom_layer_thickness", "top_layer_thickness", "top_of_model"]
+        has_thickness_values = any(values.get(field) is not None for field in thickness_fields)
 
         if has_thickness_values and not v:
             raise ValueError(
@@ -132,3 +129,7 @@ class NativeVerticalGrid(PlainTermDataDescriptor):
         if v is not None and values.get("n_z_range") is not None:
             raise ValueError("n_z and n_z_range cannot both be set")
         return v
+
+    def accept(self, visitor: DataDescriptorVisitor) -> Any:
+        """Accept a data descriptor visitor."""
+        return visitor.visit_plain_term(self)
