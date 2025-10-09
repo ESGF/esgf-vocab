@@ -82,8 +82,8 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                     allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables"},
                 )
                 merged_data = merger.merge_linked_json()[-1]
-                # Resolve all nested @id references to full objects
-                json_specs = merger.resolve_nested_ids(merged_data)
+                # Resolve all nested @id references using merged context
+                json_specs = merger.resolve_merged_ids(merged_data)
 
                 term_kind = infer_term_kind(json_specs)
                 term_id = json_specs["id"]

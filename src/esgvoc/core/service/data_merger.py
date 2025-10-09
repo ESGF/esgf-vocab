@@ -319,6 +319,58 @@ class DataMerger:
             # Regular primitive values are returned as-is
             return data
 
+    def resolve_merged_ids(self, merged_data: dict) -> dict:
+        """
+        Resolve nested IDs in merged data by re-expanding it with proper context.
+
+        This is needed because merged data may contain fields from the parent term
+        that aren't in the original term's context.
+
+        Args:
+            merged_data: The merged dictionary from merge_linked_json()
+
+        Returns:
+            Dictionary with all nested IDs resolved to full objects
+        """
+        import json
+        import tempfile
+        from pathlib import Path
+
+        # Get universe path from locally_available
+        universe_path = self.locally_available.get("https://espri-mod.github.io/mip-cmor-tables")
+        if not universe_path:
+            # Fallback to regular resolution if no universe path
+            return self.resolve_nested_ids(merged_data)
+
+        # Find the data descriptor directory from merged_data type
+        data_descriptor = merged_data.get("type", "")
+        if not data_descriptor:
+            return self.resolve_nested_ids(merged_data)
+
+        context_dir = Path(universe_path) / data_descriptor
+
+        if not context_dir.exists():
+            # Fallback if directory doesn't exist
+            return self.resolve_nested_ids(merged_data)
+
+        # Create temp file in the universe data descriptor directory
+        # This ensures JsonLdResource picks up the correct context
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, dir=str(context_dir)) as tmp:
+            json.dump(merged_data, tmp)
+            tmp_path = tmp.name
+
+        try:
+            # Create new resource with proper context expansion
+            merged_resource = JsonLdResource(uri=tmp_path)
+            merged_expanded = merged_resource.expanded
+            if isinstance(merged_expanded, list) and len(merged_expanded) > 0:
+                merged_expanded = merged_expanded[0]
+
+            # Resolve with correct expansion
+            return self.resolve_nested_ids(merged_data, expanded_data=merged_expanded)
+        finally:
+            Path(tmp_path).unlink()
+
     def _fetch_referenced_term(self, uri: str) -> dict:
         """
         Fetch a term from URI and return its data.
