@@ -1,17 +1,48 @@
 from typing import Dict, List, Set
-from esgvoc.core.data_handler import JsonLdResource
 import logging
+
+from esgvoc.core.data_handler import JsonLdResource
+from esgvoc.core.service.resolver_config import ResolverConfig
+from esgvoc.core.service.uri_resolver import URIResolver
+from esgvoc.core.service.string_heuristics import StringHeuristics
+from esgvoc.core.service.term_cache import TermCache
 
 logger = logging.getLogger(__name__)
 
 
-def merge_dicts(original: list, custom: list) -> dict:
-    """Shallow merge: Overwrites original data with custom data."""
-    b = original[0]
-    a = custom[0]
+def merge_dicts(base: list, override: list) -> dict:
+    """
+    Merge two JSON-LD dictionaries, with override taking precedence.
+
+    This performs a shallow merge where:
+    1. Start with override data (custom/project-specific)
+    2. Overlay with base data (parent/universe defaults)
+    3. Skip @id field from both (handled separately in JSON-LD)
+
+    Args:
+        base: List containing the base/parent dictionary (expects [dict])
+        override: List containing the override/child dictionary (expects [dict])
+
+    Returns:
+        Merged dictionary with override values taking precedence
+
+    Example:
+        >>> base = [{"name": "Base", "value": 1}]
+        >>> override = [{"value": 2, "new": "field"}]
+        >>> merge_dicts(base, override)
+        {'value': 2, 'new': 'field', 'name': 'Base'}
+
+    Note:
+        Takes lists for backward compatibility with JSON-LD processing,
+        but only uses the first element of each.
+    """
+    base_data = base[0]
+    override_data = override[0]
+
+    # Merge strategy: override first, then base (so base fills in missing fields)
     merged = {
-        **{k: v for k, v in a.items() if k != "@id"},
-        **{k: v for k, v in b.items() if k != "@id"},
+        **{k: v for k, v in override_data.items() if k != "@id"},
+        **{k: v for k, v in base_data.items() if k != "@id"},
     }
     return merged
 
@@ -36,15 +67,53 @@ def resolve_nested_ids_in_dict(data: dict, merger: "DataMerger") -> dict:
 
 
 class DataMerger:
+    """
+    Merge and resolve JSON-LD data with support for @id references.
+
+    This class handles:
+    1. Merging linked JSON-LD documents (following @id chains)
+    2. Resolving nested @id references to full objects
+    3. Converting between remote URIs and local paths
+    """
+
     def __init__(
         self,
         data: JsonLdResource,
-        allowed_base_uris: Set[str] = {"https://espri-mod.github.io/mip-cmor-tables"},
-        locally_available: dict = {},
+        allowed_base_uris: Set[str] | None = None,
+        locally_available: Dict[str, str] | None = None,
+        config: ResolverConfig | None = None,
     ):
+        """
+        Initialize the DataMerger.
+
+        Args:
+            data: The JSON-LD resource to process
+            allowed_base_uris: Set of base URIs that are allowed to be resolved.
+                              Defaults to {"https://espri-mod.github.io/mip-cmor-tables"}
+                              for backward compatibility.
+            locally_available: Mapping from remote base URIs to local directory paths.
+                             Defaults to empty dict for backward compatibility.
+            config: Configuration for resolution behavior. If None, uses defaults.
+        """
         self.data = data
+
+        # Backward compatibility: use default CMIP URI if none provided
+        if allowed_base_uris is None:
+            allowed_base_uris = {"https://espri-mod.github.io/mip-cmor-tables"}
         self.allowed_base_uris = allowed_base_uris
+
+        # Fix mutable default anti-pattern
+        if locally_available is None:
+            locally_available = {}
         self.locally_available = locally_available
+
+        # Initialize configuration and helpers
+        self.config = config or ResolverConfig()
+        self.uri_resolver = URIResolver(self.locally_available)
+        self.string_heuristics = StringHeuristics(
+            max_length=self.config.max_string_length, exclude_patterns=self.config.exclude_patterns
+        )
+        self.term_cache = TermCache(max_size=self.config.cache_size, enabled=self.config.enable_caching)
 
     def _should_resolve(self, uri: str) -> bool:
         """Check if a given URI should be resolved based on allowed URIs."""
@@ -64,7 +133,7 @@ class DataMerger:
         if isinstance(data, list):
             data = data[0]
         if "@id" in data and self._should_resolve(data["@id"]):
-            result = data["@id"] + ".json"
+            result = self.uri_resolver.ensure_json_extension(data["@id"])
 
             # Don't follow the reference if it points to the same resource
             if current_uri and result == current_uri:
@@ -91,11 +160,8 @@ class DataMerger:
             current_remote_uri = next_id  # Save for next iteration
 
             # Fetch and merge the next customization
-            # do we have it in local ? if so use it instead of remote
-            next_id_local = next_id
-            for local_repo in self.locally_available.keys():
-                if next_id.startswith(local_repo):
-                    next_id_local = next_id.replace(local_repo, self.locally_available[local_repo])
+            # Convert remote URI to local path if available
+            next_id_local = self.uri_resolver.to_local_path(next_id)
 
             next_data_instance = JsonLdResource(uri=next_id_local)
             merged_json_data = merge_dicts([current_json], [next_data_instance.json_dict])
@@ -154,8 +220,7 @@ class DataMerger:
                         return data
 
                     # Ensure it has .json extension
-                    if not uri.endswith(".json"):
-                        uri += ".json"
+                    uri = self.uri_resolver.ensure_json_extension(uri)
 
                     # Prevent circular references (only within the current resolution chain)
                     if uri in visited:
@@ -167,11 +232,7 @@ class DataMerger:
                     new_visited.add(uri)
 
                     # Convert remote URI to local path
-                    local_uri = uri
-                    for local_repo, local_path in self.locally_available.items():
-                        if uri.startswith(local_repo):
-                            local_uri = uri.replace(local_repo, local_path)
-                            break
+                    local_uri = self.uri_resolver.to_local_path(uri)
 
                     # Fetch the referenced term (raw JSON)
                     resolved = self._fetch_referenced_term(uri)
@@ -236,25 +297,16 @@ class DataMerger:
             # it's an ID reference that needs resolving
             if isinstance(data, str) and isinstance(expanded_data, dict):
                 # Skip if it's a @value (literal string, not a reference)
-                if "@value" in expanded_data:
+                if self.string_heuristics.should_skip_literal(expanded_data):
                     return data
 
-                if "@id" not in expanded_data:
+                if not self.string_heuristics.has_id_in_expanded(expanded_data):
                     return data
 
                 uri = expanded_data["@id"]
 
-                # Don't resolve long strings (like citations) or strings with spaces/special chars
-                # Real file references are short identifiers like "hadgem3_gc31_atmosphere"
-                # Also skip context files, URLs, DOIs, and other non-term strings
-                if (
-                    len(data) > 100
-                    or " " in data
-                    or "." in data
-                    or data.startswith("http")
-                    or "/" in data
-                    or "@" in data
-                ):
+                # Use string heuristics to determine if this should be resolved
+                if not self.string_heuristics.is_resolvable(data):
                     return data
 
                 # Only resolve if it's in our allowed URIs
@@ -262,15 +314,15 @@ class DataMerger:
                     return data
 
                 # Check if recursion depth is too deep (prevent infinite loops)
-                if len(visited) > 5:
-                    print(f"DEPTH LIMIT: {len(visited)} URIs visited")
-                    print(f"Current: {uri}")
-                    print(f"Recent: {list(visited)[-5:]}")
+                if len(visited) > self.config.max_depth:
+                    if self.config.log_depth_warnings:
+                        logger.warning(
+                            f"Max depth ({self.config.max_depth}) exceeded. Visited {len(visited)} URIs. Current: {uri}"
+                        )
                     return data
 
                 # Ensure it has .json extension
-                if not uri.endswith(".json"):
-                    uri += ".json"
+                uri = self.uri_resolver.ensure_json_extension(uri)
 
                 # Prevent circular references
                 if uri in visited:
@@ -281,18 +333,14 @@ class DataMerger:
                 # Don't resolve strings that are just enum values or simple identifiers
                 # Only resolve if it looks like a real component/grid reference
                 try:
-                    import os
-
-                    local_uri = uri
-                    for local_repo, local_path in self.locally_available.items():
-                        if uri.startswith(local_repo):
-                            local_uri = uri.replace(local_repo, local_path)
-                            break
+                    # Convert remote URI to local path
+                    local_uri = self.uri_resolver.to_local_path(uri)
 
                     # Check if file exists - if not, it's probably not a resolvable reference
-                    if not os.path.exists(local_uri):
+                    if not self.uri_resolver.exists(uri):
                         return data
-                except:
+                except (OSError, IOError) as e:
+                    logger.debug(f"Error checking existence of {uri}: {e}")
                     return data
 
                 # Add to visited for this branch only
@@ -319,7 +367,7 @@ class DataMerger:
             # Regular primitive values are returned as-is
             return data
 
-    def resolve_merged_ids(self, merged_data: dict) -> dict:
+    def resolve_merged_ids(self, merged_data: dict, context_base_path: str | None = None) -> dict:
         """
         Resolve nested IDs in merged data by re-expanding it with proper context.
 
@@ -328,6 +376,8 @@ class DataMerger:
 
         Args:
             merged_data: The merged dictionary from merge_linked_json()
+            context_base_path: Base path containing context directories. If None,
+                              attempts to infer from locally_available mappings.
 
         Returns:
             Dictionary with all nested IDs resolved to full objects
@@ -336,18 +386,25 @@ class DataMerger:
         import tempfile
         from pathlib import Path
 
-        # Get universe path from locally_available
-        universe_path = self.locally_available.get("https://espri-mod.github.io/mip-cmor-tables")
-        if not universe_path:
-            # Fallback to regular resolution if no universe path
-            return self.resolve_nested_ids(merged_data)
+        # Determine the base path for context
+        if context_base_path is None:
+            # Try to infer from locally_available - use first available path
+            # Preferring the CMIP tables path for backward compatibility
+            if "https://espri-mod.github.io/mip-cmor-tables" in self.locally_available:
+                context_base_path = self.locally_available["https://espri-mod.github.io/mip-cmor-tables"]
+            elif self.locally_available:
+                # Use first available local path
+                context_base_path = next(iter(self.locally_available.values()))
+            else:
+                # No local paths available, fallback to regular resolution
+                return self.resolve_nested_ids(merged_data)
 
         # Find the data descriptor directory from merged_data type
         data_descriptor = merged_data.get("type", "")
         if not data_descriptor:
             return self.resolve_nested_ids(merged_data)
 
-        context_dir = Path(universe_path) / data_descriptor
+        context_dir = Path(context_base_path) / data_descriptor
 
         if not context_dir.exists():
             # Fallback if directory doesn't exist
@@ -374,56 +431,76 @@ class DataMerger:
     def _fetch_referenced_term(self, uri: str) -> dict:
         """
         Fetch a term from URI and return its data.
-        Tries multiple paths if the direct path doesn't exist.
+
+        This method:
+        1. Checks the cache first
+        2. Tries the direct local path
+        3. Tries alternate directories (for grid files)
+        4. Falls back to remote fetch if needed
 
         IMPORTANT: This method reads the JSON file directly without creating
         a JsonLdResource to avoid triggering expansion which could cause
         infinite recursion during nested ID resolution.
+
+        Args:
+            uri: The URI of the term to fetch
+
+        Returns:
+            The term data as a dictionary
+
+        Raises:
+            FileNotFoundError: If the term cannot be found locally or remotely
         """
         import os
         import json
         from pathlib import Path
 
-        # Check locally_available for path substitution
-        resolved_uri = uri
-        for local_repo, local_path in self.locally_available.items():
-            if uri.startswith(local_repo):
-                resolved_uri = uri.replace(local_repo, local_path)
-                break
+        # Check cache first
+        cached = self.term_cache.get(uri)
+        if cached is not None:
+            return cached
+
+        # Convert to local path
+        resolved_uri = self.uri_resolver.to_local_path(uri)
 
         # Try to read the file directly
         if os.path.exists(resolved_uri):
             with open(resolved_uri, "r") as f:
-                return json.load(f)
+                data = json.load(f)
+                self.term_cache.put(uri, data)
+                return data
 
         # File doesn't exist at the expanded path
         # Try to find it in other data descriptor directories
-        filename = Path(resolved_uri).name
+        filename = self.uri_resolver.get_filename(resolved_uri)
         parts = Path(resolved_uri).parts
-        if len(parts) >= 3:
+        if len(parts) >= self.config.min_path_parts:
             base_dir = Path(*parts[:-2])  # Remove data_descriptor and filename
 
             # Try common data descriptor directories for grids
-            alternate_dirs = ["horizontal_grid", "vertical_grid", "grid"]
-            for alt_dir in alternate_dirs:
+            for alt_dir in self.config.fallback_dirs:
                 alt_path = base_dir / alt_dir / filename
                 if os.path.exists(alt_path):
                     with open(alt_path, "r") as f:
-                        return json.load(f)
+                        data = json.load(f)
+                        self.term_cache.put(uri, data)
+                        return data
 
-        # If still not found, try the original URI (might be remote)
-        if os.path.exists(resolved_uri):
-            with open(resolved_uri, "r") as f:
-                return json.load(f)
-        else:
-            # Last resort: try to fetch remotely
+        # Last resort: try to fetch remotely
+        try:
             import requests
 
-            response = requests.get(uri, headers={"accept": "application/json"}, verify=False)
+            response = requests.get(uri, headers={"accept": "application/json"}, verify=self.config.verify_ssl)
             if response.status_code == 200:
-                return response.json()
+                data = response.json()
+                self.term_cache.put(uri, data)
+                return data
             else:
-                raise FileNotFoundError(f"Could not find or fetch term at {uri}")
+                raise FileNotFoundError(f"Could not find term at {uri}. HTTP status: {response.status_code}")
+        except Exception as e:
+            raise FileNotFoundError(
+                f"Could not find or fetch term at {uri}. Tried local path: {resolved_uri}. Error: {e}"
+            ) from e
 
 
 if __name__ == "__main__":
