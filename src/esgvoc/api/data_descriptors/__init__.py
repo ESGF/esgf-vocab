@@ -103,7 +103,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "model_component_new": EMDModelComponent,
     "model_new": Model,
     "native_horizontal_grid_new": NativeHorizontalGrid,
-    "horizontal_grid": NativeVerticalGrid,
+    "horizontal_grid": NativeHorizontalGrid,
     "native_vertical_grid_new": NativeVerticalGrid,
     "vertical_grid": NativeVerticalGrid,
     "reference_new": Reference,
