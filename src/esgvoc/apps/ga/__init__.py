@@ -56,7 +56,7 @@ print(f"Attributes: {header.global_attributes.list_attributes()}")
 
 # Main GA validator interface
 from .validator import (
-    GAValidator, 
+    GAValidator,
     GAValidatorFactory,
     validate_netcdf_attributes,
     create_validation_summary
@@ -64,51 +64,40 @@ from .validator import (
 
 # Core models
 from .models import (
-    
-    # New models for advanced usage
-    GlobalAttributeSpecs,
+    # Models for advanced usage
     NetCDFHeader,
     NetCDFHeaderParser,
     ValidationReport,
     ValidationSeverity,
     ValidationIssue,
-    
-    # Specification models
-    AttributeSpecsConfig,
-    GlobalAttributeValueType,
-    GlobalAttributeVisitor,
-    GlobalAttributeSpecBase,
-    GlobalAttributeSpecSpecific,
-    GlobalAttributeSpec,
-    
+
     # Validator models
     ESGVocAttributeValidator,
     ValidatorFactory,
+
+    # Import AttributeProperty from project_specs
+    AttributeProperty,
+    AttributeSpecification,
 )
 
 __all__ = [
     # Main interface
     "GAValidator",
-    "GAValidatorFactory", 
+    "GAValidatorFactory",
     "validate_netcdf_attributes",
     "create_validation_summary",
-    
-    # New models  
-    "GlobalAttributeSpecs",
+
+    # Models
     "NetCDFHeader",
     "NetCDFHeaderParser",
     "ValidationReport",
     "ValidationSeverity",
     "ValidationIssue",
-    
-    # Configuration and specifications
-    "AttributeSpecsConfig",
-    "GlobalAttributeValueType",
-    "GlobalAttributeVisitor",
-    "GlobalAttributeSpecBase",
-    "GlobalAttributeSpecSpecific",
-    "GlobalAttributeSpec",
-    
+
+    # Attribute specifications from project_specs
+    "AttributeProperty",
+    "AttributeSpecification",
+
     # Validators
     "ESGVocAttributeValidator",
     "ValidatorFactory",

@@ -5,18 +5,8 @@ This package provides Pydantic models for validating NetCDF global attributes
 against project specifications using the esgvoc API.
 """
 
-# New refactored models
-from .attribute_spec import (
-    GlobalAttributeValueType,
-    GlobalAttributeVisitor,
-    GlobalAttributeSpecBase,
-    GlobalAttributeSpecSpecific,
-    GlobalAttributeSpec,
-    GlobalAttributeSpecs,
-    ValueTypeDefinition,
-    ValidationRules,
-    AttributeSpecsConfig,
-)
+# Import from project_specs for attribute models
+from esgvoc.api.project_specs import AttributeProperty, AttributeSpecification
 
 from .netcdf_header import (
     NetCDFDimension,
@@ -38,23 +28,16 @@ from .validator import (
 
 # Build __all__ dynamically based on available modules
 __all__ = [
-    # New attribute specification models
-    "GlobalAttributeValueType",
-    "GlobalAttributeVisitor",
-    "GlobalAttributeSpecBase",
-    "GlobalAttributeSpecSpecific",
-    "GlobalAttributeSpec",
-    "GlobalAttributeSpecs",
-    "ValueTypeDefinition",
-    "ValidationRules",
-    "AttributeSpecsConfig",
-    # New NetCDF header models
+    # Attribute specification models from project_specs
+    "AttributeProperty",
+    "AttributeSpecification",
+    # NetCDF header models
     "NetCDFDimension",
     "NetCDFVariable",
     "NetCDFGlobalAttributesNew",
     "NetCDFHeader",
     "NetCDFHeaderParser",
-    # New validation models
+    # Validation models
     "ValidationSeverity",
     "ValidationIssue",
     "ValidationReport",

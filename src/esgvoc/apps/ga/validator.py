@@ -2,17 +2,15 @@
 Main validator interface for NetCDF global attributes.
 
 This module provides the high-level API for validating NetCDF global attributes
-against project specifications using YAML configuration files and the esgvoc API.
+against project specifications loaded from the esgvoc database.
 """
 
-import os
-import yaml
-from pathlib import Path
 from typing import Optional, Dict, Any, List
 
+import esgvoc.api.projects as projects
+from esgvoc.api.project_specs import AttributeSpecification
+from esgvoc.core.exceptions import EsgvocNotFoundError
 from .models import (
-    AttributeSpecsConfig,
-    GlobalAttributeSpecs,
     NetCDFHeader,
     NetCDFHeaderParser,
     ValidationReport,
@@ -26,40 +24,34 @@ class GAValidator:
     Main validator class for the GA (Global Attributes) application.
 
     This class provides a high-level interface for validating NetCDF global
-    attributes against project specifications defined in YAML files.
+    attributes against project specifications loaded from the esgvoc database.
     """
 
-    def __init__(self, config_path: Optional[str] = None, project_id: str = "cmip6"):
+    def __init__(self, project_id: str = "cmip6"):
         """
         Initialize the GA validator.
 
-        :param config_path: Path to YAML configuration file. If None, uses default.
         :param project_id: Project identifier for validation
         """
         self.project_id = project_id
-        self.config_path = config_path or self._get_default_config_path()
 
-        # Load configuration
-        self.config = self._load_config()
-        self.attribute_specs = self.config.to_global_attribute_specs()
+        # Load attribute specifications from database
+        self.attribute_specs = self._load_from_database()
 
         # Initialize the validator
         self.validator = GlobalAttributeValidator(self.attribute_specs, project_id)
 
-    def _get_default_config_path(self) -> str:
-        """Get the default configuration file path."""
-        current_dir = Path(__file__).parent
-        return str(current_dir / "attributes_specs.yaml")
+    def _load_from_database(self) -> AttributeSpecification:
+        """Load attribute specifications from the esgvoc database."""
+        project = projects.get_project(self.project_id)
 
-    def _load_config(self) -> AttributeSpecsConfig:
-        """Load and parse the YAML configuration file."""
-        if not os.path.exists(self.config_path):
-            raise FileNotFoundError(f"Configuration file not found: {self.config_path}")
+        if project is None:
+            raise EsgvocNotFoundError(f"Project '{self.project_id}' not found in database")
 
-        with open(self.config_path, "r", encoding="utf-8") as f:
-            yaml_data = yaml.safe_load(f)
+        if project.attr_specs is None:
+            raise ValueError(f"Project '{self.project_id}' has no attribute specifications")
 
-        return AttributeSpecsConfig(**yaml_data)
+        return project.attr_specs
 
     def validate_from_ncdump(self, ncdump_output: str, filename: Optional[str] = None) -> ValidationReport:
         """
@@ -116,7 +108,11 @@ class GAValidator:
 
         :return: List of required attribute names
         """
-        return [attr_name for attr_name, spec in self.attribute_specs.items() if spec.required]
+        return [
+            spec.field_name or spec.source_collection
+            for spec in self.attribute_specs
+            if spec.is_required
+        ]
 
     def get_optional_attributes(self) -> List[str]:
         """
@@ -124,7 +120,11 @@ class GAValidator:
 
         :return: List of optional attribute names
         """
-        return [attr_name for attr_name, spec in self.attribute_specs.items() if not spec.required]
+        return [
+            spec.field_name or spec.source_collection
+            for spec in self.attribute_specs
+            if not spec.is_required
+        ]
 
     def get_attribute_info(self, attribute_name: str) -> Optional[Dict[str, Any]]:
         """
@@ -133,18 +133,23 @@ class GAValidator:
         :param attribute_name: Name of the attribute
         :return: Attribute information dictionary or None if not found
         """
-        if attribute_name not in self.attribute_specs:
+        spec = None
+        for s in self.attribute_specs:
+            field_name = s.field_name or s.source_collection
+            if field_name == attribute_name:
+                spec = s
+                break
+
+        if spec is None:
             return None
 
-        spec = self.attribute_specs[attribute_name]
         return {
             "name": attribute_name,
             "source_collection": spec.source_collection,
             "value_type": spec.value_type,
-            "required": spec.required,
-            "description": getattr(spec, "description", None),
-            "default_value": getattr(spec, "default_value", None),
-            "specific_key": getattr(spec, "specific_key", None),
+            "required": spec.is_required,
+            "default_value": spec.default_value,
+            "specific_key": spec.specific_key,
         }
 
     def list_attributes(self) -> List[str]:
@@ -153,25 +158,19 @@ class GAValidator:
 
         :return: List of all attribute names
         """
-        return list(self.attribute_specs.keys())
+        return [spec.field_name or spec.source_collection for spec in self.attribute_specs]
 
-    def reload_config(self, config_path: Optional[str] = None) -> None:
+    def reload_config(self) -> None:
         """
-        Reload configuration from file.
-
-        :param config_path: Optional new config path. If None, uses current path.
+        Reload attribute specifications from the database.
         """
-        if config_path:
-            self.config_path = config_path
-
-        self.config = self._load_config()
-        self.attribute_specs = self.config.to_global_attribute_specs()
+        self.attribute_specs = self._load_from_database()
         self.validator = GlobalAttributeValidator(self.attribute_specs, self.project_id)
 
 
 class GAValidatorFactory:
     """
-    Factory for creating GA validators with different configurations.
+    Factory for creating GA validators for different projects.
     """
 
     @staticmethod
@@ -192,31 +191,21 @@ class GAValidatorFactory:
         """
         return GAValidator(project_id="cmip7")
 
-    @staticmethod
-    def create_custom_validator(config_path: str, project_id: str = "custom") -> GAValidator:
-        """
-        Create a validator with custom configuration.
-
-        :param config_path: Path to custom YAML configuration file
-        :param project_id: Project identifier
-        :return: GAValidator instance with custom configuration
-        """
-        return GAValidator(config_path=config_path, project_id=project_id)
-
 
 def validate_netcdf_attributes(
-    ncdump_output: str, config_path: Optional[str] = None, project_id: str = "cmip6", filename: Optional[str] = None
+    ncdump_output: str, project_id: str = "cmip6", filename: Optional[str] = None
 ) -> ValidationReport:
     """
     Convenience function to validate NetCDF global attributes.
 
+    Loads attribute specifications from the esgvoc database for the specified project.
+
     :param ncdump_output: Output from ncdump -h command
-    :param config_path: Optional path to YAML configuration file
     :param project_id: Project identifier for validation
     :param filename: Optional filename for reporting
     :return: Validation report
     """
-    validator = GAValidator(config_path, project_id)
+    validator = GAValidator(project_id)
     return validator.validate_from_ncdump(ncdump_output, filename)
 
 

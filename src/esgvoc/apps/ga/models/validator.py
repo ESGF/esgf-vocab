@@ -12,9 +12,9 @@ from pydantic import BaseModel, Field
 import esgvoc.api.projects as projects
 import esgvoc.api.search as search
 from esgvoc.api.data_descriptors.data_descriptor import ConfiguredBaseModel
+from esgvoc.api.project_specs import AttributeProperty, AttributeSpecification
 from esgvoc.api.report import ValidationReport as EsgvocValidationReport
 from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocDbError
-from .attribute_spec import GlobalAttributeSpec, GlobalAttributeSpecs, GlobalAttributeVisitor
 from .netcdf_header import NetCDFGlobalAttributes
 
 
@@ -86,10 +86,9 @@ class ValidationReport(ConfiguredBaseModel):
         )
 
 
-class ESGVocAttributeValidator(GlobalAttributeVisitor):
+class ESGVocAttributeValidator:
     """
-    Validator that implements the GlobalAttributeVisitor protocol to validate
-    attributes against ESGVOC controlled vocabularies.
+    Validator to validate attributes against ESGVOC controlled vocabularies.
     """
 
     def __init__(self, project_id: str = "cmip6"):
@@ -102,7 +101,7 @@ class ESGVocAttributeValidator(GlobalAttributeVisitor):
         self.validation_results = {}
 
     def visit_base_attribute(
-        self, attribute_name: str, attribute: GlobalAttributeSpec, attribute_value: Any
+        self, attribute_name: str, attribute: AttributeProperty, attribute_value: Any
     ) -> Dict[str, Any]:
         """
         Validate a base global attribute against ESGVOC using proper validation logic.
@@ -168,7 +167,7 @@ class ESGVocAttributeValidator(GlobalAttributeVisitor):
             }
 
     def visit_specific_attribute(
-        self, attribute_name: str, attribute: GlobalAttributeSpec, attribute_value: Any
+        self, attribute_name: str, attribute: AttributeProperty, attribute_value: Any
     ) -> Dict[str, Any]:
         """
         Validate a specific key attribute against ESGVOC.
@@ -253,16 +252,27 @@ class GlobalAttributeValidator:
     Main validator class for NetCDF global attributes.
     """
 
-    def __init__(self, attribute_specs: GlobalAttributeSpecs, project_id: str = "cmip6"):
+    def __init__(self, attribute_specs: AttributeSpecification, project_id: str = "cmip6"):
         """
         Initialize the validator with attribute specifications.
 
-        :param attribute_specs: Global attribute specifications
+        :param attribute_specs: Global attribute specifications (list of AttributeProperty)
         :param project_id: Project identifier
         """
         self.attribute_specs = attribute_specs
         self.project_id = project_id
         self.esgvoc_validator = ESGVocAttributeValidator(project_id)
+
+    def _get_field_name(self, spec: AttributeProperty) -> str:
+        """Get the effective field name for an AttributeProperty."""
+        return spec.field_name or spec.source_collection
+
+    def _get_spec_by_field_name(self, field_name: str) -> Optional[AttributeProperty]:
+        """Find an AttributeProperty by its field name."""
+        for spec in self.attribute_specs:
+            if self._get_field_name(spec) == field_name:
+                return spec
+        return None
 
     def validate(self, global_attributes: NetCDFGlobalAttributes, filename: Optional[str] = None) -> ValidationReport:
         """
@@ -287,14 +297,15 @@ class GlobalAttributeValidator:
 
     def _check_missing_attributes(self, global_attributes: NetCDFGlobalAttributes, report: ValidationReport) -> None:
         """Check for missing required attributes."""
-        for attr_name, spec in self.attribute_specs.items():
-            if spec.required and not global_attributes.has_attribute(attr_name):
-                report.missing_attributes.append(attr_name)
+        for spec in self.attribute_specs:
+            field_name = self._get_field_name(spec)
+            if spec.is_required and not global_attributes.has_attribute(field_name):
+                report.missing_attributes.append(field_name)
                 report.add_issue(
                     ValidationIssue(
-                        attribute_name=attr_name,
+                        attribute_name=field_name,
                         severity=ValidationSeverity.ERROR,
-                        message=f"Required attribute '{attr_name}' is missing",
+                        message=f"Required attribute '{field_name}' is missing",
                         source_collection=spec.source_collection,
                     )
                 )
@@ -302,15 +313,15 @@ class GlobalAttributeValidator:
     def _validate_present_attributes(self, global_attributes: NetCDFGlobalAttributes, report: ValidationReport) -> None:
         """Validate attributes that are present."""
         for attr_name in global_attributes.list_attributes():
-            if attr_name in self.attribute_specs:
-                spec = self.attribute_specs[attr_name]
+            spec = self._get_spec_by_field_name(attr_name)
+            if spec is not None:
                 attr_value = global_attributes.get_attribute(attr_name)
 
                 # Validate value type
                 self._validate_value_type(attr_name, attr_value, spec, report)
 
                 # Use visitor pattern for ESGVOC validation
-                if hasattr(spec, "specific_key") and spec.specific_key:
+                if spec.specific_key is not None:
                     validation_result = self.esgvoc_validator.visit_specific_attribute(attr_name, spec, attr_value)
                 else:
                     validation_result = self.esgvoc_validator.visit_base_attribute(attr_name, spec, attr_value)
@@ -328,7 +339,7 @@ class GlobalAttributeValidator:
     def _check_extra_attributes(self, global_attributes: NetCDFGlobalAttributes, report: ValidationReport) -> None:
         """Check for extra attributes not in specifications."""
         for attr_name in global_attributes.list_attributes():
-            if attr_name not in self.attribute_specs:
+            if self._get_spec_by_field_name(attr_name) is None:
                 report.extra_attributes.append(attr_name)
                 report.add_issue(
                     ValidationIssue(
@@ -340,7 +351,7 @@ class GlobalAttributeValidator:
                 )
 
     def _validate_value_type(
-        self, attr_name: str, value: Any, spec: GlobalAttributeSpec, report: ValidationReport
+        self, attr_name: str, value: Any, spec: AttributeProperty, report: ValidationReport
     ) -> None:
         """Validate the type of an attribute value."""
         expected_type = spec.value_type
@@ -447,6 +458,32 @@ class ValidatorFactory:
         with open(yaml_file_path, "r") as f:
             yaml_data = yaml.safe_load(f)
 
-        attribute_specs = GlobalAttributeSpecs.from_yaml_dict(yaml_data)
+        # Parse YAML data into list of AttributeProperty
+        if isinstance(yaml_data, list):
+            attribute_specs = [AttributeProperty(**item) for item in yaml_data]
+        elif isinstance(yaml_data, dict) and "specs" in yaml_data:
+            # Legacy dict format support
+            if isinstance(yaml_data["specs"], list):
+                attribute_specs = [AttributeProperty(**item) for item in yaml_data["specs"]]
+            else:
+                # Old dict-based format - convert to list
+                specs_list = []
+                for attr_name, attr_config in yaml_data["specs"].items():
+                    spec_data = {
+                        "source_collection": attr_config.get("source_collection"),
+                        "is_required": attr_config.get("required", True),
+                        "value_type": attr_config.get("value_type", "string"),
+                    }
+                    if attr_name != attr_config.get("source_collection"):
+                        spec_data["field_name"] = attr_name
+                    if "specific_key" in attr_config:
+                        spec_data["specific_key"] = attr_config["specific_key"]
+                    if "default_value" in attr_config:
+                        spec_data["default_value"] = attr_config["default_value"]
+                    specs_list.append(AttributeProperty(**spec_data))
+                attribute_specs = specs_list
+        else:
+            raise ValueError(f"Unsupported YAML format: {type(yaml_data)}")
+
         return GlobalAttributeValidator(attribute_specs, project_id)
 
