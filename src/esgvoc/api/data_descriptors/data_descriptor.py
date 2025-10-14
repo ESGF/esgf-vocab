@@ -26,34 +26,6 @@ class ConfiguredBaseModel(BaseModel):
     )
 
 
-# Discussion point:
-# As I understand it,
-# and from reading e.g. https://refactoring.guru/design-patterns/visitor/python/example,
-# the point of the visitor pattern
-# is basically to allow adding extra behaviour to a class without altering the class itself.
-# In other words, it's plugin support.
-# This impression is reinforced by the fact
-# that the visitor architecture is not used anywhere internally.
-#
-# Question 1: is the above impression correct?
-# Question 2: do we have any examples yet of external plugins
-# or is this just there 'just in case'?
-#
-# To me, this seems like speculative generality.
-# If we do think such plug-in behaviour is super important,
-# then surely there should at least be some tests around it?
-#
-# My other thought is this: in the Python world,
-# you can litearlly add whatever behaviour you want to any other class
-# at runtime if you want.
-# Hence, is there any need for this pattern?
-# I ask this particularly because the visitor pattern
-# has a very high level of in/mis/redirection,
-# which makes it particularly prone to encouraging over-engineered solutions
-# and confusion.
-# I am struggling to see how this level of abstraction and complexity
-# is actually worth it in the esgvoc context,
-# while removing it definitely means there is one less thing to maintain.
 class DataDescriptorVisitor(Protocol):
     """
     The specifications for a data descriptor visitor
