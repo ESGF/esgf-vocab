@@ -2,9 +2,12 @@
 Model (i.e. schema/definition) of the experiment data descriptor
 """
 
-from pydantic import Field
+from typing import Optional
 
+from esgvoc.api.data_descriptors.activity import Activity
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.mip_era import MipEra
+from esgvoc.api.data_descriptors.model_component import ModelComponent
 
 
 class Experiment(PlainTermDataDescriptor):
@@ -26,21 +29,97 @@ class Experiment(PlainTermDataDescriptor):
     of the schemas for these two classes.
     """
 
-    # TODO: discuss how/if this could be only a single value for
-    # everything except CMIP6
-    # activity: list[Activity] = Field(default_factory=list)
-    # activity: Activity | list[Activity] = Field(default=None)
-    activity: list[str] = Field(default_factory=list)
+    activity: Activity
     """
     Activity to which this experiment belongs
 
     Could also be phrased as,
-    "activity with which this experiment is most strongly associated"
+    "activity with which this experiment is most strongly associated".
     """
 
-    description: str
+    # None not allowed, empty list should be used
+    # if there are no additional_allowed_model_components
+    additional_allowed_model_components: list[ModelComponent]
     """
-    Description of the experiment
+    Non-compulsory model components that are allowed when running this experiment
+    """
+
+    branch_information: str | None
+    """
+    Information about how this experiment should branch from its parent
+
+    If `None`, this experiment has no parent
+    and therefore no branching information is required.
+    """
+
+    # TODO: get Dan to help with pydantic type hint
+    # https://docs.pydantic.dev/2.2/usage/types/datetime/
+    end_timestamp: str | None
+    """
+    End timestamp (ISO-8601) of the experiment
+
+    A value of `None` indicates that simulations may end at any time,
+    no particular value is required.
+    """
+
+    min_ensemble_size: int
+    """
+    Minimum number of ensemble members to run for this experiment
+
+    This is the minimum ensemble size requested by the definer of the experiment.
+    For other uses, other ensemble sizes may be required
+    so please double check the application your simulations
+    (as defined in e.g. the data request)
+    are intended for too before deciding on your ensemble size.
+    """
+
+    # `min_length: str | None` or something
+    # so people can specify units rather than having to convert
+    # everything to years would allow slightly more flexibility
+    # and precision. However, I don't think we have a use case for this
+    # so the extra flexibility and precision probably isn't worth the headache.
+    min_number_yrs_per_sim: float | None
+    """
+    Minimum number of years required per simulation for this experiment
+
+    If `None`, then there is no minimum number of years required.
+    You can submit as short a simulation as you like.
+    """
+
+    parent_activity: Activity | None
+    """
+    Activity to which this experiment's parent experiment belongs
+
+    If `None`, this experiment has no parent experiment.
+    """
+
+    parent_experiment: Optional["Experiment"]
+    """
+    This experiment's parent experiment
+
+    If `None`, this experiment has no parent experiment.
+    """
+
+    parent_mip_era: MipEra | None
+    """
+    The MIP era to which this experiment's parent experiment belongs
+
+    If `None`, this experiment has no parent experiment.
+    """
+
+    required_model_components: list[ModelComponent]
+    """
+    Model components required to run this experiment
+    """
+
+    # TODO: get Dan to help with pydantic type hint
+    # https://docs.pydantic.dev/2.2/usage/types/datetime/
+    start_timestamp: str | None
+    """
+    Start timestamp (ISO-8601) of the experiment
+
+    A value of `None` indicates that simulations may start with any year,
+    no particular value is required.
     """
 
     tier: int | None
@@ -49,88 +128,4 @@ class Experiment(PlainTermDataDescriptor):
 
     1 is highest priority.
     If `None`, no priority is specified for this experiment.
-    """
-
-    experiment_id: str
-    # TODO: remove? redundant with drs_name
-
-    sub_experiment_id: list[str] | None
-    # TODO: figure out what this means
-
-    experiment: str
-    # TODO: remove? redundant with description
-
-    # TODO: discuss this change
-    # required_model_components: list[ModelComponent] = Field(default=None)
-    required_model_components: list[str] | None
-    """
-    Model components required to run this experiment
-
-    [TODO: delete this if we switch to a default of empty list rather than `None`]
-    If `None`, then no particular model components are required to run this experiment.
-    However, please also check `additional_allowed_model_components`
-    as `None` does not mean that any model components are allowed.
-    """
-
-    # TODO: discuss this change
-    # additional_allowed_model_components: list[ModelComponent] = Field(default_factory=list)
-    additional_allowed_model_components: list[str] = Field(default_factory=list)
-    """
-    Non-compulsory model components that are allowed when running this experiment
-    """
-
-    # TODO: do we need to support str here or are experiments always specified with start years
-    # (rather than start dates)?
-    start_year: int | None
-    """
-    Start year of the experiment
-
-    A value of `None` indicates that simulations may start with any year,
-    no particular value is required.
-    """
-
-    # TODO: do we need to support str here or are experiments always specified with end years
-    # (rather than end dates)?
-    end_year: int | None
-    """
-    End year of the experiment
-
-    A value of `None` indicates that simulations may end with any year,
-    no particular value is required.
-    """
-
-    min_number_yrs_per_sim: int | None
-    """
-    Minimum number of years required per simulation for this experiment
-
-    If `None`, then there is no minimum number of years required.
-    You can submit as few years as you like, even just one.
-    """
-
-    # # TODO: should be
-    # parent_activity_id: Activity
-    # # or
-    # parent_activity: Activity
-    # # or
-    # parent_activity_id: str
-    # # rationale: more than one parent activity is not allowed
-    # parent_activity_id: list[str] | None
-    """
-    Activity to which this experiment's parent experiment belongs
-
-    If `None`, this experiment has no parent experiment.
-    """
-
-    # # TODO: should be
-    # parent_experiment_id: Experiment
-    # # or
-    # parent_experiment: str
-    # # or
-    # parent_experiment_id: str
-    # # rationale: more than one parent activity is not allowed
-    parent_experiment_id: list[str] | None
-    """
-    This experiment's parent experiment
-
-    If `None`, this experiment has no parent experiment.
     """

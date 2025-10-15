@@ -2,7 +2,12 @@
 Model (i.e. schema/definition) of the activity data descriptor
 """
 
+from typing import TYPE_CHECKING
+
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+
+if TYPE_CHECKING:
+    from esgvoc.api.data_descriptors.experiment import Experiment
 
 
 class Activity(PlainTermDataDescriptor):
@@ -29,22 +34,19 @@ class Activity(PlainTermDataDescriptor):
     of the schemas for these two classes.
     """
 
-    name: str
-    # TODO: remove - redundant given we have drs_name ?
-    long_name: str
-    # TODO: Change to description for consistency?
+    # None not allowed, empty list should be used
+    # if there are no additional_allowed_model_components.
+    # Getting the cross-referencing right to avoid
+    # circular imports is fiddly.
+    # Using a string like this and then calling
+    # `.model_rebuild()` at some point
+    # is the only way I know to do this.
+    experiments: list["Experiment"]
+    """
+    Experiments 'sponsored' by this activity
+    """
+
     url: str | None
     """
     URL with more information about this activity
     """
-
-    # TODO: add link to experiments
-    # (I'm not sure how easy this is with pydantic,
-    # but it is possible with e.g. SQLModel
-    # although it does complicate things a bit
-    # as you need to define a class that represents the database model
-    # (with ID cross-links) and a class that represents the data model
-    # i.e. that doesn't have database-specific IDs.
-    # I think this complexity would be worth it,
-    # but we'd have to discuss as it would be non-zero effort.)
-    # experiments: list[Experiment] = Field(default_factory=list)
