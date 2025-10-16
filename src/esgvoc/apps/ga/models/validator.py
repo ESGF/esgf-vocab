@@ -49,6 +49,7 @@ class ValidationReport(ConfiguredBaseModel):
     is_valid: bool = Field(..., description="Overall validation status")
     issues: List[ValidationIssue] = Field(default_factory=list, description="List of validation issues")
     validated_attributes: Dict[str, Any] = Field(default_factory=dict, description="Successfully validated attributes")
+    mapping_used: Dict[str, str] = Field(default_factory=dict, description="Mapping of attribute names to validated term values")
     missing_attributes: List[str] = Field(default_factory=list, description="Required attributes that are missing")
     extra_attributes: List[str] = Field(default_factory=list, description="Extra attributes not in specification")
 
@@ -335,6 +336,7 @@ class GlobalAttributeValidator:
                     for issue in report.issues
                 ):
                     report.validated_attributes[attr_name] = attr_value
+                    report.mapping_used[attr_name] = str(attr_value)
 
     def _check_extra_attributes(self, global_attributes: NetCDFGlobalAttributes, report: ValidationReport) -> None:
         """Check for extra attributes not in specifications."""

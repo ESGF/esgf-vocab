@@ -236,9 +236,13 @@ class DrsValidator(DrsApplication):
                        type: DrsType,
                        drs_expression: str,
                        errors: list[DrsIssue],
-                       warnings: list[DrsIssue]) -> DrsValidationReport:
+                       warnings: list[DrsIssue],
+                       mapping_used: dict[str, str] | None = None) -> DrsValidationReport:
+        if mapping_used is None:
+            mapping_used = {}
         return DrsValidationReport(project_id=self.project_id, type=type,
                                    expression=drs_expression,
+                                   mapping_used=mapping_used,
                                    errors=cast(list[ValidationError], errors),
                                    warnings=cast(list[ValidationWarning], warnings))
 
@@ -253,6 +257,7 @@ class DrsValidator(DrsApplication):
         part_index = 0
         part_max_index = len(specs.parts)
         matching_code_mapping = dict()
+        mapping_used: dict[str, str] = dict()
         while part_index < part_max_index:
             term = terms[term_index]
             part: DrsPart = specs.parts[part_index]
@@ -260,6 +265,7 @@ class DrsValidator(DrsApplication):
                 term_index += 1
                 part_index += 1
                 matching_code_mapping[part.__str__()] = 0
+                mapping_used[part.source_collection] = term
             elif part.is_required:
                 issue: ComplianceIssue = InvalidTerm(term=term,
                                                      term_position=term_index+1,
@@ -300,4 +306,4 @@ class DrsValidator(DrsApplication):
                     issue = ExtraTerm(term=term, term_position=index, collection_id=None)
                 errors.append(issue)
                 part_index += 1
-        return self._create_report(specs.type, drs_expression, errors, warnings)
+        return self._create_report(specs.type, drs_expression, errors, warnings, mapping_used)
