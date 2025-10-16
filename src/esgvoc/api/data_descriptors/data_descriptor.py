@@ -29,15 +29,6 @@ class ConfiguredBaseModel(BaseModel):
 class DataDescriptorVisitor(Protocol):
     """
     The specifications for a data descriptor visitor
-
-    The word 'term' was used here,
-    but the visitor vists data descriptors, not terms.
-    Is 'term' just a short-hand for an instance of a data descriptor?
-    Ok, yes, seems so, I should read the type hints sooner probably.
-    In which case my question would be,
-    isn't `PlainTermDataDescriptor` a weird name/repetition?
-    A term is already an instance of a data descriptor
-    so this is basically 'instance of a data descriptor data descriptor'?
     """
 
     def visit_sub_set_term(self, term: "DataDescriptorSubSet") -> Any:
@@ -63,10 +54,27 @@ class DataDescriptor(ConfiguredBaseModel, ABC):
     The unique identifier of the term
 
     Must be unique among all instances of the given data descriptor.
-    [Question: do we enforce/check this uniqueness anywhere?]
 
     Must be all lowercase.
-    [TODO: add this validation]
+    """
+    # TODO: add validation that this is only lowercase, digits and "-"
+    # and uniqueness across all IDs for a given DD
+
+    description: str
+    """
+    Description of the instance
+
+    This is a free-form field,
+    no validation or other restriction is applied.
+
+    For example, if the type is "Experiment"
+    and id is "historical"
+    then description could be something like
+    "Simulation of the climate over the period from 1850 to 2022.".
+
+    (In other words, this isn't the description of the data descriptor itself,
+    that lives in the docstring of the class,
+    this is the description of the instance i.e. specific term being defined.)
     """
 
     type: str
@@ -79,10 +87,8 @@ class DataDescriptor(ConfiguredBaseModel, ABC):
     as this may not always be the same as the camelCase
     used for Python class names.
     Having this also simplifies parsing from the raw JSON-LD CV files.
-
-    [Are there any rules about this e.g. all lowercase?
-    I assume no?]
     """
+    # TODO: add validation that this matches the class name (?)
 
     @abstractmethod
     def accept(self, visitor: DataDescriptorVisitor) -> Any:
@@ -162,18 +168,18 @@ class CompositeTermPart(ConfiguredBaseModel):
     A reference to a term as part of a composite term
     """
 
+    # Still puzzled by the below...
+    # Why can this be a `list` or `None`?
+    # If you have more than one, wouldn't you have multiple `CompositeTermPart`?
+    # If you have no composites, wouldn't you just not use a `CompositeTermPart`
+    # rather than initialising a `CompositeTermPart` with an ID of `None`?
+    # Or does this allow for using `CompositeTermPart`'s that aren't terms themselves
+    # (I can't think of that use case, but I guess it exists)?
     id: str | list[str] | None = None
     """
     The id of the referenced term
 
     e.g. `horizontal_label` as part of `branded_variable`
-
-    Why can this be a `list` or `None`?
-    If you have more than one, wouldn't you have multiple `CompositeTermPart`?
-    If you have no composites, wouldn't you just not use a `CompositeTermPart`
-    rather than initialising a `CompositeTermPart` with an ID of `None`?
-    Or does this allow for using `CompositeTermPart`'s that aren't terms themselves
-    (I can't think of that use case, but I guess it exists)?
 
     See [TODO: cross-ref DataDescriptor.id for details]
     """
