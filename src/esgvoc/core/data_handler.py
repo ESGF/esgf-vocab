@@ -5,7 +5,7 @@ from functools import cached_property
 from typing import Any, Optional, Dict
 import requests
 from pyld import jsonld
-from pydantic import BaseModel, model_validator, ConfigDict
+from pydantic import BaseModel, model_validator, ConfigDict, TypeAdapter
 
 from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
 
@@ -177,7 +177,8 @@ class JsonLdResource(BaseModel):
         model_key = self._extract_model_key(self.uri)
         if model_key and model_key in mapping:
             model = mapping[model_key]
-            return model(**self.json_dict)
+            adapter = TypeAdapter(model)
+            return adapter.validate_python(self.json_dict)
         _LOGGER.warning(f"No matching model found for key: {model_key}")
         return None
 
