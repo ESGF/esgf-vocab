@@ -2,6 +2,8 @@
 Model (i.e. schema/definition) of the area label data descriptor
 """
 
+from pydantic import field_validator
+
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
@@ -18,19 +20,23 @@ class AreaLabel(PlainTermDataDescriptor):
 
     This label is used as the area component of a branded variable's suffix
     (see :py:class:`BrandedSuffix`).
-    By definition, the area label must be consistent with the branded suffix.
-    Area labels must not contain dashes
+    As a result, area labels must not contain dashes
     (as the dash is used as a separator when constructing the branded suffix).
+    By definition, the area label must be consistent with the branded suffix.
     """  # noqa: E501
 
-    # TODO: add validation for not containing dashes in `drs_name`,
-    # although my pydantic is not good enough to know how to do
-    # that without looking it up (which I'm not going to do right now).
+    # Ensure no dash in the drs name
+    # as this would cause the branding suffix construction to explode.
+    # [TODO: check with Laurent whether there is already a fancier
+    # mechanism for ensuring that the separator doesn't appear in any of the drs names
+    # for the components.]
+    # Could introduce a BrandedSuffixComponent sub-class
+    # to avoid duplicating this code four times,
+    # but more layers in the sub-classing hierarchy, urgh...
+    @field_validator("drs_name")
+    def name_must_not_contain_dash(cls, v):
+        if "-" in v:
+            msg = f"`drs_name` for {cls} must not contain a dash. Received: {v}"
+            raise ValueError(msg)
 
-    description: str
-    """
-    Description of the meaning of this area label
-    """
-
-    label: str
-    # TODO: remove? `drs_name` or `id` should be used here instead?
+        return v

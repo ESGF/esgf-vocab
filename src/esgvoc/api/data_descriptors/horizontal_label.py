@@ -1,20 +1,41 @@
+"""
+Model (i.e. schema/definition) of the horizontal label data descriptor
+"""
+
+from pydantic import field_validator
+
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
 class HorizontalLabel(PlainTermDataDescriptor):
     """
-    Horizontal sampling label.
+    Label that describes a specific horizontal sampling approach
 
-    This label provides information about the horizontal sampling of a given dataset.
-    For a list of allowed values, see
-    [TODO think about how to cross-reference to somewhere where people can look up the allowed values,
-    e.g. some summary of the values in https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc/horizontal_label.]
+    Examples: "hxy", "hs", "hm"
 
-    This label is used as the horizontal component of a branded variable's suffix
+    This is set to "hm" ("horizontal mean") when no other horizontal labels apply.
+    For underlying details and logic, please see
+    [Taylor et al., 2025](https://docs.google.com/document/d/19jzecgymgiiEsTDzaaqeLP6pTvLT-NzCMaq-wu-QoOc/edit?pli=1&tab=t.0).
+
+    This label is used as the area component of a branded variable's suffix
     (see :py:class:`BrandedSuffix`).
+    As a result, horizontal labels must not contain dashes
+    (as the dash is used as a separator when constructing the branded suffix).
     By definition, the horizontal label must be consistent with the branded suffix.
-    Horizontal labels must not contain the separator used when constructing the branded suffix.
-    """
+    """  # noqa: E501
 
-    description: str
-    label: str
+    # Ensure no dash in the drs name
+    # as this would cause the branding suffix construction to explode.
+    # [TODO: check with Laurent whether there is already a fancier
+    # mechanism for ensuring that the separator doesn't appear in any of the drs names
+    # for the components.]
+    # Could introduce a BrandedSuffixComponent sub-class
+    # to avoid duplicating this code four times,
+    # but more layers in the sub-classing hierarchy, urgh...
+    @field_validator("drs_name")
+    def name_must_not_contain_dash(cls, v):
+        if "-" in v:
+            msg = f"`drs_name` for {cls} must not contain a dash. Received: {v}"
+            raise ValueError(msg)
+
+        return v
