@@ -142,12 +142,7 @@ class PlainTermDataDescriptor(DataDescriptor):
 
 class PatternTermDataDescriptor(DataDescriptor):
     """
-    A data descriptor that describes terms defined by a regular expression
-
-    ['defined by a regex', or 'that have to match a regex'?
-    The latter is more accurate to me I think.
-    The term is defined by its value.
-    The regex defines the allowed values for that term, not the terms themselves.]
+    A data descriptor that describes terms that have to match a regular expression
     """
 
     regex: str
