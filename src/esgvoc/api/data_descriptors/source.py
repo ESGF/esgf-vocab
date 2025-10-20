@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import Field
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.activity import Activity
 
 
 class Source(PlainTermDataDescriptor):
@@ -16,7 +17,12 @@ class Source(PlainTermDataDescriptor):
     Geophysical Fluid Dynamics Laboratory (GFDL) in the United States.
     """
 
-    activity_participation: list[str] | None
+    activity_participation: list[str | Activity] | None
+    """
+    Activities this source participates in.
+
+    Can be either string IDs or resolved Activity objects.
+    """
     cohort: list[str] = Field(default_factory=list)
     organisation_id: list[str] = Field(default_factory=list)
     label: str

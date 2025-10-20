@@ -5,14 +5,10 @@ from functools import cached_property
 from typing import Any, Optional, Dict
 import requests
 from pyld import jsonld
-from pydantic import BaseModel, model_validator, ConfigDict, TypeAdapter
-
-from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
+from pydantic import BaseModel, model_validator, ConfigDict
 
 # Configure logging
 _LOGGER = logging.getLogger(__name__)
-
-mapping = DATA_DESCRIPTOR_CLASS_MAPPING
 
 
 def unified_document_loader(uri: str) -> Dict:
@@ -100,6 +96,12 @@ class JsonLdResource(BaseModel):
                     for item in value:
                         if isinstance(item, dict):
                             result[key].append(self._preprocess_nested_contexts(item, context))
+                        elif isinstance(item, str) and base_url and term_def.get("@type") == "@id":
+                            # Convert string items to {"@id": "..."} when @type is @id
+                            if not item.startswith("http://") and not item.startswith("https://"):
+                                result[key].append({"@id": base_url + item})
+                            else:
+                                result[key].append({"@id": item})
                         else:
                             result[key].append(item)
                 elif isinstance(value, dict):
@@ -170,18 +172,6 @@ class JsonLdResource(BaseModel):
         _LOGGER.info(f"Normalizing JSON-LD data for {self.uri}")
         return jsonld.normalize(self.uri, options={"algorithm": "URDNA2015", "format": "application/n-quads"})
 
-    @cached_property
-    def python(self) -> Optional[Any]:
-        """Map the data to a Pydantic model based on URI."""
-        _LOGGER.info(f"Mapping data to a Pydantic model for {self.uri}")
-        model_key = self._extract_model_key(self.uri)
-        if model_key and model_key in mapping:
-            model = mapping[model_key]
-            adapter = TypeAdapter(model)
-            return adapter.validate_python(self.json_dict)
-        _LOGGER.warning(f"No matching model found for key: {model_key}")
-        return None
-
     def _extract_model_key(self, uri: str) -> Optional[str]:
         """Extract a model key from the URI."""
         parts = uri.strip("/").split("/")
@@ -199,7 +189,6 @@ class JsonLdResource(BaseModel):
         res += f"JSON Version:\n {json.dumps(self.json_dict, indent=2)}\n"
         res += f"Expanded Version:\n {json.dumps(self.expanded, indent=2)}\n"
         res += f"Normalized Version:\n {self.normalized}\n"
-        res += f"Pydantic Model Instance:\n {self.python}\n"
         return res
 
 

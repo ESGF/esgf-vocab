@@ -15,7 +15,6 @@ from esgvoc.core.exceptions import EsgvocDbError
 from esgvoc.core.service.data_merger import DataMerger
 
 _LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 
 def infer_term_kind(json_specs: dict) -> TermKind:
@@ -112,7 +111,11 @@ def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnecti
                     )
                     merged_data = merger.merge_linked_json()[-1]
                     # Resolve all nested @id references to full objects
-                    json_specs = merger.resolve_nested_ids(merged_data)
+                    # Use resolve_merged_ids to properly handle merged data with correct context
+                    json_specs = merger.resolve_merged_ids(
+                        merged_data,
+                        context_base_path=service.current_state.universe.local_path
+                    )
 
                     term_kind = infer_term_kind(json_specs)
                     term_id = json_specs["id"]

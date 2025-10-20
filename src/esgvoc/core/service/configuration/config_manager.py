@@ -5,8 +5,15 @@ from platformdirs import PlatformDirs
 from typing import Type, TypeVar, Generic, Protocol
 
 # Setup logging
-logging.basicConfig(level=logging.INFO)
+# Use WARNING level to see important messages (errors, warnings) but not debug/info spam
+logging.basicConfig(
+    level=logging.WARNING,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
+# Explicitly set data_merger logger to WARNING since something else seems to change it to ERROR
+logging.getLogger("esgvoc.core.service.data_merger").setLevel(logging.WARNING)
 
 # Define a generic type for configuration
 T = TypeVar("T", bound="ConfigSchema")

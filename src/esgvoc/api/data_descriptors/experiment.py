@@ -31,7 +31,7 @@ class ExperimentCMI7(PlainTermDataDescriptor):
     of the schemas for these two classes.
     """
 
-    activity: list[str]
+    activity: list[Activity]
     """
     Activity to which this experiment belongs
 
@@ -41,9 +41,11 @@ class ExperimentCMI7(PlainTermDataDescriptor):
 
     # None not allowed, empty list should be used
     # if there are no additional_allowed_model_components
-    additional_allowed_model_components: list[str] = Field(default_factory=list)
+    additional_allowed_model_components: list[str | SourceType] = Field(default_factory=list)
     """
     Non-compulsory model components that are allowed when running this experiment
+
+    Can be either string IDs or resolved SourceType objects.
     """
 
     branch_information: str | None
@@ -95,7 +97,7 @@ class ExperimentCMI7(PlainTermDataDescriptor):
     If `None`, this parent experiment has no parent activity.
     """
 
-    parent_experiment: Optional[list[str]]
+    parent_experiment: Optional[list[Experiment]]
     """
     This experiment's parent experiment
 
@@ -109,9 +111,11 @@ class ExperimentCMI7(PlainTermDataDescriptor):
     If `None`, this experiment has no parent experiment.
     """
 
-    required_model_components: list[str]
+    required_model_components: list[str | SourceType]
     """
     Model components required to run this experiment
+
+    Can be either string IDs or resolved SourceType objects.
     """
 
     # TODO: get Dan to help with pydantic type hint
