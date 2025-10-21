@@ -57,8 +57,6 @@ class DataDescriptor(ConfiguredBaseModel, ABC):
 
     Must be all lowercase.
     """
-    # TODO: add validation of and uniqueness across all IDs for a given DD
-    # (in the esgvoc test app? You can't do this on an individual instance)
 
     description: str
     """
