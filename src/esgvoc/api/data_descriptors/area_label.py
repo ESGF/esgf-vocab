@@ -17,5 +17,4 @@ class AreaLabel(PlainTermDataDescriptor):
     (as the dash is used as a separator when constructing the branded suffix).
     """
 
-    description: str
     label: str

@@ -16,5 +16,4 @@ class TemporalLabel(PlainTermDataDescriptor):
     Temporal labels must not contain the separator used when constructing the branded suffix.
     """
 
-    description: str
     label: str

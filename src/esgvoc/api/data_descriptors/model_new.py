@@ -31,7 +31,6 @@ class Model(PlainTermDataDescriptor):
         description="The components that are wholly omitted from the top-level model. Taken from a standardised list: 7.1 component CV.",
         default_factory=list,
     )
-    description: str = Field(description="A brief, free-text scientific overview of the top-level model.", min_length=1)
     calendar: List[str] = Field(
         description="The calendar, or calendars, that define which dates are permitted in the top-level model. Taken from a standardised list: 7.2 calendar CV.",
         min_length=1,
@@ -48,7 +47,7 @@ class Model(PlainTermDataDescriptor):
         default=None, description="The model components that dynamically simulate processes within the model."
     )
 
-    @field_validator("name", "family", "description")
+    @field_validator("name", "family")
     @classmethod
     def validate_non_empty_strings(cls, v):
         """Validate that string fields are not empty."""

@@ -58,10 +58,6 @@ class NativeVerticalGrid(DataDescriptor):
     coordinate: str = Field(
         description="The coordinate type of the vertical grid. Taken from a standardised list: 7.11 coordinate CV. If there is no vertical grid, then the value 'none' must be selected."
     )
-    description: Optional[str] = Field(
-        default=None,
-        description="A free-text description of the vertical grid. A description is only required if there is information that is not covered by any of the other properties.",
-    )
     n_z: Optional[int] = Field(
         default=None,
         description="The number of layers (i.e. grid cells) in the Z direction. Omit when not applicable or not constant. If the number of layers varies in time or across the horizontal grid, then the n_z_range property may be used instead.",

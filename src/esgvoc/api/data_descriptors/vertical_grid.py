@@ -12,10 +12,6 @@ class VerticalGrid(DataDescriptor):
     coordinate: str = Field(
         description="The coordinate type of the vertical grid. If there is no vertical grid, then the value 'none' must be selected."
     )
-    description: Optional[str] = Field(
-        default=None,
-        description="A free-text description of the vertical grid.",
-    )
     n_z: Optional[int] = Field(
         default=None,
         description="The number of layers (i.e. grid cells) in the Z direction.",

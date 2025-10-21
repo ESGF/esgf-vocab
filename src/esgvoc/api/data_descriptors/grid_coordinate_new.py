@@ -49,4 +49,4 @@ class Coordinate(PlainTermDataDescriptor):
             ◦ (Not a standard name) The z* coordinate of Adcroft and Campin (2004).
     """
 
-    description: str
+    pass

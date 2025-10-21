@@ -14,4 +14,4 @@ class Unit(PlainTermDataDescriptor):
             ◦
     """
 
-    description: str
+    pass

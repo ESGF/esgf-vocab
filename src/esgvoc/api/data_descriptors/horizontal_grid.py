@@ -12,10 +12,6 @@ class HorizontalGrid(DataDescriptor):
     grid: str = Field(
         description="The horizontal grid type, i.e. the method of distributing grid points over the sphere. If there is no horizontal grid, then the value 'none' must be selected."
     )
-    description: Optional[str] = Field(
-        default=None,
-        description="A free-text description of the grid.",
-    )
     grid_mapping: Optional[str] = Field(
         default=None, description="The name of the coordinate reference system of the horizontal coordinates."
     )

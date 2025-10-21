@@ -95,10 +95,6 @@ class NativeHorizontalGrid(PlainTermDataDescriptor):
     grid: str = Field(
         description="The horizontal grid type, i.e. the method of distributing grid points over the sphere. Taken from a standardised list: 7.3 grid CV. If there is no horizontal grid, then the value 'none' must be selected."
     )
-    description: Optional[str] = Field(
-        default=None,
-        description="A free-text description of the grid. A description is only required if there is information that is not covered by any of the other properties.",
-    )
     grid_mapping: str = Field(
         description="The name of the coordinate reference system of the horizontal coordinates. Taken from a standardised list: 7.4 grid_mapping CV."
     )

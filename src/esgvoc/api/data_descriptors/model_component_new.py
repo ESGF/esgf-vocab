@@ -69,10 +69,6 @@ class EMDModelComponent(PlainTermDataDescriptor):
         description="The model component's 'family' name. Use 'none' to indicate that there is no such family.",
         min_length=1,
     )
-    description: str = Field(
-        description="A scientific overview of the model component. The description should summarise the key processes simulated by the model component.",
-        min_length=1,
-    )
     references: List[Reference] = Field(
         description="One or more references to published work for the model component.", min_length=1
     )
@@ -95,7 +91,7 @@ class EMDModelComponent(PlainTermDataDescriptor):
         description="A standardised description of the model component's vertical grid."
     )
 
-    @field_validator("component", "name", "family", "description", "code_base")
+    @field_validator("component", "name", "family", "code_base")
     @classmethod
     def validate_non_empty_strings(cls, v):
         """Validate that string fields are not empty."""

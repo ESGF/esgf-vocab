@@ -147,7 +147,6 @@ class ExperimentBeforeCMIP7(PlainTermDataDescriptor):
     """
 
     activity: list[str] = Field(default_factory=list)
-    description: str
     tier: int | None
     experiment_id: str
     sub_experiment_id: list[str] | None
