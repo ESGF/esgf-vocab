@@ -9,14 +9,7 @@ class DataSpecsVersion(PatternTermDataDescriptor):
     """
     Data specifications version number
 
-    Examples: "MIP-DS7.0.1.0", "MIP-DS7.1.0.0", "MIP-DS7.2.2.0-rc.1"
-    [TODO: I would propose using some separator between the prefix and the semantic version
-    so the above would become e.g. MIP-DS7_0.1.0.
-    I don't feel super strongly about this though as,
-    even when people start with semantic versioning,
-    they usually do all sorts of things to break it anyway
-    so strict adherence is normally an illusion/not practical
-    i.e. no need to pretend we're going to be strict from the start.]
+    Examples: "MIPDS7-202510p01", "MIPDS7-0p1p0", "MIPDS7-0p1p0hrc1"
 
     The data specifications describe the overall set of data specifications
     used when writing the dataset.
@@ -26,7 +19,8 @@ class DataSpecsVersion(PatternTermDataDescriptor):
     When it solidifies, more details and examples will be added here.)
 
     [TODO: Given that writing a regexp for this will be tricky
-    (particularly the versioning bit)
+    (particularly if we want a separator between the prefix and the versioning bit
+    and have to handle translating "p" to "." and "h" to "-" in the version)
     and perhaps too loose,
     would we consider just having a `ValidatedTermDataDescriptor`
     to support cases where the term is validated by a function
