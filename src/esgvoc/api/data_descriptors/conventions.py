@@ -15,7 +15,8 @@ class Convention(PlainTermDataDescriptor):
     that the data follows.
     This data descriptor is actually defined by the CF-conventions.
     However, it is often used in a more specific and restrictive form
-    within WCRP activities, which is why we have to define it within esgvoc.
+    within WCRP activities.
+    To support this possibility, this data descriptor must also be defined within esgvoc.
     """
 
     # TODO: delete given we have description and drs_name
