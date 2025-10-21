@@ -5,7 +5,7 @@ Base definitions for all data descriptors
 from abc import ABC, abstractmethod
 from typing import Any, ClassVar, Protocol
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class ConfiguredBaseModel(BaseModel):
@@ -49,7 +49,7 @@ class DataDescriptor(ConfiguredBaseModel, ABC):
     Generic class for data descriptors
     """
 
-    id: str
+    id: str = Field(pattern=r"^[a-z0-9-]*$")
     """
     The unique identifier of the term
 
@@ -57,8 +57,8 @@ class DataDescriptor(ConfiguredBaseModel, ABC):
 
     Must be all lowercase.
     """
-    # TODO: add validation that this is only lowercase, digits and "-"
-    # and uniqueness across all IDs for a given DD
+    # TODO: add validation of and uniqueness across all IDs for a given DD
+    # (in the esgvoc test app? You can't do this on an individual instance)
 
     description: str
     """
@@ -88,7 +88,15 @@ class DataDescriptor(ConfiguredBaseModel, ABC):
     used for Python class names.
     Having this also simplifies parsing from the raw JSON-LD CV files.
     """
-    # TODO: add validation that this matches the class name (?)
+
+    @field_validator("type")
+    @classmethod
+    def ensure_matches_class_name(cls, value: str) -> str:
+        if value != str(cls):
+            msg = f"type must match the data descriptor type. Received type={value!r}, expected type={str(cls)!r}"
+            raise ValueError(msg)
+
+        return value
 
     @abstractmethod
     def accept(self, visitor: DataDescriptorVisitor) -> Any:
