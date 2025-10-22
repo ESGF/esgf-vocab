@@ -2,7 +2,10 @@
 Model (i.e. schema/definition) of the activity data descriptor
 """
 
+import re
 from typing import TYPE_CHECKING
+
+from pydantic import HttpUrl, field_validator
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
@@ -25,7 +28,6 @@ class Activity(PlainTermDataDescriptor):
     Activity DRS names should not include a phase.
     For example, the activity should always be ScenarioMIP,
     not ScenarioMIP6, ScenarioMIP7 etc.
-    [TODO: How do we validate this? Forbid drs_name from ending in a number?]
 
     It is now considered essential for each :py:class:`Experiment`
     to be associated with a single :py:class:`Activity`.
@@ -34,6 +36,7 @@ class Activity(PlainTermDataDescriptor):
     of the schemas for these two classes.
     """
 
+    # TODO: double check.
     # None not allowed, empty list should be used
     # if there are no additional_allowed_model_components.
     # Getting the cross-referencing right to avoid
@@ -46,7 +49,15 @@ class Activity(PlainTermDataDescriptor):
     Experiments 'sponsored' by this activity
     """
 
-    url: str | None
+    url: HttpUrl | None
     """
     URL with more information about this activity
     """
+
+    @field_validator("drs_name")
+    def name_must_not_end_in_number(cls, v):
+        if re.match(r".*\d$", v):
+            msg = f"`drs_name` for {cls} must not end in a number. Received: {v}"
+            raise ValueError(msg)
+
+        return v
