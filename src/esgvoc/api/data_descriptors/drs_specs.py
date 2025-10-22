@@ -16,7 +16,8 @@ class DRSSpecs(PlainTermDataDescriptor):
     This data descriptor is self-referential:
     for a given set of CVs (e.g. CMIP7 CVs),
     it can only have a single value.
-    [In practice, this term was a nice idea,
+
+    In practice, this term was a nice idea,
     but the way things are architected at the moment,
     we can't really exploit it.
     As background, the idea was that multiple projects could use the same DRS
@@ -33,5 +34,5 @@ class DRSSpecs(PlainTermDataDescriptor):
     then off I go".
     However, it does open up the possibility of such centralisation/re-use in future
     so while it's a bit redundant now, having it adds only minor extra work
-    and may be useful so I guess we just go with it.]
+    and may be useful so I guess we just go with it.
     """

@@ -63,5 +63,5 @@ class TrackingId(PatternTermDataDescriptor):
     `hdl:21.14100/f2f502c9-9626-31c6-b016-3f7c0534803b`).
     (Or at least this link with handle.net is the intention.
     It hasn't always happened
-    e.g this is not the case for all CMIP7 input4MIPs files)
+    e.g this is not the case for all CMIP7 input4MIPs files.)
     """

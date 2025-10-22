@@ -15,9 +15,4 @@ class CreationDate(PatternTermDataDescriptor):
     `\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z`
     (this matches ISO 8601 timestamps in UTC).
     If you use a different regex, different examples would be needed.
-    [TODO: although even this regex isn't really complete and regex validating timestamps is a nightmare,
-    see e.g. https://stackoverflow.com/questions/28020805/regex-validate-correct-iso8601-date-string-with-time,
-    would we consider just having a `ValidatedTermDataDescriptor`
-    to support cases where the term is validated by a function
-    rather than only allowing regex validation).]
     """
