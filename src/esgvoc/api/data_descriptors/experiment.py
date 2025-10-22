@@ -52,6 +52,15 @@ class Experiment(PlainTermDataDescriptor):
     and therefore no branching information is required.
     """
 
+    citation_dois: list[str]
+    """
+    DOIs to cite when using output from this experiment
+
+    This simplifies correct citing by users.
+    """
+    # Background for devs: https://github.com/WCRP-CMIP/cmip7-guidance/pull/37#discussion_r2448348474
+    # TODO: validate that these are valid DOIs ?
+
     # TODO: get Dan to help with pydantic type hint
     # https://docs.pydantic.dev/2.2/usage/types/datetime/
     end_timestamp: str | None
