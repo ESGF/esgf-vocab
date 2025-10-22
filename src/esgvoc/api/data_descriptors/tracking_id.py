@@ -51,7 +51,6 @@ class TrackingId(PatternTermDataDescriptor):
     For a standalone solution, the OSSP utility is available.
     It can be accessed from http://www.ossp.org/pkg/lib/uuid/.
     Since CMIP6, version 4 UUIDs (random number based) have been required.
-    [TODO: check whether QAQC will verify that tracking IDs are not being re-used]
 
     The tracking IDs are
     used by a PID service
@@ -66,12 +65,3 @@ class TrackingId(PatternTermDataDescriptor):
     It hasn't always happened
     e.g this is not the case for all CMIP7 input4MIPs files)
     """
-
-    # TODO: Move into CMIP7 CVs. The prefix for CMIP7 is "21.14107"
-    # (I was just told this in a random email)
-    # so the regex should be
-    # `hdl:21.14101/<uuid-regexp>`.
-    # Defining a regex to validate UUIDs is non-trivial.
-    # would we consider just having a `ValidatedTermDataDescriptor`
-    # to support cases where the term is validated by a function
-    # rather than only allowing regex validation?

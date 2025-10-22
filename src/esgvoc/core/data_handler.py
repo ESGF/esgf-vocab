@@ -7,12 +7,8 @@ import requests
 from pyld import jsonld
 from pydantic import BaseModel, model_validator, ConfigDict
 
-from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
-
 # Configure logging
 _LOGGER = logging.getLogger(__name__)
-
-mapping = DATA_DESCRIPTOR_CLASS_MAPPING
 
 
 def unified_document_loader(uri: str) -> Dict:
@@ -46,7 +42,8 @@ class JsonLdResource(BaseModel):
             lambda uri, options: {
                 "contextUrl": None,  # No special context URL
                 "documentUrl": uri,  # The document's actual URL
-                "document": unified_document_loader(uri),  # The parsed JSON-LD document
+                # The parsed JSON-LD document
+                "document": unified_document_loader(uri),
             }
         )
         return values
@@ -57,11 +54,97 @@ class JsonLdResource(BaseModel):
         _LOGGER.debug(f"Fetching JSON data from {self.uri}")
         return unified_document_loader(self.uri)
 
+    def _preprocess_nested_contexts(self, data: dict, context: dict) -> dict:
+        """
+        Pre-process data to resolve @base in nested @context definitions.
+        This works around pyld's limitation with scoped contexts.
+
+        Args:
+            data: The JSON-LD data to preprocess
+            context: The @context dictionary
+
+        Returns:
+            Preprocessed data with resolved nested contexts
+        """
+        if not isinstance(data, dict):
+            return data
+
+        result = {}
+
+        for key, value in data.items():
+            if key == "@context":
+                result[key] = value
+                continue
+
+            # Check if this term has a nested @context with @base
+            term_def = context.get(key, {})
+            if isinstance(term_def, dict) and "@context" in term_def:
+                nested_context = term_def["@context"]
+                base_url = nested_context.get("@base", "")
+
+                # If the value is a string and we have a @base, prepend it
+                if isinstance(value, str) and base_url and term_def.get("@type") == "@id":
+                    # Don't prepend if it's already an absolute URL
+                    if not value.startswith("http://") and not value.startswith("https://"):
+                        # Return as {"@id": "full_url"} to preserve @id semantics
+                        result[key] = {"@id": base_url + value}
+                    else:
+                        result[key] = {"@id": value}
+                elif isinstance(value, list):
+                    # Process each item in the list
+                    result[key] = []
+                    for item in value:
+                        if isinstance(item, dict):
+                            result[key].append(self._preprocess_nested_contexts(item, context))
+                        elif isinstance(item, str) and base_url and term_def.get("@type") == "@id":
+                            # Convert string items to {"@id": "..."} when @type is @id
+                            if not item.startswith("http://") and not item.startswith("https://"):
+                                result[key].append({"@id": base_url + item})
+                            else:
+                                result[key].append({"@id": item})
+                        else:
+                            result[key].append(item)
+                elif isinstance(value, dict):
+                    result[key] = self._preprocess_nested_contexts(value, context)
+                else:
+                    result[key] = value
+            elif isinstance(value, list):
+                # Process each item in the list
+                result[key] = []
+                for item in value:
+                    if isinstance(item, dict):
+                        result[key].append(self._preprocess_nested_contexts(item, context))
+                    else:
+                        result[key].append(item)
+            elif isinstance(value, dict):
+                result[key] = self._preprocess_nested_contexts(value, context)
+            else:
+                result[key] = value
+
+        return result
+
     @cached_property
     def expanded(self) -> Any:
-        """Expand the JSON-LD data."""
+        """Expand the JSON-LD data with preprocessing for nested contexts."""
         _LOGGER.debug(f"Expanding JSON-LD data for {self.uri}")
-        return jsonld.expand(self.uri, options={"base": self.uri})
+
+        # Get the data and context
+        data = self.json_dict
+
+        # Get the context - it should already be the inner dictionary
+        context_dict = self.context
+        if isinstance(context_dict, dict) and "@context" in context_dict:
+            context_dict = context_dict["@context"]
+
+        # Preprocess to handle nested contexts with @base
+        preprocessed = self._preprocess_nested_contexts(data, context_dict)
+
+        # Add the context back if it was in the original data
+        if "@context" in data:
+            preprocessed["@context"] = data["@context"]
+
+        # Expand the preprocessed data
+        return jsonld.expand(preprocessed, options={"base": self.uri})
 
     @cached_property
     def context(self) -> Dict:
@@ -89,17 +172,6 @@ class JsonLdResource(BaseModel):
         _LOGGER.info(f"Normalizing JSON-LD data for {self.uri}")
         return jsonld.normalize(self.uri, options={"algorithm": "URDNA2015", "format": "application/n-quads"})
 
-    @cached_property
-    def python(self) -> Optional[Any]:
-        """Map the data to a Pydantic model based on URI."""
-        _LOGGER.info(f"Mapping data to a Pydantic model for {self.uri}")
-        model_key = self._extract_model_key(self.uri)
-        if model_key and model_key in mapping:
-            model = mapping[model_key]
-            return model(**self.json_dict)
-        _LOGGER.warning(f"No matching model found for key: {model_key}")
-        return None
-
     def _extract_model_key(self, uri: str) -> Optional[str]:
         """Extract a model key from the URI."""
         parts = uri.strip("/").split("/")
@@ -117,18 +189,17 @@ class JsonLdResource(BaseModel):
         res += f"JSON Version:\n {json.dumps(self.json_dict, indent=2)}\n"
         res += f"Expanded Version:\n {json.dumps(self.expanded, indent=2)}\n"
         res += f"Normalized Version:\n {self.normalized}\n"
-        res += f"Pydantic Model Instance:\n {self.python}\n"
         return res
 
 
 if __name__ == "__main__":
-    ## For Universe
+    # For Universe
     # online
     # d = Data(uri = "https://espri-mod.github.io/mip-cmor-tables/activity/cmip.json")
     # print(d.info)
     # offline
     # print(Data(uri = ".cache/repos/mip-cmor-tables/activity/cmip.json").info)
-    ## for Project
+    # for Project
     # d = Data(uri = "https://espri-mod.github.io/CMIP6Plus_CVs/activity_id/cmip.json")
     # print(d.info)
     # offline

@@ -489,6 +489,9 @@ class DrsValidationReport(DrsReport):
     expression: str
     """The DRS expression been checked."""
 
+    mapping_used: Mapping
+    """The mapping of collection ids to validated terms."""
+
     errors: list[ValidationError]
     """A list of DRS parsing and compliance issues that are considered as errors."""
 

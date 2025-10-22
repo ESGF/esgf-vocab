@@ -8,7 +8,6 @@ docs/build
 
 # Venv
 .venv
-venv
 *.lock
 .pdm-python
 .mise.toml
