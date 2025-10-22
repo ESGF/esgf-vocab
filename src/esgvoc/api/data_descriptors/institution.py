@@ -8,7 +8,9 @@ class Institution(PlainTermDataDescriptor):
     An registered institution for WCRP modelisation MIP.
     """
 
-    acronyms: list[str] = Field(default_factory=list)
+    acronyms: list[str] = Field(
+        default_factory=list, description="it is the acronym that btw doesnt belong here anymore"
+    )
     aliases: list[str] = Field(default_factory=list)
     established: int | None
     labels: list[str] = Field(default_factory=list)

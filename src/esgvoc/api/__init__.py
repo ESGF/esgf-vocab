@@ -1,8 +1,5 @@
 from esgvoc.api.project_specs import (
-                                      DrsCollection,
-                                      DrsConstant,
                                       DrsPart,
-                                      DrsPartKind,
                                       DrsSpecification,
                                       DrsType,
                                       ProjectSpecs,
@@ -51,10 +48,7 @@ from esgvoc.api.universe import (
 )
 
 __all__ = [
-    "DrsCollection",
-    "DrsConstant",
     "DrsPart",
-    "DrsPartKind",
     "DrsSpecification",
     "DrsType",
     "find_collections_in_project",

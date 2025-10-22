@@ -64,9 +64,10 @@ class RepoFetcher:
     DataFetcher is responsible for fetching data from external sources such as GitHub.
     """
 
-    def __init__(self, base_url: str = "https://api.github.com", local_path: str = ".cache/repos"):
+    def __init__(self, base_url: str = "https://api.github.com", local_path: str = ".cache/repos", offline_mode: bool = False):
         self.base_url = base_url
         self.repo_dir = local_path
+        self.offline_mode = offline_mode
 
     def fetch_repositories(self, user: str) -> List[GitHubRepository]:
         """
@@ -74,6 +75,9 @@ class RepoFetcher:
         :param user: GitHub username
         :return: List of GitHubRepository objects
         """
+        if self.offline_mode:
+            raise Exception("Cannot fetch repositories in offline mode")
+
         url = f"{self.base_url}/users/{user}/repos"
         response = requests.get(url)
 
@@ -93,6 +97,9 @@ class RepoFetcher:
         :param repo: Repository name
         :return: GitHubRepository object
         """
+        if self.offline_mode:
+            raise Exception("Cannot fetch repository details in offline mode")
+
         url = f"{self.base_url}/repos/{owner}/{repo}"
         response = requests.get(url)
 
@@ -113,6 +120,9 @@ class RepoFetcher:
         :param branch: Branch name
         :return: GitHubBranch object
         """
+        if self.offline_mode:
+            raise Exception("Cannot fetch branch details in offline mode")
+
         url = f"{self.base_url}/repos/{owner}/{repo}/branches/{branch}"
         response = requests.get(url)
 
@@ -133,6 +143,9 @@ class RepoFetcher:
         :param branch: Branch name (default: 'main').
         :return: List of directories in the repository.
         """
+        if self.offline_mode:
+            raise Exception("Cannot list directories in offline mode")
+
         url = f"https://api.github.com/repos/{owner}/{repo}/contents/?ref={branch}"
         response = requests.get(url)
         response.raise_for_status()  # Raise an error for bad responses
@@ -150,6 +163,9 @@ class RepoFetcher:
         :param branch: Branch name (default: 'main').
         :return: List of files in the specified directory.
         """
+        if self.offline_mode:
+            raise Exception("Cannot list files in offline mode")
+
         url = f"https://api.github.com/repos/{owner}/{repo}/contents/{directory}?ref={branch}"
         response = requests.get(url)
         response.raise_for_status()  # Raise an error for bad responses
@@ -157,18 +173,24 @@ class RepoFetcher:
         files = [item["name"] for item in contents if item["type"] == "file"]
         return files
 
-    def clone_repository(self, owner: str, repo: str, branch: Optional[str] = None, local_path: str | None = None):
+    def clone_repository(self, owner: str, repo: str, branch: Optional[str] = None, local_path: str | None = None, shallow: bool = True):
         """
         Clone a GitHub repository to a target directory.
         :param owner: Repository owner
         :param repo: Repository name
         :param target_dir: The directory where the repository should be cloned.
         :param branch: (Optional) The branch to clone. Clones the default branch if None.
+        :param shallow: (Optional) If True, performs a shallow clone with --depth 1. Default is True.
         """
+        if self.offline_mode:
+            raise Exception("Cannot clone repository in offline mode")
+
         repo_url = f"https://github.com/{owner}/{repo}.git"
         destination = local_path if local_path else f"{self.repo_dir}/{repo}"
 
         command = ["git", "clone", repo_url, destination]
+        if shallow:
+            command.extend(["--depth", "1"])
         if branch:
             command.extend(["--branch", branch])
         with redirect_stdout_to_log():
@@ -179,8 +201,63 @@ class RepoFetcher:
                 else:
                     current_work_dir = os.getcwd()
                     os.chdir(f"{destination}")
-                    command = ["git", "pull"]
-                    subprocess.run(command, check=True)
+
+                    # Clean up any conflicted state first
+                    try:
+                        subprocess.run(["git", "reset", "--hard"], capture_output=True, check=False)
+                        subprocess.run(["git", "clean", "-fd"], capture_output=True, check=False)
+                    except Exception:
+                        pass
+
+                    # Check if the requested branch exists locally
+                    try:
+                        result = subprocess.run(
+                            ["git", "rev-parse", "--verify", f"refs/heads/{branch}"],
+                            capture_output=True,
+                            check=False
+                        )
+                        branch_exists_locally = result.returncode == 0
+                    except Exception:
+                        branch_exists_locally = False
+
+                    if not branch_exists_locally and branch:
+                        # If branch doesn't exist locally, we need to fetch it
+                        # For shallow repos, we need to unshallow first or fetch the specific branch
+                        try:
+                            # Try to fetch the specific branch
+                            subprocess.run(["git", "fetch", "origin", f"{branch}:{branch}"], check=True)
+                            _LOGGER.debug(f"Fetched new branch {branch}")
+                        except subprocess.CalledProcessError:
+                            # If that fails, unshallow and try again
+                            subprocess.run(["git", "fetch", "--unshallow"], check=True)
+                            subprocess.run(["git", "fetch", "origin", f"{branch}:{branch}"], check=True)
+                            _LOGGER.debug(f"Unshallowed repo and fetched branch {branch}")
+
+                    # Switch to the requested branch if specified
+                    if branch:
+                        subprocess.run(["git", "checkout", branch], check=True)
+                        _LOGGER.debug(f"Switched to branch {branch}")
+
+                    # For shallow repos that switched branches, just ensure we have latest
+                    # to avoid merge conflicts from different commit histories
+                    if branch and not branch_exists_locally:
+                        # We already fetched the branch, no need for additional reset
+                        _LOGGER.debug(f"Switched to newly fetched branch {branch}")
+                    else:
+                        # Pull latest changes for normal updates
+                        try:
+                            subprocess.run(["git", "pull"], check=True)
+                        except subprocess.CalledProcessError:
+                            # If pull fails, try to fetch and reset
+                            subprocess.run(["git", "fetch"], check=True)
+                            # Check if remote tracking branch exists
+                            try:
+                                subprocess.run(["git", "rev-parse", f"origin/{branch}"], capture_output=True, check=True)
+                                subprocess.run(["git", "reset", "--hard", f"origin/{branch}"], check=True)
+                                _LOGGER.debug(f"Reset to origin/{branch} after pull failure")
+                            except subprocess.CalledProcessError:
+                                # Remote tracking branch doesn't exist, just continue
+                                _LOGGER.debug(f"No remote tracking branch for {branch}, continuing")
                     os.chdir(current_work_dir)
 
             except Exception as e:
@@ -188,11 +265,17 @@ class RepoFetcher:
 
     def get_github_version_with_api(self, owner: str, repo: str, branch: str = "main"):
         """Fetch the latest commit version (or any other versioning scheme) from GitHub."""
+        if self.offline_mode:
+            raise Exception("Cannot get GitHub version in offline mode")
         details = self.fetch_branch_details(owner, repo, branch)
         return details.commit.get("sha")
 
     def get_github_version(self, owner: str, repo: str, branch: str = "main"):
         """Fetch the latest commit version (or any other versioning scheme) from GitHub. with command git fetch"""
+        if self.offline_mode:
+            _LOGGER.debug("Cannot get GitHub version in offline mode")
+            return None
+
         repo_url = f"https://github.com/{owner}/{repo}.git"
         command = ["git", "ls-remote", repo_url, f"{self.repo_dir}/{repo}"]
         if branch:

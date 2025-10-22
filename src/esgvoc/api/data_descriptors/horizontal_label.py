@@ -2,8 +2,6 @@
 Model (i.e. schema/definition) of the horizontal label data descriptor
 """
 
-from pydantic import field_validator
-
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
@@ -23,19 +21,3 @@ class HorizontalLabel(PlainTermDataDescriptor):
     (as the dash is used as a separator when constructing the branded suffix).
     By definition, the horizontal label must be consistent with the branded suffix.
     """  # noqa: E501
-
-    # Ensure no dash in the drs name
-    # as this would cause the branding suffix construction to explode.
-    # [TODO: check with Laurent whether there is already a fancier
-    # mechanism for ensuring that the separator doesn't appear in any of the drs names
-    # for the components.]
-    # Could introduce a BrandedSuffixComponent sub-class
-    # to avoid duplicating this code four times,
-    # but more layers in the sub-classing hierarchy, urgh...
-    @field_validator("drs_name")
-    def name_must_not_contain_dash(cls, v):
-        if "-" in v:
-            msg = f"`drs_name` for {cls} must not contain a dash. Received: {v}"
-            raise ValueError(msg)
-
-        return v
