@@ -17,7 +17,4 @@ class HorizontalLabel(PlainTermDataDescriptor):
 
     This label is used as the area component of a branded variable's suffix
     (see :py:class:`BrandedSuffix`).
-    As a result, horizontal labels must not contain dashes
-    (as the dash is used as a separator when constructing the branded suffix).
-    By definition, the horizontal label must be consistent with the branded suffix.
     """  # noqa: E501
