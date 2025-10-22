@@ -25,12 +25,6 @@ class BrandedSuffix(CompositeTermDataDescriptor):
     #. :py:class:`HorizontalLabel`
     #. :py:class:`AreaLabel`
 
-    These components are separated by a separator to create the branded suffix.
-    [TODO: discuss whether separator should be general or just hard-coded
-    to dash to simplify things, particularly validation implemenation
-    on the components and avoid speculative generality
-    (I see pros and cons, tricky choice).]
-
     For underlying details and logic, please see
     [Taylor et al., 2025](https://docs.google.com/document/d/19jzecgymgiiEsTDzaaqeLP6pTvLT-NzCMaq-wu-QoOc/edit?pli=1&tab=t.0).
     """  # noqa: E501
