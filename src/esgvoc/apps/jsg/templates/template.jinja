@@ -1,0 +1,249 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://stac-extensions.github.io/{{ project_id|lower }}/{{ catalog_version }}/schema.json#",
+  "title": "{{ project_id|upper }} Extension",
+  "description": "STAC {{ project_id|upper }} Extension for STAC Items and STAC Collection Summaries.",
+  "type": "object",
+  "required": [
+    "stac_extensions"
+  ],
+  "properties": {
+    "stac_extensions": {
+      "type": "array",
+      "allOf": [
+        {
+          "contains": {
+            "const": "https://stac-extensions.github.io/file/{{ file_extension_version }}/schema.json"
+          }
+        },
+        {
+          "contains": {
+            "const": "https://stac-extensions.github.io/{{ project_id|lower }}/{{ catalog_version }}/schema.json"
+          }
+        }
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "$comment": "This is the schema for STAC Items.",
+      "type": "object",
+      "required": [
+        "collection"
+      ],
+      "properties": {
+        "type": {
+          "const": "Feature"
+        },
+        "id": {
+          "type": "string",
+          "pattern": {{ drs_dataset_id_regex|tojson }}
+        },
+        "collection": {
+          "const": "{{ project_id|upper }}"
+        },
+        "properties": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/require_item_fields"
+            },
+            {
+              "$ref": "#/definitions/item_fields"
+            }
+          ]
+        },
+        "assets": {
+          "type": "object",
+          "additionalProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/require_asset_fields"
+              },
+              {
+                "$ref": "https://stac-extensions.github.io/file/{{ file_extension_version }}/schema.json#/definitions/fields"
+              },
+              {
+                "$ref": "#/definitions/asset_fields"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "$comment": "This is the schema for STAC Collections, or more specifically only Collection Summaries in this case. By default, only checks the existence of the properties, but not the schema of the summaries.",
+      "type": "object",
+      "required": [
+        "type",
+        "summaries"
+      ],
+      "properties": {
+        "type": {
+          "const": "Collection"
+        },
+        "summaries": {
+          "$ref": "#/definitions/require_any"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "require_any": {
+      "$comment": "Only used for Collection summarizes.",
+      "type": "object",
+      "minProperties": 1
+    },
+    "require_item_fields": {
+      "$comment": "Please list all fields here so that we can force the existence of one of them in other parts of the schemas.",
+      "allOf": [
+        {
+          "required": [
+            "created"
+          ]
+        },
+        {
+          "required": [
+            "end_datetime"
+          ]
+        },
+        {
+          "required": [
+            "latest"
+          ]
+        },
+        {
+          "required": [
+            "retracted"
+          ]
+        },
+        {
+          "required": [
+            "size"
+          ]
+        },
+        {
+          "required": [
+            "start_datetime"
+          ]
+        },
+        {
+          "required": [
+            "title"
+          ]
+        },
+        {
+          "required": [
+            "updated"
+          ]
+        },
+        {% for dataset_property in catalog_dataset_properties|sort(attribute="field_name") %}
+          {% if dataset_property.is_required %}
+            {
+              "required": [
+                "{{ dataset_property.field_name }}"
+              ]
+            }
+            {% if not loop.last %},{% endif %}
+          {% endif %}
+        {% endfor %}
+      ]
+    },
+    "require_asset_fields": {
+      "$comment": "Please list all fields here so that we can force the existence of one of them in other parts of the schemas.",
+      "allOf": [
+        {
+          "required": [
+            "created"
+          ]
+        },
+        {
+          "required": [
+            "file:checksum"
+          ]
+        },
+        {
+          "required": [
+            "file:size"
+          ]
+        },
+        {
+          "required": [
+            "protocol"
+          ]
+        },
+        {
+          "required": [
+            "updated"
+          ]
+        },
+        {% for file_property in catalog_file_properties|sort(attribute="field_name") %}
+          {% if file_property.is_required %}
+            {
+              "required": [
+                "{{ file_property.field_name }}"
+              ]
+            }
+            {% if not loop.last %},{% endif %}
+          {% endif %}
+        {% endfor %}
+      ]
+    },
+    "asset_fields": {
+      "$comment": " Don't require fields here, do that above in the corresponding schema.",
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "type": "string",
+          "enum": [
+            "http",
+            "https",
+            "globus",
+            "gridftp",
+            "kerchunk",
+            "netcdfsubset",
+            "opendap",
+            "wms",
+            "wps",
+            "s3"
+          ]
+        },
+        {% for file_property in catalog_file_properties|sort(attribute="field_name") %}
+          "{{ file_property.field_name }}": {
+          {% for key, value in file_property.field_value|dictsort(reverse=true) %}
+            "{{ key }}": {{ value|tojson }}
+            {% if not loop.last %},{% endif %}
+          {% endfor %}
+          }{% if not loop.last %},{% endif %}
+        {% endfor %}
+      }
+    },
+    "item_fields": {
+      "$comment": " Don't require fields here, do that above in the corresponding schema.",
+      "type": "object",
+      "properties": {
+        "latest": {
+          "type": "boolean"
+        },
+        "retracted": {
+          "type": "boolean"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        {% for dataset_property in catalog_dataset_properties|sort(attribute="field_name") %}
+          "{{ dataset_property.field_name }}": {
+          {% for key, value in dataset_property.field_value|dictsort(reverse=true) %}
+            "{{ key }}": {{ value|tojson }}
+            {% if not loop.last %},{% endif %}
+          {% endfor %}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+      },
+      "patternProperties": {
+        "^(?!{{ project_id|lower }}:)": {}
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -2,4 +2,4 @@ from esgvoc.api.data_descriptors.data_descriptor import PatternTermDataDescripto
 
 
 class TrackingId(PatternTermDataDescriptor):
-    description: str
+    pass

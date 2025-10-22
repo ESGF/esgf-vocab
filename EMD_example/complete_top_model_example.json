@@ -1,0 +1,196 @@
+{
+  "name": "HadGEM3-GC31-HH",
+  "family": "HadGEM3",
+  "dynamic_components": ["atmosphere", "land_surface", "ocean", "sea_ice", "ocean_biogeochemistry"],
+  "prescribed_components": ["atmospheric_chemistry", "aerosol"],
+  "omitted_components": ["land_ice"],
+  "description": "HadGEM3-GC31-HH is a high-resolution global coupled climate model developed by the UK Met Office. The model includes a dynamically simulated atmosphere component using the Unified Model (UM) with comprehensive representation of physical processes including radiation, convection, and boundary layer dynamics. The land surface is represented by the Joint UK Land Environment Simulator (JULES) which calculates water, energy, and carbon fluxes between the surface and atmosphere, including vegetation dynamics and soil processes. The ocean component uses the Nucleus for European Modelling of the Ocean (NEMO) with detailed representation of ocean dynamics, thermodynamics, and mixing processes. Sea ice is simulated using the Los Alamos Sea Ice Model (CICE) which includes comprehensive ice dynamics and thermodynamics. Ocean biogeochemistry is represented by the Model of Ecosystem Dynamics, nutrient Utilisation, Sequestration and Acidification (MEDUSA) which simulates marine carbon cycle and ecosystem processes. Atmospheric chemistry is prescribed using monthly mean three-dimensional ozone concentrations from observations and does not include interactive chemical processes. Aerosol distributions are prescribed using monthly mean fields derived from separate atmospheric chemistry-aerosol model simulations and do not interact dynamically with the radiation scheme. Land ice processes are completely omitted from this model configuration.",
+  "calendar": ["standard"],
+  "release_year": 2019,
+  "references": [
+    {
+      "citation": "Williams, K. D., Copsey, D., Blockley, E. W., Bodas‐Salcedo, A., Calvert, D., Comer, R., et al. (2018). The Met Office Global Coupled Model 3.0 and 3.1 (GC3.0 and GC3.1) configurations. Journal of Advances in Modeling Earth Systems, 10, 357–380. https://doi.org/10.1002/2017MS001115",
+      "doi": "https://doi.org/10.1002/2017MS001115"
+    },
+    {
+      "citation": "Storkey, D., Blaker, A. T., Mathiot, P., Megann, A., Aksenov, Y., Blockley, E. W., et al. (2018). UK Global Ocean GO6 and GO7: A traceable hierarchy of model resolutions. Geoscientific Model Development, 11, 3187–3213. https://doi.org/10.5194/gmd-11-3187-2018",
+      "doi": "https://doi.org/10.5194/gmd-11-3187-2018"
+    }
+  ],
+  "model_components": [
+    {
+      "component": "atmosphere",
+      "name": "HadGEM3-GC31-Atmosphere",
+      "family": "UM",
+      "description": "The atmospheric component is based on the Unified Model (UM) version 11.1 with comprehensive representation of dynamical, physical, and thermodynamical processes. The model includes detailed treatments of radiation (using the Suite of Community RAdiative Transfer codes based on Edwards and Slingo, SOCRATES), convection (using the Gregory-Rowntree mass-flux scheme), cloud microphysics (using the Wilson-Ballard scheme), and boundary layer processes (using the Lock et al. scheme). The model uses a semi-implicit, semi-Lagrangian numerical scheme for time integration and employs a hybrid height coordinate system in the vertical. The atmospheric chemistry component is prescribed rather than interactive, using monthly mean three-dimensional ozone concentrations. Aerosol interactions are limited to prescribed climatological distributions.",
+      "references": [
+        {
+          "citation": "Walters, D., Baran, A. J., Boutle, I., Brooks, M., Earnshaw, P., Edwards, J., et al. (2019). The Met Office Unified Model Global Atmosphere 7.0/7.1 and JULES Global Land 7.0 configurations. Geoscientific Model Development, 12, 1909–1963. https://doi.org/10.5194/gmd-12-1909-2019",
+          "doi": "https://doi.org/10.5194/gmd-12-1909-2019"
+        }
+      ],
+      "code_base": "https://code.metoffice.gov.uk/trac/um/browser/main/branches/dev/hadgem3-gc31",
+      "coupled_with": ["land_surface", "ocean", "sea_ice"],
+      "native_horizontal_grid": {
+        "grid": "regular_latitude_longitude",
+        "description": "High-resolution regular latitude-longitude grid with enhanced resolution for improved representation of atmospheric processes and extreme weather events.",
+        "grid_mapping": "latitude_longitude",
+        "region": "global",
+        "temporal_refinement": "static",
+        "arrangement": "arakawa_c",
+        "resolution_x": 0.833,
+        "resolution_y": 0.556,
+        "horizontal_units": "degree",
+        "n_cells": 139968,
+        "resolution_range_km": [75.0, 140.0],
+        "mean_resolution_km": 95.8,
+        "nominal_resolution": "100 km"
+      },
+      "native_vertical_grid": {
+        "coordinate": "atmosphere_hybrid_height_coordinate",
+        "description": "Terrain-following hybrid height coordinate with enhanced vertical resolution in the boundary layer and near the tropopause.",
+        "n_z": 85,
+        "top_layer_thickness": 846.3,
+        "top_of_model": 84763.34,
+        "vertical_units": "m"
+      }
+    },
+    {
+      "component": "land_surface",
+      "name": "JULES-GL7",
+      "family": "JULES",
+      "description": "The Joint UK Land Environment Simulator (JULES) Global Land version 7.0 represents terrestrial processes including surface energy and water balance, carbon cycle, vegetation dynamics, and soil processes. The model includes multiple plant functional types (PFTs), dynamic vegetation allocation, soil carbon decomposition, and representation of crop growth. JULES calculates fluxes of momentum, heat, moisture, and carbon dioxide between the land surface and atmosphere. The model includes treatment of snow processes, soil freeze-thaw cycles, wetland methane emissions, and fire dynamics. Urban surfaces are represented using the MORUSES (Met Office Reading Urban Surface Exchange Scheme) urban canopy model.",
+      "references": [
+        {
+          "citation": "Mulcahy, J. P., Jones, C., Sellar, A., Johnson, B., Boutle, I. A., Jones, A., et al. (2018). Improved aerosol processes and effective radiative forcing in HadGEM3 and UKESM1. Journal of Advances in Modeling Earth Systems, 10, 2786–2805. https://doi.org/10.1029/2018MS001464",
+          "doi": "https://doi.org/10.1029/2018MS001464"
+        }
+      ],
+      "code_base": "https://code.metoffice.gov.uk/trac/jules/browser/main/branches/dev/jules-gl7",
+      "embedded_in": "atmosphere",
+      "native_horizontal_grid": {
+        "grid": "regular_latitude_longitude",
+        "grid_mapping": "latitude_longitude",
+        "region": "global",
+        "temporal_refinement": "static",
+        "arrangement": "arakawa_c",
+        "resolution_x": 0.833,
+        "resolution_y": 0.556,
+        "horizontal_units": "degree",
+        "n_cells": 139968,
+        "resolution_range_km": [75.0, 140.0],
+        "mean_resolution_km": 95.8,
+        "nominal_resolution": "100 km"
+      },
+      "native_vertical_grid": {
+        "coordinate": "depth",
+        "description": "Soil layers with exponentially increasing thickness with depth, plus optional snow layers above ground and bedrock below the deepest soil layer.",
+        "n_z": 14,
+        "bottom_layer_thickness": 2.0,
+        "top_layer_thickness": 0.05,
+        "top_of_model": 3.0,
+        "vertical_units": "m"
+      }
+    },
+    {
+      "component": "ocean",
+      "name": "NEMO-GO7",
+      "family": "NEMO",
+      "description": "The ocean component is based on NEMO (Nucleus for European Modelling of the Ocean) version 3.6 in the Global Ocean 7.0 configuration. The model includes comprehensive representation of ocean dynamics using primitive equations, advanced mixing schemes including Gent-McWilliams parameterization for mesoscale eddies, and detailed treatment of boundary layer processes. The model uses z-star vertical coordinates with partial cells to improve representation of bottom topography. Tidal mixing is parameterized, and the model includes enhanced mixing in the equatorial region. Sea ice interactions are fully coupled through exchanges of momentum, heat, and freshwater.",
+      "references": [
+        {
+          "citation": "Storkey, D., Blaker, A. T., Mathiot, P., Megann, A., Aksenov, Y., Blockley, E. W., et al. (2018). UK Global Ocean GO6 and GO7: A traceable hierarchy of model resolutions. Geoscientific Model Development, 11, 3187–3213. https://doi.org/10.5194/gmd-11-3187-2018",
+          "doi": "https://doi.org/10.5194/gmd-11-3187-2018"
+        }
+      ],
+      "code_base": "https://forge.ipsl.jussieu.fr/nemo/browser/NEMO/releases/release-3.6",
+      "coupled_with": ["atmosphere", "sea_ice", "ocean_biogeochemistry"],
+      "native_horizontal_grid": {
+        "grid": "tripolar",
+        "description": "ORCA025 tripolar grid with enhanced resolution in the equatorial regions and two northern hemisphere poles displaced over land to avoid computational singularities.",
+        "grid_mapping": "latitude_longitude",
+        "region": "global",
+        "temporal_refinement": "static",
+        "arrangement": "arakawa_c",
+        "n_cells": 1051200,
+        "resolution_range_km": [9.0, 28.0],
+        "mean_resolution_km": 18.5,
+        "nominal_resolution": "25 km"
+      },
+      "native_vertical_grid": {
+        "coordinate": "ocean_s_coordinate",
+        "description": "z-star coordinate system with 75 vertical levels, with enhanced resolution near the surface and bottom boundary layers.",
+        "n_z": 75,
+        "bottom_layer_thickness": 204.1,
+        "top_layer_thickness": 1.0,
+        "top_of_model": 0.0,
+        "vertical_units": "m"
+      }
+    },
+    {
+      "component": "sea_ice",
+      "name": "CICE-GSI8",
+      "family": "CICE",
+      "description": "The sea ice component uses the Los Alamos Sea Ice Model (CICE) version 5.1.2 in the Global Sea Ice version 8.1 configuration. The model includes comprehensive representation of sea ice dynamics using the elastic-viscous-plastic (EVP) rheology, detailed thermodynamics with multiple ice thickness categories, and advanced snow processes. The model includes ice floe size distribution, melt pond representation, and biogeochemical tracers. Coupling with the ocean includes exchanges of momentum, heat, and freshwater, while coupling with the atmosphere includes surface energy balance calculations and momentum exchange.",
+      "references": [
+        {
+          "citation": "Rae, J. G. L., Hewitt, H. T., Keen, A. B., Ridley, J. K., West, A. E., Harris, C. M., et al. (2015). Development of the Global Sea Ice 6.0 CICE configuration for the Met Office Global Coupled model. Geoscientific Model Development, 8, 2221–2230. https://doi.org/10.5194/gmd-8-2221-2015",
+          "doi": "https://doi.org/10.5194/gmd-8-2221-2015"
+        }
+      ],
+      "code_base": "https://github.com/CICE-Consortium/CICE-svn-trunk/releases/tag/cice-5.1.2",
+      "coupled_with": ["atmosphere", "ocean"],
+      "native_horizontal_grid": {
+        "grid": "tripolar",
+        "description": "Same ORCA025 tripolar grid as the ocean component to ensure consistent coupling without interpolation.",
+        "grid_mapping": "latitude_longitude",
+        "region": "global",
+        "temporal_refinement": "static",
+        "arrangement": "arakawa_c",
+        "n_cells": 1051200,
+        "resolution_range_km": [9.0, 28.0],
+        "mean_resolution_km": 18.5,
+        "nominal_resolution": "25 km"
+      },
+      "native_vertical_grid": {
+        "coordinate": "none",
+        "description": "Sea ice is treated as a 2D surface with multiple thickness categories but no explicit vertical layers."
+      }
+    },
+    {
+      "component": "ocean_biogeochemistry",
+      "name": "MEDUSA-2.1",
+      "family": "MEDUSA",
+      "description": "The ocean biogeochemistry component uses MEDUSA (Model of Ecosystem Dynamics, nutrient Utilisation, Sequestration and Acidification) version 2.1. The model includes representation of lower and upper ocean ecosystems with multiple plankton functional types, detailed carbon cycle including both organic and inorganic carbon pumps, oxygen dynamics, and ocean acidification processes. The model simulates nitrogen, phosphorus, silicon, and iron cycles, and includes representation of calcifying organisms. Benthic processes are included for sediment-water column interactions. The model is fully coupled with ocean physics through temperature, light, and nutrient dependencies.",
+      "references": [
+        {
+          "citation": "Yool, A., Popova, E. E., and Anderson, T. R. (2013). MEDUSA-2.0: an intermediate complexity biogeochemical model of the marine carbon cycle for climate change and ocean acidification studies. Geoscientific Model Development, 6, 1767–1811. https://doi.org/10.5194/gmd-6-1767-2013",
+          "doi": "https://doi.org/10.5194/gmd-6-1767-2013"
+        }
+      ],
+      "code_base": "https://forge.ipsl.jussieu.fr/nemo/browser/NEMO/releases/release-3.6/NEMOGCM/CONFIG/MEDUSA",
+      "embedded_in": "ocean",
+      "native_horizontal_grid": {
+        "grid": "tripolar",
+        "description": "Identical to the ocean component grid for seamless integration of biogeochemical and physical processes.",
+        "grid_mapping": "latitude_longitude",
+        "region": "global",
+        "temporal_refinement": "static",
+        "arrangement": "arakawa_c",
+        "n_cells": 1051200,
+        "resolution_range_km": [9.0, 28.0],
+        "mean_resolution_km": 18.5,
+        "nominal_resolution": "25 km"
+      },
+      "native_vertical_grid": {
+        "coordinate": "ocean_s_coordinate",
+        "description": "Same vertical grid as the ocean component with additional biogeochemical tracers at each level including nutrients, phytoplankton, detritus, and dissolved gases.",
+        "n_z": 75,
+        "bottom_layer_thickness": 204.1,
+        "top_layer_thickness": 1.0,
+        "top_of_model": 0.0,
+        "vertical_units": "m"
+      }
+    }
+  ]
+}

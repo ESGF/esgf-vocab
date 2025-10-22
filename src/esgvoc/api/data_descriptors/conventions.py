@@ -18,6 +18,3 @@ class Convention(PlainTermDataDescriptor):
     within WCRP activities.
     To support this possibility, this data descriptor must also be defined within esgvoc.
     """
-
-    # TODO: delete given we have description and drs_name
-    label: str

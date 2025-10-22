@@ -16,5 +16,4 @@ class HorizontalLabel(PlainTermDataDescriptor):
     Horizontal labels must not contain the separator used when constructing the branded suffix.
     """
 
-    description: str
     label: str

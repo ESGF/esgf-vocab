@@ -3,10 +3,7 @@ from typing import cast
 import esgvoc.api.projects as projects
 import esgvoc.apps.drs.constants as constants
 from esgvoc.api.project_specs import (
-    DrsCollection,
-    DrsConstant,
     DrsPart,
-    DrsPartKind,
     DrsSpecification,
     DrsType,
     ProjectSpecs,
@@ -44,19 +41,12 @@ class DrsApplication:
         project_specs: ProjectSpecs | None = projects.get_project(project_id)
         if not project_specs:
             raise EsgvocNotFoundError(f"unable to find project '{project_id}'")
-        for specs in project_specs.drs_specs:
-            match specs.type:
-                case DrsType.DIRECTORY:
-                    self.directory_specs: DrsSpecification = specs
-                    """The DRS directory specs of the project."""
-                case DrsType.FILE_NAME:
-                    self.file_name_specs: DrsSpecification = specs
-                    """The DRS file name specs of the project."""
-                case DrsType.DATASET_ID:
-                    self.dataset_id_specs: DrsSpecification = specs
-                    """The DRS dataset id specs of the project."""
-                case _:
-                    raise EsgvocDbError(f"unsupported DRS specs type '{specs.type}'")
+        self.directory_specs: DrsSpecification = project_specs.drs_specs[DrsType.DIRECTORY]
+        """The DRS directory specs of the project."""
+        self.file_name_specs: DrsSpecification = project_specs.drs_specs[DrsType.FILE_NAME]
+        """The DRS file name specs of the project."""
+        self.dataset_id_specs: DrsSpecification = project_specs.drs_specs[DrsType.DATASET_ID]
+        """The DRS dataset id specs of the project."""
 
     def _get_full_file_name_extension(self) -> str:
         """
@@ -229,29 +219,30 @@ class DrsValidator(DrsApplication):
         return sorted(issues, key=lambda issue: issue.column if issue.column else 0)
 
     def _validate_term(self, term: str, part: DrsPart) -> bool:
-        match part.kind:
-            case DrsPartKind.COLLECTION:
-                casted_part: DrsCollection = cast(DrsCollection, part)
-                matching_terms = projects.valid_term_in_collection(term,
-                                                                   self.project_id,
-                                                                   casted_part.collection_id)
-                if len(matching_terms) > 0:
-                    return True
-                else:
-                    return False
-            case DrsPartKind.CONSTANT:
-                part_casted: DrsConstant = cast(DrsConstant, part)
-                return part_casted.value != term
-            case _:
-                raise EsgvocDbError(f"unsupported DRS specs part type '{part.kind}'")
+        if part.source_collection_term is None:
+            matching_terms = projects.valid_term_in_collection(
+                term,
+                self.project_id,
+                part.source_collection)
+            if len(matching_terms) > 0:
+                return True
+            else:
+                return False
+        else:
+            return projects.valid_term(term, self.project_id, part.source_collection,
+                                       part.source_collection_term).validated
 
     def _create_report(self,
                        type: DrsType,
                        drs_expression: str,
                        errors: list[DrsIssue],
-                       warnings: list[DrsIssue]) -> DrsValidationReport:
+                       warnings: list[DrsIssue],
+                       mapping_used: dict[str, str] | None = None) -> DrsValidationReport:
+        if mapping_used is None:
+            mapping_used = {}
         return DrsValidationReport(project_id=self.project_id, type=type,
                                    expression=drs_expression,
+                                   mapping_used=mapping_used,
                                    errors=cast(list[ValidationError], errors),
                                    warnings=cast(list[ValidationWarning], warnings))
 
@@ -266,15 +257,16 @@ class DrsValidator(DrsApplication):
         part_index = 0
         part_max_index = len(specs.parts)
         matching_code_mapping = dict()
+        mapping_used: dict[str, str] = dict()
         while part_index < part_max_index:
             term = terms[term_index]
-            part = specs.parts[part_index]
+            part: DrsPart = specs.parts[part_index]
             if self._validate_term(term, part):
                 term_index += 1
                 part_index += 1
                 matching_code_mapping[part.__str__()] = 0
-            elif part.kind == DrsPartKind.CONSTANT or \
-                 cast(DrsCollection, part).is_required:  # noqa E127
+                mapping_used[part.source_collection] = term
+            elif part.is_required:
                 issue: ComplianceIssue = InvalidTerm(term=term,
                                                      term_position=term_index+1,
                                                      collection_id_or_constant_value=str(part))
@@ -298,8 +290,7 @@ class DrsValidator(DrsApplication):
             for index in range(part_index, part_max_index):
                 part = specs.parts[index]
                 issue = MissingTerm(collection_id=str(part), collection_position=index+1)
-                if part.kind == DrsPartKind.CONSTANT or \
-                   cast(DrsCollection, part).is_required:
+                if part.is_required:
                     errors.append(issue)
                 else:
                     warnings.append(issue)
@@ -308,12 +299,11 @@ class DrsValidator(DrsApplication):
             for index in range(term_index, term_max_index):
                 term = terms[index]
                 part = specs.parts[part_index]
-                if part.kind != DrsPartKind.CONSTANT           and \
-                   (not cast(DrsCollection, part).is_required) and \
+                if (not part.is_required) and \
                     matching_code_mapping[part.__str__()] < 0: # noqa E125
                     issue = ExtraTerm(term=term, term_position=index, collection_id=str(part))
                 else:
                     issue = ExtraTerm(term=term, term_position=index, collection_id=None)
                 errors.append(issue)
                 part_index += 1
-        return self._create_report(specs.type, drs_expression, errors, warnings)
+        return self._create_report(specs.type, drs_expression, errors, warnings, mapping_used)

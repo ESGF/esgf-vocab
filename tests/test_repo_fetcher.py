@@ -131,13 +131,20 @@ def test_fetch_branch_details_failure(mock_get, fetcher):
 @patch("subprocess.run")
 def test_clone_repository(mock_run,fetcher):
 
-    # Test cloning the default branch
+    # Test cloning the default branch (shallow by default)
     fetcher.clone_repository("testuser","test-repo")
-    mock_run.assert_called_with(["git", "clone", "https://github.com/testuser/test-repo.git", '.cache/repos/test-repo'], check=True)
+    mock_run.assert_called_with(["git", "clone", "https://github.com/testuser/test-repo.git", '.cache/repos/test-repo', "--depth", "1"], check=True)
 
-    # Test cloning a specific branch
+    # Test cloning a specific branch (shallow by default)
     fetcher.clone_repository("testuser","test-repo", branch="develop")
     mock_run.assert_called_with(
-        ["git", "clone", "https://github.com/testuser/test-repo.git", '.cache/repos/test-repo', "--branch", "develop"],
+        ["git", "clone", "https://github.com/testuser/test-repo.git", '.cache/repos/test-repo', "--depth", "1", "--branch", "develop"],
+        check=True
+    )
+
+    # Test cloning without shallow (full clone)
+    fetcher.clone_repository("testuser","test-repo", shallow=False)
+    mock_run.assert_called_with(
+        ["git", "clone", "https://github.com/testuser/test-repo.git", '.cache/repos/test-repo'],
         check=True
     )

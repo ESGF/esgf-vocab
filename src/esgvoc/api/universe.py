@@ -4,6 +4,7 @@ from sqlalchemy import text
 from sqlmodel import Session, col, select
 
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+from esgvoc.api.pydantic_handler import instantiate_pydantic_term
 from esgvoc.api.search import (
     Item,
     execute_find_item_statements,
@@ -11,7 +12,6 @@ from esgvoc.api.search import (
     generate_matching_condition,
     get_universe_session,
     handle_rank_limit_offset,
-    instantiate_pydantic_term,
     instantiate_pydantic_terms,
     process_expression,
 )
