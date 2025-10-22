@@ -13,8 +13,6 @@ Full documentation is available at [https://esgf.github.io/esgf-vocab/](https://
   - Perform cross-validation and search operations.
   - Supports case-sensitive, wildcard, and approximate matching.
 
-[To check: this is less of a feature and more of a design choice no?
-You can't use esgvoc without this cache, it always downloads first.]
 - **Caching**:
   - Download CVs to a local database for offline use.
   - Keep the local cache up-to-date.
@@ -32,17 +30,16 @@ ESGVOC is available on PyPI. Install it with pip:
 pip install esgvoc
 ```
 
-After installing ESGVOC,
-use this command to install the latest CVs
-(or update them if you have already installed ESGVOC).
+Following this command to install or update the latest CVs.
+
 
 ```bash
 esgvoc install
 ```
 
-### For developers
+## How to contribute
 
-* with pip
+* Pip
 
 ```bash
 pip install -e .
@@ -50,7 +47,7 @@ pip install pre-commit
 pre-commit install
 ```
 
-* with uv
+* UV
 
 ```bash
 uv sync
