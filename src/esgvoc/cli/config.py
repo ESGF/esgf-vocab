@@ -9,8 +9,14 @@ from rich.console import Console
 from rich.syntax import Syntax
 from rich.table import Table
 
-import esgvoc.core.service as service
+# Import service module but don't initialize it immediately
+import esgvoc.core.service.configuration.config_manager as config_manager_module
 from esgvoc.core.service.configuration.setting import ServiceSettings
+
+def get_service():
+    """Get the service module, importing it only when needed."""
+    import esgvoc.core.service as service
+    return service
 
 app = typer.Typer()
 console = Console()
@@ -78,6 +84,7 @@ def list():
 
     Displays all available configurations along with the active one.
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     configs = config_manager.list_configs()
     active_config = config_manager.get_active_config_name()
@@ -106,6 +113,7 @@ def show(
     Args:
         name: Name of the configuration to show. Shows the active configuration if not specified.
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     if name is None:
         name = config_manager.get_active_config_name()
@@ -136,6 +144,7 @@ def switch(name: str = typer.Argument(..., help="Name of the configuration to sw
     Args:
         name: Name of the configuration to switch to.
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     configs = config_manager.list_configs()
 
@@ -170,6 +179,7 @@ def create(
         base: Base the new configuration on an existing one. Uses the default if not specified.
         switch_to: Switch to the new configuration after creating it.
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     configs = config_manager.list_configs()
 
@@ -188,7 +198,7 @@ def create(
             config_data = base_config.dump()
         else:
             # Use default settings
-            config_data = ServiceSettings.DEFAULT_SETTINGS
+            config_data = ServiceSettings._get_default_settings()
 
         # Add the new configuration
         config_manager.add_config(name, config_data)
@@ -213,6 +223,7 @@ def remove(name: str = typer.Argument(..., help="Name of the configuration to re
     Args:
         name: Name of the configuration to remove.
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     configs = config_manager.list_configs()
 
@@ -259,6 +270,7 @@ def edit(
         name: Name of the configuration to edit. Edits the active configuration if not specified.
         editor: Editor to use. Uses the system default if not specified.
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     if name is None:
         name = config_manager.get_active_config_name()
@@ -314,17 +326,24 @@ def set(
 
     Examples:
         # Change the universe branch in the active configuration
-        esgvoc set 'universe:branch=esgvoc_dev'
+        esgvoc config set 'universe:branch=esgvoc_dev'
+
+        # Enable offline mode for universe
+        esgvoc config set 'universe:offline_mode=true'
+
+        # Enable offline mode for a specific project
+        esgvoc config set 'cmip6:offline_mode=true'
 
         # Change multiple components at once
-        esgvoc set 'universe:branch=esgvoc_dev' 'cmip6:branch=esgvoc_dev'
+        esgvoc config set 'universe:branch=esgvoc_dev' 'cmip6:branch=esgvoc_dev'
 
         # Change settings in a specific configuration
-        esgvoc set 'universe:local_path=repos/prod/universe' --config prod
+        esgvoc config set 'universe:local_path=repos/prod/universe' --config prod
 
         # Change the GitHub repository URL for a project
-        esgvoc set 'cmip6:github_repo=https://github.com/WCRP-CMIP/CMIP6_CVs_new'
+        esgvoc config set 'cmip6:github_repo=https://github.com/WCRP-CMIP/CMIP6_CVs_new'
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     if config_name is None:
         config_name = config_manager.get_active_config_name()
@@ -360,6 +379,9 @@ def set(
                         modified = True
                     elif setting_key == "db_path":
                         config.universe.db_path = setting_value
+                        modified = True
+                    elif setting_key == "offline_mode":
+                        config.universe.offline_mode = setting_value.lower() in ("true", "1", "yes", "on")
                         modified = True
                     else:
                         console.print(f"[yellow]Warning: Unknown universe setting '{setting_key}'. Skipping.[/yellow]")
@@ -410,15 +432,14 @@ def list_available_projects():
     """
     List all available default projects that can be added.
     """
-    available_projects = ServiceSettings.DEFAULT_PROJECT_CONFIGS.keys()
+    available_projects = ServiceSettings._get_default_project_configs()
 
     table = Table(title="Available Default Projects")
     table.add_column("Project Name", style="cyan")
     table.add_column("Repository", style="green")
     table.add_column("Branch", style="yellow")
 
-    for project_name in available_projects:
-        config = ServiceSettings.DEFAULT_PROJECT_CONFIGS[project_name]
+    for project_name, config in available_projects.items():
         table.add_row(project_name, config["github_repo"], config["branch"])
 
     display(table)
@@ -433,6 +454,7 @@ def list_projects(
     """
     List all projects in a configuration.
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     if config_name is None:
         config_name = config_manager.get_active_config_name()
@@ -502,6 +524,7 @@ def add_project(
         # Add a custom project
         esgvoc add-project my_project --custom --repo https://github.com/me/repo
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     if config_name is None:
         config_name = config_manager.get_active_config_name()
@@ -603,6 +626,7 @@ def remove_project(
     """
     Remove a project from a configuration.
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     if config_name is None:
         config_name = config_manager.get_active_config_name()
@@ -679,6 +703,7 @@ def update_project(
     """
     Update settings for an existing project.
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     if config_name is None:
         config_name = config_manager.get_active_config_name()
@@ -758,6 +783,7 @@ def add(
         esgvoc config add input4mip obs4mip cordex-cmip6
         esgvoc config add obs4mip --config my_config
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     if config_name is None:
         config_name = config_manager.get_active_config_name()
@@ -865,6 +891,7 @@ def rm(
         esgvoc config rm obs4mip --force
         esgvoc config rm cmip6 input4mip --keep-files  # Remove from config but keep files
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     if config_name is None:
         config_name = config_manager.get_active_config_name()
@@ -987,6 +1014,7 @@ def init(
         esgvoc config init minimal
         esgvoc config init test --no-switch  # Create but don't switch
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     configs = config_manager.list_configs()
 
@@ -996,8 +1024,9 @@ def init(
 
     try:
         # Create empty configuration with only universe settings
+        default_settings = ServiceSettings._get_default_settings()
         empty_config_data = {
-            "universe": ServiceSettings.DEFAULT_SETTINGS["universe"],
+            "universe": default_settings["universe"],
             "projects": [],  # No projects - completely empty
         }
 
@@ -1018,6 +1047,191 @@ def init(
 
 
 @app.command()
+def migrate(
+    config_name: Optional[str] = typer.Option(
+        None, "--config", "-c", help="Configuration name to migrate. Migrates all configs if not specified."
+    ),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Show what would be changed without making changes."),
+):
+    """
+    Migrate configuration(s) to convert relative paths to absolute paths.
+
+    This command is needed when upgrading to newer versions that require absolute paths.
+    By default, migrates all configurations. Use --config to migrate only a specific one.
+
+    Examples:
+        esgvoc config migrate              # Migrate all configurations
+        esgvoc config migrate --config user_config  # Migrate specific configuration
+        esgvoc config migrate --dry-run    # Show what would be changed
+    """
+    import os
+    from pathlib import Path
+
+    # Enable migration mode to allow loading configs with relative paths
+    os.environ['ESGVOC_MIGRATION_MODE'] = '1'
+
+    try:
+        # Use config manager directly to avoid service initialization issues
+        from esgvoc.core.service.configuration.config_manager import ConfigManager
+        config_manager = ConfigManager(ServiceSettings, app_name="esgvoc", app_author="ipsl", default_settings=ServiceSettings._get_default_settings())
+        configs = config_manager.list_configs()
+
+        # Determine which configs to migrate
+        if config_name:
+            if config_name not in configs:
+                console.print(f"[red]Error: Configuration '{config_name}' not found.[/red]")
+                raise typer.Exit(1)
+            configs_to_migrate = {config_name: configs[config_name]}
+        else:
+            configs_to_migrate = configs
+
+        console.print(f"[blue]Migrating {len(configs_to_migrate)} configuration(s)...[/blue]")
+
+        migrated_count = 0
+        for name, config_path in configs_to_migrate.items():
+            console.print(f"\n[cyan]Processing configuration: {name}[/cyan]")
+
+            try:
+                # Load the raw TOML data first to check for relative paths
+                with open(config_path, 'r') as f:
+                    raw_data = toml.load(f)
+
+                changes_made = []
+
+                # Check universe paths
+                if 'universe' in raw_data:
+                    universe = raw_data['universe']
+                    for path_field in ['local_path', 'db_path']:
+                        if path_field in universe and universe[path_field]:
+                            path_val = universe[path_field]
+                            if not Path(path_val).is_absolute():
+                                changes_made.append(f"universe.{path_field}: {path_val} -> <absolute>")
+
+                # Check project paths
+                if 'projects' in raw_data:
+                    for project in raw_data['projects']:
+                        project_name = project.get('project_name', 'unknown')
+                        for path_field in ['local_path', 'db_path']:
+                            if path_field in project and project[path_field]:
+                                path_val = project[path_field]
+                                if not Path(path_val).is_absolute():
+                                    changes_made.append(f"{project_name}.{path_field}: {path_val} -> <absolute>")
+
+                if changes_made:
+                    console.print(f"[yellow]Found {len(changes_made)} relative paths to migrate:[/yellow]")
+                    for change in changes_made:
+                        console.print(f"  • {change}")
+
+                    if not dry_run:
+                        # Load using ServiceSettings which will auto-convert to absolute paths
+                        migrated_config = ServiceSettings.load_from_file(config_path)
+
+                        # Save back to file (now with absolute paths)
+                        migrated_config.save_to_file(config_path)
+                        console.print(f"[green]✓ Successfully migrated configuration: {name}[/green]")
+                        migrated_count += 1
+                    else:
+                        console.print(f"[blue]  (dry-run: would migrate configuration: {name})[/blue]")
+                        migrated_count += 1
+                else:
+                    console.print(f"[dim]No relative paths found in {name} - already migrated[/dim]")
+
+            except Exception as e:
+                console.print(f"[red]Error processing {name}: {str(e)}[/red]")
+                continue
+
+        # Summary
+        action = "would be migrated" if dry_run else "migrated"
+        if migrated_count > 0:
+            console.print(f"\n[green]✓ {migrated_count} configuration(s) {action} successfully[/green]")
+            if not dry_run:
+                console.print("[blue]All relative paths have been converted to absolute paths.[/blue]")
+                console.print("[blue]You can now use the configuration system normally.[/blue]")
+        else:
+            console.print(f"\n[blue]No configurations needed migration - all paths are already absolute[/blue]")
+
+    except Exception as e:
+        console.print(f"[red]Error during migration: {str(e)}[/red]")
+        raise typer.Exit(1)
+    finally:
+        # Disable migration mode
+        if 'ESGVOC_MIGRATION_MODE' in os.environ:
+            del os.environ['ESGVOC_MIGRATION_MODE']
+
+
+@app.command()
+def offline(
+    enable: Optional[bool] = typer.Option(
+        None, "--enable/--disable", help="Enable or disable offline mode. If not specified, shows current status."
+    ),
+    component: Optional[str] = typer.Option(
+        "universe", "--component", "-c", help="Component to modify: 'universe' or project name (default: universe)"
+    ),
+    config_name: Optional[str] = typer.Option(
+        None, "--config", help="Configuration name. Uses active configuration if not specified."
+    ),
+):
+    """
+    Enable, disable, or show offline mode status.
+
+    Examples:
+        esgvoc config offline --enable               # Enable offline mode for universe
+        esgvoc config offline --disable              # Disable offline mode for universe
+        esgvoc config offline --enable -c cmip6      # Enable offline mode for cmip6 project
+        esgvoc config offline                        # Show current offline mode status
+    """
+    service = get_service()
+    config_manager = service.get_config_manager()
+
+    if config_name is None:
+        config_name = config_manager.get_active_config_name()
+
+    configs = config_manager.list_configs()
+    if config_name not in configs:
+        console.print(f"[red]Error: Configuration '{config_name}' not found.[/red]")
+        raise typer.Exit(1)
+
+    try:
+        config = config_manager.get_config(config_name)
+
+        if enable is None:
+            # Show current status
+            if component == "universe":
+                status = "enabled" if config.universe.offline_mode else "disabled"
+                console.print(f"Universe offline mode is [cyan]{status}[/cyan] in configuration '{config_name}'")
+            elif component in config.projects:
+                status = "enabled" if config.projects[component].offline_mode else "disabled"
+                console.print(f"Project '{component}' offline mode is [cyan]{status}[/cyan] in configuration '{config_name}'")
+            else:
+                console.print(f"[red]Error: Component '{component}' not found.[/red]")
+                raise typer.Exit(1)
+        else:
+            # Update offline mode
+            if component == "universe":
+                config.universe.offline_mode = enable
+                status = "enabled" if enable else "disabled"
+                console.print(f"[green]Universe offline mode {status} in configuration '{config_name}'[/green]")
+            elif component in config.projects:
+                config.projects[component].offline_mode = enable
+                status = "enabled" if enable else "disabled"
+                console.print(f"[green]Project '{component}' offline mode {status} in configuration '{config_name}'[/green]")
+            else:
+                console.print(f"[red]Error: Component '{component}' not found.[/red]")
+                raise typer.Exit(1)
+
+            # Save the configuration
+            config_manager.save_active_config(config)
+
+            # Reset the state if we modified the active configuration
+            if config_name == config_manager.get_active_config_name():
+                service.current_state = service.get_state()
+
+    except Exception as e:
+        console.print(f"[red]Error managing offline mode: {str(e)}[/red]")
+        raise typer.Exit(1)
+
+
+@app.command()
 def avail(
     config_name: Optional[str] = typer.Option(
         None, "--config", "-c", help="Configuration name. Uses active configuration if not specified."
@@ -1034,6 +1248,7 @@ def avail(
         esgvoc config avail
         esgvoc config avail --config my_config
     """
+    service = get_service()
     config_manager = service.get_config_manager()
     if config_name is None:
         config_name = config_manager.get_active_config_name()
@@ -1050,7 +1265,7 @@ def avail(
         config = ServiceSettings.load_from_file(config_path)
 
         # Get all available default projects
-        available_projects = ServiceSettings.DEFAULT_PROJECT_CONFIGS
+        available_projects = ServiceSettings._get_default_project_configs()
 
         table = Table(title=f"Available Projects (Configuration: {config_name})")
         table.add_column("Status", style="bold")

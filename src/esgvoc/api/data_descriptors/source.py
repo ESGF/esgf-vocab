@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import Field
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.activity import Activity
 
 
 class Source(PlainTermDataDescriptor):
@@ -16,11 +17,19 @@ class Source(PlainTermDataDescriptor):
     Geophysical Fluid Dynamics Laboratory (GFDL) in the United States.
     """
 
-    activity_participation: list[str] | None
+    activity_participation: list[str | Activity] | None
+    """
+    Activities this source participates in.
+
+    Can be either string IDs or resolved Activity objects.
+    """
     cohort: list[str] = Field(default_factory=list)
     organisation_id: list[str] = Field(default_factory=list)
     label: str
     label_extended: Optional[str] = None
     license: dict = Field(default_factory=dict)
-    model_component: Optional[dict] = None
+    model_component: Optional[dict] = Field(
+        default=None,
+        description="Dictionary containing the model components that make up this climate source, including their types, resolutions, and other technical specifications"
+    )
     release_year: Optional[int] = None

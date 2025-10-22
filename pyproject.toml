@@ -21,7 +21,8 @@ dependencies = [
     "toml>=0.10.2",
     "typer>=0.15.0",
     "platformdirs>=4.3.6",
-    "pytest>=8.3.5",
+    "jinja2>=3.1.6",
+    "pyyaml>=6.0.2",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
@@ -60,6 +61,8 @@ dev = [
     "pytest>=8.3.5",
     "pytest-mock>=3.14.0",
     "pytest-cov>=6.0.0",
+    "jsonschema>=4.24.0",
+    "pip>=25.2",
 ]
 
 [tool.hatch.metadata]
@@ -75,6 +78,10 @@ path = "src/esgvoc/__init__.py"
 log_cli = true
 log_cli_level = "ERROR"
 log_cli_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+markers = [
+    "integration: marks tests as integration tests",
+    "slow: marks tests as slow running",
+]
 
 [tool.mypy]
 exclude = ['^tmp.*\.py']

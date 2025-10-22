@@ -22,4 +22,4 @@ class BrandedSuffix(CompositeTermDataDescriptor):
     These components are separated by a separator to create the branded suffix.
     """
 
-    description: str
+    pass

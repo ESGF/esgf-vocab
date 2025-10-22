@@ -107,6 +107,10 @@ class DataDescriptor(ConfiguredBaseModel, ABC):
         :rtype: Any
         """
 
+    @property
+    def describe(self):
+        return self.model_fields
+
 
 class DataDescriptorSubSet(DataDescriptor):
     """
@@ -174,7 +178,7 @@ class CompositeTermPart(ConfiguredBaseModel):
     A reference to a term as part of a composite term
     """
 
-    # Still puzzled by the below...
+    # TODO: discuss
     # Why can this be a `list` or `None`?
     # If you have more than one, wouldn't you have multiple `CompositeTermPart`?
     # If you have no composites, wouldn't you just not use a `CompositeTermPart`

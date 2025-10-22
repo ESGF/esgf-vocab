@@ -27,10 +27,5 @@ class AreaLabel(PlainTermDataDescriptor):
     # although my pydantic is not good enough to know how to do
     # that without looking it up (which I'm not going to do right now).
 
-    description: str
-    """
-    Description of the meaning of this area label
-    """
-
     label: str
     # TODO: remove? `drs_name` or `id` should be used here instead?
