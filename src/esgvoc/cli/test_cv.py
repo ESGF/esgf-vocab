@@ -29,8 +29,9 @@ def list_projects():
     table.add_column("Default Branch", style="yellow")
     table.add_column("Local Path", style="blue")
 
+    default_configs = ServiceSettings._get_default_project_configs()
     for project_name in projects:
-        config = ServiceSettings.DEFAULT_PROJECT_CONFIGS[project_name]
+        config = default_configs[project_name]
         table.add_row(project_name, config["github_repo"], config["branch"], config["local_path"])
 
     console.print(table)

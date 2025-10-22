@@ -23,5 +23,3 @@ class Consortium(PlainTermDataDescriptor):
     changes: str | None
     members: list[Member] = Field(default_factory=list)
     url: str | None
-    # TODO: remove default value when all json will have their description.
-    description: str = Field(default="")

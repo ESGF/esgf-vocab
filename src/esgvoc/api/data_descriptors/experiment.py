@@ -2,15 +2,19 @@
 Model (i.e. schema/definition) of the experiment data descriptor
 """
 
-from datetime import datetime
-from typing import Annotated, Optional
+from __future__ import annotations
 
-from pydantic import BeforeValidator
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BeforeValidator, Field
+from typing_extensions import Annotated
 
 from esgvoc.api.data_descriptors.activity import Activity
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.mip_era import MipEra
 from esgvoc.api.data_descriptors.model_component import ModelComponent
+from esgvoc.api.pydantic_handler import create_union
 
 
 def ensure_iso8601_compliant_or_none(value: str | None) -> datetime | None:
@@ -35,7 +39,7 @@ def ensure_iso8601_compliant_or_none(value: str | None) -> datetime | None:
     return res
 
 
-class Experiment(PlainTermDataDescriptor):
+class ExperimentCMIP7(PlainTermDataDescriptor):
     """
     Identifier of the CMIP experiment to which a dataset belongs/a dataset is derived from
 
@@ -143,3 +147,29 @@ class Experiment(PlainTermDataDescriptor):
     1 is highest priority.
     If `None`, no priority is specified for this experiment.
     """
+
+
+class ExperimentBeforeCMIP7(PlainTermDataDescriptor):
+    """
+    An 'experiment' refers to a specific, controlled simulation conducted using climate models to \
+    investigate particular aspects of the Earth's climate system. These experiments are designed \
+    with set parameters, such as initial conditions, external forcings (like greenhouse gas \
+    concentrations or solar radiation), and duration, to explore and understand climate behavior \
+    under various scenarios and conditions.
+    """
+
+    activity: list[str] = Field(default_factory=list)
+    tier: int | None
+    experiment_id: str
+    sub_experiment_id: list[str] | None
+    experiment: str
+    required_model_components: list[str] | None
+    additional_allowed_model_components: list[str] = Field(default_factory=list)
+    start_year: str | int | None
+    end_year: str | int | None
+    min_number_yrs_per_sim: int | None
+    parent_activity_id: list[str] | None
+    parent_experiment_id: list[str] | None
+
+
+Experiment = create_union(ExperimentCMIP7, ExperimentBeforeCMIP7)

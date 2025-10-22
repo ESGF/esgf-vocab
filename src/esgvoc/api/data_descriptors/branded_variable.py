@@ -14,4 +14,4 @@ class BrandedVariable(CompositeTermDataDescriptor):
     see [this paper draft](https://docs.google.com/document/d/19jzecgymgiiEsTDzaaqeLP6pTvLT-NzCMaq-wu-QoOc/edit?pli=1&tab=t.0).
     """
 
-    description: str
+    pass

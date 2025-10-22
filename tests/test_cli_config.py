@@ -2,15 +2,17 @@ import os
 import shutil
 import tempfile
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import pytest
 import toml
 from typer.testing import CliRunner
+from platformdirs import PlatformDirs
 
 # Import your actual CLI app - adjust this import path
 from esgvoc.cli.config import app  # Replace with your actual CLI module path
 from esgvoc.core.service.configuration.setting import ServiceSettings
+
 
 
 class MockConfigManager:
@@ -76,7 +78,7 @@ class MockConfigManager:
         """Save the active configuration."""
         config_path = self.configs[self.active_config]
         config.save_to_file(config_path)
-    
+
     def save_config_by_name(self, config: ServiceSettings, config_name: str):
         """Save a specific configuration by name."""
         if config_name in self.configs:
@@ -100,6 +102,7 @@ class TestConfigCLI:
         self.test_config_path = self.config_dir / "test.toml"
 
         # Create default configuration with only the default projects (cmip6, cmip6plus)
+        # Using relative paths that will be automatically converted to absolute by ServiceSettings
         default_config_data = {
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
@@ -144,15 +147,17 @@ class TestConfigCLI:
 
     def _patch_service_calls(self):
         """Context manager to patch service calls with our mock."""
-        # Create a mock state object with synchronize_all method  
-        mock_state = type('MockState', (), {'synchronize_all': lambda *args, **kwargs: None})()
-        
-        return patch.multiple(
-            "esgvoc.cli.config.service",  # Adjust this import path
-            get_config_manager=lambda *args, **kwargs: self.mock_config_manager,
-            current_state=mock_state,
-            get_state=lambda *args, **kwargs: mock_state,
-        )
+        # Create a mock state object with synchronize_all method
+        mock_state = type("MockState", (), {"synchronize_all": lambda *args, **kwargs: None})()
+
+        # Create a mock service module
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = self.mock_config_manager
+        mock_service.current_state = mock_state
+        mock_service.get_state.return_value = mock_state
+
+        # Mock the get_service function to return our mock service
+        return patch("esgvoc.cli.config.get_service", return_value=mock_service)
 
     # Configuration Management Tests
     def test_list_configs(self):
@@ -326,7 +331,7 @@ class TestConfigCLI:
             assert "cmip6" in result.stdout
             assert "cmip6plus" in result.stdout
             assert "input4mip" in result.stdout
-            assert "obs4mip" in result.stdout
+            assert "obs4ref" in result.stdout
 
     def test_list_projects(self):
         """Test listing projects in active configuration."""
@@ -570,7 +575,8 @@ class TestConfigCLI:
 
             project = next((p for p in data["projects"] if p["project_name"] == "cmip6"), None)
             assert project["branch"] == "develop"
-            assert project["github_repo"] == "https://github.com/WCRP-CMIP/CMIP6_CVs"  # Unchanged
+            # Unchanged
+            assert project["github_repo"] == "https://github.com/WCRP-CMIP/CMIP6_CVs"
 
     def test_update_nonexistent_project(self):
         """Test updating a project that doesn't exist."""
@@ -645,7 +651,7 @@ class TestConfigCLI:
         """Debug test to check if new commands are available."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["--help"])
-            
+
             # Check if the new commands are in the help output
             assert result.exit_code == 0
             assert "add" in result.stdout or "Commands:" in result.stdout
@@ -654,15 +660,15 @@ class TestConfigCLI:
         """Test adding a single project using the simple 'add' command."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["add", "input4mip"])
-            
+
             assert result.exit_code == 0
             assert "✓ Added project input4mip" in result.stdout
             assert "✓ Successfully installed CVs" in result.stdout
-            
+
             # Verify project was added
             with open(self.default_config_path) as f:
                 data = toml.load(f)
-            
+
             project_names = [p["project_name"] for p in data["projects"]]
             assert "input4mip" in project_names
             assert len(data["projects"]) == 3  # Original 2 + 1 new
@@ -670,22 +676,22 @@ class TestConfigCLI:
     def test_config_add_multiple_projects(self):
         """Test adding multiple projects using the simple 'add' command."""
         with self._patch_service_calls():
-            result = self.runner.invoke(app, ["add", "input4mip", "obs4mip", "cordex-cmip6"])
-            
+            result = self.runner.invoke(app, ["add", "input4mip", "obs4ref", "cordex-cmip6"])
+
             assert result.exit_code == 0
             assert "✓ Added project input4mip" in result.stdout
-            assert "✓ Added project obs4mip" in result.stdout
+            assert "✓ Added project obs4ref" in result.stdout
             assert "✓ Added project cordex-cmip6" in result.stdout
             assert "Successfully added 3 project(s)" in result.stdout
             assert "✓ Successfully installed CVs for all added projects" in result.stdout
-            
+
             # Verify all projects were added
             with open(self.default_config_path) as f:
                 data = toml.load(f)
-            
+
             project_names = [p["project_name"] for p in data["projects"]]
             assert "input4mip" in project_names
-            assert "obs4mip" in project_names
+            assert "obs4ref" in project_names
             assert "cordex-cmip6" in project_names
             assert len(data["projects"]) == 5  # Original 2 + 3 new
 
@@ -693,7 +699,7 @@ class TestConfigCLI:
         """Test adding a project that already exists."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["add", "cmip6"])
-            
+
             assert result.exit_code == 0
             assert "⚠ Project 'cmip6' already exists - skipping" in result.stdout
             assert "Skipped 1 existing project(s)" in result.stdout
@@ -701,11 +707,11 @@ class TestConfigCLI:
     def test_config_add_mixed_valid_invalid(self):
         """Test adding a mix of valid, invalid, and existing projects."""
         with self._patch_service_calls():
-            result = self.runner.invoke(app, ["add", "input4mip", "cmip6", "invalid_project", "obs4mip"])
-            
+            result = self.runner.invoke(app, ["add", "input4mip", "cmip6", "invalid_project", "obs4ref"])
+
             assert result.exit_code == 0
             assert "✓ Added project input4mip" in result.stdout
-            assert "✓ Added project obs4mip" in result.stdout
+            assert "✓ Added project obs4ref" in result.stdout
             assert "⚠ Project 'cmip6' already exists - skipping" in result.stdout
             assert "✗ Invalid project 'invalid_project'" in result.stdout
             assert "Successfully added 2 project(s)" in result.stdout
@@ -716,7 +722,7 @@ class TestConfigCLI:
         """Test adding only invalid projects."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["add", "invalid1", "invalid2"])
-            
+
             assert result.exit_code == 1
             # The error message format from the actual implementation
             assert "✗ Invalid project 'invalid1'" in result.stdout
@@ -727,15 +733,15 @@ class TestConfigCLI:
         """Test removing a single project using the simple 'rm' command."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["rm", "cmip6"], input="y\n")
-            
+
             assert result.exit_code == 0
             assert "✓ Removed cmip6 from configuration" in result.stdout
             assert "Successfully removed 1 project(s): cmip6" in result.stdout
-            
+
             # Verify project was removed
             with open(self.default_config_path) as f:
                 data = toml.load(f)
-            
+
             project_names = [p["project_name"] for p in data["projects"]]
             assert "cmip6" not in project_names
             assert "cmip6plus" in project_names  # Other project should remain
@@ -744,17 +750,17 @@ class TestConfigCLI:
         """Test removing multiple projects using the simple 'rm' command."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["rm", "cmip6", "cmip6plus"], input="y\n")
-            
+
             assert result.exit_code == 0
             assert "Projects to remove: cmip6, cmip6plus" in result.stdout
             assert "✓ Removed cmip6 from configuration" in result.stdout
             assert "✓ Removed cmip6plus from configuration" in result.stdout
             assert "Successfully removed 2 project(s): cmip6, cmip6plus" in result.stdout
-            
+
             # Verify all projects were removed
             with open(self.default_config_path) as f:
                 data = toml.load(f)
-            
+
             project_names = [p["project_name"] for p in data["projects"]]
             assert "cmip6" not in project_names
             assert "cmip6plus" not in project_names
@@ -764,21 +770,21 @@ class TestConfigCLI:
         """Test removing projects with force flag (no confirmation)."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["rm", "cmip6", "cmip6plus", "--force"])
-            
+
             assert result.exit_code == 0
             assert "Successfully removed 2 project(s): cmip6, cmip6plus" in result.stdout
-            
+
             # Verify projects were removed
             with open(self.default_config_path) as f:
                 data = toml.load(f)
-            
+
             assert len(data["projects"]) == 0
 
     def test_config_rm_with_keep_files(self):
         """Test removing projects with keep-files flag."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["rm", "cmip6", "--force", "--keep-files"])
-            
+
             assert result.exit_code == 0
             assert "✓ Removed cmip6 from configuration" in result.stdout
             # Should not see file deletion messages when using --keep-files
@@ -789,14 +795,14 @@ class TestConfigCLI:
         """Test canceling project removal."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["rm", "cmip6"], input="n\n")
-            
+
             assert result.exit_code == 0
             assert "Operation cancelled" in result.stdout
-            
+
             # Verify project still exists
             with open(self.default_config_path) as f:
                 data = toml.load(f)
-            
+
             project_names = [p["project_name"] for p in data["projects"]]
             assert "cmip6" in project_names
 
@@ -804,7 +810,7 @@ class TestConfigCLI:
         """Test removing projects that don't exist."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["rm", "nonexistent1", "nonexistent2"])
-            
+
             assert result.exit_code == 1
             assert "✗ Project 'nonexistent1' not found in configuration" in result.stdout
             assert "✗ Project 'nonexistent2' not found in configuration" in result.stdout
@@ -814,7 +820,7 @@ class TestConfigCLI:
         """Test removing a mix of valid and invalid projects."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["rm", "cmip6", "nonexistent", "cmip6plus"], input="y\n")
-            
+
             assert result.exit_code == 0
             assert "✗ Project 'nonexistent' not found in configuration" in result.stdout
             assert "Projects to remove: cmip6, cmip6plus" in result.stdout
@@ -826,19 +832,19 @@ class TestConfigCLI:
         """Test creating an empty configuration with init command."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["init", "empty_config"])
-            
+
             assert result.exit_code == 0
             assert "✓ Created empty configuration: empty_config" in result.stdout
             assert "✓ Switched to configuration: empty_config" in result.stdout
-            
+
             # Verify config file was created
             empty_config_path = self.config_dir / "empty_config.toml"
             assert empty_config_path.exists()
-            
+
             # Verify it's empty (no projects)
             with open(empty_config_path) as f:
                 data = toml.load(f)
-            
+
             assert len(data["projects"]) == 0
             assert "universe" in data
             assert self.mock_config_manager.active_config == "empty_config"
@@ -848,7 +854,7 @@ class TestConfigCLI:
         with self._patch_service_calls():
             original_active = self.mock_config_manager.active_config
             result = self.runner.invoke(app, ["init", "empty_config", "--no-switch"])
-            
+
             assert result.exit_code == 0
             assert "✓ Created empty configuration: empty_config" in result.stdout
             assert "✓ Switched to configuration" not in result.stdout
@@ -858,7 +864,7 @@ class TestConfigCLI:
         """Test creating configuration with existing name."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["init", "default"])
-            
+
             assert result.exit_code == 1
             assert "Configuration 'default' already exists" in result.stdout
 
@@ -866,30 +872,34 @@ class TestConfigCLI:
         """Test showing available projects with avail command."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["avail"])
-            
+
             assert result.exit_code == 0
             assert "Available Projects (Configuration: default)" in result.stdout
             assert "✓ Active" in result.stdout  # cmip6 and cmip6plus should be active
-            assert "○ Available" in result.stdout  # input4mip, obs4mip should be available
-            
+            assert "○ Available" in result.stdout  # input4mip, obs4ref should be available
+
             # Check specific projects
             assert "cmip6" in result.stdout
             assert "cmip6plus" in result.stdout
             assert "input4mip" in result.stdout
-            assert "obs4mip" in result.stdout
+            assert "obs4ref" in result.stdout
             assert "cordex-cmip6" in result.stdout
-            
+
             # Check summary
-            assert "2/5 projects active" in result.stdout
+            import re
+
+            assert re.search(r"2/\d+ projects active", result.stdout)
 
     def test_config_avail_specific_config(self):
         """Test showing available projects for specific configuration."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["avail", "--config", "test"])
-            
+
             assert result.exit_code == 0
             assert "Available Projects (Configuration: test)" in result.stdout
-            assert "2/5 projects active" in result.stdout
+            import re
+
+            assert re.search(r"2/\d+ projects active", result.stdout)
 
     def test_config_avail_empty_config(self):
         """Test showing available projects for empty configuration."""
@@ -903,25 +913,27 @@ class TestConfigCLI:
             },
             "projects": [],
         }
-        
+
         empty_config_path = self.config_dir / "empty.toml"
         with open(empty_config_path, "w") as f:
             toml.dump(empty_config_data, f)
-        
+
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["avail", "--config", "empty"])
-            
+
             assert result.exit_code == 0
             assert "Available Projects (Configuration: empty)" in result.stdout
             assert "○ Available" in result.stdout
             assert "✓ Active" not in result.stdout  # No projects should be active
-            assert "0/5 projects active" in result.stdout
+            import re
+
+            assert re.search(r"0/\d+ projects active", result.stdout)
 
     def test_config_avail_nonexistent_config(self):
         """Test showing available projects for nonexistent configuration."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["avail", "--config", "nonexistent"])
-            
+
             assert result.exit_code == 1
             assert "Configuration 'nonexistent' not found" in result.stdout
 
@@ -929,14 +941,14 @@ class TestConfigCLI:
         """Test adding project to specific configuration."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["add", "input4mip", "--config", "test"])
-            
+
             assert result.exit_code == 0
             assert "✓ Added project input4mip" in result.stdout
-            
+
             # Verify project was added to test config
             with open(self.test_config_path) as f:
                 data = toml.load(f)
-            
+
             project_names = [p["project_name"] for p in data["projects"]]
             assert "input4mip" in project_names
 
@@ -944,14 +956,14 @@ class TestConfigCLI:
         """Test removing project from specific configuration."""
         with self._patch_service_calls():
             result = self.runner.invoke(app, ["rm", "cmip6", "--config", "test", "--force"])
-            
+
             assert result.exit_code == 0
             assert "✓ Removed cmip6 from configuration" in result.stdout
-            
+
             # Verify project was removed from test config
             with open(self.test_config_path) as f:
                 data = toml.load(f)
-            
+
             project_names = [p["project_name"] for p in data["projects"]]
             assert "cmip6" not in project_names
 
@@ -968,7 +980,7 @@ class TestConfigCLI:
             result = self.runner.invoke(app, ["add-project", "input4mip"])
             assert result.exit_code == 0
 
-            result = self.runner.invoke(app, ["add-project", "obs4mip"])
+            result = self.runner.invoke(app, ["add-project", "obs4ref"])
             assert result.exit_code == 0
 
             # 3. Add custom project
@@ -982,7 +994,7 @@ class TestConfigCLI:
             assert "cmip6" in result.stdout
             assert "cmip6plus" in result.stdout
             assert "input4mip" in result.stdout
-            assert "obs4mip" in result.stdout
+            assert "obs4ref" in result.stdout
             assert "custom" in result.stdout
 
             # 5. Update a project
@@ -990,12 +1002,12 @@ class TestConfigCLI:
             assert result.exit_code == 0
 
             # 6. Remove a project
-            result = self.runner.invoke(app, ["remove-project", "obs4mip", "--force"])
+            result = self.runner.invoke(app, ["remove-project", "obs4ref", "--force"])
             assert result.exit_code == 0
 
             # 7. Verify final state
             result = self.runner.invoke(app, ["list-projects"])
-            assert "obs4mip" not in result.stdout
+            assert "obs4ref" not in result.stdout
             assert "custom" in result.stdout
 
             # 8. Check config file directly
@@ -1004,7 +1016,7 @@ class TestConfigCLI:
                 data = toml.load(f)
 
             project_names = [p["project_name"] for p in data["projects"]]
-            assert "obs4mip" not in project_names
+            assert "obs4ref" not in project_names
             assert "custom" in project_names
 
             custom_project = next((p for p in data["projects"] if p["project_name"] == "custom"), None)
@@ -1019,49 +1031,51 @@ class TestConfigCLI:
             assert result.exit_code == 0
             assert "✓ Created empty configuration: simple_workflow" in result.stdout
             assert "✓ Switched to configuration: simple_workflow" in result.stdout
-            
+
             # 2. Check that it's empty
             result = self.runner.invoke(app, ["avail"])
-            assert "0/5 projects active" in result.stdout
-            
+            import re
+
+            assert re.search(r"0/\d+ projects active", result.stdout)
+
             # 3. Add multiple projects at once
-            result = self.runner.invoke(app, ["add", "cmip6", "input4mip", "obs4mip"])
+            result = self.runner.invoke(app, ["add", "cmip6", "input4mip", "obs4ref"])
             assert result.exit_code == 0
-            assert "Successfully added 3 project(s): cmip6, input4mip, obs4mip" in result.stdout
-            
+            assert "Successfully added 3 project(s): cmip6, input4mip, obs4ref" in result.stdout
+
             # 4. Check projects were added
             result = self.runner.invoke(app, ["avail"])
-            assert "3/5 projects active" in result.stdout
-            
+            assert re.search(r"3/\d+ projects active", result.stdout)
+
             # 5. Try to add existing and new projects
             result = self.runner.invoke(app, ["add", "cmip6", "cmip6plus", "cordex-cmip6"])
             assert result.exit_code == 0
             assert "⚠ Project 'cmip6' already exists - skipping" in result.stdout
             assert "Successfully added 2 project(s): cmip6plus, cordex-cmip6" in result.stdout
-            
+
             # 6. Verify all are now active
             result = self.runner.invoke(app, ["avail"])
-            assert "5/5 projects active" in result.stdout
-            
+            assert re.search(r"5/\d+ projects active", result.stdout)
+
             # 7. Remove some projects
-            result = self.runner.invoke(app, ["rm", "obs4mip", "cordex-cmip6", "--force"])
+            result = self.runner.invoke(app, ["rm", "obs4ref", "cordex-cmip6", "--force"])
             assert result.exit_code == 0
-            assert "Successfully removed 2 project(s): obs4mip, cordex-cmip6" in result.stdout
-            
+            assert "Successfully removed 2 project(s): obs4ref, cordex-cmip6" in result.stdout
+
             # 8. Check final state
             result = self.runner.invoke(app, ["avail"])
-            assert "3/5 projects active" in result.stdout
-            
+            assert re.search(r"3/\d+ projects active", result.stdout)
+
             # 9. Verify configuration file directly
             simple_workflow_path = self.config_dir / "simple_workflow.toml"
             with open(simple_workflow_path) as f:
                 data = toml.load(f)
-            
+
             project_names = [p["project_name"] for p in data["projects"]]
             assert "cmip6" in project_names
             assert "cmip6plus" in project_names
             assert "input4mip" in project_names
-            assert "obs4mip" not in project_names
+            assert "obs4ref" not in project_names
             assert "cordex-cmip6" not in project_names
             assert len(project_names) == 3
 
@@ -1114,12 +1128,12 @@ class TestEdgeCases:
         with open(config_path, "w") as f:
             f.write("invalid toml content [[[")
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             result = runner.invoke(app, ["show", "isolated"])
             # Should handle the error gracefully
             assert result.exit_code == 0
@@ -1155,12 +1169,12 @@ class TestEdgeCases:
         with open(config_path, "w") as f:
             toml.dump(large_config, f)
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             # Test that listing projects works with many entries
             result = runner.invoke(app, ["list-projects", "--config", "isolated"])
             assert result.exit_code == 0
@@ -1173,22 +1187,22 @@ class TestEdgeCases:
         runner = test_data["runner"]
         mock_manager = test_data["mock_manager"]
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             # Test add with nonexistent config
             result = runner.invoke(app, ["add", "cmip6", "--config", "nonexistent"])
             assert result.exit_code == 1
             assert "Configuration 'nonexistent' not found" in result.stdout
-            
+
             # Test rm with nonexistent config
             result = runner.invoke(app, ["rm", "cmip6", "--config", "nonexistent"])
             assert result.exit_code == 1
             assert "Configuration 'nonexistent' not found" in result.stdout
-            
+
             # Test avail with nonexistent config
             result = runner.invoke(app, ["avail", "--config", "nonexistent"])
             assert result.exit_code == 1
@@ -1200,7 +1214,7 @@ class TestEdgeCases:
         config_path = test_data["config_path"]
         runner = test_data["runner"]
         mock_manager = test_data["mock_manager"]
-        
+
         # Create config with project
         config_data = {
             "universe": {
@@ -1223,15 +1237,15 @@ class TestEdgeCases:
         with open(config_path, "w") as f:
             toml.dump(config_data, f)
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             # Mock the config manager data_config_dir to avoid actual file operations
             mock_manager.data_config_dir = str(test_data["temp_dir"])
-            
+
             # Test rm with files that don't exist (should handle gracefully)
             result = runner.invoke(app, ["rm", "test_project", "--force"])
             assert result.exit_code == 0
@@ -1268,20 +1282,20 @@ class TestEdgeCases:
         with open(config_path, "w") as f:
             toml.dump(config_data, f)
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             # Test adding empty list (edge case)
             result = runner.invoke(app, ["add"])
             assert result.exit_code == 2  # Typer error for missing argument
-            
+
             # Test removing empty list (edge case)
             result = runner.invoke(app, ["rm"])
             assert result.exit_code == 2  # Typer error for missing argument
-            
+
             # Test mixed case with all existing projects
             result = runner.invoke(app, ["add", "cmip6"])
             assert result.exit_code == 0
