@@ -1,4 +1,8 @@
-from esgvoc.api.data_descriptors.data_descriptor import PatternTermDataDescriptor, PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import (
+    CompositeTermDataDescriptor,
+    PatternTermDataDescriptor,
+    PlainTermDataDescriptor,
+)
 
 
 class PlainTermDDex(PlainTermDataDescriptor):
@@ -6,4 +10,8 @@ class PlainTermDDex(PlainTermDataDescriptor):
 
 
 class PatternTermDDex(PatternTermDataDescriptor):
+    pass
+
+
+class CompositeTermDDex(CompositeTermDataDescriptor):
     pass
