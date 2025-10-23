@@ -34,6 +34,7 @@ from esgvoc.api.data_descriptors.model_component_new import EMDModelComponent
 from esgvoc.api.data_descriptors.model_new import Model
 from esgvoc.api.data_descriptors.native_horizontal_grid_new import NativeHorizontalGrid
 from esgvoc.api.data_descriptors.native_vertical_grid_new import NativeVerticalGrid
+from esgvoc.api.data_descriptors.models_test.models import PatternTermDDex, PlainTermDDex
 from esgvoc.api.data_descriptors.obs_type import ObsType
 from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.physic_index import PhysicIndex
@@ -71,6 +72,8 @@ from esgvoc.api.data_descriptors.EMD import (
 )
 
 DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
+    "PlainTermDDex": PlainTermDDex,
+    "PatternTermDDex": PatternTermDDex,
     "activity": Activity,
     "consortium": Consortium,
     "date": Date,
