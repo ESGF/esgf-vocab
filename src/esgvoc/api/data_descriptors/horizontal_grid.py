@@ -123,13 +123,16 @@ class HorizontalGrid(PlainTermDataDescriptor):
         gt=0,
     )
 
-    southernmost_latitude: float = Field(
+    southernmost_latitude: float | None = Field(
         description=textwrap.dedent(
             """
             The southernmost grid cell latitude, in degrees north
 
             Cells for which no calculations are made are included.
-            The southernmost latitude may be shared by multiple cells
+            The southernmost latitude may be shared by multiple cells.
+
+            If the southernmost latitude is not known
+            (e.g. the grid is adaptive), use `None`.
             """
         ),
         ge=-90.0,
@@ -144,6 +147,9 @@ class HorizontalGrid(PlainTermDataDescriptor):
             Cells for which no calculations are made are included.
             The westernmost longitude is the smallest longitude value of the cells
             that share the latitude given by the `southernmost_latitude`.
+
+            If the westernmost latitude is not known
+            (e.g. the grid is adaptive), use `None`.
             """
         ),
         ge=0.0,
@@ -181,12 +187,12 @@ class HorizontalGrid(PlainTermDataDescriptor):
             The minimum and maximum resolution (in km) of cells of the horizontal grid
 
             Should be calculated according to the algorithm implemented by
-            [this code](https://pcmdi.github.io/nominal_resolution/html/index.html).
+            [this code](https://github.com/PCMDI/nominal_resolution/blob/master/lib/api.py).
+            You need to take the min and max of the array that is returned
+            when using the `returnMaxDistance` of the `mean_resolution` function.
             (Of course, using other implementations of the same algorithm is fine,
             if you're confident they give the same results.)
             """
-            # TODO: do not merge until we've confirmed whether min can be calculated
-            # using the PCMDI code or not.
         ),
         min_items=2,
         max_items=2,
@@ -198,7 +204,7 @@ class HorizontalGrid(PlainTermDataDescriptor):
             The mean resolution (in km) of cells of the horizontal grid
 
             Should be calculated according to the algorithm implemented by
-            [this code](https://pcmdi.github.io/nominal_resolution/html/index.html).
+            [this code](https://github.com/PCMDI/nominal_resolution/blob/master/lib/api.py).
             (Of course, using other implementations of the same algorithm is fine,
             if you're confident they give the same results.)
             """
