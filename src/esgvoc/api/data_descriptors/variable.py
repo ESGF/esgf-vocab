@@ -2,8 +2,6 @@
 Model (i.e. schema/definition) of the variable data descriptor
 """
 
-from pydantic import Field
-
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
@@ -35,10 +33,6 @@ class Variable(PlainTermDataDescriptor):
     There is mostly a one to one mapping between CF standard names and variables.
     However, this is not always possible so please don't assume this is always the case.
     """
-
-    validation_method: str = Field(default="list")
-    # TODO: discuss, what is this?
-    # Why is the default a list given the type is str?
 
     long_name: str
     """
