@@ -10,7 +10,7 @@ from pydantic import HttpUrl, field_validator
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 if TYPE_CHECKING:
-    from esgvoc.api.data_descriptors.experiment import Experiment
+    from esgvoc.api.data_descriptors.experiment import ExperimentCMIP7
 
 
 class Activity(PlainTermDataDescriptor):
@@ -36,19 +36,14 @@ class Activity(PlainTermDataDescriptor):
     of the schemas for these two classes.
     """
 
-    # TODO: double check.
-    # None not allowed, empty list should be used
-    # if there are no additional_allowed_model_components.
-    # Getting the cross-referencing right to avoid
-    # circular imports is fiddly.
-    # Using a string like this and then calling
-    # `.model_rebuild()` at some point
-    # is the only way I know to do this.
-    experiments: list["Experiment"]
+    # Not how this is meant to work, but for now just hacking
+    # experiments: list["Experiment"]
+    experiments: list["ExperimentCMIP7"]
     """
     Experiments 'sponsored' by this activity
     """
 
+    # TODO: think - should this be a list ?
     url: HttpUrl | None
     """
     URL with more information about this activity
