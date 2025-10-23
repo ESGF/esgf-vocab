@@ -1,18 +1,45 @@
+"""
+Model (i.e. schema/definition) of the experiment data descriptor
+"""
+
 from __future__ import annotations
-from typing import Union
-from typing_extensions import Annotated
-from pydantic import Field
-from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+
+from datetime import datetime
 from typing import Optional
+
+from pydantic import BeforeValidator, Field
+from typing_extensions import Annotated
+
 from esgvoc.api.data_descriptors.activity import Activity
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.mip_era import MipEra
 from esgvoc.api.data_descriptors.model_component import ModelComponent
-from esgvoc.api.data_descriptors.source_type import SourceType
 from esgvoc.api.pydantic_handler import create_union
 
 
-class ExperimentCMI7(PlainTermDataDescriptor):
+def ensure_iso8601_compliant_or_none(value: str | None) -> datetime | None:
+    """
+    Ensure that a value is ISO-8601 compliant or `None`
+
+    Parameters
+    ----------
+    value
+        Value to check
+
+    Returns
+    -------
+    :
+        Value, cast to `datetime.datetime` if `value is not None`
+    """
+    if value is None:
+        return None
+
+    res = datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+    return res
+
+
+class ExperimentCMIP7(PlainTermDataDescriptor):
     """
     Identifier of the CMIP experiment to which a dataset belongs/a dataset is derived from
 
@@ -31,7 +58,7 @@ class ExperimentCMI7(PlainTermDataDescriptor):
     of the schemas for these two classes.
     """
 
-    activity: list[Activity]
+    activity: Activity
     """
     Activity to which this experiment belongs
 
@@ -39,13 +66,9 @@ class ExperimentCMI7(PlainTermDataDescriptor):
     "activity with which this experiment is most strongly associated".
     """
 
-    # None not allowed, empty list should be used
-    # if there are no additional_allowed_model_components
-    additional_allowed_model_components: list[str | SourceType] = Field(default_factory=list)
+    additional_allowed_model_components: list[ModelComponent]
     """
     Non-compulsory model components that are allowed when running this experiment
-
-    Can be either string IDs or resolved SourceType objects.
     """
 
     branch_information: str | None
@@ -56,9 +79,7 @@ class ExperimentCMI7(PlainTermDataDescriptor):
     and therefore no branching information is required.
     """
 
-    # TODO: get Dan to help with pydantic type hint
-    # https://docs.pydantic.dev/2.2/usage/types/datetime/
-    end_timestamp: str | None
+    end_timestamp: Annotated[datetime | None, BeforeValidator(ensure_iso8601_compliant_or_none)]
     """
     End timestamp (ISO-8601) of the experiment
 
@@ -77,11 +98,6 @@ class ExperimentCMI7(PlainTermDataDescriptor):
     are intended for too before deciding on your ensemble size.
     """
 
-    # `min_length: str | None` or something
-    # so people can specify units rather than having to convert
-    # everything to years would allow slightly more flexibility
-    # and precision. However, I don't think we have a use case for this
-    # so the extra flexibility and precision probably isn't worth the headache.
     min_number_yrs_per_sim: float | None
     """
     Minimum number of years required per simulation for this experiment
@@ -94,10 +110,10 @@ class ExperimentCMI7(PlainTermDataDescriptor):
     """
     Activity to which this experiment's parent experiment belongs
 
-    If `None`, this parent experiment has no parent activity.
+    If `None`, this experiment has no parent experiment.
     """
 
-    parent_experiment: Optional[list[Experiment]]
+    parent_experiment: Optional["Experiment"]
     """
     This experiment's parent experiment
 
@@ -111,20 +127,16 @@ class ExperimentCMI7(PlainTermDataDescriptor):
     If `None`, this experiment has no parent experiment.
     """
 
-    required_model_components: list[str | SourceType]
+    required_model_components: list[ModelComponent]
     """
     Model components required to run this experiment
-
-    Can be either string IDs or resolved SourceType objects.
     """
 
-    # TODO: get Dan to help with pydantic type hint
-    # https://docs.pydantic.dev/2.2/usage/types/datetime/
-    start_timestamp: str | None
+    start_timestamp: Annotated[datetime | None, BeforeValidator(ensure_iso8601_compliant_or_none)]
     """
     Start timestamp (ISO-8601) of the experiment
 
-    A value of `None` indicates that simulations may start with any year,
+    A value of `None` indicates that simulations may start at any time,
     no particular value is required.
     """
 
@@ -160,4 +172,4 @@ class ExperimentBeforeCMIP7(PlainTermDataDescriptor):
     parent_experiment_id: list[str] | None
 
 
-Experiment = create_union(ExperimentCMI7, ExperimentBeforeCMIP7)
+Experiment = create_union(ExperimentCMIP7, ExperimentBeforeCMIP7)
