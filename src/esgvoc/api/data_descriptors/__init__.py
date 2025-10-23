@@ -4,8 +4,8 @@ from esgvoc.api.data_descriptors.area_label import AreaLabel
 from esgvoc.api.data_descriptors.branded_suffix import BrandedSuffix
 from esgvoc.api.data_descriptors.branded_variable import BrandedVariable
 from esgvoc.api.data_descriptors.calendar_new import Calendar
-from esgvoc.api.data_descriptors.component_type_new import ComponentType
 from esgvoc.api.data_descriptors.citation_url import CitationUrl
+from esgvoc.api.data_descriptors.component_type_new import ComponentType
 from esgvoc.api.data_descriptors.consortium import Consortium
 from esgvoc.api.data_descriptors.contact import Contact
 from esgvoc.api.data_descriptors.conventions import Convention
@@ -14,12 +14,22 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.data_descriptors.data_specs_version import DataSpecsVersion
 from esgvoc.api.data_descriptors.date import Date
 from esgvoc.api.data_descriptors.directory_date import DirectoryDate
+
+# Import new EMD CV models
+from esgvoc.api.data_descriptors.EMD import (
+    CellVariableType,
+    GridType,
+    HorizontalUnits,
+    MeshLocation,
+    TruncationMethod,
+    VerticalUnits,
+)
 from esgvoc.api.data_descriptors.experiment import Experiment
 from esgvoc.api.data_descriptors.forcing_index import ForcingIndex
 from esgvoc.api.data_descriptors.frequency import Frequency
+from esgvoc.api.data_descriptors.further_info_url import FurtherInfoUrl
 from esgvoc.api.data_descriptors.grid_arrangement_new import GridArrangement
 from esgvoc.api.data_descriptors.grid_coordinate_new import Coordinate
-from esgvoc.api.data_descriptors.further_info_url import FurtherInfoUrl
 from esgvoc.api.data_descriptors.grid_label import GridLabel
 from esgvoc.api.data_descriptors.grid_mapping_new import GridMapping
 from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
@@ -32,9 +42,9 @@ from esgvoc.api.data_descriptors.mip_era import MipEra
 from esgvoc.api.data_descriptors.model_component import ModelComponent
 from esgvoc.api.data_descriptors.model_component_new import EMDModelComponent
 from esgvoc.api.data_descriptors.model_new import Model
+from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
 from esgvoc.api.data_descriptors.native_horizontal_grid_new import NativeHorizontalGrid
 from esgvoc.api.data_descriptors.native_vertical_grid_new import NativeVerticalGrid
-from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
 from esgvoc.api.data_descriptors.obs_type import ObsType
 from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.physic_index import PhysicIndex
@@ -52,24 +62,18 @@ from esgvoc.api.data_descriptors.source_type import SourceType
 from esgvoc.api.data_descriptors.sub_experiment import SubExperiment
 from esgvoc.api.data_descriptors.table import Table
 from esgvoc.api.data_descriptors.temporal_label import TemporalLabel
+from esgvoc.api.data_descriptors.temporal_refinement_new import TemporalRefinement
 from esgvoc.api.data_descriptors.time_range import TimeRange
-from esgvoc.api.data_descriptors.unit_new import Unit
 from esgvoc.api.data_descriptors.title import Title
 from esgvoc.api.data_descriptors.tracking_id import TrackingId
+from esgvoc.api.data_descriptors.unit_new import Unit
 from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
-from esgvoc.api.data_descriptors.temporal_refinement_new import TemporalRefinement
 
-# Import new EMD CV models
-from esgvoc.api.data_descriptors.EMD import (
-    GridType,
-    CellVariableType,
-    MeshLocation,
-    HorizontalUnits,
-    TruncationMethod,
-    VerticalUnits,
-)
+# Model rebuilding to handle cross-links
+# Needs Experiment links made
+Activity.model_rebuild()
 
 DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "PlainTermDDex": PlainTermDDex,
