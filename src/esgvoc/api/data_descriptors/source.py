@@ -2,17 +2,11 @@
 Model (i.e. schema/definition) of the source descriptor
 """
 
-from typing import Optional
-
-from pydantic import Field
-
-from esgvoc.api.data_descriptors.activity import Activity
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.model_component_new import EMDModelComponent
 from esgvoc.api.data_descriptors.organisation import Organisation
 
 
-# TODO: strip down to minimal set as advised by Matt
-# see https://github.com/ESGF/esgf-vocab/pull/51#issuecomment-3432513075
 class Source(PlainTermDataDescriptor):
     """
     Source of the dataset
@@ -35,48 +29,45 @@ class Source(PlainTermDataDescriptor):
     (which really muddies the meaning of the term).
     """
 
-    activity_participation: list[Activity]
+    label: str
     """
-    Activities in which this source has participated
-    """
-    # TODO: discuss moving this out of the CVs.
-    # This list changes over time, which is incompatible with the idea of a static CV.
-    # TODO: delete ? If people want this, they should get it from the EMD
+    Label to use for this source
 
-    cohort: list[str] = Field(default_factory=list)
+    Unlike the `drs_name`, this can contain any characters
     """
-    TODO: discuss what this is
-    """
-    # TODO: discuss moving this out of the CVs.
-    # Given that one of the values I have seen used for this is 'published',
-    # this list changes over time, which is incompatible with the idea of a static CV.
 
-    organisation: Organisation
+    label_extended: str
     """
-    Organisation responsible for this source
+    Extended label to use for this source
 
-    Reponsible is vaguely defined, but in practice it is the group
+    Unlike the `drs_name`, this can contain any characters.
+    If desired, it can include lots of verbose information
+    (unlike `label`, which should be more terse).
+    It can also just be the same as `label`
+    if the person registering the source wishes.
+    """
+
+    organisation: list[Organisation]
+    """
+    Organisations responsible for this source
+
+    Reponsible is vaguely defined, but in practice it is the group(s)
     that submits data using this source.
     """
 
-    label: str
-    # TODO: delete, get from Organisation instead
-
-    label_extended: Optional[str] = None
-    # TODO: delete, get from Organisation instead
-
-    license: dict = Field(default_factory=dict)
-    # TODO: delete, separate CV
-
-    model_component: Optional[dict] = None
-    # TODO: delete. If people want this, they should get it from the EMD
-
-    release_year: int | None
+    model_component: list[EMDModelComponent]
     """
-    Year that this source was released
+    Model components
 
-    Only really applies to models.
-    If `None`, the release year is either unknown
-    or this concept does not apply (e.g. because the source is not a model).
+    If this source is not a model, this can/will just be an empty list.
     """
-    # TODO: delete. If people want this, they should get it from the EMD
+
+    @property
+    def source(self) -> str:
+        """
+        Source label as used by CMOR
+        """
+        raise NotImplementedError
+        # Something like:
+        # label (release year from EMD if known):
+        # (for each model component)\n component: component name (description)
