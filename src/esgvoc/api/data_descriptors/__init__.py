@@ -24,7 +24,7 @@ from esgvoc.api.data_descriptors.EMD import (
     TruncationMethod,
     VerticalUnits,
 )
-from esgvoc.api.data_descriptors.experiment import Experiment
+from esgvoc.api.data_descriptors.experiment import Experiment, ExperimentCMIP7  # noqa: F401
 from esgvoc.api.data_descriptors.forcing_index import ForcingIndex
 from esgvoc.api.data_descriptors.frequency import Frequency
 from esgvoc.api.data_descriptors.further_info_url import FurtherInfoUrl
