@@ -13,5 +13,5 @@ class ExternalVariables(PatternTermDataDescriptor):
 
     Governed by CF-conventions
     (https://cfconventions.org/cf-conventions/cf-conventions.html#external-variables).
-    This is only required if `cell_measures` are specified.
+   `cell_measures` must also be provided when `external_variables` is specified.
     """
