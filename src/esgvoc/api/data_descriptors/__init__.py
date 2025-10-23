@@ -58,6 +58,17 @@ from esgvoc.api.data_descriptors.tracking_id import TrackingId
 from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
+from esgvoc.api.data_descriptors.temporal_refinement_new import TemporalRefinement
+
+# Import new EMD CV models
+from esgvoc.api.data_descriptors.EMD import (
+    GridType,
+    CellVariableType,
+    MeshLocation,
+    HorizontalUnits,
+    TruncationMethod,
+    VerticalUnits,
+)
 
 DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "activity": Activity,
@@ -96,9 +107,13 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "publication_status": PublicationStatus,
     "known_branded_variable": KnownBrandedVariable,
     "calendar_new": Calendar,
+    "calendar": Calendar,
     "component_type_new": ComponentType,
+    "component_type": ComponentType,
     "grid_arrangement_new": GridArrangement,
+    "grid_arrangement": GridArrangement,
     "grid_coordinate_new": Coordinate,
+    "coordinate": Coordinate,
     "grid_mapping_new": GridMapping,
     "model_component_new": EMDModelComponent,
     "model_new": Model,
@@ -109,6 +124,13 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "reference_new": Reference,
     "resolution_new": EMDResolution,
     "unit_new": Unit,
+    "temporal_refinement": TemporalRefinement,
+    "grid_type": GridType,
+    "cell_variable_type": CellVariableType,
+    "mesh_location": MeshLocation,
+    "horizontal_units": HorizontalUnits,
+    "truncation_method": TruncationMethod,
+    "vertical_units": VerticalUnits,
     "data_specs_version": DataSpecsVersion,
     "further_info_url": FurtherInfoUrl,
     "tracking_id": TrackingId,
