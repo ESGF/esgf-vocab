@@ -9,7 +9,7 @@ class Region(PlainTermDataDescriptor):
     """
     Region associated with the dataset
 
-    Examples: "GLB", "GRL", "ATA"
+    Examples: "global", "great_lakes", "indian_ocean"
 
     In other words, the domain over which the dataset is provided.
     This is intended as a rough categorisation only
