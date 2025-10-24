@@ -58,7 +58,11 @@ class ExperimentCMIP7(PlainTermDataDescriptor):
     of the schemas for these two classes.
     """
 
-    activity: Activity
+    # # Can't be Activity to avoid circularity (?).
+    # # Or it can be, but you have to be very careful
+    # # (SQLModel makes this easier).
+    # activity: Activity
+    activity: str
     """
     Activity to which this experiment belongs
 
