@@ -1,11 +1,11 @@
-from typing import Dict, List, Set
 import logging
+from typing import Dict, List, Set
 
 from esgvoc.core.data_handler import JsonLdResource
 from esgvoc.core.service.resolver_config import ResolverConfig
-from esgvoc.core.service.uri_resolver import URIResolver
 from esgvoc.core.service.string_heuristics import StringHeuristics
 from esgvoc.core.service.term_cache import TermCache
+from esgvoc.core.service.uri_resolver import URIResolver
 
 logger = logging.getLogger(__name__)
 
@@ -129,7 +129,7 @@ class DataMerger:
         Returns:
             "full" (default), "shallow", or "reference"
         """
-        if not hasattr(self.data, 'context'):
+        if not hasattr(self.data, "context"):
             return "full"
 
         context = self.data.context
@@ -199,7 +199,13 @@ class DataMerger:
         return result_list
 
     def resolve_nested_ids(
-        self, data, expanded_data=None, visited: Set[str] = None, _is_root_call: bool = True, resolve_mode: str = "full", _current_property: str | None = None
+        self,
+        data,
+        expanded_data=None,
+        visited: Set[str] = None,
+        _is_root_call: bool = True,
+        resolve_mode: str = "full",
+        _current_property: str | None = None,
     ) -> dict | list:
         """
         Recursively resolve all @id references in nested structures.
@@ -230,12 +236,10 @@ class DataMerger:
             if isinstance(expanded_data, list) and len(expanded_data) > 0:
                 expanded_data = expanded_data[0]
 
-
         # Handle the case where expanded_data is a list with a single dict
         # ONLY on the root call - not for nested list processing!
         if _is_root_call and isinstance(expanded_data, list) and len(expanded_data) == 1:
             expanded_data = expanded_data[0]
-
 
         if isinstance(data, dict):
             # Check if this dict is a simple @id reference (like {"@id": "hadgem3_gc31_atmos_100km"})
@@ -302,16 +306,18 @@ class DataMerger:
                         for exp_key in expanded_data.keys():
                             # Check for exact match or if the URI contains the key
                             # URIs may have trailing slashes: https://.../activity/
-                            if (exp_key == key or
-                                exp_key.endswith("/" + key) or
-                                exp_key.endswith("/" + key + "/") or
-                                exp_key.endswith("#" + key)):
+                            if (
+                                exp_key == key
+                                or exp_key.endswith("/" + key)
+                                or exp_key.endswith("/" + key + "/")
+                                or exp_key.endswith("#" + key)
+                            ):
                                 expanded_key = exp_key
                                 break
 
                         # If not found, check the context to see if this key has a different @id
                         # (e.g., required_model_components has @id of source_type/)
-                        if expanded_key == key and hasattr(self.data, 'context'):
+                        if expanded_key == key and hasattr(self.data, "context"):
                             context = self.data.context
                             if isinstance(context, dict) and "@context" in context:
                                 context = context["@context"]
@@ -323,17 +329,24 @@ class DataMerger:
                                     # Try with and without trailing slash
                                     if id_value in expanded_data:
                                         expanded_key = id_value
-                                    elif id_value.rstrip('/') + '/' in expanded_data:
-                                        expanded_key = id_value.rstrip('/') + '/'
-                                    elif id_value.rstrip('/') in expanded_data:
-                                        expanded_key = id_value.rstrip('/')
+                                    elif id_value.rstrip("/") + "/" in expanded_data:
+                                        expanded_key = id_value.rstrip("/") + "/"
+                                    elif id_value.rstrip("/") in expanded_data:
+                                        expanded_key = id_value.rstrip("/")
 
                 expanded_value = expanded_data.get(expanded_key) if isinstance(expanded_data, dict) else None
 
                 # Check if this field has a @resolve mode in the context
                 field_resolve_mode = self._get_resolve_mode(key)
 
-                resolved = self.resolve_nested_ids(value, expanded_value, visited, _is_root_call=False, resolve_mode=field_resolve_mode, _current_property=key)
+                resolved = self.resolve_nested_ids(
+                    value,
+                    expanded_value,
+                    visited,
+                    _is_root_call=False,
+                    resolve_mode=field_resolve_mode,
+                    _current_property=key,
+                )
                 result[key] = resolved
             return result
 
@@ -343,19 +356,41 @@ class DataMerger:
             for i, item in enumerate(data):
                 expanded_item = expanded_data[i] if i < len(expanded_data) else None
                 # Pass visited set and resolve_mode to prevent circular references across list items
-                resolved_item = self.resolve_nested_ids(item, expanded_item, visited, _is_root_call=False, resolve_mode=resolve_mode, _current_property=_current_property)
+                resolved_item = self.resolve_nested_ids(
+                    item,
+                    expanded_item,
+                    visited,
+                    _is_root_call=False,
+                    resolve_mode=resolve_mode,
+                    _current_property=_current_property,
+                )
                 result.append(resolved_item)
             return result
 
         elif isinstance(data, list):
             # List but no corresponding expanded list, process without expanded data
             # Each list item gets its own visited set
-            return [self.resolve_nested_ids(item, None, set(), _is_root_call=False, resolve_mode=resolve_mode, _current_property=_current_property) for item in data]
+            return [
+                self.resolve_nested_ids(
+                    item,
+                    None,
+                    set(),
+                    _is_root_call=False,
+                    resolve_mode=resolve_mode,
+                    _current_property=_current_property,
+                )
+                for item in data
+            ]
 
         else:
             # Primitive values - but check if they're ID references
             # If the compact form is a string but expanded form is {"@id": "..."},
             # it's an ID reference that needs resolving
+
+            # JSON-LD expansion often wraps values in arrays, unwrap single-element arrays
+            if isinstance(expanded_data, list) and len(expanded_data) == 1:
+                expanded_data = expanded_data[0]
+
             if isinstance(data, str) and isinstance(expanded_data, dict):
                 # Skip if it's a @value (literal string, not a reference)
                 if self.string_heuristics.should_skip_literal(expanded_data):
@@ -464,7 +499,17 @@ class DataMerger:
                         return resolved
                     else:  # "full"
                         # "full" mode: recursively resolve any nested references in the resolved data
-                        return self.resolve_nested_ids(resolved, temp_expanded, new_visited, _is_root_call=False, resolve_mode="full")
+                        # Create a new DataMerger with the nested object's context to properly
+                        # apply its resolve modes
+                        nested_merger = DataMerger(
+                            data=temp_resource,
+                            allowed_base_uris=self.allowed_base_uris,
+                            locally_available=self.locally_available,
+                            config=self.config,
+                        )
+                        return nested_merger.resolve_nested_ids(
+                            resolved, temp_expanded, new_visited, _is_root_call=False, resolve_mode="full"
+                        )
 
                 except Exception as e:
                     property_msg = f"  Property: '{_current_property}'\n" if _current_property else ""
@@ -566,8 +611,8 @@ class DataMerger:
         Raises:
             FileNotFoundError: If the term cannot be found locally or remotely
         """
-        import os
         import json
+        import os
         from pathlib import Path
 
         # Check cache first

@@ -5,7 +5,7 @@ Model (i.e. schema/definition) of the experiment data descriptor
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Union
 
 from pydantic import BeforeValidator, Field
 from typing_extensions import Annotated
@@ -70,7 +70,10 @@ class ExperimentCMIP7(PlainTermDataDescriptor):
     "activity with which this experiment is most strongly associated".
     """
 
-    additional_allowed_model_components: list[ModelComponent]
+    # Note: Allowing str or ModelComponent is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    additional_allowed_model_components: list[str | ModelComponent]
     """
     Non-compulsory model components that are allowed when running this experiment
     """
@@ -110,28 +113,40 @@ class ExperimentCMIP7(PlainTermDataDescriptor):
     You can submit as short a simulation as you like.
     """
 
-    parent_activity: Activity | None
+    # Note: Allowing str or Activity is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    parent_activity: Activity | str | None
     """
     Activity to which this experiment's parent experiment belongs
 
     If `None`, this experiment has no parent experiment.
     """
 
-    parent_experiment: Optional["Experiment"]
+    # Note: Allowing str or Experiment is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    parent_experiment: Union[str, "Experiment", None]
     """
     This experiment's parent experiment
 
     If `None`, this experiment has no parent experiment.
     """
 
-    parent_mip_era: MipEra | None
+    # Note: Allowing str or MipEra is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    parent_mip_era: MipEra | str | None
     """
     The MIP era to which this experiment's parent experiment belongs
 
     If `None`, this experiment has no parent experiment.
     """
 
-    required_model_components: list[ModelComponent]
+    # Note: Allowing str or ModelComponent is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    required_model_components: list[ModelComponent | str]
     """
     Model components required to run this experiment
     """

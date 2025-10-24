@@ -8,15 +8,19 @@ from rich.console import Console
 from rich.json import JSON
 from rich.table import Table
 
-from esgvoc.api.projects import (get_all_collections_in_project,
-                                 get_all_projects, get_all_terms_in_collection,
-                                 get_term_in_collection, get_term_in_project)
-from esgvoc.api.universe import (find_terms_in_data_descriptor,
-                                 find_terms_in_universe,
-                                 get_all_data_descriptors_in_universe,
-                                 get_all_terms_in_data_descriptor,
-                                 get_term_in_data_descriptor,
-                                 get_term_in_universe)
+from esgvoc.api.projects import (
+    get_all_collections_in_project,
+    get_all_projects,
+    get_all_terms_in_collection,
+    get_term_in_collection,
+    get_term_in_project,
+)
+from esgvoc.api.universe import (
+    get_all_data_descriptors_in_universe,
+    get_all_terms_in_data_descriptor,
+    get_term_in_data_descriptor,
+    get_term_in_universe,
+)
 
 app = typer.Typer()
 console = Console()
@@ -82,8 +86,8 @@ def handle_unknown(x: str | None, y: str | None, z: str | None):
 
 def display(data: Any):
     if isinstance(data, BaseModel):
-        # Pydantic Model
-        console.print(JSON.from_data(data.model_dump()))
+        # Pydantic Model - use mode='json' to serialize datetime and other types
+        console.print(JSON.from_data(data.model_dump(mode="json")))
     elif isinstance(data, dict):
         # Dictionary as JSON
         console.print(data.keys())

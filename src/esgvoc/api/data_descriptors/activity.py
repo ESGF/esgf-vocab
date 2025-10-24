@@ -3,7 +3,7 @@ Model (i.e. schema/definition) of the activity data descriptor
 """
 
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 from pydantic import HttpUrl, field_validator
 
@@ -36,7 +36,10 @@ class Activity(PlainTermDataDescriptor):
     of the schemas for these two classes.
     """
 
-    experiments: list["Experiment"]
+    # Note: Allowing str or Experiment is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    experiments: list[Union[str, "Experiment"]]
     """
     Experiments 'sponsored' by this activity
     """
