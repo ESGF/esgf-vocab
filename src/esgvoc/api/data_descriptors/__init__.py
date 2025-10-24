@@ -14,6 +14,7 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.data_descriptors.data_specs_version import DataSpecsVersion
 from esgvoc.api.data_descriptors.date import Date
 from esgvoc.api.data_descriptors.directory_date import DirectoryDate
+from esgvoc.api.data_descriptors.drs_specs import DRSSpecs
 
 # Import new EMD CV models
 from esgvoc.api.data_descriptors.EMD import (
@@ -152,4 +153,5 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "regex": Regex,
     "citation_url": CitationUrl,
     "archive": Archive,
+    "drs_specs": DRSSpecs,
 }
