@@ -8,6 +8,8 @@ from esgvoc.api.data_descriptors.citation_url import CitationUrl
 from esgvoc.api.data_descriptors.component_type_new import ComponentType
 from esgvoc.api.data_descriptors.consortium import Consortium
 from esgvoc.api.data_descriptors.contact import Contact
+from esgvoc.api.data_descriptors.contributor import Contributor
+from esgvoc.api.data_descriptors.contributor_member import ContributorMember
 from esgvoc.api.data_descriptors.conventions import Convention
 from esgvoc.api.data_descriptors.creation_date import CreationDate
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
@@ -154,4 +156,6 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "citation_url": CitationUrl,
     "archive": Archive,
     "drs_specs": DRSSpecs,
+    "contributor": Contributor,
+    "contributor_member": ContributorMember,
 }
