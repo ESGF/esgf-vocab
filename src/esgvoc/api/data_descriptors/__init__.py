@@ -33,7 +33,7 @@ from esgvoc.api.data_descriptors.grid_coordinate_new import Coordinate
 from esgvoc.api.data_descriptors.grid_label import GridLabel
 from esgvoc.api.data_descriptors.grid_mapping_new import GridMapping
 from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
-from esgvoc.api.data_descriptors.initialisation_index import InitialisationIndex
+from esgvoc.api.data_descriptors.initialization_index import InitializationIndex
 from esgvoc.api.data_descriptors.institution import Institution
 from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable
 from esgvoc.api.data_descriptors.license import License
@@ -47,10 +47,10 @@ from esgvoc.api.data_descriptors.native_horizontal_grid_new import NativeHorizon
 from esgvoc.api.data_descriptors.native_vertical_grid_new import NativeVerticalGrid
 from esgvoc.api.data_descriptors.obs_type import ObsType
 from esgvoc.api.data_descriptors.organisation import Organisation
-from esgvoc.api.data_descriptors.physic_index import PhysicIndex
+from esgvoc.api.data_descriptors.physics_index import PhysicsIndex
 from esgvoc.api.data_descriptors.product import Product
 from esgvoc.api.data_descriptors.publication_status import PublicationStatus
-from esgvoc.api.data_descriptors.realisation_index import RealisationIndex
+from esgvoc.api.data_descriptors.realization_index import RealizationIndex
 from esgvoc.api.data_descriptors.realm import Realm
 from esgvoc.api.data_descriptors.reference_new import Reference
 from esgvoc.api.data_descriptors.regex import Regex
@@ -88,15 +88,15 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "frequency": Frequency,
     "grid": GridLabel,  # Universe
     "grid_label": GridLabel,  # cmip6, cmip6plus
-    "initialisation_index": InitialisationIndex,
+    "initialization_index": InitializationIndex,
     "institution": Institution,
     "license": License,
     "mip_era": MipEra,
     "model_component": ModelComponent,
     "organisation": Organisation,
-    "physic_index": PhysicIndex,
+    "physics_index": PhysicsIndex,
     "product": Product,
-    "realisation_index": RealisationIndex,
+    "realization_index": RealizationIndex,
     "realm": Realm,
     "resolution": Resolution,
     "source": Source,
