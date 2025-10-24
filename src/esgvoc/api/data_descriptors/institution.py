@@ -1,3 +1,10 @@
+"""
+Model (i.e. schema/definition) of the institution data descriptor
+
+Note: this is kept for legacy reasons,
+but is redundant given we have :py:class:`Contributor` and :py:class:`ContributorMember`.
+"""
+
 from pydantic import Field
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
