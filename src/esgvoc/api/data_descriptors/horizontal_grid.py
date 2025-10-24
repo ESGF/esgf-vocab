@@ -1,84 +1,253 @@
-from typing import Optional, List, Any
+"""
+Model (i.e. schema/definition) of the horizontal grid data descriptor
+"""
+
+import re
+import textwrap
+
 from pydantic import Field, validator
-from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorVisitor
+
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.horizontal_grid_arrangement import HorizontalGridArrangement
+from esgvoc.api.data_descriptors.horizontal_grid_cell_variable_type import HorizontalGridCellVariableType
+from esgvoc.api.data_descriptors.horizontal_grid_mapping import HorizontalGridMapping
+from esgvoc.api.data_descriptors.horizontal_grid_temporal_refinement import HorizontalGridTemporalRefinement
+from esgvoc.api.data_descriptors.horizontal_grid_truncation_method import HorizontalGridTruncationMethod
+from esgvoc.api.data_descriptors.horizontal_grid_type import HorizontalGridType
+from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
+from esgvoc.api.data_descriptors.region import Region
 
 
-class HorizontalGrid(DataDescriptor):
+class HorizontalGrid(PlainTermDataDescriptor):
     """
-    Standalone horizontal grid CV term that can be referenced by model components.
-    This represents a reusable grid definition that can be shared across multiple models.
+    Horizontal grid
+
+    Examples: "g1", "g2", "g33"
+
+    The value has no intrinsic meaning within the CVs.
+    However, the other attributes of this model
+    provide information about the grid
+    and in other external sources (to be confirmed which)
+    further resources can be found e.g. cell areas.
+
+    Horizontal grids with the same id (also referred to as 'grid label')
+    are identical (details on how we check identical are to come, for discussion,
+    see https://github.com/WCRP-CMIP/CMIP7-CVs/issues/202)
+    and can be used by more than one model or model component.
+    Horizontal grids with different labels are different.
     """
 
-    grid: str = Field(
-        description="The horizontal grid type, i.e. the method of distributing grid points over the sphere. If there is no horizontal grid, then the value 'none' must be selected."
-    )
-    grid_mapping: Optional[str] = Field(
-        default=None, description="The name of the coordinate reference system of the horizontal coordinates."
-    )
-    region: Optional[str] = Field(default=None, description="The geographical region over which the grid is defined.")
-    temporal_refinement: Optional[str] = Field(
-        default=None,
-        description="The grid temporal refinement, indicating how the distribution of grid cells varies with time.",
-    )
-    arrangement: Optional[str] = Field(
-        default=None,
-        description="A characterisation of the relative positions on a grid of mass-, velocity- or flux-related fields.",
-    )
-    resolution_x: Optional[float] = Field(
-        default=None,
-        description="The size of grid cells in the X direction.",
+    grid: HorizontalGridType
+    """
+    Horizontal grid type
+    """
+
+    grid_mapping: HorizontalGridMapping
+    """
+    Horizontal grid mapping
+    """
+
+    region: Region
+    """
+    Region
+    """
+    # Note: do not merge until the conversation about the naming convention
+    # here is resolved:
+    # https://github.com/ESGF/esgf-vocab/pull/156/files#r2453875274
+    # Depending on which way this goes, we might need to introduce RegionEMD,
+    # which will differ from Region (as used in the DR).
+
+    temporal_refinement: HorizontalGridTemporalRefinement
+    """
+    Temporal refinement
+    """
+
+    arrangement: HorizontalGridArrangement
+    """
+    Grid arrangement
+    """
+
+    cell_variable_type: list[HorizontalGridCellVariableType]
+    """
+    Cell variable type
+
+    The grid arrangement may define different cells
+    for different types of physical variables, but only those cells
+    that carry all of the specified physical variable types are described here.
+    """
+
+    resolution_x: float | None = Field(
+        description=textwrap.dedent(
+            """
+            The size of grid cells in the 'X' direction
+
+            The X direction for a grid defined by spherical polar coordinates is longitude.
+
+            The value’s physical units are given by the `horizontal_units` property.
+
+            Report only when cell sizes are identical or else reasonably uniform (in their given units).
+            When cells sizes are not identical, a representative value should be provided
+            and this fact noted in the description property of the `Grid`.
+            If the cell sizes vary by more than 25%, set this to `None`.
+            """
+        ),
         gt=0,
     )
-    resolution_y: Optional[float] = Field(
-        default=None,
-        description="The size of grid cells in the Y direction.",
+
+    resolution_y: float | None = Field(
+        description=textwrap.dedent(
+            """
+            The size of grid cells in the 'Y' direction
+
+            The Y direction for a grid defined by spherical polar coordinates is longitude.
+
+            The value’s physical units are given by the `horizontal_units` property.
+
+            Report only when cell sizes are identical or else reasonably uniform (in their given units).
+            When cells sizes are not identical, a representative value should be provided
+            and this fact noted in the description property of the `Grid`.
+            If the cell sizes vary by more than 25%, set this to `None`.
+            """
+        ),
         gt=0,
     )
-    horizontal_units: Optional[str] = Field(
-        default=None,
-        description="The physical units of the resolution_x and resolution_y property values.",
+
+    horizontal_units: str | None = Field(
+        description=textwrap.dedent(
+            """
+            The physical units of the `resolution_x` and `resolution_y` property values
+
+            If `resolution_x` and `resolution_y` are `None`, set this to `None`.
+            """
+        ),
+        gt=0,
     )
-    n_cells: Optional[int] = Field(default=None, description="The total number of cells in the horizontal grid.", ge=1)
-    n_sides: Optional[int] = Field(
-        default=None, description="For unstructured horizontal grids only, the total number of unique cell sides.", ge=1
+
+    southernmost_latitude: float | None = Field(
+        description=textwrap.dedent(
+            """
+            The southernmost grid cell latitude, in degrees north
+
+            Cells for which no calculations are made are included.
+            The southernmost latitude may be shared by multiple cells.
+
+            If the southernmost latitude is not known
+            (e.g. the grid is adaptive), use `None`.
+            """
+        ),
+        ge=-90.0,
+        le=90.0,
     )
-    n_vertices: Optional[int] = Field(
-        default=None, description="For unstructured horizontal grids only, the number of unique cell vertices.", ge=1
+
+    westernmost_latitude: float = Field(
+        description=textwrap.dedent(
+            """
+            The westernmost grid cell latitude, in degrees east, of the southernmost grid cell(s)
+
+            Cells for which no calculations are made are included.
+            The westernmost longitude is the smallest longitude value of the cells
+            that share the latitude given by the `southernmost_latitude`.
+
+            If the westernmost latitude is not known
+            (e.g. the grid is adaptive), use `None`.
+            """
+        ),
+        ge=0.0,
+        le=360.0,
     )
-    truncation_method: Optional[str] = Field(
-        default=None,
-        description="The method for truncating the spherical harmonic representation of a spectral model.",
+
+    n_cells: int | None = Field(
+        description=textwrap.dedent(
+            """
+            The total number of cells in the horizontal grid.
+
+            If the total number of grid cells is not constant, set to `None`.
+            """
+        ),
+        ge=1,
     )
-    truncation_number: Optional[int] = Field(
-        default=None, description="The zonal (east-west) wave number at which a spectral model is truncated.", ge=1
-    )
-    resolution_range_km: Optional[List[float]] = Field(
-        default=None,
-        description="The minimum and maximum resolution (in km) of cells of the horizontal grid.",
+
+    truncation_method: HorizontalGridTruncationMethod | None
+    """
+    The method for truncating the spherical harmonic representation of a spectral model when reporting on this grid
+
+    If the grid is not used for reporting spherical harmonic representations, set to `None`.
+    """
+
+    truncation_number: int | None
+    """
+    The zonal (east-west) wave number at which a spectral model is truncated when reporting on this grid
+
+    If the grid is not used for reporting spectral models, set to `None`.
+    """
+
+    resolution_range_km: list[float] = Field(
+        description=textwrap.dedent(
+            """
+            The minimum and maximum resolution (in km) of cells of the horizontal grid
+
+            Should be calculated according to the algorithm implemented by
+            [this code](https://github.com/PCMDI/nominal_resolution/blob/master/lib/api.py).
+            You need to take the min and max of the array that is returned
+            when using the `returnMaxDistance` of the `mean_resolution` function.
+            (Of course, using other implementations of the same algorithm is fine,
+            if you're confident they give the same results.)
+            """
+        ),
         min_items=2,
         max_items=2,
     )
-    mean_resolution_km: Optional[float] = Field(
-        default=None, description="The mean resolution (in km) of cells of the horizontal grid.", gt=0
-    )
-    nominal_resolution: Optional[str] = Field(
-        default=None,
-        description="The nominal resolution characterises the approximate resolution of a horizontal grid.",
+
+    mean_resolution_km: float = Field(
+        description=textwrap.dedent(
+            """
+            The mean resolution (in km) of cells of the horizontal grid
+
+            Should be calculated according to the algorithm implemented by
+            [this code](https://github.com/PCMDI/nominal_resolution/blob/master/lib/api.py).
+            (Of course, using other implementations of the same algorithm is fine,
+            if you're confident they give the same results.)
+            """
+        ),
+        gt=0.0,
     )
 
-    @validator("grid")
-    def validate_grid(cls, v):
-        """Validate that grid is not empty."""
-        if not v.strip():
-            raise ValueError("grid cannot be empty")
-        return v.strip()
+    nominal_resolution: NominalResolution
+    """
+    Nominal resolution of the grid
+    """
+
+    @validator("drs_name")
+    def validate_drs_name(cls, v):
+        r"""Validate that the drs_name is `g\d*`"""
+        if not re.match(r"^g\d*$", v):
+            msg = rf"`drs_name` for {cls} must be of the form `g\d*` i.e. g followed by an integer. Received: {v}"
+            raise ValueError(msg)
+
+        return v
 
     @validator("horizontal_units")
-    def validate_units_requirement(cls, v, values):
-        """Validate that horizontal_units is provided when resolution values are set."""
-        has_resolution = any(values.get(field) is not None for field in ["resolution_x", "resolution_y"])
-        if has_resolution and not v:
-            raise ValueError("horizontal_units is required when resolution_x or resolution_y are set")
+    def validate_horizontal_units(cls, v, values):
+        """
+        Validate horizontal_units
+        """
+        resolution_fields = {"resolution_x", "resolution_y"}
+        has_resolution = any(values.get(field) is not None for field in resolution_fields)
+        if has_resolution:
+            if not v:
+                raise ValueError("horizontal_units is required when resolution_x or resolution_y are set")
+
+            allowed_values = {"km", "degree"}
+            if v not in allowed_values:
+                msg = f"horizontal_units must be one of {allowed_values}. Received: {v}"
+                raise ValueError(msg)
+        elif v:
+            msg = (
+                f"If all of {resolution_fields} are `None`, then `horizontal_units` must also be `None`. "
+                f"Received: {v}"
+            )
+            raise ValueError(msg)
+
         return v
 
     @validator("resolution_range_km")
@@ -94,18 +263,17 @@ class HorizontalGrid(DataDescriptor):
         return v
 
     @validator("mean_resolution_km")
+    # TODO: double check that this is correct.
+    # The function signature looks wrong, why does it take `v` and `values`,
+    # rather than just `v`?
     def validate_mean_resolution_in_range(cls, v, values):
         """Validate that mean resolution is within the resolution range."""
         if v is not None and "resolution_range_km" in values and values["resolution_range_km"]:
             range_km = values["resolution_range_km"]
             if not (range_km[0] <= v <= range_km[1]):
                 raise ValueError(
-                    f"mean_resolution_km ({v}) must be between resolution_range_km min ({range_km[0]}) and max ({
-                        range_km[1]
-                    })"
+                    f"mean_resolution_km ({v}) must be between "
+                    f"resolution_range_km min ({range_km[0]}) and max ({range_km[1]})"
                 )
-        return v
 
-    def accept(self, visitor: DataDescriptorVisitor) -> Any:
-        """Accept a data descriptor visitor."""
-        return visitor.visit_plain_term(self)
+        return v
