@@ -10,7 +10,7 @@ from pydantic import HttpUrl, field_validator
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 if TYPE_CHECKING:
-    from esgvoc.api.data_descriptors.experiment import ExperimentCMIP7
+    from esgvoc.api.data_descriptors.experiment import Experiment
 
 
 class Activity(PlainTermDataDescriptor):
@@ -36,9 +36,7 @@ class Activity(PlainTermDataDescriptor):
     of the schemas for these two classes.
     """
 
-    # Not how this is meant to work, but for now just hacking
-    # experiments: list["Experiment"]
-    experiments: list["ExperimentCMIP7"]
+    experiments: list["Experiment"]
     """
     Experiments 'sponsored' by this activity
     """
