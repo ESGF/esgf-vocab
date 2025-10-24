@@ -34,7 +34,7 @@ class Variable(PlainTermDataDescriptor):
     However, this is not always possible so please don't assume this is always the case.
     """
 
-    long_name: str
+    long_name: str | None
     """
     Long name of the variable
 
