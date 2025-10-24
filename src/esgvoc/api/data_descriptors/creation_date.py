@@ -1,5 +1,18 @@
+"""
+Model (i.e. schema/definition) of the creation date data descriptor
+"""
+
 from esgvoc.api.data_descriptors.data_descriptor import PatternTermDataDescriptor
 
 
 class CreationDate(PatternTermDataDescriptor):
-    pass
+    r"""
+    Date (more specifically timestamp) that the file was created
+
+    Examples: "2025-08-21T04:23:12Z", "2024-04-11T14:03:10Z"
+
+    Note that the examples above assume a `regex` of
+    `\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z`
+    (this matches ISO 8601 timestamps in UTC).
+    If you use a different regex, different examples would be needed.
+    """
