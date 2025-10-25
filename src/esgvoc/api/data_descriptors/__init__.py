@@ -18,23 +18,24 @@ from esgvoc.api.data_descriptors.date import Date
 from esgvoc.api.data_descriptors.directory_date import DirectoryDate
 from esgvoc.api.data_descriptors.drs_specs import DRSSpecs
 
-# Import new EMD CV models
-from esgvoc.api.data_descriptors.EMD import (
-    CellVariableType,
-    GridType,
-    HorizontalUnits,
-    MeshLocation,
-    TruncationMethod,
-    VerticalUnits,
-)
+# # Import new EMD CV models
+# from esgvoc.api.data_descriptors.EMD import (
+#     CellVariableType,
+#     GridType,
+#     HorizontalUnits,
+#     MeshLocation,
+#     TruncationMethod,
+#     VerticalUnits,
+# )
 from esgvoc.api.data_descriptors.experiment import Experiment
 from esgvoc.api.data_descriptors.forcing_index import ForcingIndex
 from esgvoc.api.data_descriptors.frequency import Frequency
 from esgvoc.api.data_descriptors.further_info_url import FurtherInfoUrl
 from esgvoc.api.data_descriptors.grid_arrangement_new import GridArrangement
 from esgvoc.api.data_descriptors.grid_coordinate_new import Coordinate
-from esgvoc.api.data_descriptors.grid_label import GridLabel
-from esgvoc.api.data_descriptors.grid_mapping_new import GridMapping
+
+# from esgvoc.api.data_descriptors.grid_label import GridLabel
+# from esgvoc.api.data_descriptors.grid_mapping_new import GridMapping
 from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
 from esgvoc.api.data_descriptors.initialization_index import InitializationIndex
 from esgvoc.api.data_descriptors.institution import Institution
@@ -89,8 +90,8 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "experiment": Experiment,
     "forcing_index": ForcingIndex,
     "frequency": Frequency,
-    "grid": GridLabel,  # Universe
-    "grid_label": GridLabel,  # cmip6, cmip6plus
+    # "grid": GridLabel,  # Universe
+    # "grid_label": GridLabel,  # cmip6, cmip6plus
     "initialization_index": InitializationIndex,
     "institution": Institution,
     "license": License,
@@ -125,7 +126,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "grid_arrangement": GridArrangement,
     "grid_coordinate_new": Coordinate,
     "coordinate": Coordinate,
-    "grid_mapping_new": GridMapping,
+    # "grid_mapping_new": GridMapping,
     "model_component_new": EMDModelComponent,
     "model_new": Model,
     "native_horizontal_grid_new": NativeHorizontalGrid,
@@ -136,12 +137,12 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "resolution_new": EMDResolution,
     "unit_new": Unit,
     "temporal_refinement": TemporalRefinement,
-    "grid_type": GridType,
-    "cell_variable_type": CellVariableType,
-    "mesh_location": MeshLocation,
-    "horizontal_units": HorizontalUnits,
-    "truncation_method": TruncationMethod,
-    "vertical_units": VerticalUnits,
+    # "grid_type": GridType,
+    # "cell_variable_type": CellVariableType,
+    # "mesh_location": MeshLocation,
+    # "horizontal_units": HorizontalUnits,
+    # "truncation_method": TruncationMethod,
+    # "vertical_units": VerticalUnits,
     "data_specs_version": DataSpecsVersion,
     "further_info_url": FurtherInfoUrl,
     "tracking_id": TrackingId,
