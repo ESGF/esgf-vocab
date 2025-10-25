@@ -37,19 +37,28 @@ class HorizontalGrid(PlainTermDataDescriptor):
     Horizontal grids with different labels are different.
     """
 
-    horizontal_grid_type: HorizontalGridType
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    horizontal_grid_type: HorizontalGridType | str
     """
     Horizontal grid type
 
     Uses the full name to not clash with the grid and type keys
     """
 
-    grid_mapping: HorizontalGridMapping
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    grid_mapping: HorizontalGridMapping | str
     """
     Horizontal grid mapping
     """
 
-    region: Region
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    region: Region | str
     """
     Region
     """
@@ -59,17 +68,26 @@ class HorizontalGrid(PlainTermDataDescriptor):
     # Depending on which way this goes, we might need to introduce RegionEMD,
     # which will differ from Region (as used in the DR).
 
-    temporal_refinement: HorizontalGridTemporalRefinement
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    temporal_refinement: HorizontalGridTemporalRefinement | str
     """
     Temporal refinement
     """
 
-    arrangement: HorizontalGridArrangement
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    arrangement: HorizontalGridArrangement | str
     """
     Grid arrangement
     """
 
-    cell_variable_type: list[HorizontalGridCellVariableType]
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    cell_variable_type: list[HorizontalGridCellVariableType | str]
     """
     Cell variable type
 
@@ -168,7 +186,10 @@ class HorizontalGrid(PlainTermDataDescriptor):
         ge=1,
     )
 
-    truncation_method: HorizontalGridTruncationMethod | None
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    truncation_method: HorizontalGridTruncationMethod | str | None
     """
     The method for truncating the spherical harmonic representation of a spectral model when reporting on this grid
 
@@ -213,7 +234,10 @@ class HorizontalGrid(PlainTermDataDescriptor):
         gt=0.0,
     )
 
-    nominal_resolution: NominalResolution
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    nominal_resolution: NominalResolution | str
     """
     Nominal resolution of the grid
     """

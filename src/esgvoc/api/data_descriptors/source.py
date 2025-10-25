@@ -47,7 +47,10 @@ class Source(PlainTermDataDescriptor):
     if the person registering the source wishes.
     """
 
-    contributors: list[Contributor]
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    contributors: list[Contributor | str]
     """
     Contributor(s) using this source
 
@@ -55,7 +58,10 @@ class Source(PlainTermDataDescriptor):
     that submit data using this source.
     """
 
-    model_components: list[EMDModelComponent]
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    model_components: list[EMDModelComponent | str]
     """
     Model components
 

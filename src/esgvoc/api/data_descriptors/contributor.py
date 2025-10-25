@@ -13,7 +13,10 @@ class Contributor(PlainTermDataDescriptor):
     Examples: "IPSL", "NCAR", "CNRM-CERFACS", "SOLARIS-HEPPA"
     """
 
-    members: list[ContributorMember]
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    members: list[ContributorMember | str]
     """
     Members associated with this contributor
     """
