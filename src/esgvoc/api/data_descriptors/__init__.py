@@ -31,6 +31,7 @@ from esgvoc.api.data_descriptors.experiment import Experiment
 from esgvoc.api.data_descriptors.forcing_index import ForcingIndex
 from esgvoc.api.data_descriptors.frequency import Frequency
 from esgvoc.api.data_descriptors.further_info_url import FurtherInfoUrl
+from esgvoc.api.data_descriptors.grid import Grid
 from esgvoc.api.data_descriptors.grid_arrangement_new import GridArrangement
 from esgvoc.api.data_descriptors.grid_coordinate_new import Coordinate
 
@@ -92,6 +93,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "frequency": Frequency,
     # "grid": GridLabel,  # Universe
     # "grid_label": GridLabel,  # cmip6, cmip6plus
+    "grid": Grid,
     "initialization_index": InitializationIndex,
     "institution": Institution,
     "license": License,

@@ -37,9 +37,11 @@ class HorizontalGrid(PlainTermDataDescriptor):
     Horizontal grids with different labels are different.
     """
 
-    grid: HorizontalGridType
+    horizontal_grid_type: HorizontalGridType
     """
     Horizontal grid type
+
+    Uses the full name to not clash with the grid and type keys
     """
 
     grid_mapping: HorizontalGridMapping
@@ -120,7 +122,6 @@ class HorizontalGrid(PlainTermDataDescriptor):
             If `resolution_x` and `resolution_y` are `None`, set this to `None`.
             """
         ),
-        gt=0,
     )
 
     southernmost_latitude: float | None = Field(
@@ -139,7 +140,7 @@ class HorizontalGrid(PlainTermDataDescriptor):
         le=90.0,
     )
 
-    westernmost_latitude: float = Field(
+    westernmost_longitude: float | None = Field(
         description=textwrap.dedent(
             """
             The westernmost grid cell latitude, in degrees east, of the southernmost grid cell(s)
