@@ -2,9 +2,9 @@
 Model (i.e. schema/definition) of the source descriptor
 """
 
+from esgvoc.api.data_descriptors.contributor import Contributor
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.model_component_new import EMDModelComponent
-from esgvoc.api.data_descriptors.organisation import Organisation
 
 
 class Source(PlainTermDataDescriptor):
@@ -47,15 +47,15 @@ class Source(PlainTermDataDescriptor):
     if the person registering the source wishes.
     """
 
-    organisation: list[Organisation]
+    contributors: list[Contributor]
     """
-    Organisations responsible for this source
+    Contributor(s) using this source
 
-    Reponsible is vaguely defined, but in practice it is the group(s)
-    that submits data using this source.
+    Using is a bit vaguely defined, but in practice it is the contributor(s)
+    that submit data using this source.
     """
 
-    model_component: list[EMDModelComponent]
+    model_components: list[EMDModelComponent]
     """
     Model components
 
