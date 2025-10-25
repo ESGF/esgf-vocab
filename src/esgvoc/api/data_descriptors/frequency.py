@@ -3,6 +3,7 @@ Model (i.e. schema/definition) of the frequency data descriptor
 """
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.time_range import TimeRange
 
 
 class Frequency(PlainTermDataDescriptor):
@@ -33,6 +34,11 @@ class Frequency(PlainTermDataDescriptor):
     Size of the interval
 
     See `self.unit` for units.
+    """
+
+    time_range: TimeRange
+    """
+    Time range to use when creating filenames
     """
 
     unit: str
