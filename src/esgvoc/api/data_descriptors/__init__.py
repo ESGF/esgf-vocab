@@ -50,6 +50,7 @@ from esgvoc.api.data_descriptors.model_new import Model
 from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
 from esgvoc.api.data_descriptors.native_horizontal_grid_new import NativeHorizontalGrid
 from esgvoc.api.data_descriptors.native_vertical_grid_new import NativeVerticalGrid
+from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
 from esgvoc.api.data_descriptors.obs_type import ObsType
 from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.physics_index import PhysicsIndex
@@ -161,4 +162,5 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "drs_specs": DRSSpecs,
     "contributor": Contributor,
     "contributor_member": ContributorMember,
+    "nominal_resolution": NominalResolution,
 }
