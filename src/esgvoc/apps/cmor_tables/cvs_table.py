@@ -93,14 +93,34 @@ class CMORCVsTable(BaseModel):
     Template for branded variable
     """
 
+    creation_date: RegularExpressionValidators
+    """
+    Allowed values of `creation_date`
+    """
+
     data_specs_version: str
     """
     Allowed value of `data_specs_version`
     """
 
+    drs_specs: AllowedDict
+    """
+    Allowed values of `drs_specs`
+    """
+
+    forcing_index: RegularExpressionValidators
+    """
+    Allowed values of `forcing_index`
+    """
+
     horizontal_label: AllowedDict
     """
     Allowed values of `horizontal_label`
+    """
+
+    initialization_index: RegularExpressionValidators
+    """
+    Allowed values of `initialization_index`
     """
 
     license: CMORLicenseDefinition
@@ -111,6 +131,21 @@ class CMORCVsTable(BaseModel):
     mip_era: str
     """
     Allowed value of `mip_era`
+    """
+
+    physics_index: RegularExpressionValidators
+    """
+    Allowed values of `physics_index`
+    """
+
+    realization_index: RegularExpressionValidators
+    """
+    Allowed values of `realization_index`
+    """
+
+    required_global_attributes: list[str]
+    """
+    Required global attributes
     """
 
     temporal_label: AllowedDict
@@ -174,6 +209,18 @@ def get_allowed_dict_for_attribute(attribute_name: str, ev_project: ev_api.proje
     )
 
     res = {v.drs_name: v.description for v in attribute_instances}
+
+    return res
+
+
+def get_regular_expression_validator_for_attribute(
+    attribute_property: ev_api.project_specs.AttributeProperty,
+    ev_project: ev_api.project_specs.ProjectSpecs,
+) -> RegularExpressionValidators:
+    attribute_instances = ev_api.get_all_terms_in_collection(
+        ev_project.project_id, attribute_property.source_collection
+    )
+    res = [v.regex for v in attribute_instances]
 
     return res
 
@@ -252,18 +299,25 @@ def get_cmor_license_definition(
 def generate_cvs_table(project: str) -> CMORCVsTable:
     ev_project = ev_api.projects.get_project(project)
 
-    init_kwargs = {}
+    init_kwargs = {"required_global_attributes": []}
     for attr_property in ev_project.attr_specs:
         if (attr_property.field_name, attr_property.source_collection) in [
             # ("archive_id", "archive"),
             # ("area_label", "area_label"),
             # ("branding_suffix", "branded_suffix"),
+            # ("branded_variable", "brandedVariable"),
+            # ("creation_date", "dateCreated"),
+            # ("conventions", "dataConventions"),
             # ("data_specs_version", "data_specs_version"),
+            # ("drs_specs", "drs_specs"),
+            # ("forcing_index", "forcing"),
             # ("horizontal_label", "horizontal_label"),
+            # ("initialisation_index", "initialization"),
             # ("mip_era", "mip_era"),
+            # ("physic_index", "physics"),
+            # ("realisation_index", "realisation"),
             # ("temporal_label", "temporal_label"),
             # ("vertical_label", "vertical_label"),
-            # ("branded_variable", "brandedVariable"),
             ("frequency", "reportingInterval"),
             ("region", "region"),
             ("grid", "gridLabel"),
@@ -272,25 +326,27 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             ("variant_label", "datasetVariant"),
             ("host_collection", "hostCollection"),
             ("activity_id", "activity"),
-            ("drs_specs", "drs_specs"),
             ("directory_date", "datasetVersion"),
             ("time_range", "timeRange"),
             ("institution_id", "institution"),
             ("realm", "realm"),
             ("license", "license"),
-            ("conventions", "dataConventions"),
-            ("creation_date", "dateCreated"),
-            ("realisation_index", "realisation"),
-            ("initialisation_index", "initialization"),
-            ("physic_index", "physics"),
-            ("forcing_index", "forcing"),
             ("tracking_id", "uniqueField"),
         ]:
             continue
 
+        if attr_property.is_required:
+            init_kwargs["required_global_attributes"].append(attr_property.field_name)
+
         print((attr_property.source_collection, attr_property.field_name))
         # Logic: https://github.com/WCRP-CMIP/CMIP7-CVs/issues/271#issuecomment-3286291815
         if attr_property.field_name in [
+            "Conventions",
+        ]:
+            # Not handled in CMOR tables
+            continue
+
+        elif attr_property.field_name in [
             "data_specs_version",
             "mip_era",
         ]:
@@ -302,6 +358,11 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             value = get_cmor_license_definition(attr_property.source_collection, ev_project)
             kwarg = "license"
 
+        elif attr_property.field_name == "experiment_id":
+            raise NotImplementedError
+            # value = get_cmor_license_definition(attr_property.source_collection, ev_project)
+            # kwarg = attr_property.field_name
+
         else:
             kwarg = attr_property.field_name
             pydantic_class = ev_api.pydantic_handler.get_pydantic_class(attr_property.source_collection)
@@ -309,14 +370,12 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
                 value = get_allowed_dict_for_attribute(attr_property.field_name, ev_project)
 
             elif issubclass(pydantic_class, ev_api.data_descriptors.data_descriptor.PatternTermDataDescriptor):
-                # breakpoint()
-                pass
+                value = get_regular_expression_validator_for_attribute(attr_property, ev_project)
 
             elif issubclass(pydantic_class, ev_api.data_descriptors.data_descriptor.CompositeTermDataDescriptor):
                 value = get_template_for_composite_attribute(attr_property.field_name, ev_project)
 
             else:
-                # breakpoint()
                 raise NotImplementedError(pydantic_class)
 
         init_kwargs[kwarg] = value
