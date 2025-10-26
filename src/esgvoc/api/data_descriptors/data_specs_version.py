@@ -2,10 +2,10 @@
 Model (i.e. schema/definition) of the data specifications data descriptor
 """
 
-from esgvoc.api.data_descriptors.data_descriptor import PatternTermDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
-class DataSpecsVersion(PatternTermDataDescriptor):
+class DataSpecsVersion(PlainTermDataDescriptor):
     """
     Data specifications version number
 

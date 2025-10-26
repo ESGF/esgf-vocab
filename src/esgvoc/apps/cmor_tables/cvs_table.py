@@ -49,6 +49,11 @@ class CMORCVsTable(BaseModel):
     Template for branding suffix
     """
 
+    data_specs_version: str
+    """
+    Allowed value of `data_specs_version`
+    """
+
     def to_cvs_json(
         self, top_level_key: str = "CV"
     ) -> dict[str, dict[str, str, AllowedDict, RegularExpressionValidators]]:
@@ -82,9 +87,7 @@ def get_project_attribute_property(
     return ev_attribute_property
 
 
-def get_allowed_dict_for_attribute_name(
-    attribute_name: str, ev_project: ev_api.project_specs.ProjectSpecs
-) -> AllowedDict:
+def get_allowed_dict_for_attribute(attribute_name: str, ev_project: ev_api.project_specs.ProjectSpecs) -> AllowedDict:
     ev_attribute_property = get_project_attribute_property(attribute_name=attribute_name, ev_project=ev_project)
 
     attribute_instances = ev_api.get_all_terms_in_collection(
@@ -96,7 +99,7 @@ def get_allowed_dict_for_attribute_name(
     return res
 
 
-def get_template_for_composite_term(attribute_name: str, ev_project: ev_api.project_specs.ProjectSpecs) -> str:
+def get_template_for_composite_attribute(attribute_name: str, ev_project: ev_api.project_specs.ProjectSpecs) -> str:
     ev_attribute_property = get_project_attribute_property(attribute_name=attribute_name, ev_project=ev_project)
     terms = ev_api.get_all_terms_in_collection(ev_project.project_id, ev_attribute_property.source_collection)
     if len(terms) > 1:
@@ -114,22 +117,41 @@ def get_template_for_composite_term(attribute_name: str, ev_project: ev_api.proj
     return res
 
 
+def get_single_allowed_value_for_attribute(attribute_name: str, ev_project: ev_api.project_specs.ProjectSpecs) -> str:
+    ev_attribute_property = get_project_attribute_property(attribute_name=attribute_name, ev_project=ev_project)
+    terms = ev_api.get_all_terms_in_collection(ev_project.project_id, ev_attribute_property.source_collection)
+    if len(terms) > 1:
+        raise AssertionError(terms)
+
+    term = terms[0]
+
+    res = term.drs_name
+
+    return res
+
+
 def generate_cvs_table(project: str) -> CMORCVsTable:
     ev_project = ev_api.projects.get_project(project)
 
     cmor_cvs_table = CMORCVsTable(
         **{
-            key: get_allowed_dict_for_attribute_name(key, ev_project)
+            key: get_allowed_dict_for_attribute(key, ev_project)
             for key in [
                 "archive_id",
                 "area_label",
             ]
         },
         **{
-            key: get_template_for_composite_term(key, ev_project)
+            key: get_template_for_composite_attribute(key, ev_project)
             for key in [
                 # Called branded_suffix everywhere else, why did we choose different name for attribute?
                 "branding_suffix",
+            ]
+        },
+        **{
+            key: get_single_allowed_value_for_attribute(key, ev_project)
+            for key in [
+                "data_specs_version",
             ]
         },
     )
