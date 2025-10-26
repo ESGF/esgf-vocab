@@ -9,7 +9,7 @@ class DataSpecsVersion(PlainTermDataDescriptor):
     """
     Data specifications version number
 
-    Examples: "MIPDS7-202510p01", "MIPDS7-202510p01hbeta", "MIPDS7-0p1p0", "MIPDS7-0p1p0hrc1"
+    Examples: "MIPDS7-2025p10p1"
 
     The data specifications describe the overall set of data specifications
     used when writing the dataset.
