@@ -2,10 +2,10 @@
 Model (i.e. schema/definition) of the conventions data descriptor
 """
 
-from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import PatternTermDataDescriptor
 
 
-class Convention(PlainTermDataDescriptor):
+class Convention(PatternTermDataDescriptor):
     """
     CF version governing the data
 
