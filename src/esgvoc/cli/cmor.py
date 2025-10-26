@@ -28,7 +28,7 @@ def cmor_export_cvs_table(
     """
     Export CVs table in the format required by CMOR
     """
-    json_dump_settings = dict(indent=2, sort_keys=True)
+    json_dump_settings = dict(indent=4, sort_keys=True)
 
     cvs_table = generate_cvs_table(project=project.lower())
     cvs_table_json = cvs_table.to_cvs_json()

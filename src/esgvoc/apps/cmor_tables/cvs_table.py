@@ -1,10 +1,14 @@
 """
 Support for generating CMOR CVs tables
+
+Note: this really shouldn't be in esgvoc.
+It should be in CMOR, as CMOR knows the structure it needs,
+not esgvoc. Anyway, can do that later.
 """
 
 from typing import Any, TypeAlias
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, HttpUrl
 
 import esgvoc.api as ev_api
 
@@ -25,6 +29,39 @@ against these regular expressions.
 """
 
 
+class CMORSpecificLicenseDefinition(BaseModel):
+    """
+    CMOR-style specific license definition
+    """
+
+    license_type: str
+    """
+    Type of the license
+    """
+
+    license_url: HttpUrl
+    """
+    URL that describes the license
+    """
+
+
+class CMORLicenseDefinition(BaseModel):
+    """
+    CMOR license definition
+    """
+
+    license_id: dict[str, CMORSpecificLicenseDefinition]
+    """
+    Supported licenses
+    """
+
+    # (rightfully) not in esgvoc
+    license_template: str
+    """
+    Template for writing license strings
+    """
+
+
 class CMORCVsTable(BaseModel):
     """
     Representation of the JSON table required by CMOR for CVs
@@ -33,6 +70,8 @@ class CMORCVsTable(BaseModel):
     This model doesn't consider those tables
     or their interactions with this table at the moment.
     """
+
+    model_config = ConfigDict(extra="forbid")
 
     archive_id: AllowedDict
     """
@@ -49,15 +88,50 @@ class CMORCVsTable(BaseModel):
     Template for branding suffix
     """
 
+    branded_variable: str
+    """
+    Template for branded variable
+    """
+
     data_specs_version: str
     """
     Allowed value of `data_specs_version`
     """
 
+    horizontal_label: AllowedDict
+    """
+    Allowed values of `horizontal_label`
+    """
+
+    license: CMORLicenseDefinition
+    """
+    CMOR-style license definition
+    """
+
+    mip_era: str
+    """
+    Allowed value of `mip_era`
+    """
+
+    temporal_label: AllowedDict
+    """
+    Allowed values of `temporal_label`
+    """
+
+    variable_id: AllowedDict
+    """
+    Allowed values of `variable_id`
+    """
+
+    vertical_label: AllowedDict
+    """
+    Allowed values of `vertical_label`
+    """
+
     def to_cvs_json(
         self, top_level_key: str = "CV"
     ) -> dict[str, dict[str, str, AllowedDict, RegularExpressionValidators]]:
-        md = self.model_dump()
+        md = self.model_dump(mode="json")
 
         # # Unclear why this is done for some keys and not others,
         # # which makes reasoning hard.
@@ -75,20 +149,25 @@ class CMORCVsTable(BaseModel):
 
 
 def get_project_attribute_property(
-    attribute_name: str, ev_project: ev_api.project_specs.ProjectSpecs
+    attribute_value: str, attribute_to_match: str, ev_project: ev_api.project_specs.ProjectSpecs
 ) -> ev_api.project_specs.AttributeProperty:
     for ev_attribute_property in ev_project.attr_specs:
-        if ev_attribute_property.field_name == attribute_name:
+        if getattr(ev_attribute_property, attribute_to_match) == attribute_value:
             break
 
     else:
-        raise KeyError(attribute_name)
+        msg = f"Nothing in attr_specs had {attribute_to_match} equal to {attribute_value}"
+        raise KeyError(msg)
 
     return ev_attribute_property
 
 
 def get_allowed_dict_for_attribute(attribute_name: str, ev_project: ev_api.project_specs.ProjectSpecs) -> AllowedDict:
-    ev_attribute_property = get_project_attribute_property(attribute_name=attribute_name, ev_project=ev_project)
+    ev_attribute_property = get_project_attribute_property(
+        attribute_value=attribute_name,
+        attribute_to_match="field_name",
+        ev_project=ev_project,
+    )
 
     attribute_instances = ev_api.get_all_terms_in_collection(
         ev_project.project_id, ev_attribute_property.source_collection
@@ -100,7 +179,11 @@ def get_allowed_dict_for_attribute(attribute_name: str, ev_project: ev_api.proje
 
 
 def get_template_for_composite_attribute(attribute_name: str, ev_project: ev_api.project_specs.ProjectSpecs) -> str:
-    ev_attribute_property = get_project_attribute_property(attribute_name=attribute_name, ev_project=ev_project)
+    ev_attribute_property = get_project_attribute_property(
+        attribute_value=attribute_name,
+        attribute_to_match="field_name",
+        ev_project=ev_project,
+    )
     terms = ev_api.get_all_terms_in_collection(ev_project.project_id, ev_attribute_property.source_collection)
     if len(terms) > 1:
         raise AssertionError(terms)
@@ -109,7 +192,7 @@ def get_template_for_composite_attribute(attribute_name: str, ev_project: ev_api
 
     parts_l = []
     for v in term.parts:
-        va = get_project_attribute_property(v.type, ev_project)
+        va = get_project_attribute_property(v.type, "source_collection", ev_project)
         parts_l.append(f"<{va.field_name}>")
 
     res = term.separator.join(parts_l)
@@ -118,7 +201,11 @@ def get_template_for_composite_attribute(attribute_name: str, ev_project: ev_api
 
 
 def get_single_allowed_value_for_attribute(attribute_name: str, ev_project: ev_api.project_specs.ProjectSpecs) -> str:
-    ev_attribute_property = get_project_attribute_property(attribute_name=attribute_name, ev_project=ev_project)
+    ev_attribute_property = get_project_attribute_property(
+        attribute_value=attribute_name,
+        attribute_to_match="field_name",
+        ev_project=ev_project,
+    )
     terms = ev_api.get_all_terms_in_collection(ev_project.project_id, ev_attribute_property.source_collection)
     if len(terms) > 1:
         raise AssertionError(terms)
@@ -130,30 +217,110 @@ def get_single_allowed_value_for_attribute(attribute_name: str, ev_project: ev_a
     return res
 
 
+def get_cmor_license_definition(
+    source_collection: str, ev_project: ev_api.project_specs.ProjectSpecs
+) -> CMORLicenseDefinition:
+    terms = ev_api.get_all_terms_in_collection(ev_project.project_id, source_collection)
+
+    license_ids_d = {
+        v.drs_name: CMORSpecificLicenseDefinition(
+            license_type=v.description,
+            license_url=v.url,
+        )
+        for v in terms
+    }
+
+    res = CMORLicenseDefinition(
+        license_id=license_ids_d,
+        license_template=(
+            "<license_id>; CMIP7 data produced by <institution_id> "
+            "is licensed under a <license_type> License (<license_url>). "
+            "Consult [TODO terms of use link] for terms of use governing CMIP7 output, "
+            "including citation requirements and proper acknowledgment. "
+            "The data producers and data providers make no warranty, "
+            "either express or implied, including, but not limited to, "
+            "warranties of merchantability and fitness for a particular purpose. "
+            "All liabilities arising from the supply of the information "
+            "(including any liability arising in negligence) "
+            "are excluded to the fullest extent permitted by law."
+        ),
+    )
+
+    return res
+
+
 def generate_cvs_table(project: str) -> CMORCVsTable:
     ev_project = ev_api.projects.get_project(project)
 
-    cmor_cvs_table = CMORCVsTable(
-        **{
-            key: get_allowed_dict_for_attribute(key, ev_project)
-            for key in [
-                "archive_id",
-                "area_label",
-            ]
-        },
-        **{
-            key: get_template_for_composite_attribute(key, ev_project)
-            for key in [
-                # Called branded_suffix everywhere else, why did we choose different name for attribute?
-                "branding_suffix",
-            ]
-        },
-        **{
-            key: get_single_allowed_value_for_attribute(key, ev_project)
-            for key in [
-                "data_specs_version",
-            ]
-        },
-    )
+    init_kwargs = {}
+    for attr_property in ev_project.attr_specs:
+        if (attr_property.field_name, attr_property.source_collection) in [
+            # ("archive_id", "archive"),
+            # ("area_label", "area_label"),
+            # ("branding_suffix", "branded_suffix"),
+            # ("data_specs_version", "data_specs_version"),
+            # ("horizontal_label", "horizontal_label"),
+            # ("mip_era", "mip_era"),
+            # ("temporal_label", "temporal_label"),
+            # ("vertical_label", "vertical_label"),
+            # ("branded_variable", "brandedVariable"),
+            ("frequency", "reportingInterval"),
+            ("region", "region"),
+            ("grid", "gridLabel"),
+            ("source_id", "source"),
+            ("experiment_id", "experiment"),
+            ("variant_label", "datasetVariant"),
+            ("host_collection", "hostCollection"),
+            ("activity_id", "activity"),
+            ("drs_specs", "drs_specs"),
+            ("directory_date", "datasetVersion"),
+            ("time_range", "timeRange"),
+            ("institution_id", "institution"),
+            ("realm", "realm"),
+            ("license", "license"),
+            ("conventions", "dataConventions"),
+            ("creation_date", "dateCreated"),
+            ("realisation_index", "realisation"),
+            ("initialisation_index", "initialization"),
+            ("physic_index", "physics"),
+            ("forcing_index", "forcing"),
+            ("tracking_id", "uniqueField"),
+        ]:
+            continue
+
+        print((attr_property.source_collection, attr_property.field_name))
+        # Logic: https://github.com/WCRP-CMIP/CMIP7-CVs/issues/271#issuecomment-3286291815
+        if attr_property.field_name in [
+            "data_specs_version",
+            "mip_era",
+        ]:
+            # Special single value entries
+            value = get_single_allowed_value_for_attribute(attr_property.field_name, ev_project)
+            kwarg = attr_property.field_name
+
+        elif attr_property.field_name == "license_id":
+            value = get_cmor_license_definition(attr_property.source_collection, ev_project)
+            kwarg = "license"
+
+        else:
+            kwarg = attr_property.field_name
+            pydantic_class = ev_api.pydantic_handler.get_pydantic_class(attr_property.source_collection)
+            if issubclass(pydantic_class, ev_api.data_descriptors.data_descriptor.PlainTermDataDescriptor):
+                value = get_allowed_dict_for_attribute(attr_property.field_name, ev_project)
+
+            elif issubclass(pydantic_class, ev_api.data_descriptors.data_descriptor.PatternTermDataDescriptor):
+                # breakpoint()
+                pass
+
+            elif issubclass(pydantic_class, ev_api.data_descriptors.data_descriptor.CompositeTermDataDescriptor):
+                value = get_template_for_composite_attribute(attr_property.field_name, ev_project)
+
+            else:
+                # breakpoint()
+                raise NotImplementedError(pydantic_class)
+
+        init_kwargs[kwarg] = value
+
+    cmor_cvs_table = CMORCVsTable(**init_kwargs)
 
     return cmor_cvs_table
