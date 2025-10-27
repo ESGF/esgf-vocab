@@ -144,6 +144,83 @@ class CMORLicenseDefinition(BaseModel):
     """
 
 
+class CMORModelComponentDefintion(BaseModel):
+    """
+    CMOR model component definition
+    """
+
+    description: str
+    """Description"""
+
+    native_nominal_resolution: str
+    """Native nominal resolution of this component"""
+
+
+class CMORSourceDefinition(BaseModel):
+    """
+    CMOR source definition
+
+    The meaning of 'source' is a bit fuzzy across projects,
+    but for CMIP phases it refers to the model which provided the simulation.
+    """
+
+    # # Don't think this is used or relevant hence drop
+    # activity_participation: RegularExpressionValidators
+    # """
+    # Activities in which this source has participated
+    # """
+
+    # # Don't know what this is hence drop
+    # cohort: RegularExpressionValidators
+    # """
+    # Cohort to which this source belongs
+    #
+    # TODO: clarify what this means
+    # """
+
+    institution_id: RegularExpressionValidators
+    """
+    Institution ID for this source
+    """
+
+    label: str
+    """
+    Label to use for this source ID
+
+    TODO: check, does this mean in graphs/plots?
+    """
+
+    label_extended: str
+    """
+    Extended label to use for this source ID
+
+    TODO: check, does this mean in graphs/plots?
+    """
+
+    model_component: dict[str, CMORModelComponentDefintion]
+    """
+    Model components of this source
+    """
+
+    # # Not relevant hence drop
+    # release_year: int | None
+    # """
+    # Release year of the model/source
+    #
+    # `None` if the release concept does not apply to this source
+    # """
+
+    source: str
+    """
+    TODO: figure out what this is meant to be
+    """
+
+    source_id: str
+    """
+    Source ID for `self`
+    """
+
+
 class CMORCVsTable(BaseModel):
     """
     Representation of the JSON table required by CMOR for CVs
@@ -274,6 +351,11 @@ class CMORCVsTable(BaseModel):
     required_global_attributes: list[str]
     """
     Required global attributes
+    """
+
+    source_id: dict[str, CMORSourceDefinition]
+    """
+    CMOR-style source definitions
     """
 
     temporal_label: AllowedDict
@@ -478,6 +560,31 @@ def get_cmor_experiment_id_definitions(
     return res
 
 
+def get_cmor_source_id_definitions(
+    source_collection: str, ev_project: ev_api.project_specs.ProjectSpecs
+) -> dict[str, CMORSourceDefinition]:
+    terms = ev_api.get_all_terms_in_collection(ev_project.project_id, source_collection)
+
+    get_term = partial(ev_api.get_term_in_project, ev_project.project_id)
+    res = {}
+    for v in terms:
+        model_components = {}
+        for mc in v.model_components:
+            raise NotImplementedError(mc)
+
+        source = "\n".join([f"{v.drs_name}:", *[f"{key}: {v.description}" for key, v in model_components.items()]])
+        res[v.drs_name] = CMORSourceDefinition(
+            institution_id=[get_term(vv).drs_name for vv in v.contributors],
+            label=v.label,
+            label_extended=v.label_extended,
+            model_component=model_components,
+            source=source,
+            source_id=v.drs_name,
+        )
+
+    return res
+
+
 def get_cmor_frequency_definitions(
     source_collection: str, ev_project: ev_api.project_specs.ProjectSpecs
 ) -> dict[str, CMORFrequencyDefinition]:
@@ -534,10 +641,8 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             kwarg = attr_property.field_name
 
         elif attr_property.field_name == "source_id":
-            continue
-            raise NotImplementedError
-            # value = get_cmor_license_definition(attr_property.source_collection, ev_project)
-            # kwarg = attr_property.field_name
+            value = get_cmor_source_id_definitions(attr_property.source_collection, ev_project)
+            kwarg = attr_property.field_name
 
         else:
             kwarg = attr_property.field_name
