@@ -30,6 +30,32 @@ against these regular expressions.
 """
 
 
+class CMORDRSDefinition(BaseModel):
+    """
+    CMOR data reference syntax (DRS) definition
+    """
+
+    directory_path_example: str
+    """
+    Example of a directory path that follows this DRS
+    """
+
+    directory_path_template: str
+    """
+    Template to use for generating directory paths
+    """
+
+    filename_path_example: str
+    """
+    Example of a filename path that follows this DRS
+    """
+
+    filename_path_template: str
+    """
+    Template to use for generating filename paths
+    """
+
+
 class CMORExperimentDefinition(BaseModel):
     """
     CMOR experiment definition
@@ -212,7 +238,9 @@ class CMORSourceDefinition(BaseModel):
 
     source: str
     """
-    TODO: figure out what this is meant to be
+    Source information
+
+    Combination of source name and information about each model component
     """
 
     source_id: str
@@ -231,6 +259,11 @@ class CMORCVsTable(BaseModel):
     """
 
     model_config = ConfigDict(extra="forbid")
+
+    DRS: CMORDRSDefinition
+    """
+    CMOR definition of the data reference syntax
+    """
 
     # Note; not a required global attribute hence dropped
     # archive_id: AllowedDict
@@ -604,6 +637,146 @@ def get_cmor_frequency_definitions(
     return res
 
 
+def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CMORDRSDefinition:
+    # Creating a valid example is quite hard because of the coupling between elements.
+    # Try and anticipate those here.
+    # Note that a perfect way to do this is beyond me right now.
+    # grid region
+    activity_example = ev_api.get_term_in_collection(ev_project.project_id, "activity", "cmip")
+    experiment_example = ev_api.get_term_in_collection(
+        ev_project.project_id, "experiment", activity_example.experiments[0]
+    )
+
+    institution_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "contributor")[0]
+    sources = ev_api.get_all_terms_in_collection(ev_project.project_id, "source")
+    for source in sources:
+        if institution_example.id in source.contributors:
+            source_example = source
+            break
+    else:
+        raise AssertionError
+
+    grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid")[0]
+    region_example = grid_example.region
+
+    frequency_example = "mon"
+    time_range_example = "185001-202112"
+
+    # Creating example regexp terms on the fly also doesn't work
+    variant_label_example = "r1i1p1f1"
+    branded_suffix_example = "tavg-h2m-hxy-u"
+
+    directory_path_template_l = []
+    directory_path_example_l = []
+    for part in ev_project.drs_specs["directory"].parts:
+        if not part.is_required:
+            raise NotImplementedError
+
+        if part.source_collection == "directory_date":
+            # Maybe should be using catalogue specs rather than attr specs?
+            # Hard-coded CMOR weirdness
+            directory_path_template_l.append("<version>")
+            directory_path_example_l.append("20251104")
+
+            continue
+
+        project_attribute_property = get_project_attribute_property(
+            attribute_value=part.source_collection, attribute_to_match="source_collection", ev_project=ev_project
+        )
+        directory_path_template_l.append(f"<{project_attribute_property.field_name}>")
+
+        if part.source_collection == "activity":
+            directory_path_example_l.append(activity_example.drs_name)
+        elif part.source_collection == "experiment":
+            directory_path_example_l.append(experiment_example.drs_name)
+        elif part.source_collection == "frequency":
+            directory_path_example_l.append(frequency_example)
+        elif part.source_collection == "institution":
+            directory_path_example_l.append(institution_example.drs_name)
+        elif part.source_collection == "source":
+            directory_path_example_l.append(source_example.drs_name)
+        elif part.source_collection == "grid":
+            directory_path_example_l.append(grid_example.drs_name)
+        elif part.source_collection == "region":
+            directory_path_example_l.append(region_example.drs_name)
+        elif part.source_collection == "variant_label":
+            # Urgh
+            directory_path_example_l.append(variant_label_example)
+        elif part.source_collection == "branded_suffix":
+            # Urgh
+            directory_path_example_l.append(branded_suffix_example)
+        else:
+            example_drs_name = ev_api.get_all_terms_in_collection(ev_project.project_id, part.source_collection)[
+                0
+            ].drs_name
+            directory_path_example_l.append(example_drs_name)
+
+    directory_path_template = ev_project.drs_specs["directory"].separator.join(directory_path_template_l)
+    directory_path_example = ev_project.drs_specs["directory"].separator.join(directory_path_example_l)
+
+    filename_path_template_l = []
+    filename_path_example_l = []
+    for i, part in enumerate(ev_project.drs_specs["file_name"].parts):
+        if i > 0:
+            prefix = ev_project.drs_specs["file_name"].separator
+        else:
+            prefix = ""
+
+        if part.source_collection == "time_range":
+            # Maybe should be using catalogue specs rather than attr specs?
+            # Hard-coded CMOR weirdness
+            cmor_placeholder = "timeRange"
+            example_value = time_range_example
+
+        else:
+            project_attribute_property = get_project_attribute_property(
+                attribute_value=part.source_collection, attribute_to_match="source_collection", ev_project=ev_project
+            )
+            cmor_placeholder = project_attribute_property.field_name
+
+            if part.source_collection == "experiment":
+                example_value = experiment_example.drs_name
+            elif part.source_collection == "frequency":
+                example_value = frequency_example
+            elif part.source_collection == "source":
+                example_value = source_example.drs_name
+            elif part.source_collection == "grid":
+                example_value = grid_example.drs_name
+            elif part.source_collection == "region":
+                example_value = region_example.drs_name
+            elif part.source_collection == "variant_label":
+                # Urgh
+                example_value = variant_label_example
+            elif part.source_collection == "branded_suffix":
+                # Urgh
+                example_value = branded_suffix_example
+            else:
+                example_value = ev_api.get_all_terms_in_collection(ev_project.project_id, part.source_collection)[
+                    0
+                ].drs_name
+
+        if part.is_required:
+            filename_path_template_l.append(f"{prefix}<{cmor_placeholder}>")
+        else:
+            filename_path_template_l.append(f"[{prefix}<{cmor_placeholder}>]")
+
+        filename_path_example_l.append(f"{prefix}{example_value}")
+
+    filename_path_template_excl_ext = "".join(filename_path_template_l)
+    filename_path_template = f"{filename_path_template_excl_ext}.nc"
+    filename_path_example_excl_ext = "".join(filename_path_example_l)
+    filename_path_example = f"{filename_path_example_excl_ext}.nc"
+
+    res = CMORDRSDefinition(
+        directory_path_example=directory_path_example,
+        directory_path_template=directory_path_template,
+        filename_path_example=filename_path_example,
+        filename_path_template=filename_path_template,
+    )
+
+    return res
+
+
 def generate_cvs_table(project: str) -> CMORCVsTable:
     ev_project = ev_api.projects.get_project(project)
 
@@ -612,7 +785,6 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
         if attr_property.is_required:
             init_kwargs["required_global_attributes"].append(attr_property.field_name)
 
-        print((attr_property.source_collection, attr_property.field_name))
         # Logic: https://github.com/WCRP-CMIP/CMIP7-CVs/issues/271#issuecomment-3286291815
         if attr_property.field_name in [
             "Conventions",
@@ -661,7 +833,8 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
 
         init_kwargs[kwarg] = value
 
-    # TODO: add DRS
+    init_kwargs["DRS"] = get_cmor_drs_definition(ev_project)
+
     cmor_cvs_table = CMORCVsTable(**init_kwargs)
 
     return cmor_cvs_table

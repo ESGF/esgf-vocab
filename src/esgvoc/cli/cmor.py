@@ -36,6 +36,7 @@ def cmor_export_cvs_table(
     if out_path:
         with open(out_path, "w") as fh:
             json.dump(cvs_table_json, fh, **json_dump_settings)
+            fh.write("\n")
 
     else:
         print(json.dumps(cvs_table_json, **json_dump_settings))
