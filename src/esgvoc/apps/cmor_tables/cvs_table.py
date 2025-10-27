@@ -29,6 +29,22 @@ against these regular expressions.
 """
 
 
+class CMORFrequencyDefinition(BaseModel):
+    """
+    CMOR frequency definition
+    """
+
+    approx_interval: float
+    """
+    Approximate interval in days
+    """
+
+    description: str
+    """
+    Description
+    """
+
+
 class CMORSpecificLicenseDefinition(BaseModel):
     """
     CMOR-style specific license definition
@@ -73,9 +89,15 @@ class CMORCVsTable(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    archive_id: AllowedDict
+    # Note; not a required global attribute hence dropped
+    # archive_id: AllowedDict
+    # """
+    # Allowed values of `archive_id`
+    # """
+
+    activity_id: AllowedDict
     """
-    Allowed values of `archive_id`
+    Allowed values of `activity_id`
     """
 
     area_label: AllowedDict
@@ -95,7 +117,7 @@ class CMORCVsTable(BaseModel):
 
     creation_date: RegularExpressionValidators
     """
-    Allowed values of `creation_date`
+    Allowed patterns for `creation_date`
     """
 
     data_specs_version: str
@@ -110,7 +132,17 @@ class CMORCVsTable(BaseModel):
 
     forcing_index: RegularExpressionValidators
     """
-    Allowed values of `forcing_index`
+    Allowed patterns for `forcing_index`
+    """
+
+    frequency: AllowedDict
+    """
+    Allowed values of `frequency`
+    """
+
+    grid_label: AllowedDict
+    """
+    Allowed values of `grid_label`
     """
 
     horizontal_label: AllowedDict
@@ -120,7 +152,12 @@ class CMORCVsTable(BaseModel):
 
     initialization_index: RegularExpressionValidators
     """
-    Allowed values of `initialization_index`
+    Allowed patterns for `initialization_index`
+    """
+
+    institution_id: AllowedDict
+    """
+    Allowed values of `institution_id`
     """
 
     license: CMORLicenseDefinition
@@ -133,14 +170,34 @@ class CMORCVsTable(BaseModel):
     Allowed value of `mip_era`
     """
 
+    nominal_resolution: AllowedDict
+    """
+    Allowed values of `nominal_resolution`
+    """
+
     physics_index: RegularExpressionValidators
     """
-    Allowed values of `physics_index`
+    Allowed patterns for `physics_index`
+    """
+
+    product: AllowedDict
+    """
+    Allowed values of `product`
     """
 
     realization_index: RegularExpressionValidators
     """
-    Allowed values of `realization_index`
+    Allowed patterns for `realization_index`
+    """
+
+    realm: AllowedDict
+    """
+    Allowed values of `realm`
+    """
+
+    region: AllowedDict
+    """
+    Allowed values of `region`
     """
 
     required_global_attributes: list[str]
@@ -153,9 +210,19 @@ class CMORCVsTable(BaseModel):
     Allowed values of `temporal_label`
     """
 
+    tracking_id: RegularExpressionValidators
+    """
+    Allowed patterns for `tracking_id`
+    """
+
     variable_id: AllowedDict
     """
     Allowed values of `variable_id`
+    """
+
+    variant_label: RegularExpressionValidators
+    """
+    Allowed patterns for `variant_label`
     """
 
     vertical_label: AllowedDict
@@ -296,12 +363,51 @@ def get_cmor_license_definition(
     return res
 
 
+def get_approx_interval(interval: float, units: str) -> float:
+    try:
+        import pint
+
+        ur = pint.get_application_registry()
+    except ImportError as exc:
+        msg = "Missing optional dependency `pint`, please install"
+        raise ImportError(msg) from exc
+
+    if units == "month":
+        # Special case, month is 30 days
+        res = interval * 30.0
+    else:
+        res = ur.Quantity(interval, units).to("day").m
+
+    return res
+
+
+def get_cmor_frequency_definitions(
+    source_collection: str, ev_project: ev_api.project_specs.ProjectSpecs
+) -> dict[str, CMORFrequencyDefinition]:
+    terms = ev_api.get_all_terms_in_collection(ev_project.project_id, source_collection)
+
+    res = {
+        v.drs_name: CMORFrequencyDefinition(
+            description=v.description,
+            approx_interval=get_approx_interval(v.interval, units=v.units),
+        )
+        if v.interval
+        # I'm still not convinced that it wouldn't be simpler to use the same schema for all types
+        else "fixed (time invariant) field"
+        for v in terms
+    }
+
+    return res
+
+
 def generate_cvs_table(project: str) -> CMORCVsTable:
     ev_project = ev_api.projects.get_project(project)
 
     init_kwargs = {"required_global_attributes": []}
     for attr_property in ev_project.attr_specs:
         if (attr_property.field_name, attr_property.source_collection) in [
+            # ("activity_id", "activity"),
+            # Note; not a required global attribute hence dropped
             # ("archive_id", "archive"),
             # ("area_label", "area_label"),
             # ("branding_suffix", "branded_suffix"),
@@ -310,28 +416,24 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             # ("conventions", "dataConventions"),
             # ("data_specs_version", "data_specs_version"),
             # ("drs_specs", "drs_specs"),
+            ("experiment_id", "experiment"),
             # ("forcing_index", "forcing"),
+            # ("frequency", "reportingInterval"),
+            # ("grid", "gridLabel"),
             # ("horizontal_label", "horizontal_label"),
             # ("initialisation_index", "initialization"),
+            # ("institution_id", "institution"),
             # ("mip_era", "mip_era"),
             # ("physic_index", "physics"),
             # ("realisation_index", "realisation"),
-            # ("temporal_label", "temporal_label"),
-            # ("vertical_label", "vertical_label"),
-            ("frequency", "reportingInterval"),
-            ("region", "region"),
-            ("grid", "gridLabel"),
+            # ("realm", "realm"),
+            # ("region", "region"),
             ("source_id", "source"),
-            ("experiment_id", "experiment"),
-            ("variant_label", "datasetVariant"),
-            ("host_collection", "hostCollection"),
-            ("activity_id", "activity"),
-            ("directory_date", "datasetVersion"),
-            ("time_range", "timeRange"),
-            ("institution_id", "institution"),
-            ("realm", "realm"),
-            ("license", "license"),
-            ("tracking_id", "uniqueField"),
+            # ("temporal_label", "temporal_label"),
+            # ("tracking_id", "uniqueField"),
+            # ("variant_label", "datasetVariant"),
+            # ("vertical_label", "vertical_label"),
+            # ("host_collection", "hostCollection"),
         ]:
             continue
 
@@ -358,7 +460,16 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             value = get_cmor_license_definition(attr_property.source_collection, ev_project)
             kwarg = "license"
 
+        elif attr_property.field_name == "frequency":
+            value = get_cmor_frequency_definitions(attr_property.source_collection, ev_project)
+            kwarg = attr_property.field_name
+
         elif attr_property.field_name == "experiment_id":
+            raise NotImplementedError
+            # value = get_cmor_license_definition(attr_property.source_collection, ev_project)
+            # kwarg = attr_property.field_name
+
+        elif attr_property.field_name == "source_id":
             raise NotImplementedError
             # value = get_cmor_license_definition(attr_property.source_collection, ev_project)
             # kwarg = attr_property.field_name
@@ -380,6 +491,7 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
 
         init_kwargs[kwarg] = value
 
+    # TODO: add DRS
     cmor_cvs_table = CMORCVsTable(**init_kwargs)
 
     return cmor_cvs_table
