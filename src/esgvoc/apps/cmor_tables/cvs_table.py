@@ -6,6 +6,7 @@ It should be in CMOR, as CMOR knows the structure it needs,
 not esgvoc. Anyway, can do that later.
 """
 
+from functools import partial
 from typing import Any, TypeAlias
 
 from pydantic import BaseModel, ConfigDict, HttpUrl
@@ -27,6 +28,71 @@ List of values which are assumed to be regular expressions
 Attribute values provided by teams are then validated
 against these regular expressions.
 """
+
+
+class CMORExperimentDefinition(BaseModel):
+    """
+    CMOR experiment definition
+    """
+
+    activity_id: str
+    """
+    Activity ID to which this experiment belongs
+    """
+
+    required_model_components: RegularExpressionValidators
+    """
+    Required model components to run this experiment
+    """
+
+    additional_allowed_model_components: RegularExpressionValidators
+    """
+    Additional model components that can be included when running this experiment
+    """
+
+    description: str
+    """
+    Experiment description
+    """
+
+    experiment: str
+    """
+    Experiment description (same as description)
+    """
+
+    # TODO: check if we should switch to timestamps
+    start_year: int | None
+    """Start year of the experiment"""
+
+    end_year: int | None
+    """End year of the experiment"""
+
+    min_number_yrs_per_sim: int | None
+    """Minimum number of years of simulation required"""
+
+    experiment_id: str
+    """
+    Experiment ID
+    """
+
+    # # Not a thing anymore, hence remove
+    # host_collection: str
+    # """
+    # Host collection of this experiment
+    # """
+
+    parent_activity_id: str | None
+    """Activity ID for the parent of this experiment"""
+
+    parent_experiment_id: str | None
+    """Experiment ID for the parent of this experiment"""
+
+    tier: int
+    """
+    Tier i.e. priority of this experiment
+
+    Lower is higher priority i.e. 1 is the highest priority
+    """
 
 
 class CMORFrequencyDefinition(BaseModel):
@@ -128,6 +194,11 @@ class CMORCVsTable(BaseModel):
     drs_specs: AllowedDict
     """
     Allowed values of `drs_specs`
+    """
+
+    experiment_id: dict[str, CMORExperimentDefinition]
+    """
+    CMOR-style experiment definitions
     """
 
     forcing_index: RegularExpressionValidators
@@ -381,6 +452,32 @@ def get_approx_interval(interval: float, units: str) -> float:
     return res
 
 
+def get_cmor_experiment_id_definitions(
+    source_collection: str, ev_project: ev_api.project_specs.ProjectSpecs
+) -> dict[str, CMORExperimentDefinition]:
+    terms = ev_api.get_all_terms_in_collection(ev_project.project_id, source_collection)
+
+    get_term = partial(ev_api.get_term_in_project, ev_project.project_id)
+    res = {}
+    for v in terms:
+        res[v.drs_name] = CMORExperimentDefinition(
+            activity_id=get_term(v.activity).drs_name,
+            required_model_components=[get_term(vv).drs_name for vv in v.required_model_components],
+            additional_allowed_model_components=[get_term(vv).drs_name for vv in v.additional_allowed_model_components],
+            description=v.description,
+            experiment=v.description,
+            start_year=v.start_timestamp.year if v.start_timestamp else v.start_timestamp,
+            end_year=v.end_timestamp.year if v.end_timestamp else v.end_timestamp,
+            min_number_yrs_per_sim=v.min_number_yrs_per_sim,
+            experiment_id=v.drs_name,
+            parent_activity_id=v.parent_activity.drs_name if v.parent_activity else v.parent_activity,
+            parent_experiment_id=v.parent_experiment.drs_name if v.parent_experiment else v.parent_experiment,
+            tier=v.tier,
+        )
+
+    return res
+
+
 def get_cmor_frequency_definitions(
     source_collection: str, ev_project: ev_api.project_specs.ProjectSpecs
 ) -> dict[str, CMORFrequencyDefinition]:
@@ -405,38 +502,6 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
 
     init_kwargs = {"required_global_attributes": []}
     for attr_property in ev_project.attr_specs:
-        if (attr_property.field_name, attr_property.source_collection) in [
-            # ("activity_id", "activity"),
-            # Note; not a required global attribute hence dropped
-            # ("archive_id", "archive"),
-            # ("area_label", "area_label"),
-            # ("branding_suffix", "branded_suffix"),
-            # ("branded_variable", "brandedVariable"),
-            # ("creation_date", "dateCreated"),
-            # ("conventions", "dataConventions"),
-            # ("data_specs_version", "data_specs_version"),
-            # ("drs_specs", "drs_specs"),
-            ("experiment_id", "experiment"),
-            # ("forcing_index", "forcing"),
-            # ("frequency", "reportingInterval"),
-            # ("grid", "gridLabel"),
-            # ("horizontal_label", "horizontal_label"),
-            # ("initialisation_index", "initialization"),
-            # ("institution_id", "institution"),
-            # ("mip_era", "mip_era"),
-            # ("physic_index", "physics"),
-            # ("realisation_index", "realisation"),
-            # ("realm", "realm"),
-            # ("region", "region"),
-            ("source_id", "source"),
-            # ("temporal_label", "temporal_label"),
-            # ("tracking_id", "uniqueField"),
-            # ("variant_label", "datasetVariant"),
-            # ("vertical_label", "vertical_label"),
-            # ("host_collection", "hostCollection"),
-        ]:
-            continue
-
         if attr_property.is_required:
             init_kwargs["required_global_attributes"].append(attr_property.field_name)
 
@@ -465,11 +530,11 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             kwarg = attr_property.field_name
 
         elif attr_property.field_name == "experiment_id":
-            raise NotImplementedError
-            # value = get_cmor_license_definition(attr_property.source_collection, ev_project)
-            # kwarg = attr_property.field_name
+            value = get_cmor_experiment_id_definitions(attr_property.source_collection, ev_project)
+            kwarg = attr_property.field_name
 
         elif attr_property.field_name == "source_id":
+            continue
             raise NotImplementedError
             # value = get_cmor_license_definition(attr_property.source_collection, ev_project)
             # kwarg = attr_property.field_name
