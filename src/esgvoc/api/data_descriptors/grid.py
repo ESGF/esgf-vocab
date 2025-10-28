@@ -3,6 +3,7 @@ Model (i.e. schema/definition) of the grid data descriptor
 """
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.region import Region
 
 
 class Grid(PlainTermDataDescriptor):
@@ -25,15 +26,15 @@ class Grid(PlainTermDataDescriptor):
     Grids with different labels are different.
     """
 
-    # TODO: consider whether there is a tight coupling to region or not.
-    # Let's see where https://github.com/WCRP-CMIP/CMIP7-CVs/issues/202#issuecomment-3455040709
-    # goes.
-    # Whatever the answer, we can't make this the same as HorizontalGrid.
-    # If grid defines the region, then we need to use CMIP regions here,
-    # not EMD regions.
-    #    We can't use EMD regions because they can include "limited_area".
-    #    If we forced EMD regions to be the same as CMIP regions,
-    #    then we could make grid and horizontal grid the same
-    #    (assuming that grid defines the region).
-    # If grid does not define the region, then the data models
-    # for grid and horizontal grid are simply different.
+    region: Region
+    """
+    Region represented by this grid
+    """
+    # Developer note:
+    # There is a tight coupling to region
+    # (see https://github.com/WCRP-CMIP/CMIP7-CVs/issues/202#issue-3084934841).
+    # However, this region can't be the same as the regions used by EMD,
+    # as EMD has the 'limited_area' region, but that's not something
+    # which makes sense in the CMIP context (it's too vague).
+    # As a result, we need to have both Grid (CMIP) and HorizontalGrid (EMD)
+    # and both Region (CMIP) and HorizontalGridRegion (EMD).
