@@ -654,7 +654,8 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             source_example = source
             break
     else:
-        raise AssertionError
+        msg = f"No example source found for {institution_example.id}"
+        raise AssertionError(msg)
 
     grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid")[0]
     region_example = grid_example.region
