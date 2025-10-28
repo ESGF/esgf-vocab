@@ -11,26 +11,23 @@ from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.horizontal_grid_arrangement import HorizontalGridArrangement
 from esgvoc.api.data_descriptors.horizontal_grid_cell_variable_type import HorizontalGridCellVariableType
 from esgvoc.api.data_descriptors.horizontal_grid_mapping import HorizontalGridMapping
+from esgvoc.api.data_descriptors.horizontal_grid_region import HorizontalGridRegion
 from esgvoc.api.data_descriptors.horizontal_grid_temporal_refinement import HorizontalGridTemporalRefinement
 from esgvoc.api.data_descriptors.horizontal_grid_truncation_method import HorizontalGridTruncationMethod
 from esgvoc.api.data_descriptors.horizontal_grid_type import HorizontalGridType
 from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
-from esgvoc.api.data_descriptors.region import Region
 
 
 class HorizontalGrid(PlainTermDataDescriptor):
     """
     Horizontal grid
 
-    Examples: "g1", "g2", "g33"
+    Examples: [TODO: discuss what these should be.
+    They shouldn't be the same as :py:class:`Grid`
+    because :py:class:`Grid` and :py:class:`Region`
+    aren't linked, whereas EMD has to enforce that link.]
 
-    The value has no intrinsic meaning within the CVs.
-    However, the other attributes of this model
-    provide information about the grid
-    and in other external sources (to be confirmed which)
-    further resources can be found e.g. cell areas.
-
-    Horizontal grids with the same id (also referred to as 'grid label')
+    Horizontal grids with the same id
     are identical (details on how we check identical are to come, for discussion,
     see https://github.com/WCRP-CMIP/CMIP7-CVs/issues/202)
     and can be used by more than one model or model component.
@@ -47,15 +44,10 @@ class HorizontalGrid(PlainTermDataDescriptor):
     Horizontal grid mapping
     """
 
-    region: Region
+    region: HorizontalGridRegion
     """
-    Region
+    Horizontal grid region
     """
-    # Note: do not merge until the conversation about the naming convention
-    # here is resolved:
-    # https://github.com/ESGF/esgf-vocab/pull/156/files#r2453875274
-    # Depending on which way this goes, we might need to introduce RegionEMD,
-    # which will differ from Region (as used in the DR).
 
     temporal_refinement: HorizontalGridTemporalRefinement
     """
