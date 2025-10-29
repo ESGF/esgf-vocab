@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from itertools import product
+from itertools import combinations, product
 from pathlib import Path
 from typing import Sequence
 
@@ -9,7 +9,7 @@ from sqlmodel import Session
 
 from esgvoc.api import projects, search
 from esgvoc.api.project_specs import CatalogProperty, DrsType
-from esgvoc.core.constants import DRS_SPECS_JSON_KEY, PATTERN_JSON_KEY
+from esgvoc.core.constants import COMPOSITE_REQUIRED_KEY, DRS_SPECS_JSON_KEY, PATTERN_JSON_KEY
 from esgvoc.core.db.models.project import PCollection, PTerm, TermKind
 from esgvoc.core.db.models.universe import UTerm
 from esgvoc.core.exceptions import EsgvocException, EsgvocNotFoundError, EsgvocNotImplementedError, EsgvocValueError
@@ -93,9 +93,24 @@ def _accumulate_resolved_part(resolved_part: list,
     return has_pattern
 
 
+def _generate_combinations(items_parts: list[list], required_parts: list[bool]) -> list[list]:
+    number_of_parts = len(items_parts)
+    required_indexes = {index for index, required in enumerate(required_parts) if required}
+    result = list()
+    # Generate all the combination of item lists.
+    for r in range(1, number_of_parts + 1):  # Some optional list may or may not be included.
+        # According to the doc, combination respect the list order.
+        for index_subset in combinations(range(number_of_parts), r):
+            # Only keep combinations with the required item lists.
+            if required_indexes.issubset(index_subset):
+                result.append([items_parts[index] for index in index_subset])
+    return result
+
+
 def _process_composite_term(term: UTerm | PTerm, universe_session: Session,
                             project_session: Session) -> tuple[str, list[str | dict], bool]:
-    resolved_parts = list()
+    items_parts: list[list[str]] = list()
+    required_parts: list[bool] = list()
     separator, parts = projects._get_composite_term_separator_parts(term)
     has_pattern = False
     for part in parts:
@@ -108,18 +123,21 @@ def _process_composite_term(term: UTerm | PTerm, universe_session: Session,
         else:
             has_pattern = _accumulate_resolved_part(resolved_part, resolved_term, universe_session,
                                                     project_session)
-        resolved_parts.append(resolved_part)
+        items_parts.append(resolved_part)
+        required_parts.append(part[COMPOSITE_REQUIRED_KEY])
     property_values: list[str | dict] = list()
-    for combination in product(*resolved_parts):
-        # Patterns terms are meant to be validated individually.
-        # So their regex are defined as a whole (begins by a ^, ends by a $).
-        # As the pattern is a concatenation of plain or regex, multiple ^ and $ can exist.
-        # The later, must be removed.
-        tmp = separator.join(combination)
-        if has_pattern:
-            tmp = f'^{tmp}$'
-            tmp = {'pattern': tmp}
-        property_values.append(tmp)
+    combinations = _generate_combinations(items_parts, required_parts)
+    for combination in combinations:
+        for product_result in product(*combination):
+            # Patterns terms are meant to be validated individually.
+            # So their regex are defined as a whole (begins by a ^, ends by a $).
+            # As the pattern is a concatenation of plain or regex, multiple ^ and $ can exist.
+            # The later, must be removed.
+            tmp = separator.join(product_result)
+            if has_pattern:
+                tmp = f'^{tmp}$'
+                tmp = {'pattern': tmp}
+            property_values.append(tmp)
     property_key = 'anyOf' if has_pattern else 'enum'
     return property_key, property_values, has_pattern
 
