@@ -71,8 +71,9 @@ class CatalogProperty(BaseModel):
     A dataset property described in a catalog.
     """
 
-    source_collection: str
-    "The project collection that originated the property."
+    source_collection: str | None
+    "The project collection that originated the property. `None` value means that the property "
+    "is not related to any collection of the project. So the property has limited specifications."
     catalog_field_value_type: str
     "The type of the field value."
     is_required: bool

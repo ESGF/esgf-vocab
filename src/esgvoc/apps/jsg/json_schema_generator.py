@@ -177,56 +177,62 @@ class CatalogPropertiesJsonTranslator:
         return True
 
     def _translate_property_value(self, catalog_property: CatalogProperty) \
-            -> tuple[str, str | list[str] | list[str | dict]]:
-        property_value: str | list[str] | list[str | dict]
-        if catalog_property.source_collection not in self.collections:
+            -> tuple[str | None, str | list[str] | list[str | dict] | None]:
+        property_key: str | None
+        property_value: str | list[str] | list[str | dict] | None
+
+        # Properties unrelated to collections of project.
+        if catalog_property.source_collection is None:
+            property_key = None
+            property_value = None
+        elif catalog_property.source_collection not in self.collections:
             raise EsgvocNotFoundError(f"collection '{catalog_property.source_collection}' is not found")
-
-        if catalog_property.source_collection_key is None:
-            source_collection_key = DRS_SPECS_JSON_KEY
         else:
-            source_collection_key = catalog_property.source_collection_key
+            if catalog_property.source_collection_key is None:
+                source_collection_key = DRS_SPECS_JSON_KEY
+            else:
+                source_collection_key = catalog_property.source_collection_key
 
-        if catalog_property.source_collection_term is None:
-            collection = self.collections[catalog_property.source_collection]
-            match collection.term_kind:
-                case TermKind.PLAIN:
-                    property_key, property_value = _process_col_plain_terms(
-                        collection=collection,
-                        source_collection_key=source_collection_key)
-                case TermKind.COMPOSITE:
-                    property_key, property_value, _ = _process_col_composite_terms(
-                        collection=collection,
-                        universe_session=self.universe_session,
-                        project_session=self.project_session)
-                case TermKind.PATTERN:
-                    property_key, property_value = _process_col_pattern_terms(collection)
-                case _:
-                    msg = f"unsupported term kind '{collection.term_kind}'"
-                    raise EsgvocNotImplementedError(msg)
-        else:
-            pterm_found = projects._get_term_in_collection(
-                session=self.project_session,
-                collection_id=catalog_property.source_collection,
-                term_id=catalog_property.source_collection_term)
-            if pterm_found is None:
-                raise EsgvocValueError(f"term '{catalog_property.source_collection_term}' is not " +
-                                       f"found in collection '{catalog_property.source_collection}'")
-            match pterm_found.kind:
-                case TermKind.PLAIN:
-                    property_key, property_value = _process_plain_term(
-                        term=pterm_found,
-                        source_collection_key=source_collection_key)
-                case TermKind.COMPOSITE:
-                    property_key, property_value, _ = _process_composite_term(
-                        term=pterm_found,
-                        universe_session=self.universe_session,
-                        project_session=self.project_session)
-                case TermKind.PATTERN:
-                    property_key, property_value = _process_pattern_term(term=pterm_found)
-                case _:
-                    msg = f"unsupported term kind '{pterm_found.kind}'"
-                    raise EsgvocNotImplementedError(msg)
+            if catalog_property.source_collection_term is None:
+                collection = self.collections[catalog_property.source_collection]
+                match collection.term_kind:
+                    case TermKind.PLAIN:
+                        property_key, property_value = _process_col_plain_terms(
+                            collection=collection,
+                            source_collection_key=source_collection_key)
+                    case TermKind.COMPOSITE:
+                        property_key, property_value, _ = _process_col_composite_terms(
+                            collection=collection,
+                            universe_session=self.universe_session,
+                            project_session=self.project_session)
+                    case TermKind.PATTERN:
+                        property_key, property_value = _process_col_pattern_terms(collection)
+                    case _:
+                        msg = f"unsupported term kind '{collection.term_kind}'"
+                        raise EsgvocNotImplementedError(msg)
+            else:
+                pterm_found = projects._get_term_in_collection(
+                    session=self.project_session,
+                    collection_id=catalog_property.source_collection,
+                    term_id=catalog_property.source_collection_term)
+                if pterm_found is None:
+                    raise EsgvocValueError(f"term '{catalog_property.source_collection_term}' is not " +
+                                           f"found in collection '{catalog_property.source_collection}'")
+                match pterm_found.kind:
+                    case TermKind.PLAIN:
+                        property_key, property_value = _process_plain_term(
+                            term=pterm_found,
+                            source_collection_key=source_collection_key)
+                    case TermKind.COMPOSITE:
+                        property_key, property_value, _ = _process_composite_term(
+                            term=pterm_found,
+                            universe_session=self.universe_session,
+                            project_session=self.project_session)
+                    case TermKind.PATTERN:
+                        property_key, property_value = _process_pattern_term(term=pterm_found)
+                    case _:
+                        msg = f"unsupported term kind '{pterm_found.kind}'"
+                        raise EsgvocNotImplementedError(msg)
         return property_key, property_value
 
     def translate_property(self, catalog_property: CatalogProperty) -> _CatalogProperty:
@@ -242,7 +248,8 @@ class CatalogPropertiesJsonTranslator:
             field_value['type'] = catalog_property.catalog_field_value_type
             root_property = field_value
 
-        root_property[property_key] = property_value
+        if (property_key is not None) and (property_value is not None):
+            root_property[property_key] = property_value
 
         if catalog_property.catalog_field_name is None:
             attribute_name = catalog_property.source_collection
