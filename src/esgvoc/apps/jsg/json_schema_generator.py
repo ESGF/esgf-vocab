@@ -317,7 +317,7 @@ def generate_json_schema(project_id: str) -> dict:
                 result = json.loads(json_raw_str)
                 return result
             except Exception as e:
-                raise EsgvocException(f'JSON error: {e}') from e
+                raise EsgvocException(f'JSON error: {e}. Dump raw:\n{json_raw_str}') from e
         else:
             raise EsgvocNotFoundError(f"catalog properties for the project '{project_id}' " +
                                       "are missing")
