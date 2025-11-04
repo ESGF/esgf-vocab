@@ -1,4 +1,4 @@
-from pydantic import Field
+from pydantic import Field, validator
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
@@ -12,7 +12,10 @@ class Experiment(PlainTermDataDescriptor):
     under various scenarios and conditions.
     """
 
-    activity: list[str] = Field(default_factory=list)
+    activity: list[str] = Field(
+        default_factory=list,
+        description="Primary activity under which the experiment will be published.",
+    )
     description: str
     tier: int | None
     experiment_id: str
@@ -25,3 +28,11 @@ class Experiment(PlainTermDataDescriptor):
     min_number_yrs_per_sim: int | None
     parent_activity_id: list[str] | None
     parent_experiment_id: list[str] | None
+
+    @validator("activity")
+    def primary_activity_field(cls, v):
+        if not isinstance(v, list):
+            raise TypeError("activity must be a list containing exactly one item")
+        if len(v) != 1:
+            raise ValueError("activity must be a list containing exactly one item")
+        return v
