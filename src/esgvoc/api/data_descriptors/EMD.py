@@ -9,82 +9,21 @@ All CV fields are properly typed using their respective CV models instead of pla
 """
 
 from __future__ import annotations
-from typing import List, Optional, Union
-from pydantic import BaseModel, Field, field_validator
 
-from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, PlainTermDataDescriptor
+from typing import List, Optional
+
+from pydantic import BaseModel, Field, field_validator
 
 # Import existing CV models from other files
 from esgvoc.api.data_descriptors.calendar_new import Calendar
 from esgvoc.api.data_descriptors.component_type_new import ComponentType
-from esgvoc.api.data_descriptors.grid_arrangement_new import GridArrangement
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.grid_coordinate_new import Coordinate
-from esgvoc.api.data_descriptors.grid_mapping_new import GridMapping
-from esgvoc.api.data_descriptors.region import Region
-from esgvoc.api.data_descriptors.resolution_new import EMDResolution
-from esgvoc.api.data_descriptors.temporal_refinement_new import TemporalRefinement
-
+from esgvoc.api.data_descriptors.horizontal_grid import HorizontalGrid
 
 # ============================================================================
 # NEW CV MODELS
 # ============================================================================
-
-
-class GridType(PlainTermDataDescriptor):
-    """
-    Horizontal grid type CV (7.3 grid CV).
-
-    Describes the method for distributing grid points over the sphere.
-    Options include: regular_latitude_longitude, regular_gaussian, reduced_gaussian,
-    spectral_gaussian, tripolar, cubed_sphere, unstructured_triangular,
-    unstructured_polygonal, plane_projection, none, etc.
-    """
-
-    pass
-
-
-class CellVariableType(PlainTermDataDescriptor):
-    """
-    Cell variable type CV (7.8 cell_variable_type CV).
-
-    Types of physical variables that are carried on the cells described by the horizontal grid.
-    Options include: mass, velocity_x, velocity_y
-    """
-
-    pass
-
-
-class MeshLocation(PlainTermDataDescriptor):
-    """
-    Mesh location CV (7.9 mesh_location CV).
-
-    Mesh location of cells on an unstructured grid.
-    Options include: node, edge, face
-    """
-
-    pass
-
-
-class HorizontalUnits(PlainTermDataDescriptor):
-    """
-    Horizontal units CV (7.10 horizontal_units CV).
-
-    Physical units of horizontal grid resolution values.
-    Options include: km, degree
-    """
-
-    pass
-
-
-class TruncationMethod(PlainTermDataDescriptor):
-    """
-    Truncation method CV (7.11 truncation_method CV).
-
-    Method for truncating the spherical harmonic representation of a spectral model.
-    Options include: triangular, rhomboidal
-    """
-
-    pass
 
 
 class VerticalUnits(PlainTermDataDescriptor):
@@ -243,138 +182,6 @@ class NativeVerticalGrid(DataDescriptor):
 
 
 # ============================================================================
-# NATIVE HORIZONTAL GRID
-# ============================================================================
-
-
-class NativeHorizontalGrid(PlainTermDataDescriptor):
-    """
-    Native horizontal grid description (Section 4.1).
-
-    The model component's native horizontal grid is described by a subset of the following properties.
-    """
-
-    grid_label: Optional[str] = Field(
-        default=None,
-        description="A free-text identifier that is intended to characterize all of the other grid properties. For CMIP7, grids with the same grid_label may be assumed to be identical. Omit when not required.",
-    )
-    grid: str | GridType = Field(
-        description="The horizontal grid type, i.e. the method of distributing grid points over the sphere. Taken from 7.3 grid CV. If there is no horizontal grid, then the value 'none' must be selected."
-    )
-    grid_mapping: str | GridMapping = Field(
-        description="The name of the coordinate reference system of the horizontal coordinates. Taken from 7.4 grid_mapping CV."
-    )
-    region: str | Region = Field(
-        description="The geographical region, or regions, over which the component is simulated. Taken from 7.5 region CV."
-    )
-    temporal_refinement: str | TemporalRefinement = Field(
-        description="The grid temporal refinement, indicating how the distribution of grid cells varies with time. Taken from 7.6 temporal_refinement CV."
-    )
-    arrangement: str | GridArrangement = Field(
-        description="A characterisation of the relative positions on a grid of mass-, velocity- or flux-related fields. Taken from 7.7 arrangement CV."
-    )
-    cell_variable_type: Optional[List[str | CellVariableType]] = Field(
-        default=None,
-        description="The type, or types, of physical variables that are carried on the cells described by the horizontal grid. Taken from 7.8 cell_variable_type CV. Omit when not applicable.",
-    )
-    mesh_location: Optional[str | MeshLocation] = Field(
-        default=None,
-        description="The mesh location of cells on an unstructured grid. Taken from 7.9 mesh_location CV. Omit when not applicable.",
-    )
-    resolution_x: Optional[float] = Field(
-        default=None,
-        description="The size of grid cells in the X direction. The value's physical units are given by the horizontal_units property. Report only when cell sizes are identical or else reasonably uniform.",
-        gt=0,
-    )
-    resolution_y: Optional[float] = Field(
-        default=None,
-        description="The size of grid cells in the Y direction. The value's physical units are given by the horizontal_units property. Report only when cell sizes are identical or else reasonably uniform.",
-        gt=0,
-    )
-    horizontal_units: Optional[str | HorizontalUnits] = Field(
-        default=None,
-        description="The physical units of the resolution_x and resolution_y property values. Taken from 7.10 horizontal_units CV.",
-    )
-    southernmost_latitude: Optional[float] = Field(
-        default=None,
-        description="The southernmost grid cell latitude, in degrees north. Must be >= -90 and <= 90. Cells for which no calculations are made are included. Omit when not applicable.",
-        ge=-90,
-        le=90,
-    )
-    westernmost_longitude: Optional[float] = Field(
-        default=None,
-        description="The westernmost longitude, in degrees east, of the southernmost grid cells. Must be >= 0 and < 360. Omit when not applicable.",
-        ge=0,
-        lt=360,
-    )
-    n_cells: int = Field(description="The total number of cells in the horizontal grid.", ge=1)
-    truncation_method: Optional[str | TruncationMethod] = Field(
-        default=None,
-        description="The method for truncating the spherical harmonic representation of a spectral model. Taken from 7.11 truncation_method CV.",
-    )
-    truncation_number: Optional[int] = Field(
-        default=None, description="The zonal (east-west) wave number at which a spectral model is truncated.", ge=1
-    )
-    resolution_range_km: List[float] = Field(
-        description="The minimum and maximum resolution (in km) of cells of the horizontal grid.",
-        min_length=2,
-        max_length=2,
-    )
-    mean_resolution_km: float = Field(description="The mean resolution (in km) of cells of the horizontal grid.", gt=0)
-    nominal_resolution: str | EMDResolution = Field(
-        description="The nominal resolution characterises the approximate resolution of a horizontal grid. Taken from 7.12 nominal_resolution CV."
-    )
-
-    @field_validator(
-        "grid", "grid_mapping", "region", "temporal_refinement", "arrangement", "nominal_resolution", mode="before"
-    )
-    @classmethod
-    def validate_required_strings(cls, v):
-        """Validate that required string fields are not empty if they are strings."""
-        if isinstance(v, str):
-            if not v.strip():
-                raise ValueError("Field cannot be empty")
-            return v.strip()
-        return v
-
-    @field_validator("horizontal_units", mode="before")
-    @classmethod
-    def validate_units_requirement(cls, v, info):
-        """Validate that horizontal_units is provided when resolution values are set."""
-        has_resolution = any(info.data.get(field) is not None for field in ["resolution_x", "resolution_y"])
-
-        if has_resolution and not v:
-            raise ValueError("horizontal_units is required when resolution_x or resolution_y are set")
-        return v
-
-    @field_validator("resolution_range_km")
-    @classmethod
-    def validate_resolution_range(cls, v):
-        """Validate that resolution range has exactly 2 values and min <= max."""
-        if len(v) != 2:
-            raise ValueError("resolution_range_km must contain exactly 2 values [min, max]")
-        if v[0] > v[1]:
-            raise ValueError("resolution_range_km: minimum must be <= maximum")
-        if any(val <= 0 for val in v):
-            raise ValueError("resolution_range_km values must be > 0")
-        return v
-
-    @field_validator("mean_resolution_km")
-    @classmethod
-    def validate_mean_resolution_in_range(cls, v, info):
-        """Validate that mean resolution is within the resolution range."""
-        if "resolution_range_km" in info.data and info.data["resolution_range_km"]:
-            range_km = info.data["resolution_range_km"]
-            if not (range_km[0] <= v <= range_km[1]):
-                raise ValueError(
-                    f"mean_resolution_km ({v}) must be between resolution_range_km min ({range_km[0]}) and max ({
-                        range_km[1]
-                    })"
-                )
-        return v
-
-
-# ============================================================================
 # EMD MODEL COMPONENT
 # ============================================================================
 
@@ -409,7 +216,7 @@ class EMDModelComponent(PlainTermDataDescriptor):
         default=None,
         description="The model components (identified by their component properties) with which this component is 'coupled'. Taken from 7.1 component CV. Omit when this component is embedded in another component.",
     )
-    native_horizontal_grid: NativeHorizontalGrid = Field(
+    native_horizontal_grid: HorizontalGrid = Field(
         description="A standardised description of the model component's horizontal grid."
     )
     native_vertical_grid: NativeVerticalGrid = Field(
