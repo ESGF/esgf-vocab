@@ -1,20 +1,39 @@
 import json
+from string import Template
 
 from jsonschema import validate
 
+from esgvoc.api import projects
 from esgvoc.apps.jsg import json_schema_generator as jsg
 from tests.api_inputs import project_id  # noqa: F401
 
-json_example = json.loads(
+_COMPLIANCE_PROJECT_TESTED = 'cmip6'
+
+project_specs_being_tested = projects.get_project(_COMPLIANCE_PROJECT_TESTED)
+
+if project_specs_being_tested is not None and \
+   project_specs_being_tested.catalog_specs is not None:
+  project_version = project_specs_being_tested.catalog_specs.version
+  project_extensions = project_specs_being_tested.catalog_specs.catalog_properties.extensions
+  extension_url_template = project_specs_being_tested.catalog_specs.catalog_properties.url_template
+  extension_urls = list()
+  for project_extension in project_extensions:
+     extension_url = extension_url_template.format(extension_name=project_extension.name,
+                                                   extension_version=project_extension.version)
+     extension_urls.append(extension_url)
+  extension_url = extension_url_template.format(extension_name=_COMPLIANCE_PROJECT_TESTED,
+                                                extension_version=project_version)
+  extension_urls.append(extension_url)
+else:
+   raise RuntimeError('unable to compute extension URL')
+
+
+json_template = Template(
 """
 {
   "type": "Feature",
   "stac_version": "1.1.0",
-  "stac_extensions": [
-    "https://stac-extensions.github.io/cmip6/v3.0.0/schema.json",
-    "https://stac-extensions.github.io/file/v2.1.0/schema.json",
-    "https://stac-extensions.github.io/alternate-assets/v2.1.0/schema.json"
-  ],
+  "stac_extensions": $extension_urls,
   "id": "CMIP6.ScenarioMIP.THU.CIESM.ssp585.r1i1p1f1.Amon.rsus.gr.v20200806",
   "collection": "CMIP6",
   "geometry": {
@@ -160,10 +179,12 @@ json_example = json.loads(
   }
 }
 """)
+str_extension_urls = "[" + ", ".join(f'"{url}"' for url in extension_urls) + "]"
+json_example = json.loads(json_template.substitute(extension_urls=str_extension_urls))
 
 
 def test_cmip6_compliance() -> None:
-    json_schema = jsg.generate_json_schema('cmip6')
+    json_schema = jsg.generate_json_schema(_COMPLIANCE_PROJECT_TESTED)
     validate(instance=json_example, schema=json_schema)
 
 
