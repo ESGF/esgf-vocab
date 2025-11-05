@@ -18,6 +18,11 @@
         },
         {
           "contains": {
+            "const": "https://stac-extensions.github.io/alternate-assets/{{ alternate_assets_extension_version }}/schema.json"
+          }
+        },
+        {
+          "contains": {
             "const": "https://stac-extensions.github.io/{{ project_id|lower }}/{{ catalog_version }}/schema.json"
           }
         }
@@ -138,7 +143,8 @@
         }
         {% for dataset_property in catalog_dataset_properties|sort(attribute="field_name") %}
           {% if dataset_property.is_required %}
-            ,{
+            ,
+            {
               "required": [
                 "{{ dataset_property.field_name }}"
               ]
@@ -157,16 +163,6 @@
         },
         {
           "required": [
-            "file:checksum"
-          ]
-        },
-        {
-          "required": [
-            "file:size"
-          ]
-        },
-        {
-          "required": [
             "protocol"
           ]
         },
@@ -177,7 +173,8 @@
         }
         {% for file_property in catalog_file_properties|sort(attribute="field_name") %}
           {% if file_property.is_required %}
-            ,{
+            ,
+            {
               "required": [
                 "{{ file_property.field_name }}"
               ]

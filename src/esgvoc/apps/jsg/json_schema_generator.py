@@ -294,8 +294,9 @@ def generate_json_schema(project_id: str) -> dict:
         if catalog_specs is not None:
             env = Environment(loader=FileSystemLoader(TEMPLATE_DIR_PATH))  # noqa: S701
             template = env.get_template(TEMPLATE_FILE_NAME)
-
-            file_extension_version = catalog_specs.catalog_properties.extensions[0].version
+            extension_specs = dict()
+            for catalog_extension in catalog_specs.catalog_properties.extensions:
+                extension_specs[f'{catalog_extension.name}_extension_version'] = catalog_extension.version
             drs_dataset_id_regex = project_specs.drs_specs[DrsType.DATASET_ID].regex
             property_translator = CatalogPropertiesJsonTranslator(project_id)
             catalog_dataset_properties = \
@@ -308,10 +309,10 @@ def generate_json_schema(project_id: str) -> dict:
             del property_translator
             json_raw_str = template.render(project_id=project_id,
                                            catalog_version=catalog_specs.version,
-                                           file_extension_version=file_extension_version,
                                            drs_dataset_id_regex=drs_dataset_id_regex,
                                            catalog_dataset_properties=catalog_dataset_properties,
-                                           catalog_file_properties=catalog_file_properties)
+                                           catalog_file_properties=catalog_file_properties,
+                                           **extension_specs)
             # Json compliance checking.
             try:
                 result = json.loads(json_raw_str)

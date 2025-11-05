@@ -12,7 +12,8 @@ json_example = json.loads(
   "stac_version": "1.1.0",
   "stac_extensions": [
     "https://stac-extensions.github.io/cmip6/v3.0.0/schema.json",
-    "https://stac-extensions.github.io/file/v2.1.0/schema.json"
+    "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+    "https://stac-extensions.github.io/alternate-assets/v2.1.0/schema.json"
   ],
   "id": "CMIP6.ScenarioMIP.THU.CIESM.ssp585.r1i1p1f1.Amon.rsus.gr.v20200806",
   "collection": "CMIP6",
