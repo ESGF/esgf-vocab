@@ -36,19 +36,12 @@ class Activity(PlainTermDataDescriptor):
     of the schemas for these two classes.
     """
 
-    # TODO: double check.
-    # None not allowed, empty list should be used
-    # if there are no additional_allowed_model_components.
-    # Getting the cross-referencing right to avoid
-    # circular imports is fiddly.
-    # Using a string like this and then calling
-    # `.model_rebuild()` at some point
-    # is the only way I know to do this.
-    experiments: list["Experiment"]
+    experiments: list["Experiment"] | list[str]
     """
     Experiments 'sponsored' by this activity
     """
 
+    # TODO: should this be a list?
     url: HttpUrl | None
     """
     URL with more information about this activity
