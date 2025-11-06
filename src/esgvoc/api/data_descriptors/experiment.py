@@ -73,7 +73,7 @@ class ExperimentCMIP7(PlainTermDataDescriptor):
     # Note: Allowing str or ModelComponent is under discussion.
     # Using this to get things working.
     # Long-term, we might do something different.
-    additional_allowed_model_components: list[str | ModelComponent]
+    additional_allowed_model_components: list[str] | list[ModelComponent]
     """
     Non-compulsory model components that are allowed when running this experiment
     """
