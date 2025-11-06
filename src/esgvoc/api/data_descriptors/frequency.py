@@ -32,7 +32,7 @@ class Frequency(PlainTermDataDescriptor):
     """
     Size of the interval
 
-    See `self.unit` for units.
+    See `self.units` for units.
     """
 
     units: str
