@@ -35,5 +35,5 @@ class Frequency(PlainTermDataDescriptor):
     See `self.unit` for units.
     """
 
-    unit: str
-    """Unit of the interval"""
+    units: str
+    """Units of the interval"""
