@@ -35,12 +35,5 @@ class Frequency(PlainTermDataDescriptor):
     See `self.unit` for units.
     """
 
-    # Note: probably won't be included.
-    # Consistency between frequency and time range is a QAQC thing
-    # time_range: TimeRange
-    # """
-    # Time range to use when creating filenames
-    # """
-
-    units: str
-    """Units of the interval"""
+    unit: str
+    """Unit of the interval"""

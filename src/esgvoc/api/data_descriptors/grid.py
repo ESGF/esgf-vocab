@@ -2,15 +2,11 @@
 Model (i.e. schema/definition) of the grid data descriptor
 """
 
-from esgvoc.api.data_descriptors.horizontal_grid import HorizontalGrid
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.region import Region
 
 
-# Developer note: deliberately just subclassing HorizontalGrid.
-# These two ideas are meant to be the same,
-# we just support both names:
-# - Grid: the CVs name
-# - HorizontalGrid: the EMD name
-class Grid(HorizontalGrid):
+class Grid(PlainTermDataDescriptor):
     """
     Grid (horizontal) on which the data is reported
 
@@ -29,3 +25,16 @@ class Grid(HorizontalGrid):
     (also referred to as 'source' in CMIP language).
     Grids with different labels are different.
     """
+
+    region: Region
+    """
+    Region represented by this grid
+    """
+    # Developer note:
+    # There is a tight coupling to region
+    # (see https://github.com/WCRP-CMIP/CMIP7-CVs/issues/202#issue-3084934841).
+    # However, this region can't be the same as the regions used by EMD,
+    # as EMD has the 'limited_area' region, but that's not something
+    # which makes sense in the CMIP context (it's too vague).
+    # As a result, we need to have both Grid (CMIP) and HorizontalGrid (EMD)
+    # and both Region (CMIP) and HorizontalGridRegion (EMD).

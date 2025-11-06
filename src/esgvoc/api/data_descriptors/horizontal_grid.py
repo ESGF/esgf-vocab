@@ -11,83 +11,55 @@ from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.horizontal_grid_arrangement import HorizontalGridArrangement
 from esgvoc.api.data_descriptors.horizontal_grid_cell_variable_type import HorizontalGridCellVariableType
 from esgvoc.api.data_descriptors.horizontal_grid_mapping import HorizontalGridMapping
+from esgvoc.api.data_descriptors.horizontal_grid_region import HorizontalGridRegion
 from esgvoc.api.data_descriptors.horizontal_grid_temporal_refinement import HorizontalGridTemporalRefinement
 from esgvoc.api.data_descriptors.horizontal_grid_truncation_method import HorizontalGridTruncationMethod
 from esgvoc.api.data_descriptors.horizontal_grid_type import HorizontalGridType
 from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
-from esgvoc.api.data_descriptors.region import Region
 
 
 class HorizontalGrid(PlainTermDataDescriptor):
     """
     Horizontal grid
 
-    Examples: "g1", "g2", "g33"
+    Examples: [TODO: discuss what these should be.
+    They shouldn't be the same as :py:class:`Grid`
+    because :py:class:`Grid` and :py:class:`Region`
+    aren't linked, whereas EMD has to enforce that link.]
 
-    The value has no intrinsic meaning within the CVs.
-    However, the other attributes of this model
-    provide information about the grid
-    and in other external sources (to be confirmed which)
-    further resources can be found e.g. cell areas.
-
-    Horizontal grids with the same id (also referred to as 'grid label')
+    Horizontal grids with the same id
     are identical (details on how we check identical are to come, for discussion,
     see https://github.com/WCRP-CMIP/CMIP7-CVs/issues/202)
     and can be used by more than one model or model component.
     Horizontal grids with different labels are different.
     """
 
-    # Note: Allowing str is under discussion.
-    # Using this to get things working.
-    # Long-term, we might do something different.
-    horizontal_grid_type: HorizontalGridType | str
+    grid: HorizontalGridType
     """
     Horizontal grid type
-
-    Uses the full name to not clash with the grid and type keys
     """
 
-    # Note: Allowing str is under discussion.
-    # Using this to get things working.
-    # Long-term, we might do something different.
-    grid_mapping: HorizontalGridMapping | str
+    grid_mapping: HorizontalGridMapping
     """
     Horizontal grid mapping
     """
 
-    # Note: Allowing str is under discussion.
-    # Using this to get things working.
-    # Long-term, we might do something different.
-    region: Region | str
+    region: HorizontalGridRegion
     """
-    Region
+    Horizontal grid region
     """
-    # Note: do not merge until the conversation about the naming convention
-    # here is resolved:
-    # https://github.com/ESGF/esgf-vocab/pull/156/files#r2453875274
-    # Depending on which way this goes, we might need to introduce RegionEMD,
-    # which will differ from Region (as used in the DR).
 
-    # Note: Allowing str is under discussion.
-    # Using this to get things working.
-    # Long-term, we might do something different.
-    temporal_refinement: HorizontalGridTemporalRefinement | str
+    temporal_refinement: HorizontalGridTemporalRefinement
     """
     Temporal refinement
     """
 
-    # Note: Allowing str is under discussion.
-    # Using this to get things working.
-    # Long-term, we might do something different.
-    arrangement: HorizontalGridArrangement | str
+    arrangement: HorizontalGridArrangement
     """
     Grid arrangement
     """
 
-    # Note: Allowing str is under discussion.
-    # Using this to get things working.
-    # Long-term, we might do something different.
-    cell_variable_type: list[HorizontalGridCellVariableType | str]
+    cell_variable_type: list[HorizontalGridCellVariableType]
     """
     Cell variable type
 
@@ -140,6 +112,7 @@ class HorizontalGrid(PlainTermDataDescriptor):
             If `resolution_x` and `resolution_y` are `None`, set this to `None`.
             """
         ),
+        gt=0,
     )
 
     southernmost_latitude: float | None = Field(
@@ -158,7 +131,7 @@ class HorizontalGrid(PlainTermDataDescriptor):
         le=90.0,
     )
 
-    westernmost_longitude: float | None = Field(
+    westernmost_latitude: float = Field(
         description=textwrap.dedent(
             """
             The westernmost grid cell latitude, in degrees east, of the southernmost grid cell(s)
@@ -186,10 +159,7 @@ class HorizontalGrid(PlainTermDataDescriptor):
         ge=1,
     )
 
-    # Note: Allowing str is under discussion.
-    # Using this to get things working.
-    # Long-term, we might do something different.
-    truncation_method: HorizontalGridTruncationMethod | str | None
+    truncation_method: HorizontalGridTruncationMethod | None
     """
     The method for truncating the spherical harmonic representation of a spectral model when reporting on this grid
 
@@ -234,10 +204,7 @@ class HorizontalGrid(PlainTermDataDescriptor):
         gt=0.0,
     )
 
-    # Note: Allowing str is under discussion.
-    # Using this to get things working.
-    # Long-term, we might do something different.
-    nominal_resolution: NominalResolution | str
+    nominal_resolution: NominalResolution
     """
     Nominal resolution of the grid
     """

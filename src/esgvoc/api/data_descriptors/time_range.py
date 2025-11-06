@@ -12,5 +12,6 @@ class TimeRange(PatternTermDataDescriptor):
     Examples: "185001-202112", "18500101-20211231", "203101010130-203112312230", "185001-186412-clim"
 
     The right choice of time range is tightly coupled to the frequency of the data.
-    This coupling is captured via the `time_range` attribute of :py:class:`Frequency`.
+    This coupling is not captured within the CVs.
+    (It is hopefully enforced elsewhere e.g. in QAQC workflows.)
     """

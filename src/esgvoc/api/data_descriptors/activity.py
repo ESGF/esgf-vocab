@@ -3,7 +3,7 @@ Model (i.e. schema/definition) of the activity data descriptor
 """
 
 import re
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from pydantic import HttpUrl, field_validator
 
@@ -36,15 +36,19 @@ class Activity(PlainTermDataDescriptor):
     of the schemas for these two classes.
     """
 
-    # Note: Allowing str or Experiment is under discussion.
-    # Using this to get things working.
-    # Long-term, we might do something different.
-    experiments: list[Union[str, "Experiment"]]
+    # TODO: double check.
+    # None not allowed, empty list should be used
+    # if there are no additional_allowed_model_components.
+    # Getting the cross-referencing right to avoid
+    # circular imports is fiddly.
+    # Using a string like this and then calling
+    # `.model_rebuild()` at some point
+    # is the only way I know to do this.
+    experiments: list["Experiment"]
     """
     Experiments 'sponsored' by this activity
     """
 
-    # TODO: think - should this be a list ?
     url: HttpUrl | None
     """
     URL with more information about this activity
