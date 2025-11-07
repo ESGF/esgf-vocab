@@ -105,9 +105,15 @@ def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnecti
                         "https://espri-mod.github.io/mip-cmor-tables": service.current_state.universe.local_path
                     }
 
-                    json_specs = DataMerger(
-                        data=JsonLdResource(uri=str(term_file_path)), locally_available=locally_available
-                    ).merge_linked_json()[-1]
+                    merger = DataMerger(
+                        data=JsonLdResource(uri=str(term_file_path)),
+                        locally_available=locally_available,
+                        allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables"},
+                    )
+                    merged_data = merger.merge_linked_json()[-1]
+                    # Resolve all nested @id references to full objects
+                    json_specs = merger.resolve_nested_ids(merged_data)
+
                     term_kind = infer_term_kind(json_specs)
                     term_id = json_specs["id"]
 
@@ -131,6 +137,13 @@ def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnecti
                     session.add(term)
         if term_kind_dd is not None:
             data_descriptor.term_kind = term_kind_dd
+        else:
+            # If no terms were found, default to PLAIN
+            _LOGGER.warning(
+                f"TermKind was not auto-detected for data descriptor '{data_descriptor_id}'. "
+                f"No terms were successfully ingested. Defaulting to PLAIN."
+            )
+            data_descriptor.term_kind = TermKind.PLAIN
         session.add(data_descriptor)
         session.commit()
 

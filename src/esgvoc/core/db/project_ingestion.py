@@ -76,11 +76,15 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                 locally_avail = {
                     "https://espri-mod.github.io/mip-cmor-tables": service.current_state.universe.local_path
                 }
-                json_specs = DataMerger(
+                merger = DataMerger(
                     data=JsonLdResource(uri=str(term_file_path)),
-                    # locally_available={"https://espri-mod.github.io/mip-cmor-tables":".cache/repos/WCRP-universe"}).merge_linked_json()[-1]
                     locally_available=locally_avail,
-                ).merge_linked_json()[-1]
+                    allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables"},
+                )
+                merged_data = merger.merge_linked_json()[-1]
+                # Resolve all nested @id references using merged context
+                json_specs = merger.resolve_merged_ids(merged_data)
+
                 term_kind = infer_term_kind(json_specs)
                 term_id = json_specs["id"]
 
@@ -108,22 +112,16 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                     + f"of project '{project.id}' from file '{term_file_path}': {str(e)}"
                 )
                 continue
-    if term_kind_collection:
+    if term_kind_collection is not None:
         collection.term_kind = term_kind_collection
     else:
-        # If we couldn't determine a term kind, use PLAIN as default and log warning
+        # If no terms were found, default to PLAIN
         _LOGGER.warning(
-            f"No term kind determined for collection '{collection_id}' in project '{project.id}'. "
-            + "Using PLAIN as default. This might indicate empty collection or processing errors."
+            f"TermKind was not auto-detected for collection '{collection_id}' in project '{project.id}'. "
+            f"No terms were successfully ingested. Defaulting to PLAIN."
         )
         collection.term_kind = TermKind.PLAIN
-
-    try:
-        project_db_session.add(collection)
-    except Exception as e:
-        error_context = f"Failed to add collection '{collection_id}' to project '{project.id}'"
-        _LOGGER.error(f"{error_context}: {str(e)}")
-        raise EsgvocDbError(f"{error_context}: {str(e)}") from e
+    project_db_session.add(collection)
 
 
 def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash: str):
