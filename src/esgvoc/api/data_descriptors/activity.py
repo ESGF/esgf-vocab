@@ -41,8 +41,7 @@ class Activity(PlainTermDataDescriptor):
     Experiments 'sponsored' by this activity
     """
 
-    # TODO: should this be a list?
-    url: HttpUrl | None
+    urls : list[HttpUrl] | None
     """
     URL with more information about this activity
     """
