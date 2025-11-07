@@ -11,16 +11,18 @@ logger = logging.getLogger(__name__)
 # Define a generic type for configuration
 T = TypeVar("T", bound="ConfigSchema")
 
+
 class ConfigSchema(Protocol):
     """Protocol for application-specific configuration classes."""
 
     @classmethod
     def load_from_file(cls, file_path: str): ...
-    
+
     def save_to_file(self, file_path: str): ...
 
+
 class ConfigManager(Generic[T]):
-    def __init__(self, config_cls: Type[T], app_name: str, app_author: str, default_settings : dict | None = None ):
+    def __init__(self, config_cls: Type[T], app_name: str, app_author: str, default_settings: dict | None = None):
         """
         Initialize the configuration manager.
         - config_cls: A class that implements `ConfigSchema` (e.g., ServiceSettings).
@@ -33,10 +35,9 @@ class ConfigManager(Generic[T]):
         # Define standard paths
         self.config_dir = Path(self.dirs.user_config_path).expanduser().resolve()
         self.data_dir = Path(self.dirs.user_data_path).expanduser().resolve()
-        self.data_config_dir = None # depends on loaded settings
+        self.data_config_dir = None  # depends on loaded settings
 
         self.cache_dir = Path(self.dirs.user_cache_path).expanduser().resolve()
-
 
         self.config_dir.mkdir(parents=True, exist_ok=True)
         self.data_dir.mkdir(parents=True, exist_ok=True)
@@ -80,7 +81,7 @@ class ConfigManager(Generic[T]):
         active_config_name = registry["active"]
         return Path(registry["configs"][active_config_name])
 
-    def get_config(self, config_name:str) -> T:
+    def get_config(self, config_name: str) -> T:
         """Load the configuration as an instance of the given config schema."""
         registry = self._load_toml(self.registry_path)
         if config_name not in registry["configs"]:
@@ -92,9 +93,14 @@ class ConfigManager(Generic[T]):
     def get_active_config(self) -> T:
         """Load the active configuration as an instance of the given config schema."""
         active_config_path = self._get_active_config_path()
+        active_config_name = self.get_active_config_name()
 
-        return self.config_cls.load_from_file(str(active_config_path)) 
-     
+        settings = self.config_cls.load_from_file(str(active_config_path))
+        # Set the config name if the settings support it (duck typing)
+        if hasattr(settings, 'set_config_name'):
+            settings.set_config_name(active_config_name)
+        return settings
+
     def get_active_config_name(self) -> str:
         """Retrieve the config name from the registry"""
         registry = self._load_toml(self.registry_path)
@@ -102,7 +108,7 @@ class ConfigManager(Generic[T]):
 
     def save_config(self, config_data: dict, name: str | None = None) -> None:
         """Save the modified configuration to the corresponding file and update the registry."""
-        
+
         if name:
             # If a name is provided, save the configuration with that name
             config_path = self.config_dir / f"{name}.toml"
@@ -119,11 +125,11 @@ class ConfigManager(Generic[T]):
             # If no name is provided, give the user a default name, like "user_config"
             default_name = "user_config"
             config_path = self.config_dir / f"{default_name}.toml"
-            
+
             # Check if the user_config already exists, if so, warn them
             if config_path.exists():
                 logger.warning(f"{default_name}.toml already exists. Overwriting with the new config.")
-            
+
             # Save the configuration with the default name
             self._save_toml(config_path, config_data)
 
@@ -147,7 +153,7 @@ class ConfigManager(Generic[T]):
             logger.error(f"Config '{config_name}' not found in registry.")
             raise ValueError(f"Config '{config_name}' not found in registry.")
         registry["active"] = config_name
-        
+
         self._save_toml(self.registry_path, registry)
         logger.info(f"Switched to configuration: {config_name}")
 
@@ -181,8 +187,3 @@ class ConfigManager(Generic[T]):
         if registry["active"] not in registry["configs"]:
             self.switch_config("default")
             logger.info("active configuration doesnot exist anymore : Switch to default configuration")
-
-
-    
-
-

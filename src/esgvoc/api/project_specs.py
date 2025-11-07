@@ -47,13 +47,33 @@ class DrsSpecification(BaseModel):
     """The parts of the DRS specification."""
 
 
+class AttributeProperty(BaseModel):
+    """
+    A NetCDF global attribute property specification.
+    """
+
+    source_collection: str
+    "The project collection that originated the property."
+    is_required: bool
+    "Specifies if the attribute must be present in the NetCDF file."
+    value_type: str
+    "The type of the attribute value."
+    specific_key: str | None = None
+    "Specifies a specific key in the collection."
+    field_name: str | None = None
+    "The name of the attribute field."
+    default_value: str | None = None
+    "The default value for the attribute."
+
+
 class CatalogProperty(BaseModel):
     """
     A dataset property described in a catalog.
     """
 
-    source_collection: str
-    "The project collection that originated the property."
+    source_collection: str | None
+    "The project collection that originated the property. `None` value means that the property "
+    "is not related to any collection of the project. So the property has limited specifications."
     catalog_field_value_type: str
     "The type of the field value."
     is_required: bool
@@ -80,6 +100,9 @@ class CatalogProperties(BaseModel):
     """The URI template of the catalog system."""
     extensions: list[CatalogExtension]
     """The extensions of the catalog."""
+
+
+AttributeSpecification = list[AttributeProperty]
 
 
 class CatalogSpecification(BaseModel):
@@ -113,4 +136,6 @@ class ProjectSpecs(BaseModel):
     # TODO: release = None when all projects have catalog_specs.yaml.
     catalog_specs: CatalogSpecification | None = None
     """The catalog specifications of the project."""
+    attr_specs: AttributeSpecification | None = None
+    """The NetCDF global attribute specifications of the project."""
     model_config = ConfigDict(extra="allow")

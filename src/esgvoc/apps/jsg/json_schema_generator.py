@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from itertools import product
+from itertools import combinations, product
 from pathlib import Path
 from typing import Sequence
 
@@ -9,7 +9,7 @@ from sqlmodel import Session
 
 from esgvoc.api import projects, search
 from esgvoc.api.project_specs import CatalogProperty, DrsType
-from esgvoc.core.constants import DRS_SPECS_JSON_KEY, PATTERN_JSON_KEY
+from esgvoc.core.constants import COMPOSITE_REQUIRED_KEY, DRS_SPECS_JSON_KEY, PATTERN_JSON_KEY
 from esgvoc.core.db.models.project import PCollection, PTerm, TermKind
 from esgvoc.core.db.models.universe import UTerm
 from esgvoc.core.exceptions import EsgvocException, EsgvocNotFoundError, EsgvocNotImplementedError, EsgvocValueError
@@ -93,9 +93,24 @@ def _accumulate_resolved_part(resolved_part: list,
     return has_pattern
 
 
+def _generate_combinations(items_parts: list[list], required_parts: list[bool]) -> list[list]:
+    number_of_parts = len(items_parts)
+    required_indexes = {index for index, required in enumerate(required_parts) if required}
+    result = list()
+    # Generate all the combination of item lists.
+    for r in range(1, number_of_parts + 1):  # Some optional list may or may not be included.
+        # According to the doc, combination respect the list order.
+        for index_subset in combinations(range(number_of_parts), r):
+            # Only keep combinations with the required item lists.
+            if required_indexes.issubset(index_subset):
+                result.append([items_parts[index] for index in index_subset])
+    return result
+
+
 def _process_composite_term(term: UTerm | PTerm, universe_session: Session,
                             project_session: Session) -> tuple[str, list[str | dict], bool]:
-    resolved_parts = list()
+    items_parts: list[list[str]] = list()
+    required_parts: list[bool] = list()
     separator, parts = projects._get_composite_term_separator_parts(term)
     has_pattern = False
     for part in parts:
@@ -108,31 +123,36 @@ def _process_composite_term(term: UTerm | PTerm, universe_session: Session,
         else:
             has_pattern = _accumulate_resolved_part(resolved_part, resolved_term, universe_session,
                                                     project_session)
-        resolved_parts.append(resolved_part)
+        items_parts.append(resolved_part)
+        required_parts.append(part[COMPOSITE_REQUIRED_KEY])
     property_values: list[str | dict] = list()
-    for combination in product(*resolved_parts):
-        # Patterns terms are meant to be validated individually.
-        # So their regex are defined as a whole (begins by a ^, ends by a $).
-        # As the pattern is a concatenation of plain or regex, multiple ^ and $ can exist.
-        # The later, must be removed.
-        tmp = separator.join(combination)
-        if has_pattern:
-            tmp = f'^{tmp}$'
-            tmp = {'pattern': tmp}
-        property_values.append(tmp)
+    combinations = _generate_combinations(items_parts, required_parts)
+    for combination in combinations:
+        for product_result in product(*combination):
+            # Patterns terms are meant to be validated individually.
+            # So their regex are defined as a whole (begins by a ^, ends by a $).
+            # As the pattern is a concatenation of plain or regex, multiple ^ and $ can exist.
+            # The later, must be removed.
+            tmp = separator.join(product_result)
+            if has_pattern:
+                tmp = f'^{tmp}$'
+                tmp = {'pattern': tmp}
+            property_values.append(tmp)
     property_key = 'anyOf' if has_pattern else 'enum'
     return property_key, property_values, has_pattern
 
 
-def _process_col_pattern_terms(collection: PCollection) -> tuple[str, str]:
-    # The generation of the value of the field pattern for the collections with more than one term
-    # is not specified yet.
+def _process_col_pattern_terms(collection: PCollection) -> tuple[str, str | list[dict]]:
     if len(collection.terms) == 1:
         term = collection.terms[0]
-        return _process_pattern_term(term)
+        property_key, property_value = _process_pattern_term(term)
     else:
-        msg = f"unsupported collection of term pattern with more than one term for '{collection.id}'"
-        raise EsgvocNotImplementedError(msg)
+        property_key = 'anyOf'
+        property_value = list()
+        for term in collection.terms:
+            pkey, pvalue = _process_pattern_term(term)
+            property_value.append({pkey: pvalue})
+    return property_key, property_value
 
 
 def _process_pattern_term(term: PTerm) -> tuple[str, str]:
@@ -157,56 +177,62 @@ class CatalogPropertiesJsonTranslator:
         return True
 
     def _translate_property_value(self, catalog_property: CatalogProperty) \
-            -> tuple[str, str | list[str] | list[str | dict]]:
-        property_value: str | list[str] | list[str | dict]
-        if catalog_property.source_collection not in self.collections:
+            -> tuple[str | None, str | list[str] | list[str | dict] | None]:
+        property_key: str | None
+        property_value: str | list[str] | list[str | dict] | None
+
+        # Properties unrelated to collections of project.
+        if catalog_property.source_collection is None:
+            property_key = None
+            property_value = None
+        elif catalog_property.source_collection not in self.collections:
             raise EsgvocNotFoundError(f"collection '{catalog_property.source_collection}' is not found")
-
-        if catalog_property.source_collection_key is None:
-            source_collection_key = DRS_SPECS_JSON_KEY
         else:
-            source_collection_key = catalog_property.source_collection_key
+            if catalog_property.source_collection_key is None:
+                source_collection_key = DRS_SPECS_JSON_KEY
+            else:
+                source_collection_key = catalog_property.source_collection_key
 
-        if catalog_property.source_collection_term is None:
-            collection = self.collections[catalog_property.source_collection]
-            match collection.term_kind:
-                case TermKind.PLAIN:
-                    property_key, property_value = _process_col_plain_terms(
-                        collection=collection,
-                        source_collection_key=source_collection_key)
-                case TermKind.COMPOSITE:
-                    property_key, property_value, _ = _process_col_composite_terms(
-                        collection=collection,
-                        universe_session=self.universe_session,
-                        project_session=self.project_session)
-                case TermKind.PATTERN:
-                    property_key, property_value = _process_col_pattern_terms(collection)
-                case _:
-                    msg = f"unsupported term kind '{collection.term_kind}'"
-                    raise EsgvocNotImplementedError(msg)
-        else:
-            pterm_found = projects._get_term_in_collection(
-                session=self.project_session,
-                collection_id=catalog_property.source_collection,
-                term_id=catalog_property.source_collection_term)
-            if pterm_found is None:
-                raise EsgvocValueError(f"term '{catalog_property.source_collection_term}' is not " +
-                                       f"found in collection '{catalog_property.source_collection}'")
-            match pterm_found.kind:
-                case TermKind.PLAIN:
-                    property_key, property_value = _process_plain_term(
-                        term=pterm_found,
-                        source_collection_key=source_collection_key)
-                case TermKind.COMPOSITE:
-                    property_key, property_value, _ = _process_composite_term(
-                        term=pterm_found,
-                        universe_session=self.universe_session,
-                        project_session=self.project_session)
-                case TermKind.PATTERN:
-                    property_key, property_value = _process_pattern_term(term=pterm_found)
-                case _:
-                    msg = f"unsupported term kind '{pterm_found.kind}'"
-                    raise EsgvocNotImplementedError(msg)
+            if catalog_property.source_collection_term is None:
+                collection = self.collections[catalog_property.source_collection]
+                match collection.term_kind:
+                    case TermKind.PLAIN:
+                        property_key, property_value = _process_col_plain_terms(
+                            collection=collection,
+                            source_collection_key=source_collection_key)
+                    case TermKind.COMPOSITE:
+                        property_key, property_value, _ = _process_col_composite_terms(
+                            collection=collection,
+                            universe_session=self.universe_session,
+                            project_session=self.project_session)
+                    case TermKind.PATTERN:
+                        property_key, property_value = _process_col_pattern_terms(collection)
+                    case _:
+                        msg = f"unsupported term kind '{collection.term_kind}'"
+                        raise EsgvocNotImplementedError(msg)
+            else:
+                pterm_found = projects._get_term_in_collection(
+                    session=self.project_session,
+                    collection_id=catalog_property.source_collection,
+                    term_id=catalog_property.source_collection_term)
+                if pterm_found is None:
+                    raise EsgvocValueError(f"term '{catalog_property.source_collection_term}' is not " +
+                                           f"found in collection '{catalog_property.source_collection}'")
+                match pterm_found.kind:
+                    case TermKind.PLAIN:
+                        property_key, property_value = _process_plain_term(
+                            term=pterm_found,
+                            source_collection_key=source_collection_key)
+                    case TermKind.COMPOSITE:
+                        property_key, property_value, _ = _process_composite_term(
+                            term=pterm_found,
+                            universe_session=self.universe_session,
+                            project_session=self.project_session)
+                    case TermKind.PATTERN:
+                        property_key, property_value = _process_pattern_term(term=pterm_found)
+                    case _:
+                        msg = f"unsupported term kind '{pterm_found.kind}'"
+                        raise EsgvocNotImplementedError(msg)
         return property_key, property_value
 
     def translate_property(self, catalog_property: CatalogProperty) -> _CatalogProperty:
@@ -222,7 +248,8 @@ class CatalogPropertiesJsonTranslator:
             field_value['type'] = catalog_property.catalog_field_value_type
             root_property = field_value
 
-        root_property[property_key] = property_value
+        if (property_key is not None) and (property_value is not None):
+            root_property[property_key] = property_value
 
         if catalog_property.catalog_field_name is None:
             attribute_name = catalog_property.source_collection
@@ -267,8 +294,10 @@ def generate_json_schema(project_id: str) -> dict:
         if catalog_specs is not None:
             env = Environment(loader=FileSystemLoader(TEMPLATE_DIR_PATH))  # noqa: S701
             template = env.get_template(TEMPLATE_FILE_NAME)
-
-            file_extension_version = catalog_specs.catalog_properties.extensions[0].version
+            extension_specs = dict()
+            for catalog_extension in catalog_specs.catalog_properties.extensions:
+                catalog_extension_name = catalog_extension.name.replace('-', '_')
+                extension_specs[f'{catalog_extension_name}_extension_version'] = catalog_extension.version
             drs_dataset_id_regex = project_specs.drs_specs[DrsType.DATASET_ID].regex
             property_translator = CatalogPropertiesJsonTranslator(project_id)
             catalog_dataset_properties = \
@@ -281,16 +310,16 @@ def generate_json_schema(project_id: str) -> dict:
             del property_translator
             json_raw_str = template.render(project_id=project_id,
                                            catalog_version=catalog_specs.version,
-                                           file_extension_version=file_extension_version,
                                            drs_dataset_id_regex=drs_dataset_id_regex,
                                            catalog_dataset_properties=catalog_dataset_properties,
-                                           catalog_file_properties=catalog_file_properties)
+                                           catalog_file_properties=catalog_file_properties,
+                                           **extension_specs)
             # Json compliance checking.
             try:
                 result = json.loads(json_raw_str)
                 return result
             except Exception as e:
-                raise EsgvocException(f'unable to produce schema compliant to JSON: {e}') from e
+                raise EsgvocException(f'JSON error: {e}. Dump raw:\n{json_raw_str}') from e
         else:
             raise EsgvocNotFoundError(f"catalog properties for the project '{project_id}' " +
                                       "are missing")

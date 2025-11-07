@@ -8,6 +8,10 @@
 
 import os
 import sys
+import inspect
+import importlib
+from pathlib import Path
+
 sys.path.insert(0, os.path.abspath('../../src'))
 
 project = 'ESGVOC'
@@ -34,6 +38,38 @@ def linkcode_resolve(domain, info):
         return None
     if not info["module"]:
         return None
+
+    # Try to import the module and get the actual source file
+    try:
+        module = importlib.import_module(info["module"])
+
+        # If we have a specific object (class, function, etc.), try to get it
+        if info.get("fullname"):
+            obj = module
+            for part in info["fullname"].split("."):
+                obj = getattr(obj, part)
+
+            # Get the source file for this object
+            source_file = inspect.getsourcefile(obj)
+        else:
+            # Just get the module's source file
+            source_file = inspect.getsourcefile(module)
+
+        if source_file:
+            # Convert absolute path to relative path from repository root
+            source_path = Path(source_file)
+
+            # Find the 'src' directory in the path
+            parts = source_path.parts
+            if 'src' in parts:
+                src_index = parts.index('src')
+                relative_path = '/'.join(parts[src_index:])
+                return f"{BASE_URL}/tree/main/{relative_path}"
+    except Exception:
+        # If anything fails, fall back to the old behavior
+        pass
+
+    # Fallback to the original simple behavior
     filename = info["module"].replace(".", "/")
     return f"{BASE_URL}/tree/main/src/{filename}.py"
 

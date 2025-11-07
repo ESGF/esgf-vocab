@@ -82,7 +82,7 @@ class CVTester:
 
     def get_available_projects(self) -> List[str]:
         """Get list of all available project CVs"""
-        return list(ServiceSettings.DEFAULT_PROJECT_CONFIGS.keys())
+        return list(ServiceSettings._get_default_project_configs().keys())
 
     def configure_for_testing(
         self,
@@ -121,7 +121,7 @@ class CVTester:
             # Use custom repo/branch if provided, otherwise use defaults
             if repo_url or branch:
                 # Custom configuration
-                default_config = ServiceSettings.DEFAULT_PROJECT_CONFIGS[project_name]
+                default_config = ServiceSettings._get_default_project_configs()[project_name]
                 project_config = {
                     "project_name": project_name,
                     "github_repo": repo_url or default_config["github_repo"],
@@ -134,7 +134,7 @@ class CVTester:
                 console.print(f"  Branch: {project_config['branch']}")
             else:
                 # Default configuration
-                project_config = ServiceSettings.DEFAULT_PROJECT_CONFIGS[project_name].copy()
+                project_config = ServiceSettings._get_default_project_configs()[project_name].copy()
                 console.print(f"[blue]Using default configuration for {project_name}[/blue]")
 
             # Create temporary test configuration with universe and single project
@@ -391,9 +391,12 @@ class CVTester:
         """Test YAML specification files (project_specs.yaml, drs_specs.yaml, catalog_spec.yaml, attr_specs.yaml)"""
         errors = []
 
+        # Add clear section header
+        console.print(f"\n[bold blue]📋 Testing YAML Specification Files[/bold blue]")
+        console.print(f"[dim]Repository path: {repo_dir}[/dim]")
+
         # Import constants and YAML handling
         try:
-            import yaml
             from esgvoc.core.constants import (
                 PROJECT_SPECS_FILENAME,
                 DRS_SPECS_FILENAME,
@@ -401,12 +404,24 @@ class CVTester:
                 ATTRIBUTES_SPECS_FILENAME
             )
         except ImportError as e:
-            errors.append(f"❌ Missing required dependencies: {e}")
+            error_msg = f"❌ Missing required esgvoc constants: {e}"
+            errors.append(error_msg)
+            console.print(f"[red]{error_msg}[/red]")
+            return errors
+
+        try:
+            import yaml
+        except ImportError:
+            error_msg = f"❌ PyYAML not installed. Install with: pip install PyYAML"
+            errors.append(error_msg)
+            console.print(f"[red]{error_msg}[/red]")
             return errors
 
         # Get existing collections for validation
         existing_collections = {d.name for d in collection_directories}
         source_collections = set()
+        # Track which files contain each collection reference for better error reporting
+        collection_file_mapping = {}  # collection_name -> set of files that reference it
         files_tested = 0
 
         # Test project_specs.yaml
@@ -419,11 +434,17 @@ class CVTester:
                 console.print(f"   [green]✅ {PROJECT_SPECS_FILENAME} parsed successfully[/green]")
                 files_tested += 1
             except yaml.YAMLError as e:
-                errors.append(f"❌ {PROJECT_SPECS_FILENAME}: Invalid YAML syntax - {e}")
+                error_msg = f"❌ {PROJECT_SPECS_FILENAME}: Invalid YAML syntax - {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
             except Exception as e:
-                errors.append(f"❌ Error reading {PROJECT_SPECS_FILENAME}: {e}")
+                error_msg = f"❌ Error reading {PROJECT_SPECS_FILENAME}: {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
         else:
-            errors.append(f"❌ Required file {PROJECT_SPECS_FILENAME} not found")
+            error_msg = f"❌ Required file {PROJECT_SPECS_FILENAME} not found"
+            errors.append(error_msg)
+            console.print(f"📄 [red]{error_msg}[/red]")
 
         # Test drs_specs.yaml
         drs_specs_file = repo_dir / DRS_SPECS_FILENAME
@@ -442,15 +463,24 @@ class CVTester:
                                 collection_ref = part.get("collection_id") or part.get("source_collection")
                                 if collection_ref:
                                     source_collections.add(collection_ref)
+                                    if collection_ref not in collection_file_mapping:
+                                        collection_file_mapping[collection_ref] = set()
+                                    collection_file_mapping[collection_ref].add(DRS_SPECS_FILENAME)
 
                 console.print(f"   [green]✅ {DRS_SPECS_FILENAME} parsed successfully[/green]")
                 files_tested += 1
             except yaml.YAMLError as e:
-                errors.append(f"❌ {DRS_SPECS_FILENAME}: Invalid YAML syntax - {e}")
+                error_msg = f"❌ {DRS_SPECS_FILENAME}: Invalid YAML syntax - {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
             except Exception as e:
-                errors.append(f"❌ Error reading {DRS_SPECS_FILENAME}: {e}")
+                error_msg = f"❌ Error reading {DRS_SPECS_FILENAME}: {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
         else:
-            errors.append(f"❌ Required file {DRS_SPECS_FILENAME} not found")
+            error_msg = f"❌ Required file {DRS_SPECS_FILENAME} not found"
+            errors.append(error_msg)
+            console.print(f"📄 [red]{error_msg}[/red]")
 
         # Test catalog_spec.yaml (optional)
         catalog_specs_file = repo_dir / CATALOG_SPECS_FILENAME
@@ -467,61 +497,230 @@ class CVTester:
                         if prop_type in catalog_specs and isinstance(catalog_specs[prop_type], list):
                             for prop in catalog_specs[prop_type]:
                                 if isinstance(prop, dict) and "source_collection" in prop:
-                                    source_collections.add(prop["source_collection"])
+                                    collection_ref = prop["source_collection"]
+                                    # Skip None values - collections can now be null in YAML
+                                    if collection_ref is not None:
+                                        source_collections.add(collection_ref)
+                                        if collection_ref not in collection_file_mapping:
+                                            collection_file_mapping[collection_ref] = set()
+                                        collection_file_mapping[collection_ref].add(CATALOG_SPECS_FILENAME)
 
                 console.print(f"   [green]✅ {CATALOG_SPECS_FILENAME} parsed successfully[/green]")
                 files_tested += 1
             except yaml.YAMLError as e:
-                errors.append(f"❌ {CATALOG_SPECS_FILENAME}: Invalid YAML syntax - {e}")
+                error_msg = f"❌ {CATALOG_SPECS_FILENAME}: Invalid YAML syntax - {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
             except Exception as e:
-                errors.append(f"❌ Error reading {CATALOG_SPECS_FILENAME}: {e}")
+                error_msg = f"❌ Error reading {CATALOG_SPECS_FILENAME}: {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
         else:
             console.print(f"   [yellow]⚠️  Optional file {CATALOG_SPECS_FILENAME} not found[/yellow]")
 
-        # Test attr_specs.yaml (currently not ingested by esgvoc, but test for syntax)
+        # Test attr_specs.yaml (now ingested by esgvoc as confirmed by project_ingestion.py updates)
         attr_specs_file = repo_dir / ATTRIBUTES_SPECS_FILENAME
         if attr_specs_file.exists():
-            console.print(f"📄 Testing {ATTRIBUTES_SPECS_FILENAME} (syntax only - not ingested by esgvoc)...")
+            console.print(f"📄 Testing {ATTRIBUTES_SPECS_FILENAME}...")
             try:
                 with open(attr_specs_file, "r", encoding="utf-8") as f:
                     attr_specs = yaml.safe_load(f)
 
-                # Extract collection references from attribute specs if they exist
-                if isinstance(attr_specs, dict):
-                    # Check for global_attributes_specs or similar structures
+                # Extract collection references from attribute specs
+                if isinstance(attr_specs, list):
+                    # New format: list of AttributeProperty objects
+                    for attr_spec in attr_specs:
+                        if isinstance(attr_spec, dict) and "source_collection" in attr_spec:
+                            collection_ref = attr_spec["source_collection"]
+                            # Skip None values - collections can now be null in YAML
+                            if collection_ref is not None:
+                                source_collections.add(collection_ref)
+                                if collection_ref not in collection_file_mapping:
+                                    collection_file_mapping[collection_ref] = set()
+                                collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
+                elif isinstance(attr_specs, dict):
+                    # Legacy format: nested structure with "specs" key
                     if "specs" in attr_specs:
                         specs = attr_specs["specs"]
                         if isinstance(specs, dict):
                             for attr_name, attr_spec in specs.items():
                                 if isinstance(attr_spec, dict) and "source_collection" in attr_spec:
-                                    source_collections.add(attr_spec["source_collection"])
+                                    collection_ref = attr_spec["source_collection"]
+                                    # Skip None values - collections can now be null in YAML
+                                    if collection_ref is not None:
+                                        source_collections.add(collection_ref)
+                                        if collection_ref not in collection_file_mapping:
+                                            collection_file_mapping[collection_ref] = set()
+                                        collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
+                        elif isinstance(specs, list):
+                            for attr_spec in specs:
+                                if isinstance(attr_spec, dict) and "source_collection" in attr_spec:
+                                    collection_ref = attr_spec["source_collection"]
+                                    # Skip None values - collections can now be null in YAML
+                                    if collection_ref is not None:
+                                        source_collections.add(collection_ref)
+                                        if collection_ref not in collection_file_mapping:
+                                            collection_file_mapping[collection_ref] = set()
+                                        collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
 
                 console.print(f"   [green]✅ {ATTRIBUTES_SPECS_FILENAME} parsed successfully[/green]")
-                console.print(f"   [yellow]⚠️  Note: {ATTRIBUTES_SPECS_FILENAME} is not currently ingested by esgvoc[/yellow]")
                 files_tested += 1
             except yaml.YAMLError as e:
-                errors.append(f"❌ {ATTRIBUTES_SPECS_FILENAME}: Invalid YAML syntax - {e}")
+                error_msg = f"❌ {ATTRIBUTES_SPECS_FILENAME}: Invalid YAML syntax - {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
             except Exception as e:
-                errors.append(f"❌ Error reading {ATTRIBUTES_SPECS_FILENAME}: {e}")
+                error_msg = f"❌ Error reading {ATTRIBUTES_SPECS_FILENAME}: {e}"
+                errors.append(error_msg)
+                console.print(f"   [red]{error_msg}[/red]")
         else:
             console.print(f"   [yellow]⚠️  Optional file {ATTRIBUTES_SPECS_FILENAME} not found[/yellow]")
 
         # Validate collection references
+        console.print(f"\n📂 Validating collection references...")
         if source_collections:
             console.print(f"   Found {len(source_collections)} source_collection references")
 
             for collection in source_collections:
                 if collection not in existing_collections:
-                    errors.append(f"❌ YAML specs reference non-existent collection: '{collection}'")
+                    # Enhanced error message showing which files contain the reference
+                    referencing_files = collection_file_mapping.get(collection, set())
+                    files_list = ", ".join(sorted(referencing_files))
+                    error_msg = f"❌ YAML specs reference non-existent collection: '{collection}' (referenced in: {files_list})"
+                    errors.append(error_msg)
+                    console.print(f"   [red]{error_msg}[/red]")
                 else:
                     console.print(f"   [green]✅ Reference '{collection}' exists[/green]")
         else:
             console.print("   [yellow]⚠️  No collection references found in YAML specs[/yellow]")
 
+        # Final YAML validation summary
+        console.print(f"\n📊 YAML Validation Summary:")
         if files_tested == 0:
-            errors.append("❌ No YAML specification files found")
+            error_msg = "❌ No YAML specification files found"
+            errors.append(error_msg)
+            console.print(f"   [red]{error_msg}[/red]")
         else:
-            console.print(f"   [blue]📊 Successfully tested {files_tested} YAML specification files[/blue]")
+            if errors:
+                console.print(f"   [red]❌ {len(errors)} errors found in YAML files[/red]")
+            else:
+                console.print(f"   [green]✅ All {files_tested} YAML specification files are valid[/green]")
+
+            console.print(f"   [blue]Files tested: {files_tested}[/blue]")
+
+        return errors
+
+    def _test_esgvoc_specs_ingestion(self, project_name: str, repo_dir: Path) -> List[str]:
+        """Test that YAML specs are properly ingested into esgvoc and accessible via API"""
+        errors = []
+
+        try:
+            # Import esgvoc API and constants
+            import esgvoc.api as ev
+            from esgvoc.core.constants import ATTRIBUTES_SPECS_FILENAME
+        except ImportError as e:
+            errors.append(f"❌ Cannot import esgvoc modules for ingestion testing: {e}")
+            return errors
+
+        try:
+            import yaml
+        except ImportError:
+            errors.append(f"❌ PyYAML not installed. Install with: pip install PyYAML")
+            return errors
+
+        console.print(f"🔍 Testing esgvoc ingestion compatibility for {project_name}...")
+
+        # Get the project specs from esgvoc
+        try:
+            project = ev.get_project(project_name)
+            console.print(f"   [green]✅ Project '{project_name}' found in esgvoc[/green]")
+
+            if hasattr(project, 'attr_specs') and hasattr(project, 'drs_specs'):
+                # Project is properly loaded with specs - convert to dict format for compatibility
+                specs = {}
+                if hasattr(project, 'attr_specs') and project.attr_specs:
+                    specs["attr_specs"] = project.attr_specs
+                if hasattr(project, 'drs_specs') and project.drs_specs:
+                    specs["drs_specs"] = project.drs_specs
+                if hasattr(project, 'catalog_specs') and project.catalog_specs:
+                    specs["catalog_specs"] = project.catalog_specs
+
+                console.print(f"   [blue]📊 Project specs loaded with keys: {list(specs.keys())}[/blue]")
+
+                # Test attr_specs ingestion specifically
+                attr_specs_file = repo_dir / ATTRIBUTES_SPECS_FILENAME
+                if attr_specs_file.exists() and "attr_specs" in specs:
+                    console.print(f"   [green]✅ attr_specs found in ingested project data[/green]")
+
+                    # Load the original YAML for comparison
+                    with open(attr_specs_file, "r", encoding="utf-8") as f:
+                        original_attr_specs = yaml.safe_load(f)
+
+                    ingested_attr_specs = specs["attr_specs"]
+
+                    # Validate structure compatibility
+                    if isinstance(original_attr_specs, list) and isinstance(ingested_attr_specs, list):
+                        console.print(f"   [green]✅ attr_specs structure matches: {len(original_attr_specs)} items in YAML, {len(ingested_attr_specs)} items ingested[/green]")
+
+                        # Check for source_collection fields
+                        yaml_collections = set()
+                        ingested_collections = set()
+
+                        for item in original_attr_specs:
+                            if isinstance(item, dict) and "source_collection" in item:
+                                collection_ref = item["source_collection"]
+                                # Skip None values - collections can now be null in YAML
+                                if collection_ref is not None:
+                                    yaml_collections.add(collection_ref)
+
+                        for item in ingested_attr_specs:
+                            if isinstance(item, dict) and "source_collection" in item:
+                                collection_ref = item["source_collection"]
+                                if collection_ref is not None:
+                                    ingested_collections.add(collection_ref)
+                            elif hasattr(item, "source_collection"):
+                                # Handle Pydantic model objects
+                                collection_ref = item.source_collection
+                                if collection_ref is not None:
+                                    ingested_collections.add(collection_ref)
+
+                        if yaml_collections == ingested_collections:
+                            console.print(f"   [green]✅ Collection references preserved: {sorted(yaml_collections)}[/green]")
+                        else:
+                            errors.append(f"❌ Collection reference mismatch - YAML: {sorted(yaml_collections)}, Ingested: {sorted(ingested_collections)}")
+                    else:
+                        console.print(f"   [yellow]⚠️  Structure difference: YAML type={type(original_attr_specs)}, Ingested type={type(ingested_attr_specs)}[/yellow]")
+
+                elif attr_specs_file.exists():
+                    errors.append(f"❌ attr_specs.yaml exists but not found in ingested project specs")
+
+                # Test drs_specs ingestion
+                if "drs_specs" in specs:
+                    console.print(f"   [green]✅ drs_specs found in ingested project data[/green]")
+                else:
+                    errors.append(f"❌ drs_specs not found in ingested project data")
+
+                # Test catalog_specs ingestion
+                if "catalog_specs" in specs:
+                    console.print(f"   [green]✅ catalog_specs found in ingested project data[/green]")
+                else:
+                    console.print(f"   [yellow]⚠️  catalog_specs not found in ingested project data (may be optional)[/yellow]")
+
+            else:
+                # More detailed error message about missing specs
+                expected_specs = ["project_specs", "attr_specs", "drs_specs", "catalog_specs (optional)"]
+                if hasattr(project, 'attr_specs') or hasattr(project, 'drs_specs'):
+                    missing_specs = []
+                    if not hasattr(project, 'attr_specs') or not project.attr_specs:
+                        missing_specs.append("attr_specs")
+                    if not hasattr(project, 'drs_specs') or not project.drs_specs:
+                        missing_specs.append("drs_specs")
+                    errors.append(f"❌ Project '{project_name}' missing required specs: {missing_specs}. Expected specs: {', '.join(expected_specs)}")
+                else:
+                    errors.append(f"❌ Project '{project_name}' has no specs attributes. Expected specs: {', '.join(expected_specs)}")
+
+        except Exception as e:
+            errors.append(f"❌ Failed to retrieve project '{project_name}' from esgvoc: {e}")
 
         return errors
 
@@ -1198,8 +1397,9 @@ class CVTester:
                 try:
                     from esgvoc.core.service.configuration.setting import ServiceSettings
 
-                    if project_name in ServiceSettings.DEFAULT_PROJECT_CONFIGS:
-                        default_local_path = ServiceSettings.DEFAULT_PROJECT_CONFIGS[project_name]["local_path"]
+                    default_configs = ServiceSettings._get_default_project_configs()
+                    if project_name in default_configs:
+                        default_local_path = default_configs[project_name]["local_path"]
                         config_manager = service.get_config_manager()
 
                         # Try different path constructions to find where the repository actually is
@@ -1231,14 +1431,30 @@ class CVTester:
                 console.print("[yellow]⚠️  Could not determine CV repository path, using current directory[/yellow]")
 
         # Step 3: Test repository structure
-        if not self.test_repository_structure(repo_path):
+        console.print(f"[dim]Debug: About to test repository structure with path: {repo_path}[/dim]")
+        try:
+            if not self.test_repository_structure(repo_path):
+                success = False
+        except Exception as e:
+            console.print(f"[red]❌ Repository structure test failed with exception: {e}[/red]")
             success = False
 
         # Debug: Check what configuration is active before API test
         current_active = service.get_config_manager().get_active_config_name()
         console.print(f"[dim]Debug: Active config before API test: {current_active}[/dim]")
 
-        # Step 4: Test esgvoc API access
+        # Step 4: Test YAML specs ingestion compatibility
+        console.print(f"[blue]Testing YAML specs ingestion compatibility...[/blue]")
+        ingestion_errors = self._test_esgvoc_specs_ingestion(project_name, Path(repo_path))
+        if ingestion_errors:
+            console.print(f"[red]❌ YAML specs ingestion test failed with {len(ingestion_errors)} errors:[/red]")
+            for error in ingestion_errors:
+                console.print(f"   {error}")
+            success = False
+        else:
+            console.print(f"[green]✅ YAML specs ingestion test passed![/green]")
+
+        # Step 5: Test esgvoc API access
         if not self.test_esgvoc_api_access(project_name, repo_path):
             success = False
 
@@ -1306,7 +1522,7 @@ def main():
             projects = tester.get_available_projects()
             console.print(f"[blue]Available projects ({len(projects)}):[/blue]")
             for project in projects:
-                config = ServiceSettings.DEFAULT_PROJECT_CONFIGS[project]
+                config = ServiceSettings._get_default_project_configs()[project]
                 console.print(f"  [cyan]{project}[/cyan] - {config['github_repo']} (branch: {config['branch']})")
 
         elif command == "configure":

@@ -22,5 +22,8 @@ class Source(PlainTermDataDescriptor):
     label: str
     label_extended: Optional[str] = None
     license: dict = Field(default_factory=dict)
-    model_component: Optional[dict] = None
+    model_component: Optional[dict] = Field(
+        default=None,
+        description="Dictionary containing the model components that make up this climate source, including their types, resolutions, and other technical specifications"
+    )
     release_year: Optional[int] = None

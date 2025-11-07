@@ -22,6 +22,7 @@ dependencies = [
     "typer>=0.15.0",
     "platformdirs>=4.3.6",
     "jinja2>=3.1.6",
+    "pyyaml>=6.0.2",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
@@ -77,6 +78,10 @@ path = "src/esgvoc/__init__.py"
 log_cli = true
 log_cli_level = "ERROR"
 log_cli_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+markers = [
+    "integration: marks tests as integration tests",
+    "slow: marks tests as slow running",
+]
 
 [tool.mypy]
 exclude = ['^tmp.*\.py']

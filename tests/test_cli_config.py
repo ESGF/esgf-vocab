@@ -2,15 +2,17 @@ import os
 import shutil
 import tempfile
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import pytest
 import toml
 from typer.testing import CliRunner
+from platformdirs import PlatformDirs
 
 # Import your actual CLI app - adjust this import path
 from esgvoc.cli.config import app  # Replace with your actual CLI module path
 from esgvoc.core.service.configuration.setting import ServiceSettings
+
 
 
 class MockConfigManager:
@@ -100,6 +102,7 @@ class TestConfigCLI:
         self.test_config_path = self.config_dir / "test.toml"
 
         # Create default configuration with only the default projects (cmip6, cmip6plus)
+        # Using relative paths that will be automatically converted to absolute by ServiceSettings
         default_config_data = {
             "universe": {
                 "github_repo": "https://github.com/WCRP-CMIP/WCRP-universe",
@@ -147,12 +150,14 @@ class TestConfigCLI:
         # Create a mock state object with synchronize_all method
         mock_state = type("MockState", (), {"synchronize_all": lambda *args, **kwargs: None})()
 
-        return patch.multiple(
-            "esgvoc.cli.config.service",  # Adjust this import path
-            get_config_manager=lambda *args, **kwargs: self.mock_config_manager,
-            current_state=mock_state,
-            get_state=lambda *args, **kwargs: mock_state,
-        )
+        # Create a mock service module
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = self.mock_config_manager
+        mock_service.current_state = mock_state
+        mock_service.get_state.return_value = mock_state
+
+        # Mock the get_service function to return our mock service
+        return patch("esgvoc.cli.config.get_service", return_value=mock_service)
 
     # Configuration Management Tests
     def test_list_configs(self):
@@ -570,7 +575,8 @@ class TestConfigCLI:
 
             project = next((p for p in data["projects"] if p["project_name"] == "cmip6"), None)
             assert project["branch"] == "develop"
-            assert project["github_repo"] == "https://github.com/WCRP-CMIP/CMIP6_CVs"  # Unchanged
+            # Unchanged
+            assert project["github_repo"] == "https://github.com/WCRP-CMIP/CMIP6_CVs"
 
     def test_update_nonexistent_project(self):
         """Test updating a project that doesn't exist."""
@@ -1122,12 +1128,12 @@ class TestEdgeCases:
         with open(config_path, "w") as f:
             f.write("invalid toml content [[[")
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             result = runner.invoke(app, ["show", "isolated"])
             # Should handle the error gracefully
             assert result.exit_code == 0
@@ -1163,12 +1169,12 @@ class TestEdgeCases:
         with open(config_path, "w") as f:
             toml.dump(large_config, f)
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             # Test that listing projects works with many entries
             result = runner.invoke(app, ["list-projects", "--config", "isolated"])
             assert result.exit_code == 0
@@ -1181,12 +1187,12 @@ class TestEdgeCases:
         runner = test_data["runner"]
         mock_manager = test_data["mock_manager"]
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             # Test add with nonexistent config
             result = runner.invoke(app, ["add", "cmip6", "--config", "nonexistent"])
             assert result.exit_code == 1
@@ -1231,12 +1237,12 @@ class TestEdgeCases:
         with open(config_path, "w") as f:
             toml.dump(config_data, f)
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             # Mock the config manager data_config_dir to avoid actual file operations
             mock_manager.data_config_dir = str(test_data["temp_dir"])
 
@@ -1276,12 +1282,12 @@ class TestEdgeCases:
         with open(config_path, "w") as f:
             toml.dump(config_data, f)
 
-        with patch.multiple(
-            "esgvoc.cli.config.service",
-            get_config_manager=lambda: mock_manager,
-            current_state=None,
-            get_state=lambda: None,
-        ):
+        mock_service = MagicMock()
+        mock_service.get_config_manager.return_value = mock_manager
+        mock_service.current_state = None
+        mock_service.get_state.return_value = None
+
+        with patch("esgvoc.cli.config.get_service", return_value=mock_service):
             # Test adding empty list (edge case)
             result = runner.invoke(app, ["add"])
             assert result.exit_code == 2  # Typer error for missing argument
