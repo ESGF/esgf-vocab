@@ -41,7 +41,7 @@ class Activity(PlainTermDataDescriptor):
     Experiments 'sponsored' by this activity
     """
 
-    urls : list[HttpUrl] | None
+    urls: list[HttpUrl]
     """
     URL with more information about this activity
     """
