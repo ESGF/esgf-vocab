@@ -8,20 +8,35 @@ from esgvoc.api.data_descriptors.citation_url import CitationUrl
 from esgvoc.api.data_descriptors.component_type_new import ComponentType
 from esgvoc.api.data_descriptors.consortium import Consortium
 from esgvoc.api.data_descriptors.contact import Contact
+from esgvoc.api.data_descriptors.contributor import Contributor
+from esgvoc.api.data_descriptors.contributor_member import ContributorMember
 from esgvoc.api.data_descriptors.conventions import Convention
 from esgvoc.api.data_descriptors.creation_date import CreationDate
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.data_descriptors.data_specs_version import DataSpecsVersion
 from esgvoc.api.data_descriptors.date import Date
 from esgvoc.api.data_descriptors.directory_date import DirectoryDate
+from esgvoc.api.data_descriptors.drs_specs import DRSSpecs
+
+# # Import new EMD CV models
+# from esgvoc.api.data_descriptors.EMD import (
+#     CellVariableType,
+#     GridType,
+#     HorizontalUnits,
+#     MeshLocation,
+#     TruncationMethod,
+#     VerticalUnits,
+# )
 from esgvoc.api.data_descriptors.experiment import Experiment
 from esgvoc.api.data_descriptors.forcing_index import ForcingIndex
 from esgvoc.api.data_descriptors.frequency import Frequency
 from esgvoc.api.data_descriptors.further_info_url import FurtherInfoUrl
+from esgvoc.api.data_descriptors.grid import Grid
 from esgvoc.api.data_descriptors.grid_arrangement_new import GridArrangement
 from esgvoc.api.data_descriptors.grid_coordinate_new import Coordinate
-from esgvoc.api.data_descriptors.grid_label import GridLabel
-from esgvoc.api.data_descriptors.grid_mapping_new import GridMapping
+
+# from esgvoc.api.data_descriptors.grid_label import GridLabel
+# from esgvoc.api.data_descriptors.grid_mapping_new import GridMapping
 from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
 from esgvoc.api.data_descriptors.initialization_index import InitializationIndex
 from esgvoc.api.data_descriptors.institution import Institution
@@ -32,9 +47,10 @@ from esgvoc.api.data_descriptors.mip_era import MipEra
 from esgvoc.api.data_descriptors.model_component import ModelComponent
 from esgvoc.api.data_descriptors.model_component_new import EMDModelComponent
 from esgvoc.api.data_descriptors.model_new import Model
+from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
 from esgvoc.api.data_descriptors.native_horizontal_grid_new import NativeHorizontalGrid
 from esgvoc.api.data_descriptors.native_vertical_grid_new import NativeVerticalGrid
-from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
+from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
 from esgvoc.api.data_descriptors.obs_type import ObsType
 from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.physics_index import PhysicsIndex
@@ -52,6 +68,7 @@ from esgvoc.api.data_descriptors.source_type import SourceType
 from esgvoc.api.data_descriptors.sub_experiment import SubExperiment
 from esgvoc.api.data_descriptors.table import Table
 from esgvoc.api.data_descriptors.temporal_label import TemporalLabel
+from esgvoc.api.data_descriptors.temporal_refinement_new import TemporalRefinement
 from esgvoc.api.data_descriptors.time_range import TimeRange
 from esgvoc.api.data_descriptors.title import Title
 from esgvoc.api.data_descriptors.tracking_id import TrackingId
@@ -59,17 +76,10 @@ from esgvoc.api.data_descriptors.unit_new import Unit
 from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
-from esgvoc.api.data_descriptors.temporal_refinement_new import TemporalRefinement
 
-# Import new EMD CV models
-from esgvoc.api.data_descriptors.EMD import (
-    GridType,
-    CellVariableType,
-    MeshLocation,
-    HorizontalUnits,
-    TruncationMethod,
-    VerticalUnits,
-)
+# Model rebuilding to handle cross-links
+# Needs Experiment links made
+Activity.model_rebuild()
 
 DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "PlainTermDDex": PlainTermDDex,
@@ -82,8 +92,9 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "experiment": Experiment,
     "forcing_index": ForcingIndex,
     "frequency": Frequency,
-    "grid": GridLabel,  # Universe
-    "grid_label": GridLabel,  # cmip6, cmip6plus
+    # "grid": GridLabel,  # Universe
+    # "grid_label": GridLabel,  # cmip6, cmip6plus
+    "grid": Grid,
     "initialization_index": InitializationIndex,
     "institution": Institution,
     "license": License,
@@ -118,7 +129,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "grid_arrangement": GridArrangement,
     "grid_coordinate_new": Coordinate,
     "coordinate": Coordinate,
-    "grid_mapping_new": GridMapping,
+    # "grid_mapping_new": GridMapping,
     "model_component_new": EMDModelComponent,
     "model_new": Model,
     "native_horizontal_grid_new": NativeHorizontalGrid,
@@ -129,12 +140,12 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "resolution_new": EMDResolution,
     "unit_new": Unit,
     "temporal_refinement": TemporalRefinement,
-    "grid_type": GridType,
-    "cell_variable_type": CellVariableType,
-    "mesh_location": MeshLocation,
-    "horizontal_units": HorizontalUnits,
-    "truncation_method": TruncationMethod,
-    "vertical_units": VerticalUnits,
+    # "grid_type": GridType,
+    # "cell_variable_type": CellVariableType,
+    # "mesh_location": MeshLocation,
+    # "horizontal_units": HorizontalUnits,
+    # "truncation_method": TruncationMethod,
+    # "vertical_units": VerticalUnits,
     "data_specs_version": DataSpecsVersion,
     "further_info_url": FurtherInfoUrl,
     "tracking_id": TrackingId,
@@ -148,4 +159,8 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "regex": Regex,
     "citation_url": CitationUrl,
     "archive": Archive,
+    "drs_specs": DRSSpecs,
+    "contributor": Contributor,
+    "contributor_member": ContributorMember,
+    "nominal_resolution": NominalResolution,
 }

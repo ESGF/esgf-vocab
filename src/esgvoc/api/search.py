@@ -11,7 +11,7 @@ from sqlmodel import Column, Field, Session, col
 
 import esgvoc.core.service as service
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
-from esgvoc.api.pydantic_handler import get_pydantic_class, instantiate_pydantic_term
+from esgvoc.api.pydantic_handler import instantiate_pydantic_term
 from esgvoc.core.db.models.project import PCollectionFTS5, PTerm, PTermFTS5
 from esgvoc.core.db.models.universe import UDataDescriptorFTS5, UTerm, UTermFTS5
 from esgvoc.core.exceptions import EsgvocDbError, EsgvocValueError

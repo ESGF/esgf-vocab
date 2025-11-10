@@ -34,32 +34,50 @@ class HorizontalGrid(PlainTermDataDescriptor):
     Horizontal grids with different labels are different.
     """
 
-    grid: HorizontalGridType
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    grid: HorizontalGridType | str
     """
     Horizontal grid type
     """
 
-    grid_mapping: HorizontalGridMapping
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    grid_mapping: HorizontalGridMapping | str
     """
     Horizontal grid mapping
     """
 
-    region: HorizontalGridRegion
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    region: HorizontalGridRegion | str
     """
     Horizontal grid region
     """
 
-    temporal_refinement: HorizontalGridTemporalRefinement
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    temporal_refinement: HorizontalGridTemporalRefinement | str
     """
     Temporal refinement
     """
 
-    arrangement: HorizontalGridArrangement
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    arrangement: HorizontalGridArrangement | str
     """
     Grid arrangement
     """
 
-    cell_variable_type: list[HorizontalGridCellVariableType]
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    cell_variable_type: list[HorizontalGridCellVariableType] | str
     """
     Cell variable type
 
@@ -131,7 +149,7 @@ class HorizontalGrid(PlainTermDataDescriptor):
         le=90.0,
     )
 
-    westernmost_latitude: float = Field(
+    westernmost_latitude: float | None = Field(
         description=textwrap.dedent(
             """
             The westernmost grid cell latitude, in degrees east, of the southernmost grid cell(s)
@@ -159,7 +177,10 @@ class HorizontalGrid(PlainTermDataDescriptor):
         ge=1,
     )
 
-    truncation_method: HorizontalGridTruncationMethod | None
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    truncation_method: HorizontalGridTruncationMethod | str | None
     """
     The method for truncating the spherical harmonic representation of a spectral model when reporting on this grid
 
@@ -204,7 +225,10 @@ class HorizontalGrid(PlainTermDataDescriptor):
         gt=0.0,
     )
 
-    nominal_resolution: NominalResolution
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    nominal_resolution: NominalResolution | str
     """
     Nominal resolution of the grid
     """

@@ -1,8 +1,9 @@
-from typing import Union, Annotated, Any, Type, Iterable, TYPE_CHECKING, get_origin, get_args
+from typing import TYPE_CHECKING, Annotated, Any, Iterable, Type, Union, get_args, get_origin
+
 from pydantic import BaseModel, Discriminator, Tag, TypeAdapter
 
-from esgvoc.core.exceptions import EsgvocDbError
 import esgvoc.core.constants as api_settings
+from esgvoc.core.exceptions import EsgvocDbError
 
 if TYPE_CHECKING:
     from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
@@ -64,7 +65,7 @@ def create_union(*classes: Type[BaseModel]):
                 failed_matches.append((cls.__name__, sorted(missing_fields)))
 
         # If no model matched, raise a helpful error
-        error_parts = [f"Could not discriminate union type. No model matched the input data."]
+        error_parts = ["Could not discriminate union type. No model matched the input data."]
         error_parts.append(f"Input fields: {sorted(input_fields)}")
         error_parts.append("\nAttempted models:")
         for model_name, missing in failed_matches:

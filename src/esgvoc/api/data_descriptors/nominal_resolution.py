@@ -2,6 +2,8 @@
 Model (i.e. schema/definition) of the nominal resolution data descriptor
 """
 
+from pydantic import validator
+
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
@@ -23,7 +25,25 @@ class NominalResolution(PlainTermDataDescriptor):
     Magnitude of the nominal resolution
     """
 
-    unit: str
+    range: tuple[float, float]
     """
-    Unit of the nominal resolution
+    Range of mean resolutions to which this nominal resolution applies
     """
+
+    units: str
+    """
+    Units of the nominal resolution and range
+    """
+
+    @validator("range")
+    def validate_range(cls, v):
+        """Validate that range has exactly 2 values and min <= max."""
+        if len(v) != 2:
+            msg = f"range must contain exactly 2 values [min, max]. Received: {v}"
+            raise ValueError(msg)
+
+        if v[0] > v[1]:
+            msg = f"range[0] must be <= range[1]. Received: {v}"
+            raise ValueError(msg)
+
+        return v
