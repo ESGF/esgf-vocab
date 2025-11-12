@@ -1,3 +1,43 @@
+from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
+from esgvoc.api.data_descriptors.variant_label import VariantLabel
+from esgvoc.api.data_descriptors.variable import Variable
+from esgvoc.api.data_descriptors.unit_new import Unit
+from esgvoc.api.data_descriptors.tracking_id import TrackingId
+from esgvoc.api.data_descriptors.title import Title
+from esgvoc.api.data_descriptors.time_range import TimeRange
+from esgvoc.api.data_descriptors.temporal_refinement_new import TemporalRefinement
+from esgvoc.api.data_descriptors.temporal_label import TemporalLabel
+from esgvoc.api.data_descriptors.table import Table
+from esgvoc.api.data_descriptors.sub_experiment import SubExperiment
+from esgvoc.api.data_descriptors.source_type import SourceType
+from esgvoc.api.data_descriptors.source import Source
+from esgvoc.api.data_descriptors.resolution_new import EMDResolution
+from esgvoc.api.data_descriptors.resolution import Resolution
+from esgvoc.api.data_descriptors.region import Region
+from esgvoc.api.data_descriptors.regex import Regex
+from esgvoc.api.data_descriptors.reference_new import Reference
+from esgvoc.api.data_descriptors.realm import Realm
+from esgvoc.api.data_descriptors.realization_index import RealizationIndex
+from esgvoc.api.data_descriptors.publication_status import PublicationStatus
+from esgvoc.api.data_descriptors.product import Product
+from esgvoc.api.data_descriptors.physics_index import PhysicsIndex
+from esgvoc.api.data_descriptors.organisation import Organisation
+from esgvoc.api.data_descriptors.obs_type import ObsType
+from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
+from esgvoc.api.data_descriptors.native_vertical_grid_new import NativeVerticalGrid
+from esgvoc.api.data_descriptors.native_horizontal_grid_new import NativeHorizontalGrid
+from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
+from esgvoc.api.data_descriptors.model_new import Model
+from esgvoc.api.data_descriptors.model_component_new import EMDModelComponent
+from esgvoc.api.data_descriptors.model_component import ModelComponent
+from esgvoc.api.data_descriptors.mip_era import MipEra
+from esgvoc.api.data_descriptors.member_id import MemberId
+from esgvoc.api.data_descriptors.license import License
+from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable
+from esgvoc.api.data_descriptors.institution import Institution
+from esgvoc.api.data_descriptors.initialization_index import InitializationIndex
+from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
+from esgvoc.api.data_descriptors.horizontal_grid_mapping import HorizontalGridMapping
 from esgvoc.api.data_descriptors.activity import Activity
 from esgvoc.api.data_descriptors.archive import Archive
 from esgvoc.api.data_descriptors.area_label import AreaLabel
@@ -37,45 +77,12 @@ from esgvoc.api.data_descriptors.grid_coordinate_new import Coordinate
 
 # from esgvoc.api.data_descriptors.grid_label import GridLabel
 # from esgvoc.api.data_descriptors.grid_mapping_new import GridMapping
-from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
-from esgvoc.api.data_descriptors.initialization_index import InitializationIndex
-from esgvoc.api.data_descriptors.institution import Institution
-from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable
-from esgvoc.api.data_descriptors.license import License
-from esgvoc.api.data_descriptors.member_id import MemberId
-from esgvoc.api.data_descriptors.mip_era import MipEra
-from esgvoc.api.data_descriptors.model_component import ModelComponent
-from esgvoc.api.data_descriptors.model_component_new import EMDModelComponent
-from esgvoc.api.data_descriptors.model_new import Model
-from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
-from esgvoc.api.data_descriptors.native_horizontal_grid_new import NativeHorizontalGrid
-from esgvoc.api.data_descriptors.native_vertical_grid_new import NativeVerticalGrid
-from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
-from esgvoc.api.data_descriptors.obs_type import ObsType
-from esgvoc.api.data_descriptors.organisation import Organisation
-from esgvoc.api.data_descriptors.physics_index import PhysicsIndex
-from esgvoc.api.data_descriptors.product import Product
-from esgvoc.api.data_descriptors.publication_status import PublicationStatus
-from esgvoc.api.data_descriptors.realization_index import RealizationIndex
-from esgvoc.api.data_descriptors.realm import Realm
-from esgvoc.api.data_descriptors.reference_new import Reference
-from esgvoc.api.data_descriptors.regex import Regex
-from esgvoc.api.data_descriptors.region import Region
-from esgvoc.api.data_descriptors.resolution import Resolution
-from esgvoc.api.data_descriptors.resolution_new import EMDResolution
-from esgvoc.api.data_descriptors.source import Source
-from esgvoc.api.data_descriptors.source_type import SourceType
-from esgvoc.api.data_descriptors.sub_experiment import SubExperiment
-from esgvoc.api.data_descriptors.table import Table
-from esgvoc.api.data_descriptors.temporal_label import TemporalLabel
-from esgvoc.api.data_descriptors.temporal_refinement_new import TemporalRefinement
-from esgvoc.api.data_descriptors.time_range import TimeRange
-from esgvoc.api.data_descriptors.title import Title
-from esgvoc.api.data_descriptors.tracking_id import TrackingId
-from esgvoc.api.data_descriptors.unit_new import Unit
-from esgvoc.api.data_descriptors.variable import Variable
-from esgvoc.api.data_descriptors.variant_label import VariantLabel
-from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
+from esgvoc.api.data_descriptors.horizontal_grid_arrangement import HorizontalGridArrangement
+from esgvoc.api.data_descriptors.horizontal_grid_cell_variable_type import HorizontalGridCellVariableType
+from esgvoc.api.data_descriptors.horizontal_grid_region import HorizontalGridRegion
+from esgvoc.api.data_descriptors.horizontal_grid_temporal_refinement import HorizontalGridTemporalRefinement
+from esgvoc.api.data_descriptors.horizontal_grid_truncation_method import HorizontalGridTruncationMethod
+from esgvoc.api.data_descriptors.horizontal_grid_type import HorizontalGridType
 
 # Model rebuilding to handle cross-links
 # Needs Experiment links made
@@ -163,4 +170,11 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "contributor": Contributor,
     "contributor_member": ContributorMember,
     "nominal_resolution": NominalResolution,
+    "horizontal_grid_arrangement": HorizontalGridArrangement,
+    "horizontal_grid_cell_variable_type": HorizontalGridCellVariableType,
+    "horizontal_grid_mapping": HorizontalGridMapping,
+    "horizontal_grid_region": HorizontalGridRegion,
+    "horizontal_grid_temporal_refinement": HorizontalGridTemporalRefinement,
+    "horizontal_grid_truncation_method": HorizontalGridTruncationMethod,
+    "horizontal_grid_type": HorizontalGridType,
 }
