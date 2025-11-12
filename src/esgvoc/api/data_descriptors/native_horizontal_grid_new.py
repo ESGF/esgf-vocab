@@ -125,8 +125,7 @@ class NativeHorizontalGrid(PlainTermDataDescriptor):
         default=None,
         description="The physical units of the resolution_x and resolution_y property values. Taken from a standardised list: 7.8 horizontal_units CV.",
     )
-    n_cells: int = Field(
-        description="The total number of cells in the horizontal grid.", ge=1)
+    n_cells: int = Field(description="The total number of cells in the horizontal grid.", ge=1)
     n_sides: Optional[int] = Field(
         default=None, description="For unstructured horizontal grids only, the total number of unique cell sides.", ge=1
     )
@@ -145,8 +144,7 @@ class NativeHorizontalGrid(PlainTermDataDescriptor):
         min_length=2,
         max_length=2,
     )
-    mean_resolution_km: float = Field(
-        description="The mean resolution (in km) of cells of the horizontal grid.", gt=0)
+    mean_resolution_km: float = Field(description="The mean resolution (in km) of cells of the horizontal grid.", gt=0)
     nominal_resolution: str = Field(
         description="The nominal resolution characterises the approximate resolution of a horizontal grid. Taken from a standardised list: 7.10 nominal_resolution CV."
     )
@@ -163,12 +161,10 @@ class NativeHorizontalGrid(PlainTermDataDescriptor):
     @classmethod
     def validate_units_requirement(cls, v, info):
         """Validate that horizontal_units is provided when resolution values are set."""
-        has_resolution = any(info.data.get(field) is not None for field in [
-                             "resolution_x", "resolution_y"])
+        has_resolution = any(info.data.get(field) is not None for field in ["resolution_x", "resolution_y"])
 
         if has_resolution and not v:
-            raise ValueError(
-                "horizontal_units is required when resolution_x or resolution_y are set")
+            raise ValueError("horizontal_units is required when resolution_x or resolution_y are set")
         return v
 
     @field_validator("resolution_range_km")
@@ -176,8 +172,7 @@ class NativeHorizontalGrid(PlainTermDataDescriptor):
     def validate_resolution_range(cls, v):
         """Validate that resolution range has exactly 2 values and min <= max."""
         if len(v) != 2:
-            raise ValueError(
-                "resolution_range_km must contain exactly 2 values [min, max]")
+            raise ValueError("resolution_range_km must contain exactly 2 values [min, max]")
         if v[0] > v[1]:
             raise ValueError("resolution_range_km: minimum must be <= maximum")
         if any(val <= 0 for val in v):
@@ -192,7 +187,6 @@ class NativeHorizontalGrid(PlainTermDataDescriptor):
             range_km = info.data["resolution_range_km"]
             if not (range_km[0] <= v <= range_km[1]):
                 raise ValueError(
-                    f"mean_resolution_km ({v}) must be between resolution_range_km min ({
-                        range_km[0]}) and max ({range_km[1]})"
+                    f"mean_resolution_km ({v}) must be between resolution_range_km min ({range_km[0]}) and max ({range_km[1]})"
                 )
         return v
