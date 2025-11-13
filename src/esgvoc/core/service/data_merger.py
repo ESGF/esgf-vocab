@@ -8,6 +8,7 @@ from esgvoc.core.service.term_cache import TermCache
 from esgvoc.core.service.uri_resolver import URIResolver
 
 logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
 
 
 def merge_dicts(base: list, override: list) -> dict:
@@ -494,6 +495,18 @@ class DataMerger:
 
                     # Handle resolution based on mode
                     if resolve_mode == "shallow":
+                        if "historical" in local_uri:
+                            # TODO: remove hack
+                            local_uri_project = local_uri.replace("WCRP-universe", "cmip7")
+                            json_resource = JsonLdResource(uri=str(local_uri_project))
+
+                            merger = DataMerger(
+                                data=json_resource,
+                                locally_available=self.locally_available,
+                            )
+                            merger_result = merger.merge_linked_json()
+                            temp_expanded = merger_result[-1]
+
                         # "shallow" mode: return the object but DON'T resolve its nested IDs
                         # Just return the raw data without any resolution
                         return resolved
