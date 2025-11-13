@@ -476,7 +476,18 @@ class DataMerger:
 
                 try:
                     # Fetch the referenced term
-                    resolved = self._fetch_referenced_term(uri)
+                    if _current_property not in ("parent_experiment", "parent_activity"):
+                        resolved = self._fetch_referenced_term(uri)
+                    else:
+                        # TODO: remove hack.
+                        local_uri = local_uri.replace("WCRP-universe", "cmip7")
+                        json_ld_res_project_uri = JsonLdResource(uri=local_uri)
+                        merger = DataMerger(
+                            data=json_ld_res_project_uri,
+                            locally_available=self.locally_available,
+                        )
+                        merger_result = merger.merge_linked_json()
+                        resolved = merger_result[-1]
 
                     logger.info(
                         f"Successfully resolved ID reference\n"
@@ -487,26 +498,8 @@ class DataMerger:
                         f"  → Replacing with {'shallow' if resolve_mode == 'shallow' else 'full'} object"
                     )
 
-                    # Create a temporary resource to get proper expansion for this term
-                    temp_resource = JsonLdResource(uri=local_uri)
-                    temp_expanded = temp_resource.expanded
-                    if isinstance(temp_expanded, list) and len(temp_expanded) > 0:
-                        temp_expanded = temp_expanded[0]
-
                     # Handle resolution based on mode
                     if resolve_mode == "shallow":
-                        if "historical" in local_uri:
-                            # TODO: remove hack
-                            local_uri_project = local_uri.replace("WCRP-universe", "cmip7")
-                            json_resource = JsonLdResource(uri=str(local_uri_project))
-
-                            merger = DataMerger(
-                                data=json_resource,
-                                locally_available=self.locally_available,
-                            )
-                            merger_result = merger.merge_linked_json()
-                            resolved = merger_result[-1]
-
                         # "shallow" mode: return the object but DON'T resolve its nested IDs
                         # Just return the raw data without any resolution
                         return resolved
@@ -514,6 +507,13 @@ class DataMerger:
                         # "full" mode: recursively resolve any nested references in the resolved data
                         # Create a new DataMerger with the nested object's context to properly
                         # apply its resolve modes
+
+                        # Create a temporary resource to get proper expansion for this term
+                        temp_resource = JsonLdResource(uri=local_uri)
+                        temp_expanded = temp_resource.expanded
+                        if isinstance(temp_expanded, list) and len(temp_expanded) > 0:
+                            temp_expanded = temp_expanded[0]
+
                         nested_merger = DataMerger(
                             data=temp_resource,
                             allowed_base_uris=self.allowed_base_uris,
