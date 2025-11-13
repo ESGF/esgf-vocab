@@ -505,7 +505,7 @@ class DataMerger:
                                 locally_available=self.locally_available,
                             )
                             merger_result = merger.merge_linked_json()
-                            temp_expanded = merger_result[-1]
+                            resolved = merger_result[-1]
 
                         # "shallow" mode: return the object but DON'T resolve its nested IDs
                         # Just return the raw data without any resolution
