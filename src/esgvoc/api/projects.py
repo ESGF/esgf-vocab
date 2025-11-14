@@ -91,7 +91,7 @@ def _valid_value_composite_term_with_separator(
     value: str, term: UTerm | PTerm, universe_session: Session, project_session: Session
 ) -> list[UniverseTermError | ProjectTermError]:
     separator, parts = _get_composite_term_separator_parts(term)
-    required_indices = {i for i, p in enumerate(parts) if p.get("is_required", False)}
+    required_indices = {i for i, p in enumerate(parts) if p.get(constants.COMPOSITE_REQUIRED_KEY, False)}
 
     splits = value.split(separator)
     nb_splits = len(splits)
@@ -129,7 +129,7 @@ def _valid_value_composite_term_with_separator(
         all_valid = True
         for i, given_value in enumerate(candidate):
             if given_value is None:
-                if parts[i].get("is_required", False):
+                if parts[i].get(constants.COMPOSITE_REQUIRED_KEY, False):
                     all_valid = False
                     break
                 continue  # optional and missing part is allowed

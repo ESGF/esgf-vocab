@@ -498,10 +498,12 @@ class CVTester:
                             for prop in catalog_specs[prop_type]:
                                 if isinstance(prop, dict) and "source_collection" in prop:
                                     collection_ref = prop["source_collection"]
-                                    source_collections.add(collection_ref)
-                                    if collection_ref not in collection_file_mapping:
-                                        collection_file_mapping[collection_ref] = set()
-                                    collection_file_mapping[collection_ref].add(CATALOG_SPECS_FILENAME)
+                                    # Skip None values - collections can now be null in YAML
+                                    if collection_ref is not None:
+                                        source_collections.add(collection_ref)
+                                        if collection_ref not in collection_file_mapping:
+                                            collection_file_mapping[collection_ref] = set()
+                                        collection_file_mapping[collection_ref].add(CATALOG_SPECS_FILENAME)
 
                 console.print(f"   [green]✅ {CATALOG_SPECS_FILENAME} parsed successfully[/green]")
                 files_tested += 1
@@ -530,10 +532,12 @@ class CVTester:
                     for attr_spec in attr_specs:
                         if isinstance(attr_spec, dict) and "source_collection" in attr_spec:
                             collection_ref = attr_spec["source_collection"]
-                            source_collections.add(collection_ref)
-                            if collection_ref not in collection_file_mapping:
-                                collection_file_mapping[collection_ref] = set()
-                            collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
+                            # Skip None values - collections can now be null in YAML
+                            if collection_ref is not None:
+                                source_collections.add(collection_ref)
+                                if collection_ref not in collection_file_mapping:
+                                    collection_file_mapping[collection_ref] = set()
+                                collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
                 elif isinstance(attr_specs, dict):
                     # Legacy format: nested structure with "specs" key
                     if "specs" in attr_specs:
@@ -542,18 +546,22 @@ class CVTester:
                             for attr_name, attr_spec in specs.items():
                                 if isinstance(attr_spec, dict) and "source_collection" in attr_spec:
                                     collection_ref = attr_spec["source_collection"]
-                                    source_collections.add(collection_ref)
-                                    if collection_ref not in collection_file_mapping:
-                                        collection_file_mapping[collection_ref] = set()
-                                    collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
+                                    # Skip None values - collections can now be null in YAML
+                                    if collection_ref is not None:
+                                        source_collections.add(collection_ref)
+                                        if collection_ref not in collection_file_mapping:
+                                            collection_file_mapping[collection_ref] = set()
+                                        collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
                         elif isinstance(specs, list):
                             for attr_spec in specs:
                                 if isinstance(attr_spec, dict) and "source_collection" in attr_spec:
                                     collection_ref = attr_spec["source_collection"]
-                                    source_collections.add(collection_ref)
-                                    if collection_ref not in collection_file_mapping:
-                                        collection_file_mapping[collection_ref] = set()
-                                    collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
+                                    # Skip None values - collections can now be null in YAML
+                                    if collection_ref is not None:
+                                        source_collections.add(collection_ref)
+                                        if collection_ref not in collection_file_mapping:
+                                            collection_file_mapping[collection_ref] = set()
+                                        collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
 
                 console.print(f"   [green]✅ {ATTRIBUTES_SPECS_FILENAME} parsed successfully[/green]")
                 files_tested += 1
@@ -660,14 +668,21 @@ class CVTester:
 
                         for item in original_attr_specs:
                             if isinstance(item, dict) and "source_collection" in item:
-                                yaml_collections.add(item["source_collection"])
+                                collection_ref = item["source_collection"]
+                                # Skip None values - collections can now be null in YAML
+                                if collection_ref is not None:
+                                    yaml_collections.add(collection_ref)
 
                         for item in ingested_attr_specs:
                             if isinstance(item, dict) and "source_collection" in item:
-                                ingested_collections.add(item["source_collection"])
+                                collection_ref = item["source_collection"]
+                                if collection_ref is not None:
+                                    ingested_collections.add(collection_ref)
                             elif hasattr(item, "source_collection"):
                                 # Handle Pydantic model objects
-                                ingested_collections.add(item.source_collection)
+                                collection_ref = item.source_collection
+                                if collection_ref is not None:
+                                    ingested_collections.add(collection_ref)
 
                         if yaml_collections == ingested_collections:
                             console.print(f"   [green]✅ Collection references preserved: {sorted(yaml_collections)}[/green]")
