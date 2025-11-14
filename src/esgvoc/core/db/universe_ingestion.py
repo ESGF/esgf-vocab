@@ -101,13 +101,13 @@ def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnecti
             if term_file_path.is_file() and term_file_path.suffix == ".json":
                 try:
                     locally_available = {
-                        "https://espri-mod.github.io/mip-cmor-tables": service.current_state.universe.local_path
+                        "https://esgvoc.ipsl.fr/resource/universe": service.current_state.universe.local_path
                     }
 
                     merger = DataMerger(
                         data=JsonLdResource(uri=str(term_file_path)),
                         locally_available=locally_available,
-                        allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables"},
+                        allowed_base_uris={"https://esgvoc.ipsl.fr/resource/universe"},
                     )
                     merged_data = merger.merge_linked_json()[-1]
                     # Resolve all nested @id references to full objects

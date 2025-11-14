@@ -73,13 +73,15 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
         _LOGGER.debug(f"found term path : {term_file_path}")
         if term_file_path.is_file() and term_file_path.suffix == ".json":
             try:
+                # Map both universe and project URLs to their local paths
                 locally_avail = {
-                    "https://espri-mod.github.io/mip-cmor-tables": service.current_state.universe.local_path
+                    "https://esgvoc.ipsl.fr/resource/universe": service.current_state.universe.local_path,
+                    f"https://esgvoc.ipsl.fr/resource/{project.id}": str(collection_dir_path.parent),
                 }
                 merger = DataMerger(
                     data=JsonLdResource(uri=str(term_file_path)),
                     locally_available=locally_avail,
-                    allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables"},
+                    allowed_base_uris={"https://esgvoc.ipsl.fr/resource/universe", f"https://esgvoc.ipsl.fr/resource/{project.id}"},
                 )
                 merged_data = merger.merge_linked_json()[-1]
                 # Resolve all nested @id references using merged context
