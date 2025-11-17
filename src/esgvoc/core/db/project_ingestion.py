@@ -85,7 +85,8 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                 )
                 merged_data = merger.merge_linked_json()[-1]
                 # Resolve all nested @id references using merged context
-                json_specs = merger.resolve_merged_ids(merged_data)
+                # IMPORTANT: Pass the project repo path so nested IDs use the project context
+                json_specs = merger.resolve_merged_ids(merged_data, context_base_path=str(collection_dir_path.parent))
 
                 term_kind = infer_term_kind(json_specs)
                 term_id = json_specs["id"]
