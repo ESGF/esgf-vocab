@@ -46,10 +46,7 @@ from esgvoc.api.data_descriptors.branded_variable import BrandedVariable
 from esgvoc.api.data_descriptors.calendar_new import Calendar
 from esgvoc.api.data_descriptors.citation_url import CitationUrl
 from esgvoc.api.data_descriptors.component_type_new import ComponentType
-from esgvoc.api.data_descriptors.consortium import Consortium
 from esgvoc.api.data_descriptors.contact import Contact
-from esgvoc.api.data_descriptors.contributor import Contributor
-from esgvoc.api.data_descriptors.contributor_member import ContributorMember
 from esgvoc.api.data_descriptors.conventions import Convention
 from esgvoc.api.data_descriptors.creation_date import CreationDate
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
@@ -95,7 +92,6 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "PatternTermDDex": PatternTermDDex,
     "CompositeTermDDex": CompositeTermDDex,
     "activity": Activity,
-    "consortium": Consortium,
     "date": Date,
     "directory_date": DirectoryDate,
     "experiment": Experiment,
@@ -169,8 +165,6 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "citation_url": CitationUrl,
     "archive": Archive,
     "drs_specs": DRSSpecs,
-    "contributor": Contributor,
-    "contributor_member": ContributorMember,
     "nominal_resolution": NominalResolution,
     "horizontal_grid_arrangement": HorizontalGridArrangement,
     "horizontal_grid_cell_variable_type": HorizontalGridCellVariableType,
