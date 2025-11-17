@@ -168,7 +168,7 @@ class ExperimentCMIP7(PlainTermDataDescriptor):
     """
 
 
-class ExperimentBeforeCMIP7(PlainTermDataDescriptor):
+class ExperimentLegacy(PlainTermDataDescriptor):
     """
     An 'experiment' refers to a specific, controlled simulation conducted using climate models to \
     investigate particular aspects of the Earth's climate system. These experiments are designed \
@@ -191,4 +191,4 @@ class ExperimentBeforeCMIP7(PlainTermDataDescriptor):
     parent_experiment_id: list[str] | None
 
 
-Experiment = create_union(ExperimentCMIP7, ExperimentBeforeCMIP7)
+Experiment = create_union(ExperimentCMIP7, ExperimentLegacy)

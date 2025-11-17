@@ -7,13 +7,14 @@ from typing import TYPE_CHECKING
 
 from pydantic import HttpUrl, field_validator
 
-from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, PlainTermDataDescriptor
+from esgvoc.api.pydantic_handler import create_union
 
 if TYPE_CHECKING:
     from esgvoc.api.data_descriptors.experiment import Experiment
 
 
-class Activity(PlainTermDataDescriptor):
+class ActivityCMIP7(PlainTermDataDescriptor):
     """
     Identifier of the CMIP activity to which a dataset belongs
 
@@ -53,3 +54,19 @@ class Activity(PlainTermDataDescriptor):
             raise ValueError(msg)
 
         return v
+
+
+class ActivityLegacy(DataDescriptor):
+    """
+    Legacy activity model for CMIP6 and earlier versions.
+
+    This version only contains basic fields (id, type, description)
+    without the additional requirements introduced in CMIP7.
+    """
+
+    def accept(self, visitor):
+        """Accept method for visitor pattern."""
+        return visitor.visit_plain_term(self)
+
+
+Activity = create_union(ActivityCMIP7, ActivityLegacy)

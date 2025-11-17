@@ -86,7 +86,9 @@ from esgvoc.api.data_descriptors.horizontal_grid_type import HorizontalGridType
 
 # Model rebuilding to handle cross-links
 # Needs Experiment links made
-Activity.model_rebuild()
+from esgvoc.api.data_descriptors.activity import ActivityCMIP7
+
+ActivityCMIP7.model_rebuild()
 
 DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "PlainTermDDex": PlainTermDDex,
