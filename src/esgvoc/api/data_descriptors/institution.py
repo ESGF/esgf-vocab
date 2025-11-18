@@ -25,9 +25,9 @@ class Location(BaseModel):
     Latitude in degrees north
     """
 
-    lon: float = Field(ge=0.0, le=360.0)
+    lon: float = Field(ge=-180.0, le=180.0)
     """
-    Longitude in degrees east
+    Longitude in degrees east (range: -180 to 180)
     """
 
 

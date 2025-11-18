@@ -26,7 +26,10 @@ class Grid(PlainTermDataDescriptor):
     Grids with different labels are different.
     """
 
-    region: Region
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    region: Region | str
     """
     Region represented by this grid
     """

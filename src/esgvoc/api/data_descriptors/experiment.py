@@ -182,8 +182,8 @@ class ExperimentLegacy(PlainTermDataDescriptor):
     experiment_id: str
     sub_experiment_id: list[str] | None
     experiment: str
-    required_model_components: list[str] | None
-    additional_allowed_model_components: list[str] = Field(default_factory=list)
+    required_model_components: list[ModelComponent | str] | None
+    additional_allowed_model_components: list[ModelComponent | str] = Field(default_factory=list)
     start_year: str | int | None
     end_year: str | int | None
     min_number_yrs_per_sim: int | None
@@ -191,4 +191,5 @@ class ExperimentLegacy(PlainTermDataDescriptor):
     parent_experiment_id: list[str] | None
 
 
-Experiment = create_union(ExperimentCMIP7, ExperimentLegacy)
+# Priority: Try Legacy first (for CMIP6/CMIP6Plus overrides), then CMIP7 (for Universe)
+Experiment = create_union(ExperimentLegacy, ExperimentCMIP7)

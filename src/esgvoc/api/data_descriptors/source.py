@@ -4,7 +4,7 @@ Model (i.e. schema/definition) of the source descriptor
 
 from pydantic import Field
 
-from esgvoc.api.data_descriptors.contributor import Contributor
+from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.model_component_new import EMDModelComponent
 from esgvoc.api.pydantic_handler import create_union
@@ -53,11 +53,11 @@ class SourceCMIP7(PlainTermDataDescriptor):
     # Note: Allowing str is under discussion.
     # Using this to get things working.
     # Long-term, we might do something different.
-    contributors: list[Contributor | str]
+    contributors: list[Organisation | str]
     """
-    Contributor(s) using this source
+    Organisation(s) using this source
 
-    Using is a bit vaguely defined, but in practice it is the contributor(s)
+    Using is a bit vaguely defined, but in practice it is the organisation(s)
     that submit data using this source.
     """
 
