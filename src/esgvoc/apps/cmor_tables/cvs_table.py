@@ -577,8 +577,8 @@ def get_cmor_experiment_id_definitions(
     for v in terms:
         res[v.drs_name] = CMORExperimentDefinition(
             activity_id=get_term(v.activity).drs_name,
-            required_model_components=[get_term(vv).drs_name for vv in v.required_model_components],
-            additional_allowed_model_components=[get_term(vv).drs_name for vv in v.additional_allowed_model_components],
+            required_model_components=[vv.drs_name for vv in v.required_model_components],
+            additional_allowed_model_components=[vv.drs_name for vv in v.additional_allowed_model_components],
             description=v.description,
             experiment=v.description,
             start_year=v.start_timestamp.year if v.start_timestamp else v.start_timestamp,
@@ -647,7 +647,7 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
         ev_project.project_id, "experiment", activity_example.experiments[0]
     )
 
-    institution_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "contributor")[0]
+    institution_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "organisation")[0]
     sources = ev_api.get_all_terms_in_collection(ev_project.project_id, "source")
     for source in sources:
         if institution_example.id in source.contributors:
@@ -658,7 +658,7 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
         raise AssertionError(msg)
 
     grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid")[0]
-    region_example = grid_example.region
+    region_example = ev_api.get_term_in_collection(ev_project.project_id, "region", grid_example.region)
 
     frequency_example = "mon"
     time_range_example = "185001-202112"
@@ -816,6 +816,12 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
         elif attr_property.field_name == "source_id":
             value = get_cmor_source_id_definitions(attr_property.source_collection, ev_project)
             kwarg = attr_property.field_name
+
+        elif attr_property.field_name in ("activity_id",):
+            # Hard-code for now
+            # TODO: figure out how to unpack typing.Annotated
+            kwarg = attr_property.field_name
+            value = get_allowed_dict_for_attribute(attr_property.field_name, ev_project)
 
         else:
             kwarg = attr_property.field_name
