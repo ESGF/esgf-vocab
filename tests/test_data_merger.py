@@ -7,7 +7,7 @@ from esgvoc.core.service.data_merger import DataMerger, merge
 from esgvoc.core.repo_fetcher import RepoFetcher
 #
 # def test_remote_organisation_ipsl():
-#     
+#
 #     uri = "https://espri-mod.github.io/WCRP-universe/tree/esgvoc/organisation/ipsl.json"
 #     merger = DataMerger(data= JsonLdResource(uri = uri), allowed_base_uris={"https://espri-mod.github.io/mip-cmor-table/"})
 #     jsonlist = merger.merge_linked_json()
@@ -18,30 +18,64 @@ from esgvoc.core.repo_fetcher import RepoFetcher
 #     uri =  "https://espri-mod.github.io/CMIP6Plus_CVs/institution_id/ipsl.json"
 #     merger = DataMerger(data= JsonLdResource(uri = uri), allowed_base_uris={"https://espri-mod.github.io/WCRP-universe/"})
 #     jsonlist = merger.merge_linked_json()
-#     assert jsonlist[-1]["established"]==1998 # this is a overcharged value 'from 1991 in ipsl definition in the universe to 1996 in ipsl in cmip6plus_cvs 
+#     assert jsonlist[-1]["established"]==1998 # this is a overcharged value 'from 1991 in ipsl definition in the universe to 1996 in ipsl in cmip6plus_cvs
 #     assert jsonlist[-1]["myprop"]=="42" # a new property definition in the project cv
 
 
-def test_local_organisation_ipsl():
+def test_universe_experiment_historical():
+    """Test loading historical experiment from Universe (CMIP7 format)."""
     from esgvoc.core.service import current_state
+
     uri_base = current_state.universe.local_path
-    assert(uri_base is not None)
-    uri = uri_base + "/organisation/ipsl.json"
-    merger = DataMerger(data= JsonLdResource(uri = uri), allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables/"})
-    jsonlist = merger.merge_linked_json()
-    assert jsonlist[-1]["established"]==1991
+    assert uri_base is not None
 
-def test_local_from_project_ipsl():
+    uri = uri_base + "/experiment/historical.json"
+    merger = DataMerger(
+        data=JsonLdResource(uri=uri),
+        locally_available={"https://esgvoc.ipsl.fr/resource/universe/": uri_base + "/"},
+        allowed_base_uris={"https://esgvoc.ipsl.fr/resource/universe/"},
+    )
+    jsonlist = merger.merge_linked_json()
+    result = jsonlist[-1]
+
+    # Verify CMIP7 structure is present
+    assert result["id"] == "historical"
+    assert result["type"] == "experiment"
+    assert result["activity"] == "cmip"
+    assert result["tier"] == 1
+    assert result["start_timestamp"] == "1850-01-01"
+    assert result["parent_experiment"] == "picontrol"
+
+
+def test_project_experiment_historical_override():
+    """Test loading historical from CMIP6 project - should override description from Universe."""
     from esgvoc.core.service import current_state
-    uri_base = current_state.projects["cmip6plus"].local_path
-    assert(uri_base is not None)
 
-    uri = uri_base + "/institution_id/ipsl.json"
-    merger = DataMerger(data= JsonLdResource(uri = uri), allowed_base_uris={"https://espri-mod.github.io/WCRP-universe/"})
+    project_uri_base = current_state.projects["cmip6"].local_path
+    universe_uri_base = current_state.universe.local_path
+    assert project_uri_base is not None
+    assert universe_uri_base is not None
+
+    uri = project_uri_base + "/experiment_id/historical.json"
+    merger = DataMerger(
+        data=JsonLdResource(uri=uri),
+        locally_available={
+            "https://esgvoc.ipsl.fr/resource/universe/": universe_uri_base + "/",
+            "https://esgvoc.ipsl.fr/resource/cmip6/": project_uri_base + "/",
+        },
+        allowed_base_uris={"https://esgvoc.ipsl.fr/resource/universe/"},
+    )
     jsonlist = merger.merge_linked_json()
-    assert jsonlist[-1]["established"]==1998 # this is a overcharged value 'from 1991 in ipsl definition in the universe to 1996 in ipsl in cmip6plus_cvs 
-    assert jsonlist[-1]["myprop"]=="42" # a new property definition in the project cv
+    result = jsonlist[-1]
 
+    # Verify project override: CMIP6 description should override Universe description
+    assert result["id"] == "historical"
+    assert result["type"] == "experiment"
+    # CMIP6-specific description should override
+    assert "CMIP6" in result["description"]
+    # Universe fields should still be present
+    assert result["activity"] == "cmip"
+    assert result["tier"] == 1
 
 
 """
@@ -143,6 +177,7 @@ def test_local_project_local_universe():
 # Tests for Resolve Modes (reference, shallow, full)
 # ============================================================================
 
+
 @pytest.fixture
 def temp_test_dir():
     """Create a temporary directory structure for testing resolve modes."""
@@ -159,7 +194,7 @@ def temp_test_dir():
                 "@base": "https://test.example.com/activity/",
                 "@vocab": "http://schema.org/",
                 "id": "@id",
-                "type": "@type"
+                "type": "@type",
             }
         }
         (activity_dir / "000_context.jsonld").write_text(json.dumps(activity_context))
@@ -170,7 +205,7 @@ def temp_test_dir():
             "id": "scenariomip",
             "type": "activity",
             "name": "ScenarioMIP",
-            "drs_name": "ScenarioMIP"
+            "drs_name": "ScenarioMIP",
         }
         (activity_dir / "scenariomip.json").write_text(json.dumps(scenariomip_activity))
 
@@ -180,7 +215,7 @@ def temp_test_dir():
             "id": "cmip",
             "type": "activity",
             "name": "CMIP",
-            "drs_name": "CMIP"
+            "drs_name": "CMIP",
         }
         (activity_dir / "cmip.json").write_text(json.dumps(cmip_activity))
 
@@ -193,7 +228,7 @@ def temp_test_dir():
                 "@base": "https://test.example.com/source_type/",
                 "@vocab": "http://schema.org/",
                 "id": "@id",
-                "type": "@type"
+                "type": "@type",
             }
         }
         (source_type_dir / "000_context.jsonld").write_text(json.dumps(source_type_context))
@@ -203,7 +238,7 @@ def temp_test_dir():
             "@context": "000_context.jsonld",
             "id": "agcm",
             "type": "source_type",
-            "name": "Atmospheric General Circulation Model"
+            "name": "Atmospheric General Circulation Model",
         }
         (source_type_dir / "agcm.json").write_text(json.dumps(agcm_source))
 
@@ -215,7 +250,7 @@ def temp_test_dir():
             "esgvoc_resolve_modes": {
                 "activity": "full",
                 "required_components": "reference",
-                "parent_experiment": "shallow"
+                "parent_experiment": "shallow",
             },
             "@context": {
                 "@base": "https://test.example.com/experiment/",
@@ -225,25 +260,19 @@ def temp_test_dir():
                 "activity": {
                     "@id": "https://test.example.com/activity/",
                     "@type": "@id",
-                    "@context": {
-                        "@base": "https://test.example.com/activity/"
-                    }
+                    "@context": {"@base": "https://test.example.com/activity/"},
                 },
                 "required_components": {
                     "@id": "https://test.example.com/source_type/",
                     "@type": "@id",
-                    "@context": {
-                        "@base": "https://test.example.com/source_type/"
-                    }
+                    "@context": {"@base": "https://test.example.com/source_type/"},
                 },
                 "parent_experiment": {
                     "@id": "https://test.example.com/experiment/",
                     "@type": "@id",
-                    "@context": {
-                        "@base": "https://test.example.com/experiment/"
-                    }
-                }
-            }
+                    "@context": {"@base": "https://test.example.com/experiment/"},
+                },
+            },
         }
         (experiment_dir / "000_context.jsonld").write_text(json.dumps(experiment_context))
 
@@ -254,7 +283,7 @@ def temp_test_dir():
             "type": "experiment",
             "name": "Parent Experiment",
             "activity": ["cmip"],
-            "required_components": ["agcm"]
+            "required_components": ["agcm"],
         }
         (experiment_dir / "parent_exp.json").write_text(json.dumps(parent_exp))
 
@@ -266,7 +295,7 @@ def temp_test_dir():
             "name": "Child Experiment",
             "activity": ["scenariomip"],
             "required_components": ["agcm"],
-            "parent_experiment": ["parent_exp"]
+            "parent_experiment": ["parent_exp"],
         }
         (experiment_dir / "child_exp.json").write_text(json.dumps(child_exp))
 
@@ -277,9 +306,7 @@ def test_resolve_mode_reference(temp_test_dir):
     """Test that 'reference' mode keeps IDs as strings."""
     experiment_file = temp_test_dir / "experiment" / "child_exp.json"
 
-    locally_available = {
-        "https://test.example.com": str(temp_test_dir)
-    }
+    locally_available = {"https://test.example.com": str(temp_test_dir)}
 
     merger = DataMerger(
         data=JsonLdResource(uri=str(experiment_file)),
@@ -301,9 +328,7 @@ def test_resolve_mode_full(temp_test_dir):
     """Test that 'full' mode resolves to complete objects."""
     experiment_file = temp_test_dir / "experiment" / "child_exp.json"
 
-    locally_available = {
-        "https://test.example.com": str(temp_test_dir)
-    }
+    locally_available = {"https://test.example.com": str(temp_test_dir)}
 
     merger = DataMerger(
         data=JsonLdResource(uri=str(experiment_file)),
@@ -327,9 +352,7 @@ def test_resolve_mode_shallow(temp_test_dir):
     """Test that 'shallow' mode resolves but doesn't recurse."""
     experiment_file = temp_test_dir / "experiment" / "child_exp.json"
 
-    locally_available = {
-        "https://test.example.com": str(temp_test_dir)
-    }
+    locally_available = {"https://test.example.com": str(temp_test_dir)}
 
     merger = DataMerger(
         data=JsonLdResource(uri=str(experiment_file)),
@@ -363,14 +386,13 @@ def test_mixed_resolved_unresolved_references(temp_test_dir):
         "id": "mixed_exp",
         "type": "experiment",
         "name": "Mixed Experiment",
-        "activity": ["scenariomip", "nonexistent_activity"],  # One valid, one invalid
-        "required_components": ["agcm", "nonexistent_component"]
+        # One valid, one invalid
+        "activity": ["scenariomip", "nonexistent_activity"],
+        "required_components": ["agcm", "nonexistent_component"],
     }
     (experiment_dir / "mixed_exp.json").write_text(json.dumps(mixed_exp))
 
-    locally_available = {
-        "https://test.example.com": str(temp_test_dir)
-    }
+    locally_available = {"https://test.example.com": str(temp_test_dir)}
 
     merger = DataMerger(
         data=JsonLdResource(uri=str(experiment_dir / "mixed_exp.json")),
@@ -406,31 +428,17 @@ def test_get_resolve_mode():
 
         # Create context with esgvoc_resolve_modes
         context = {
-            "esgvoc_resolve_modes": {
-                "field1": "full",
-                "field2": "reference",
-                "field3": "shallow"
-            },
-            "@context": {
-                "@base": "https://test.example.com/test_dd/",
-                "id": "@id",
-                "type": "@type"
-            }
+            "esgvoc_resolve_modes": {"field1": "full", "field2": "reference", "field3": "shallow"},
+            "@context": {"@base": "https://test.example.com/test_dd/", "id": "@id", "type": "@type"},
         }
         (test_dir / "000_context.jsonld").write_text(json.dumps(context))
 
         # Create test term
-        term = {
-            "@context": "000_context.jsonld",
-            "id": "test",
-            "type": "test_dd"
-        }
+        term = {"@context": "000_context.jsonld", "id": "test", "type": "test_dd"}
         term_file = test_dir / "test.json"
         term_file.write_text(json.dumps(term))
 
-        locally_available = {
-            "https://test.example.com": str(tmppath)
-        }
+        locally_available = {"https://test.example.com": str(tmppath)}
 
         merger = DataMerger(
             data=JsonLdResource(uri=str(term_file)),
@@ -459,13 +467,11 @@ def test_property_tracking_in_warnings(temp_test_dir):
         "id": "test_exp",
         "type": "experiment",
         "name": "Test",
-        "activity": ["nonexistent_activity"]
+        "activity": ["nonexistent_activity"],
     }
     (experiment_dir / "test_exp.json").write_text(json.dumps(exp))
 
-    locally_available = {
-        "https://test.example.com": str(temp_test_dir)
-    }
+    locally_available = {"https://test.example.com": str(temp_test_dir)}
 
     merger = DataMerger(
         data=JsonLdResource(uri=str(experiment_dir / "test_exp.json")),

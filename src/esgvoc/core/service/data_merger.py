@@ -187,7 +187,7 @@ class DataMerger:
             next_id_local = self.uri_resolver.to_local_path(next_id)
 
             next_data_instance = JsonLdResource(uri=next_id_local)
-            merged_json_data = merge_dicts([current_json], [next_data_instance.json_dict])
+            merged_json_data = merge_dicts([next_data_instance.json_dict], [current_json])
 
             # Add the merged instance to the result list
             result_list.append(merged_json_data)
