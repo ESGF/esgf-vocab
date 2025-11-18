@@ -401,11 +401,6 @@ class CMORCVsTable(BaseModel):
     Allowed patterns for `tracking_id`
     """
 
-    variable_id: AllowedDict
-    """
-    Allowed values of `variable_id`
-    """
-
     variant_label: RegularExpressionValidators
     """
     Allowed patterns for `variant_label`
@@ -789,6 +784,7 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
         # Logic: https://github.com/WCRP-CMIP/CMIP7-CVs/issues/271#issuecomment-3286291815
         if attr_property.field_name in [
             "Conventions",
+            "variable_id",
         ]:
             # Not handled in CMOR tables
             continue
