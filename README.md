@@ -24,7 +24,7 @@ Full documentation is available at [https://esgf.github.io/esgf-vocab/](https://
   - Validate strings against CV terms and templates.
 
 - **Apps**:
-  - Ease some traitment using the CV.
+  - Ease some treatment using the CV.
 
 
 ## Installation
