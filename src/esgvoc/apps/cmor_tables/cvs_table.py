@@ -68,15 +68,15 @@ class CMORExperimentDefinition(BaseModel):
     Activity ID to which this experiment belongs
     """
 
-    required_model_components: RegularExpressionValidators
-    """
-    Required model components to run this experiment
-    """
-
-    additional_allowed_model_components: RegularExpressionValidators
-    """
-    Additional model components that can be included when running this experiment
-    """
+    # required_model_components: RegularExpressionValidators
+    # """
+    # Required model components to run this experiment
+    # """
+    #
+    # additional_allowed_model_components: RegularExpressionValidators
+    # """
+    # Additional model components that can be included when running this experiment
+    # """
 
     description: str
     """
@@ -647,8 +647,8 @@ def get_cmor_experiment_id_definitions(
     for v in terms:
         res[v.drs_name] = CMORExperimentDefinition(
             activity_id=[get_term(v.activity).drs_name],
-            required_model_components=[vv.drs_name for vv in v.required_model_components],
-            additional_allowed_model_components=[vv.drs_name for vv in v.additional_allowed_model_components],
+            # required_model_components=[vv.drs_name for vv in v.required_model_components],
+            # additional_allowed_model_components=[vv.drs_name for vv in v.additional_allowed_model_components],
             description=v.description,
             experiment=v.description,
             start_year=v.start_timestamp.year if v.start_timestamp else v.start_timestamp,
