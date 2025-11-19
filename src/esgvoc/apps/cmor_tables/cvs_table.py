@@ -6,6 +6,7 @@ It should be in CMOR, as CMOR knows the structure it needs,
 not esgvoc. Anyway, can do that later.
 """
 
+import re
 from functools import partial
 from typing import Any, TypeAlias
 
@@ -482,6 +483,20 @@ def get_allowed_dict_for_attribute(attribute_name: str, ev_project: ev_api.proje
     return res
 
 
+def convert_python_regex_to_posix_regex(inv: str) -> str:
+    # Not ideal that we have to do this ourselves,
+    # but I can't see another way
+    # (it doesn't make sense to use posix regex in the CV JSON
+    # because then esgvoc's Python API won't work)
+
+    # Get rid of Python style capturing groups.
+    # Super brittle, might break if there are brackets inside the caught expression.
+    # We'll have to fix as we find problems, regex is annoyingly complicated.
+    res = re.sub(r"\(\?P\<[^>]*\>([^)]*)\)", r"\1", inv)
+
+    return res
+
+
 def get_regular_expression_validator_for_attribute(
     attribute_property: ev_api.project_specs.AttributeProperty,
     ev_project: ev_api.project_specs.ProjectSpecs,
@@ -489,7 +504,7 @@ def get_regular_expression_validator_for_attribute(
     attribute_instances = ev_api.get_all_terms_in_collection(
         ev_project.project_id, attribute_property.source_collection
     )
-    res = [v.regex for v in attribute_instances]
+    res = [convert_python_regex_to_posix_regex(v.regex) for v in attribute_instances]
 
     return res
 
