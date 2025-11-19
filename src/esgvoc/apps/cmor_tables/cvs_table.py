@@ -6,6 +6,7 @@ It should be in CMOR, as CMOR knows the structure it needs,
 not esgvoc. Anyway, can do that later.
 """
 
+import itertools
 import re
 from functools import partial
 from typing import Any, TypeAlias
@@ -478,25 +479,53 @@ def get_allowed_dict_for_attribute(attribute_name: str, ev_project: ev_api.proje
     return res
 
 
-def convert_python_regex_to_cmor_regex(inv: str) -> str:
+def convert_python_regex_to_cmor_regex(inv: str) -> list[str]:
     # Not ideal that we have to do this ourselves,
     # but I can't see another way
     # (it doesn't make sense to use posix regex in the CV JSON
     # because then esgvoc's Python API won't work)
 
-    # Get rid of Python style capturing groups.
-    # Super brittle, might break if there are brackets inside the caught expression.
-    # We'll have to fix as we find problems, regex is annoyingly complicated.
-    res = re.sub(r"\(\?P\<[^>]*\>([^)]*)\)", r"\1", inv)
+    if "|" in inv:
+        or_sections = re.findall(r"\([^|(]*\|[^)]*\)", inv)
+        if not or_sections:
+            raise AssertionError(inv)
 
-    # Other things we seem to have to change
-    res = res.replace("{", r"\{")
-    res = res.replace("}", r"\}")
-    res = res.replace("(", r"\(")
-    res = res.replace(")", r"\)")
-    res = res.replace(r"\d", "[[:digit:]]")
-    res = res.replace("+", r"\{1,\}")
-    res = res.replace("?", r"\{0,\}")
+        substitution_components = []
+        for or_section in or_sections:
+            tmp = []
+            for subs in (v.strip("()") for v in or_section.split("|")):
+                tmp.append((or_section, subs))
+
+            substitution_components.append(tmp)
+
+        to_substitute = []
+        for substitution_set in itertools.product(*substitution_components):
+            filled = inv
+            for old, new in substitution_set:
+                filled = filled.replace(old, new)
+
+            to_substitute.append(filled)
+
+    else:
+        to_substitute = [inv]
+
+    res = []
+    for start in to_substitute:
+        # Get rid of Python style capturing groups.
+        # Super brittle, might break if there are brackets inside the caught exptmpsion.
+        # We'll have to fix as we find problems, regex is annoyingly complicated.
+        tmp = re.sub(r"\(\?P\<[^>]*\>([^)]*)\)", r"\1", start)
+
+        # Other things we seem to have to change
+        tmp = tmp.replace("{", r"\{")
+        tmp = tmp.replace("}", r"\}")
+        tmp = tmp.replace("(", r"\(")
+        tmp = tmp.replace(")", r"\)")
+        tmp = tmp.replace(r"\d", "[[:digit:]]")
+        tmp = tmp.replace("+", r"\{1,\}")
+        tmp = tmp.replace("?", r"\{0,\}")
+
+        res.append(tmp)
 
     return res
 
@@ -508,7 +537,9 @@ def get_regular_expression_validator_for_attribute(
     attribute_instances = ev_api.get_all_terms_in_collection(
         ev_project.project_id, attribute_property.source_collection
     )
-    res = [convert_python_regex_to_cmor_regex(v.regex) for v in attribute_instances]
+    res = []
+    for v in attribute_instances:
+        res.extend(convert_python_regex_to_cmor_regex(v.regex))
 
     return res
 
