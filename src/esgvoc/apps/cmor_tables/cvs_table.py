@@ -306,11 +306,6 @@ class CMORCVsTable(BaseModel):
     Template for branding suffix
     """
 
-    branded_variable: str
-    """
-    Template for branded variable
-    """
-
     creation_date: RegularExpressionValidators
     """
     Allowed patterns for `creation_date`
@@ -820,6 +815,7 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
         # Logic: https://github.com/WCRP-CMIP/CMIP7-CVs/issues/271#issuecomment-3286291815
         if attr_property.field_name in [
             "Conventions",
+            "branded_variable",
             "variable_id",
         ]:
             # Not handled in CMOR tables
