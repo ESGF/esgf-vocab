@@ -249,6 +249,25 @@ class CMORSourceDefinition(BaseModel):
     """
 
 
+def convert_none_value_to_empty_string(v: Any) -> Any:
+    return v if v is not None else ""
+
+
+def remove_none_values_from_dict(inv: dict[str, Any]) -> dict[str, Any]:
+    res = {}
+    for k, v in inv.items():
+        if isinstance(v, list):
+            res[k] = [convert_none_value_to_empty_string(vv) for vv in v]
+
+        elif isinstance(v, dict):
+            res[k] = remove_none_values_from_dict(v)
+
+        else:
+            res[k] = convert_none_value_to_empty_string(v)
+
+    return res
+
+
 class CMORCVsTable(BaseModel):
     """
     Representation of the JSON table required by CMOR for CVs
@@ -426,7 +445,9 @@ class CMORCVsTable(BaseModel):
         # # More fun
         # md["DRS"] = md.pop("drs")
 
-        cvs_json = {top_level_key: md}
+        md_no_none = remove_none_values_from_dict(md)
+
+        cvs_json = {top_level_key: md_no_none}
 
         return cvs_json
 
