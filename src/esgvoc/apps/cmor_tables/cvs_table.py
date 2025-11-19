@@ -478,7 +478,7 @@ def get_allowed_dict_for_attribute(attribute_name: str, ev_project: ev_api.proje
     return res
 
 
-def convert_python_regex_to_posix_regex(inv: str) -> str:
+def convert_python_regex_to_cmor_regex(inv: str) -> str:
     # Not ideal that we have to do this ourselves,
     # but I can't see another way
     # (it doesn't make sense to use posix regex in the CV JSON
@@ -488,6 +488,15 @@ def convert_python_regex_to_posix_regex(inv: str) -> str:
     # Super brittle, might break if there are brackets inside the caught expression.
     # We'll have to fix as we find problems, regex is annoyingly complicated.
     res = re.sub(r"\(\?P\<[^>]*\>([^)]*)\)", r"\1", inv)
+
+    # Other things we seem to have to change
+    res = res.replace("{", r"\{")
+    res = res.replace("}", r"\}")
+    res = res.replace("(", r"\(")
+    res = res.replace(")", r"\)")
+    res = res.replace(r"\d", "[[:digit:]]")
+    res = res.replace("+", r"\{1,\}")
+    res = res.replace("?", r"\{0,\}")
 
     return res
 
@@ -499,7 +508,7 @@ def get_regular_expression_validator_for_attribute(
     attribute_instances = ev_api.get_all_terms_in_collection(
         ev_project.project_id, attribute_property.source_collection
     )
-    res = [convert_python_regex_to_posix_regex(v.regex) for v in attribute_instances]
+    res = [convert_python_regex_to_cmor_regex(v.regex) for v in attribute_instances]
 
     return res
 
@@ -521,7 +530,11 @@ def get_template_for_composite_attribute(attribute_name: str, ev_project: ev_api
         va = get_project_attribute_property(v.type, "source_collection", ev_project)
         parts_l.append(f"<{va.field_name}>")
 
-    res = term.separator.join(parts_l)
+    if term.separator != "-":
+        msg = f"CMOR only supports '-' as a separator, received {term.separator=} for {term=}"
+        raise NotImplementedError(msg)
+
+    res = "".join(parts_l)
 
     return res
 
