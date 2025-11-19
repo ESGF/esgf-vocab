@@ -62,7 +62,7 @@ class CMORExperimentDefinition(BaseModel):
     CMOR experiment definition
     """
 
-    activity_id: str
+    activity_id: list[str]
     """
     Activity ID to which this experiment belongs
     """
@@ -108,10 +108,10 @@ class CMORExperimentDefinition(BaseModel):
     # Host collection of this experiment
     # """
 
-    parent_activity_id: str | None
+    parent_activity_id: list[str]
     """Activity ID for the parent of this experiment"""
 
-    parent_experiment_id: str | None
+    parent_experiment_id: list[str]
     """Experiment ID for the parent of this experiment"""
 
     tier: int
@@ -602,7 +602,7 @@ def get_cmor_experiment_id_definitions(
     res = {}
     for v in terms:
         res[v.drs_name] = CMORExperimentDefinition(
-            activity_id=get_term(v.activity).drs_name,
+            activity_id=[get_term(v.activity).drs_name],
             required_model_components=[vv.drs_name for vv in v.required_model_components],
             additional_allowed_model_components=[vv.drs_name for vv in v.additional_allowed_model_components],
             description=v.description,
@@ -611,8 +611,8 @@ def get_cmor_experiment_id_definitions(
             end_year=v.end_timestamp.year if v.end_timestamp else v.end_timestamp,
             min_number_yrs_per_sim=v.min_number_yrs_per_sim,
             experiment_id=v.drs_name,
-            parent_activity_id=v.parent_activity.drs_name if v.parent_activity else v.parent_activity,
-            parent_experiment_id=v.parent_experiment.drs_name if v.parent_experiment else v.parent_experiment,
+            parent_activity_id=[v.parent_activity.drs_name] if v.parent_activity else [],
+            parent_experiment_id=[v.parent_experiment.drs_name] if v.parent_experiment else [],
             tier=v.tier,
         )
 
