@@ -6,6 +6,8 @@ It should be in CMOR, as CMOR knows the structure it needs,
 not esgvoc. Anyway, can do that later.
 """
 
+import itertools
+import re
 from functools import partial
 from typing import Any, TypeAlias
 
@@ -61,20 +63,20 @@ class CMORExperimentDefinition(BaseModel):
     CMOR experiment definition
     """
 
-    activity_id: str
+    activity_id: list[str]
     """
     Activity ID to which this experiment belongs
     """
 
-    required_model_components: RegularExpressionValidators
-    """
-    Required model components to run this experiment
-    """
-
-    additional_allowed_model_components: RegularExpressionValidators
-    """
-    Additional model components that can be included when running this experiment
-    """
+    # required_model_components: RegularExpressionValidators
+    # """
+    # Required model components to run this experiment
+    # """
+    #
+    # additional_allowed_model_components: RegularExpressionValidators
+    # """
+    # Additional model components that can be included when running this experiment
+    # """
 
     description: str
     """
@@ -107,10 +109,10 @@ class CMORExperimentDefinition(BaseModel):
     # Host collection of this experiment
     # """
 
-    parent_activity_id: str | None
+    parent_activity_id: list[str]
     """Activity ID for the parent of this experiment"""
 
-    parent_experiment_id: str | None
+    parent_experiment_id: list[str]
     """Experiment ID for the parent of this experiment"""
 
     tier: int
@@ -249,6 +251,25 @@ class CMORSourceDefinition(BaseModel):
     """
 
 
+def convert_none_value_to_empty_string(v: Any) -> Any:
+    return v if v is not None else ""
+
+
+def remove_none_values_from_dict(inv: dict[str, Any]) -> dict[str, Any]:
+    res = {}
+    for k, v in inv.items():
+        if isinstance(v, list):
+            res[k] = [convert_none_value_to_empty_string(vv) for vv in v]
+
+        elif isinstance(v, dict):
+            res[k] = remove_none_values_from_dict(v)
+
+        else:
+            res[k] = convert_none_value_to_empty_string(v)
+
+    return res
+
+
 class CMORCVsTable(BaseModel):
     """
     Representation of the JSON table required by CMOR for CVs
@@ -284,11 +305,6 @@ class CMORCVsTable(BaseModel):
     branding_suffix: str
     """
     Template for branding suffix
-    """
-
-    branded_variable: str
-    """
-    Template for branded variable
     """
 
     creation_date: RegularExpressionValidators
@@ -401,11 +417,6 @@ class CMORCVsTable(BaseModel):
     Allowed patterns for `tracking_id`
     """
 
-    variable_id: AllowedDict
-    """
-    Allowed values of `variable_id`
-    """
-
     variant_label: RegularExpressionValidators
     """
     Allowed patterns for `variant_label`
@@ -431,7 +442,9 @@ class CMORCVsTable(BaseModel):
         # # More fun
         # md["DRS"] = md.pop("drs")
 
-        cvs_json = {top_level_key: md}
+        md_no_none = remove_none_values_from_dict(md)
+
+        cvs_json = {top_level_key: md_no_none}
 
         return cvs_json
 
@@ -466,6 +479,57 @@ def get_allowed_dict_for_attribute(attribute_name: str, ev_project: ev_api.proje
     return res
 
 
+def convert_python_regex_to_cmor_regex(inv: str) -> list[str]:
+    # Not ideal that we have to do this ourselves,
+    # but I can't see another way
+    # (it doesn't make sense to use posix regex in the CV JSON
+    # because then esgvoc's Python API won't work)
+
+    if "|" in inv:
+        or_sections = re.findall(r"\([^|(]*\|[^)]*\)", inv)
+        if not or_sections:
+            raise AssertionError(inv)
+
+        substitution_components = []
+        for or_section in or_sections:
+            tmp = []
+            for subs in (v.strip("()") for v in or_section.split("|")):
+                tmp.append((or_section, subs))
+
+            substitution_components.append(tmp)
+
+        to_substitute = []
+        for substitution_set in itertools.product(*substitution_components):
+            filled = inv
+            for old, new in substitution_set:
+                filled = filled.replace(old, new)
+
+            to_substitute.append(filled)
+
+    else:
+        to_substitute = [inv]
+
+    res = []
+    for start in to_substitute:
+        # Get rid of Python style capturing groups.
+        # Super brittle, might break if there are brackets inside the caught exptmpsion.
+        # We'll have to fix as we find problems, regex is annoyingly complicated.
+        tmp = re.sub(r"\(\?P\<[^>]*\>([^)]*)\)", r"\1", start)
+
+        # Other things we seem to have to change
+        tmp = tmp.replace("{", r"\{")
+        tmp = tmp.replace("}", r"\}")
+        tmp = tmp.replace("(", r"\(")
+        tmp = tmp.replace(")", r"\)")
+        tmp = tmp.replace(r"\d", "[[:digit:]]")
+        tmp = tmp.replace("+", r"\{1,\}")
+        tmp = tmp.replace("?", r"\{0,\}")
+
+        res.append(tmp)
+
+    return res
+
+
 def get_regular_expression_validator_for_attribute(
     attribute_property: ev_api.project_specs.AttributeProperty,
     ev_project: ev_api.project_specs.ProjectSpecs,
@@ -473,7 +537,9 @@ def get_regular_expression_validator_for_attribute(
     attribute_instances = ev_api.get_all_terms_in_collection(
         ev_project.project_id, attribute_property.source_collection
     )
-    res = [v.regex for v in attribute_instances]
+    res = []
+    for v in attribute_instances:
+        res.extend(convert_python_regex_to_cmor_regex(v.regex))
 
     return res
 
@@ -495,7 +561,11 @@ def get_template_for_composite_attribute(attribute_name: str, ev_project: ev_api
         va = get_project_attribute_property(v.type, "source_collection", ev_project)
         parts_l.append(f"<{va.field_name}>")
 
-    res = term.separator.join(parts_l)
+    if term.separator != "-":
+        msg = f"CMOR only supports '-' as a separator, received {term.separator=} for {term=}"
+        raise NotImplementedError(msg)
+
+    res = "".join(parts_l)
 
     return res
 
@@ -576,17 +646,17 @@ def get_cmor_experiment_id_definitions(
     res = {}
     for v in terms:
         res[v.drs_name] = CMORExperimentDefinition(
-            activity_id=get_term(v.activity).drs_name,
-            required_model_components=[get_term(vv).drs_name for vv in v.required_model_components],
-            additional_allowed_model_components=[get_term(vv).drs_name for vv in v.additional_allowed_model_components],
+            activity_id=[get_term(v.activity).drs_name],
+            # required_model_components=[vv.drs_name for vv in v.required_model_components],
+            # additional_allowed_model_components=[vv.drs_name for vv in v.additional_allowed_model_components],
             description=v.description,
             experiment=v.description,
             start_year=v.start_timestamp.year if v.start_timestamp else v.start_timestamp,
             end_year=v.end_timestamp.year if v.end_timestamp else v.end_timestamp,
             min_number_yrs_per_sim=v.min_number_yrs_per_sim,
             experiment_id=v.drs_name,
-            parent_activity_id=v.parent_activity.drs_name if v.parent_activity else v.parent_activity,
-            parent_experiment_id=v.parent_experiment.drs_name if v.parent_experiment else v.parent_experiment,
+            parent_activity_id=[v.parent_activity.drs_name] if v.parent_activity else [],
+            parent_experiment_id=[v.parent_experiment.drs_name] if v.parent_experiment else [],
             tier=v.tier,
         )
 
@@ -647,7 +717,7 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
         ev_project.project_id, "experiment", activity_example.experiments[0]
     )
 
-    institution_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "contributor")[0]
+    institution_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "organisation")[0]
     sources = ev_api.get_all_terms_in_collection(ev_project.project_id, "source")
     for source in sources:
         if institution_example.id in source.contributors:
@@ -658,7 +728,7 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
         raise AssertionError(msg)
 
     grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid")[0]
-    region_example = grid_example.region
+    region_example = ev_api.get_term_in_collection(ev_project.project_id, "region", grid_example.region)
 
     frequency_example = "mon"
     time_range_example = "185001-202112"
@@ -789,6 +859,8 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
         # Logic: https://github.com/WCRP-CMIP/CMIP7-CVs/issues/271#issuecomment-3286291815
         if attr_property.field_name in [
             "Conventions",
+            "branded_variable",
+            "variable_id",
         ]:
             # Not handled in CMOR tables
             continue
@@ -816,6 +888,12 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
         elif attr_property.field_name == "source_id":
             value = get_cmor_source_id_definitions(attr_property.source_collection, ev_project)
             kwarg = attr_property.field_name
+
+        elif attr_property.field_name in ("activity_id",):
+            # Hard-code for now
+            # TODO: figure out how to unpack typing.Annotated
+            kwarg = attr_property.field_name
+            value = get_allowed_dict_for_attribute(attr_property.field_name, ev_project)
 
         else:
             kwarg = attr_property.field_name
