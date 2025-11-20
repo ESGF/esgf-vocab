@@ -177,18 +177,18 @@ class ExperimentLegacy(PlainTermDataDescriptor):
     under various scenarios and conditions.
     """
 
-    activity: list[str] = Field(default_factory=list)
-    tier: int | None
-    experiment_id: str
-    sub_experiment_id: list[str] | None
-    experiment: str
-    required_model_components: list[ModelComponent | str] | None
+    activity: str | None = None
+    tier: int | None = None
+    experiment_id: str | None = None
+    sub_experiment_id: list[str] | None = None
+    experiment: str | None = None
+    required_model_components: list[ModelComponent | str] | None = None
     additional_allowed_model_components: list[ModelComponent | str] = Field(default_factory=list)
-    start_year: str | int | None
-    end_year: str | int | None
-    min_number_yrs_per_sim: int | None
-    parent_activity_id: list[str] | None
-    parent_experiment_id: list[str] | None
+    start_year: str | int | None = None
+    end_year: str | int | None = None
+    min_number_yrs_per_sim: int | None = None
+    parent_activity_id: list[str] | None = None
+    parent_experiment_id: list[str] | None = None
 
 
 # Priority: Try Legacy first (for CMIP6/CMIP6Plus overrides), then CMIP7 (for Universe)
