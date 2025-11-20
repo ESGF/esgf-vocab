@@ -1313,7 +1313,22 @@ class CVTester:
                         console.print(f"   [green]✅ All elements in '{collection_name}' are queryable[/green]")
 
                 except Exception as e:
-                    errors.append(f"❌ Failed to get terms from collection '{collection_name}': {e}")
+                    # Try to identify which specific term is failing
+                    error_msg = f"❌ Failed to get terms from collection '{collection_name}': {e}"
+
+                    # Attempt to identify the failing term by testing each one individually
+                    try:
+                        console.print(f"   [yellow]⚠️  Attempting to identify failing term...[/yellow]")
+                        for repo_elem in repo_elements:
+                            try:
+                                ev.get_term_in_collection(project_name, collection_name, repo_elem)
+                            except Exception as term_error:
+                                error_msg += f"\n   → Failing term: '{repo_elem}' - {term_error}"
+                                break
+                    except:
+                        pass  # If we can't identify the specific term, just use the original error
+
+                    errors.append(error_msg)
 
         # Test 5: General API functions
         try:
