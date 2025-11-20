@@ -48,7 +48,7 @@ def test_experiment_legacy_with_activity_list():
         "id": "test_exp",
         "type": "experiment",
         "drs_name": "test-exp",
-        "activity": ["scenariomip", "cmip"],  # Legacy expects list of strings
+        "activity_id": ["scenariomip", "cmip"],  # Legacy uses activity_id, not activity
         "tier": 2,
         "experiment_id": "test_exp",
         "sub_experiment_id": None,
@@ -66,8 +66,8 @@ def test_experiment_legacy_with_activity_list():
     exp = TypeAdapter(Experiment).validate_python(experiment_data)
     assert exp.id == "test_exp"
     assert isinstance(exp, ExperimentLegacy)
-    assert len(exp.activity) == 2
-    assert "scenariomip" in exp.activity
+    assert len(exp.activity_id) == 2
+    assert "scenariomip" in exp.activity_id
 
 
 def test_experiment_with_mixed_model_components():
@@ -195,7 +195,7 @@ def test_experiment_discriminator_before_cmip7():
         "id": "old_exp",
         "type": "experiment",
         "drs_name": "old-exp",
-        "activity": [],
+        "activity_id": [],
         "description": "Old experiment",
         "tier": 1,
         "experiment_id": "old_exp",
@@ -275,7 +275,7 @@ def test_experiment_with_parent_experiment():
             "id": "parent_exp",
             "type": "experiment",
             "drs_name": "parent-exp",
-            "activity": ["cmip"],  # Legacy format: list of strings
+            "activity_id": ["cmip"],  # Legacy uses activity_id, not activity
             "description": "Parent experiment description",
             "experiment_id": "parent_exp",
             "sub_experiment_id": None,

@@ -177,9 +177,9 @@ class ExperimentLegacy(PlainTermDataDescriptor):
     under various scenarios and conditions.
     """
 
-    activity: str | None = None
+    activity_id: list[str] | None = None
     tier: int | None = None
-    experiment_id: str | None = None
+    experiment_id: str  # Required field that distinguishes Legacy from CMIP7
     sub_experiment_id: list[str] | None = None
     experiment: str | None = None
     required_model_components: list[ModelComponent | str] | None = None
