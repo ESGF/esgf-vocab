@@ -402,6 +402,10 @@ class DataMerger:
                 expanded_data = expanded_data[0]
 
             if isinstance(data, str) and isinstance(expanded_data, dict):
+                # Skip empty or whitespace-only strings
+                if not data or not data.strip():
+                    return data
+
                 # Skip if it's a @value (literal string, not a reference)
                 if self.string_heuristics.should_skip_literal(expanded_data):
                     return data
