@@ -28,12 +28,21 @@ class Frequency(PlainTermDataDescriptor):
     (as identifying these follows special rules covered by the CF conventions).
     """
 
-    interval: float
+    interval: float | None
     """
     Size of the interval
 
     See `self.units` for units.
+
+    If `None`, then the interval for this frequency label is undefined,
+    either because it does not exist (e.g. the label for data that does not have a time dimension)
+    or because the label does not uniquely define the interval (e.g. sub-hour labels).
     """
 
-    units: str
-    """Units of the interval"""
+    units: str | None
+    """
+    Units of the interval
+
+    If `None`, then the units for this frequency are not defined
+    because it does not exist (e.g. the label for data that does not have a time dimension).
+    """
