@@ -367,7 +367,7 @@ class CMORCVsTable(BaseModel):
     Allowed value of `mip_era`
     """
 
-    nominal_resolution: AllowedDict
+    nominal_resolution: RegularExpressionValidators
     """
     Allowed values of `nominal_resolution`
     """
@@ -663,6 +663,31 @@ def get_cmor_experiment_id_definitions(
     return res
 
 
+def get_cmor_nominal_resolution_defintions(
+    source_collection: str, ev_project: ev_api.project_specs.ProjectSpecs
+) -> list[str]:
+    try:
+        import pint
+
+        ur = pint.get_application_registry()
+    except ImportError as exc:
+        msg = "Missing optional dependency `pint`, please install"
+        raise ImportError(msg) from exc
+
+    terms = ev_api.get_all_terms_in_collection(ev_project.project_id, source_collection)
+    res = []
+    for t in terms:
+        size_km = ur.Quantity(t.magnitude, t.units).to("km").m
+        if int(size_km) == size_km:
+            allowed = f"{size_km:.0f} km"
+        else:
+            allowed = f"{size_km:.1f} km"
+
+        res.append(allowed)
+
+    return sorted(res)
+
+
 def get_cmor_source_id_definitions(
     source_collection: str, ev_project: ev_api.project_specs.ProjectSpecs
 ) -> dict[str, CMORSourceDefinition]:
@@ -884,6 +909,10 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
         elif attr_property.field_name == "experiment_id":
             value = get_cmor_experiment_id_definitions(attr_property.source_collection, ev_project)
             kwarg = attr_property.field_name
+
+        elif attr_property.field_name == "nominal_resolution":
+            kwarg = attr_property.field_name
+            value = get_cmor_nominal_resolution_defintions(attr_property.field_name, ev_project)
 
         elif attr_property.field_name == "source_id":
             value = get_cmor_source_id_definitions(attr_property.source_collection, ev_project)
