@@ -177,19 +177,37 @@ class ExperimentLegacy(PlainTermDataDescriptor):
     under various scenarios and conditions.
     """
 
-    activity_id: list[str] | None = None
-    tier: int | None = None
-    experiment_id: str  # Required field that distinguishes Legacy from CMIP7
+    # Required fields
+    experiment_id: str  # Discriminator - distinguishes Legacy from CMIP7
+    activity_id: list[str]
+    experiment: str
+    tier: int
+
+    # Optional fields
     sub_experiment_id: list[str] | None = None
-    experiment: str | None = None
-    required_model_components: list[ModelComponent | str] | None = None
-    additional_allowed_model_components: list[ModelComponent | str] = Field(default_factory=list)
     start_year: str | int | None = None
     end_year: str | int | None = None
     min_number_yrs_per_sim: int | None = None
     parent_activity_id: list[str] | None = None
     parent_experiment_id: list[str] | None = None
+    required_model_components: list[ModelComponent | str] | None = None
+    additional_allowed_model_components: list[ModelComponent | str] = Field(default_factory=list)
 
 
-# Priority: Try Legacy first (for CMIP6/CMIP6Plus overrides), then CMIP7 (for Universe)
-Experiment = create_union(ExperimentLegacy, ExperimentCMIP7)
+class ExperimentBase(PlainTermDataDescriptor):
+    """
+    Base experiment model for Universe data.
+
+    This loose model accepts experiment data that doesn't fully conform to either
+    ExperimentLegacy or ExperimentCMIP7. Used as fallback for incomplete experiments.
+    Only contains fields common to both Legacy and CMIP7 models.
+    """
+
+    tier: int | None = None
+    min_number_yrs_per_sim: float | int | None = None
+    required_model_components: list[ModelComponent | str] | None = None
+    additional_allowed_model_components: list[ModelComponent | str] = Field(default_factory=list)
+
+
+# Priority: Try strict models first (Legacy, CMIP7), then fall back to Base
+Experiment = create_union(ExperimentLegacy, ExperimentCMIP7, ExperimentBase)
