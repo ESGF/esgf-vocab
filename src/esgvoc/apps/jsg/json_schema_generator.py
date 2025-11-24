@@ -33,7 +33,7 @@ def _process_col_plain_terms(collection: PCollection, source_collection_key: str
     for term in collection.terms:
         property_key, property_value = _process_plain_term(term, source_collection_key)
         property_values.add(property_value)
-    return property_key, list(property_values)  # type: ignore
+    return property_key, sorted(list(property_values))  # type: ignore
 
 
 def _process_plain_term(term: PTerm, source_collection_key: str) -> tuple[str, str]:
