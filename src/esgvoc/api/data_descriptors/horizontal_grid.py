@@ -11,11 +11,11 @@ from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.horizontal_grid_arrangement import HorizontalGridArrangement
 from esgvoc.api.data_descriptors.horizontal_grid_cell_variable_type import HorizontalGridCellVariableType
 from esgvoc.api.data_descriptors.horizontal_grid_mapping import HorizontalGridMapping
-from esgvoc.api.data_descriptors.horizontal_grid_region import HorizontalGridRegion
 from esgvoc.api.data_descriptors.horizontal_grid_temporal_refinement import HorizontalGridTemporalRefinement
 from esgvoc.api.data_descriptors.horizontal_grid_truncation_method import HorizontalGridTruncationMethod
 from esgvoc.api.data_descriptors.horizontal_grid_type import HorizontalGridType
 from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
+from esgvoc.api.data_descriptors.region import Region
 
 
 class HorizontalGrid(PlainTermDataDescriptor):
@@ -53,7 +53,7 @@ class HorizontalGrid(PlainTermDataDescriptor):
     # Note: Allowing str is under discussion.
     # Using this to get things working.
     # Long-term, we might do something different.
-    region: HorizontalGridRegion | str
+    region: Region | str
     """
     Horizontal grid region
     """
@@ -123,6 +123,7 @@ class HorizontalGrid(PlainTermDataDescriptor):
     )
 
     horizontal_units: str | None = Field(
+        default=None,
         description=textwrap.dedent(
             """
             The physical units of the `resolution_x` and `resolution_y` property values
@@ -130,7 +131,6 @@ class HorizontalGrid(PlainTermDataDescriptor):
             If `resolution_x` and `resolution_y` are `None`, set this to `None`.
             """
         ),
-        gt=0,
     )
 
     southernmost_latitude: float | None = Field(

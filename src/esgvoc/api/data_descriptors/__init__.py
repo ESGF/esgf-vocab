@@ -1,3 +1,4 @@
+from esgvoc.api.data_descriptors.horizontal_grid import HorizontalGrid
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
 from esgvoc.api.data_descriptors.variable import Variable
@@ -80,6 +81,7 @@ from esgvoc.api.data_descriptors.horizontal_grid_region import HorizontalGridReg
 from esgvoc.api.data_descriptors.horizontal_grid_temporal_refinement import HorizontalGridTemporalRefinement
 from esgvoc.api.data_descriptors.horizontal_grid_truncation_method import HorizontalGridTruncationMethod
 from esgvoc.api.data_descriptors.horizontal_grid_type import HorizontalGridType
+from esgvoc.api.data_descriptors.vertical_grid import VerticalGrid
 
 # Model rebuilding to handle cross-links
 # Needs Experiment links made
@@ -138,9 +140,9 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "model_component_new": EMDModelComponent,
     "model_new": Model,
     "native_horizontal_grid_new": NativeHorizontalGrid,
-    "horizontal_grid": NativeHorizontalGrid,
+    "horizontal_grid": HorizontalGrid,
     "native_vertical_grid_new": NativeVerticalGrid,
-    "vertical_grid": NativeVerticalGrid,
+    "vertical_grid": VerticalGrid,
     "reference_new": Reference,
     "resolution_new": EMDResolution,
     "unit_new": Unit,
