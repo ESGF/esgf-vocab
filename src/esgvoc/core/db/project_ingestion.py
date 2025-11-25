@@ -1,4 +1,5 @@
 import logging
+import traceback
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -95,9 +96,14 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                     term_kind_collection = term_kind
 
             except Exception as e:
-                _LOGGER.warning(
-                    f"Unable to read term file {term_file_path} in collection '{collection_id}' "
-                    + f"of project '{project.id}'. Skip.\n{str(e)}"
+                _LOGGER.error(
+                    f"❌ INGESTION FAILURE - Term skipped\n"
+                    f"   File: {term_file_path}\n"
+                    f"   Collection: {collection_id}\n"
+                    f"   Project: {project.id}\n"
+                    f"   Error Type: {type(e).__name__}\n"
+                    f"   Error Message: {str(e)}\n"
+                    f"   Full Traceback:\n{traceback.format_exc()}"
                 )
                 continue
             try:
@@ -109,12 +115,28 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                 )
                 project_db_session.add(term)
             except Exception as e:
-                # Enhanced error reporting for term validation failures
                 _LOGGER.error(
-                    f"Failed to create term '{term_id}' in collection '{collection_id}' "
-                    + f"of project '{project.id}' from file '{term_file_path}': {str(e)}"
+                    f"❌ DATABASE INSERTION FAILURE\n"
+                    f"   Term ID: {term_id}\n"
+                    f"   Collection: {collection_id}\n"
+                    f"   Project: {project.id}\n"
+                    f"   Error Type: {type(e).__name__}\n"
+                    f"   Error Message: {str(e)}\n"
+                    f"   Full Traceback:\n{traceback.format_exc()}"
                 )
                 continue
+    # Report ingestion results for this collection
+    json_file_count = len([f for f in collection_dir_path.glob('*.json')])
+    ingested_term_count = len([t for t in collection.terms])
+    _LOGGER.info(
+        f"Collection '{collection_id}' in project '{project.id}': "
+        f"{ingested_term_count}/{json_file_count} terms ingested"
+    )
+    if ingested_term_count < json_file_count:
+        _LOGGER.warning(
+            f"⚠️  {json_file_count - ingested_term_count} term(s) failed to ingest "
+            f"in collection '{collection_id}'. See error messages above."
+        )
     if term_kind_collection is not None:
         collection.term_kind = term_kind_collection
     else:
