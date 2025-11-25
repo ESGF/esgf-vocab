@@ -33,7 +33,9 @@ def _process_col_plain_terms(collection: PCollection, source_collection_key: str
     for term in collection.terms:
         property_key, property_value = _process_plain_term(term, source_collection_key)
         property_values.add(property_value)
-    return property_key, sorted(list(property_values))  # type: ignore
+    # Filter out None values before sorting to avoid TypeError
+    filtered_values = [v for v in property_values if v is not None]
+    return property_key, sorted(filtered_values)  # type: ignore
 
 
 def _process_plain_term(term: PTerm, source_collection_key: str) -> tuple[str, str]:
