@@ -181,7 +181,7 @@ class ExperimentLegacy(PlainTermDataDescriptor):
     experiment_id: str  # Discriminator - distinguishes Legacy from CMIP7
     activity_id: list[str]
     experiment: str
-    tier: int
+    tier: int | None
 
     # Optional fields
     sub_experiment_id: list[str] | None = None
