@@ -154,9 +154,13 @@ def test_find_terms_in_project(find_term_param) -> None:
 
 def test_find_terms_in_all_projects(find_term_param) -> None:
     terms_found = projects.find_terms_in_all_projects(find_term_param.expression)
-    for term_found in terms_found:
-        id = find_term_param.item.term_id if find_term_param.item else None
-        check_id(term_found[1], id)
+    # Collect all terms from all projects into one list
+    all_terms = []
+    for project_id, terms in terms_found:
+        all_terms.extend(terms)
+    # Check if expected ID is among any of the results
+    id = find_term_param.item.term_id if find_term_param.item else None
+    check_id(all_terms, id)
 
 
 def test_only_id_limit_and_offset_find_terms(find_term_param):
