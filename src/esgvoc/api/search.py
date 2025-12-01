@@ -51,8 +51,14 @@ def instantiate_pydantic_terms(
     selected_term_fields: Iterable[str] | None,
 ) -> None:
     for db_term in db_terms:
-        term = instantiate_pydantic_term(db_term, selected_term_fields)
-        list_to_populate.append(term)
+        try:
+            term = instantiate_pydantic_term(db_term, selected_term_fields)
+            list_to_populate.append(term)
+        except Exception as e:
+            # Add context about which term failed
+            term_type = db_term.specs.get('type', 'N/A') if hasattr(db_term, 'specs') else 'N/A'
+            dd_id = db_term.data_descriptor.id if hasattr(db_term, 'data_descriptor') and db_term.data_descriptor else 'N/A'
+            raise ValueError(f"Failed to instantiate term with ID: '{db_term.id}', type: '{term_type}', data_descriptor: '{dd_id}'. Original error: {e}") from e
 
 
 def process_expression(expression: str) -> str:
