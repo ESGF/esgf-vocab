@@ -148,6 +148,17 @@ class CVTester:
                 "projects": [project_config],
             }
 
+            # Clean up old test_cv_temp data directories (repos and dbs) to ensure fresh start
+            import shutil
+            test_data_dir = self.config_manager.data_dir / self.test_config_name
+            if test_data_dir.exists():
+                console.print(f"[yellow]Cleaning up old test data directories...[/yellow]")
+                try:
+                    shutil.rmtree(test_data_dir)
+                    console.print(f"[green]  ✓ Removed: {test_data_dir}[/green]")
+                except Exception as e:
+                    console.print(f"[yellow]  Warning: Failed to clean test data directories: {e}[/yellow]")
+
             # Remove existing test config if it exists
             configs = self.config_manager.list_configs()
             if self.test_config_name in configs:
@@ -1496,6 +1507,17 @@ class CVTester:
 
                 # Reset service state
                 service.current_state = service.get_state()
+
+                # Clean up test_cv_temp data directories (repos and dbs)
+                import shutil
+                test_data_dir = self.config_manager.data_dir / self.test_config_name
+                if test_data_dir.exists():
+                    console.print(f"[blue]Cleaning up test data directories...[/blue]")
+                    try:
+                        shutil.rmtree(test_data_dir)
+                        console.print(f"[green]  ✓ Removed: {test_data_dir}[/green]")
+                    except Exception as e:
+                        console.print(f"[yellow]  Warning: Failed to clean test data directories: {e}[/yellow]")
 
                 # Remove temporary test configuration
                 configs = self.config_manager.list_configs()
