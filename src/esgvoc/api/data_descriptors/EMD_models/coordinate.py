@@ -8,7 +8,7 @@ class Coordinate(PlainTermDataDescriptor):
         • none
             ◦ (Not a standard name) There is no vertical dimension.
         • height
-            ◦ Height is the vertical distance above the earth’s surface.
+            ◦ Height is the vertical distance above the earth's surface.
         • geopotential_height
             ◦ Geopotential height is the geopotential divided by the standard acceleration due to gravity.
         • air_pressure
@@ -26,7 +26,7 @@ class Coordinate(PlainTermDataDescriptor):
         • atmosphere_sleve_coordinate
             ◦ Parametric atmosphere smooth vertical level coordinate.
         • depth
-            ◦ Depth is the vertical distance below the earth’s surface.
+            ◦ Depth is the vertical distance below the earth's surface.
         • sea_water_pressure
             ◦ Sea water pressure is the pressure that exists in the medium of sea water.
         • sea_water_potential_temperature

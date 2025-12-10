@@ -6,7 +6,7 @@ from pydantic import Field
 
 from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
-from esgvoc.api.data_descriptors.model_component_new import EMDModelComponent
+from esgvoc.api.data_descriptors.EMD_models.model_component import EMDModelComponent
 from esgvoc.api.pydantic_handler import create_union
 
 
