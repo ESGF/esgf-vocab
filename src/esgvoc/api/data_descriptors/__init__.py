@@ -1,5 +1,3 @@
-# EMD v1.0: horizontal_grid.py removed (v0.993 deprecated)
-# Use EMD_models.horizontal_computational_grid instead
 from esgvoc.api.data_descriptors.EMD_models.horizontal_units import HorizontalUnits
 from esgvoc.api.data_descriptors.EMD_models.vertical_coordinate import VerticalCoordinate
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
@@ -27,8 +25,6 @@ from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.obs_type import ObsType
 from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
 
-# EMD v1.0: native_vertical_grid_new and native_horizontal_grid_new removed
-# Use EMD_models.vertical_computational_grid and EMD_models.horizontal_computational_grid instead
 from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
 from esgvoc.api.data_descriptors.EMD_models.model import Model
 from esgvoc.api.data_descriptors.EMD_models.model_component import EMDModelComponent
@@ -56,24 +52,12 @@ from esgvoc.api.data_descriptors.data_specs_version import DataSpecsVersion
 from esgvoc.api.data_descriptors.date import Date
 from esgvoc.api.data_descriptors.directory_date import DirectoryDate
 from esgvoc.api.data_descriptors.drs_specs import DRSSpecs
-
-# # Import new EMD CV models
-# from esgvoc.api.data_descriptors.EMD import (
-#     CellVariableType,
-#     GridType,
-#     HorizontalUnits,
-#     MeshLocation,
-#     TruncationMethod,
-#     VerticalUnits,
-# )
 from esgvoc.api.data_descriptors.experiment import Experiment
 from esgvoc.api.data_descriptors.forcing_index import ForcingIndex
 from esgvoc.api.data_descriptors.frequency import Frequency
 from esgvoc.api.data_descriptors.further_info_url import FurtherInfoUrl
 from esgvoc.api.data_descriptors.grid import Grid
 from esgvoc.api.data_descriptors.EMD_models.coordinate import Coordinate
-
-# Import EMD v1.0 CV models from EMD_models (Section 7)
 from esgvoc.api.data_descriptors.EMD_models.arrangement import Arrangement
 from esgvoc.api.data_descriptors.EMD_models.cell_variable_type import CellVariableType
 from esgvoc.api.data_descriptors.EMD_models.grid_mapping import GridMapping
@@ -83,13 +67,6 @@ from esgvoc.api.data_descriptors.EMD_models.temporal_refinement import TemporalR
 from esgvoc.api.data_descriptors.EMD_models.truncation_method import TruncationMethod
 from esgvoc.api.data_descriptors.EMD_models.vertical_units import VerticalUnits
 
-# from esgvoc.api.data_descriptors.grid_label import GridLabel
-# EMD v1.0: Old horizontal_grid_* files removed (v0.993 deprecated)
-# EMD v1.0: vertical_grid.py removed (v0.993 deprecated)
-# Use EMD_models for all EMD v1.0 CV classes
-
-# Model rebuilding to handle cross-links
-# Needs Experiment links made
 from esgvoc.api.data_descriptors.activity import ActivityCMIP7
 
 ActivityCMIP7.model_rebuild()
@@ -104,8 +81,6 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "experiment": Experiment,
     "forcing_index": ForcingIndex,
     "frequency": Frequency,
-    # "grid": GridLabel,  # Universe
-    # "grid_label": GridLabel,  # cmip6, cmip6plus
     "grid": Grid,
     "initialization_index": InitializationIndex,
     "institution": Institution,
@@ -133,22 +108,15 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "branded_variable": BrandedVariable,
     "publication_status": PublicationStatus,
     "known_branded_variable": KnownBrandedVariable,
-    "calendar_new": Calendar,
     "calendar": Calendar,
-    "component_type_new": ComponentType,
     "component_type": ComponentType,
     "grid_arrangement": Arrangement,  # EMD v1.0
-    "grid_coordinate_new": Coordinate,
     "coordinate": Coordinate,
     "grid_mapping": GridMapping,  # EMD v1.0
-    "model_component_new": EMDModelComponent,
     "model_component": EMDModelComponent,  # EMD v1.0
-    "model_new": Model,
     "model": Model,  # EMD v1.0
-    "reference_new": Reference,
     "reference": Reference,  # EMD v1.0
     "resolution": EMDResolution,
-    "unit_new": VerticalUnits,  # EMD v1.0
     "grid_type": GridType,  # EMD v1.0
     "cell_variable_type": CellVariableType,  # EMD v1.0
     "truncation_method": TruncationMethod,  # EMD v1.0
