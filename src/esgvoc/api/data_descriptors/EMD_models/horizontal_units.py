@@ -1,5 +1,5 @@
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
-class ComponentType(PlainTermDataDescriptor):
+class HorizontalUnits(PlainTermDataDescriptor):
     pass

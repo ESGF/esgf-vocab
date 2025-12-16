@@ -1,5 +1,7 @@
 # EMD v1.0: horizontal_grid.py removed (v0.993 deprecated)
 # Use EMD_models.horizontal_computational_grid instead
+from esgvoc.api.data_descriptors.EMD_models.horizontal_units import HorizontalUnits
+from esgvoc.api.data_descriptors.EMD_models.vertical_coordinate import VerticalCoordinate
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
 from esgvoc.api.data_descriptors.variable import Variable
@@ -77,7 +79,7 @@ from esgvoc.api.data_descriptors.EMD_models.cell_variable_type import CellVariab
 from esgvoc.api.data_descriptors.EMD_models.grid_mapping import GridMapping
 from esgvoc.api.data_descriptors.EMD_models.grid_region import GridRegion
 from esgvoc.api.data_descriptors.EMD_models.grid_type import GridType
-from esgvoc.api.data_descriptors.EMD_models.temporal_refinement import TemporalRefinement as EMDTemporalRefinement
+from esgvoc.api.data_descriptors.EMD_models.temporal_refinement import TemporalRefinement
 from esgvoc.api.data_descriptors.EMD_models.truncation_method import TruncationMethod
 from esgvoc.api.data_descriptors.EMD_models.vertical_units import VerticalUnits
 
@@ -143,18 +145,10 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "model_component": EMDModelComponent,  # EMD v1.0
     "model_new": Model,
     "model": Model,  # EMD v1.0
-    # EMD v0.993 files removed - use EMD_models for v1.0
-    # "native_horizontal_grid_new": removed
-    # "horizontal_grid": removed (use EMD_models.HorizontalComputationalGrid)
-    # "native_vertical_grid_new": removed
-    # "vertical_grid": removed (use EMD_models.VerticalComputationalGrid)
     "reference_new": Reference,
     "reference": Reference,  # EMD v1.0
-    "resolution_new": EMDResolution,
-    # EMD v1.0 (note: different from general Resolution)
     "resolution": EMDResolution,
     "unit_new": VerticalUnits,  # EMD v1.0
-    "temporal_refinement": EMDTemporalRefinement,  # EMD v1.0
     "grid_type": GridType,  # EMD v1.0
     "cell_variable_type": CellVariableType,  # EMD v1.0
     "truncation_method": TruncationMethod,  # EMD v1.0
@@ -175,12 +169,13 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "archive": Archive,
     "drs_specs": DRSSpecs,
     "nominal_resolution": NominalResolution,
-    # EMD v0.993 files - mapped to EMD v1.0 classes
-    "horizontal_grid_arrangement": Arrangement,  # EMD v1.0
-    "horizontal_grid_cell_variable_type": CellVariableType,  # EMD v1.0
-    "horizontal_grid_mapping": GridMapping,  # EMD v1.0
-    "horizontal_grid_region": GridRegion,  # EMD v1.0
-    "horizontal_grid_temporal_refinement": EMDTemporalRefinement,  # EMD v1.0
-    "horizontal_grid_truncation_method": TruncationMethod,  # EMD v1.0
-    "horizontal_grid_type": GridType,  # EMD v1.0
+    "grid_arrangement": Arrangement,  # EMD v1.0
+    "cell_variable_type": CellVariableType,  # EMD v1.0
+    "grid_mapping": GridMapping,  # EMD v1.0
+    "grid_region": GridRegion,  # EMD v1.0
+    "grid_temporal_refinement": TemporalRefinement,  # EMD v1.0
+    "truncation_method": TruncationMethod,  # EMD v1.0
+    "grid_type": GridType,  # EMD v1.0
+    "horizontal_units": HorizontalUnits,
+    "vertical_coordinate": VerticalCoordinate,
 }
