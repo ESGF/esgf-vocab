@@ -24,6 +24,7 @@ from esgvoc.api.data_descriptors.physics_index import PhysicsIndex
 from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.obs_type import ObsType
 from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
+
 # EMD v1.0: native_vertical_grid_new and native_horizontal_grid_new removed
 # Use EMD_models.vertical_computational_grid and EMD_models.horizontal_computational_grid instead
 from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
@@ -134,7 +135,6 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "calendar": Calendar,
     "component_type_new": ComponentType,
     "component_type": ComponentType,
-    "grid_arrangement_new": Arrangement,  # EMD v1.0
     "grid_arrangement": Arrangement,  # EMD v1.0
     "grid_coordinate_new": Coordinate,
     "coordinate": Coordinate,
@@ -151,7 +151,8 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "reference_new": Reference,
     "reference": Reference,  # EMD v1.0
     "resolution_new": EMDResolution,
-    "resolution": EMDResolution,  # EMD v1.0 (note: different from general Resolution)
+    # EMD v1.0 (note: different from general Resolution)
+    "resolution": EMDResolution,
     "unit_new": VerticalUnits,  # EMD v1.0
     "temporal_refinement": EMDTemporalRefinement,  # EMD v1.0
     "grid_type": GridType,  # EMD v1.0
