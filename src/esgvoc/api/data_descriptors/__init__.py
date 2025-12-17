@@ -117,7 +117,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "model_component": EMDModelComponent,  # EMD v1.0
     "model": Model,  # EMD v1.0
     "reference": Reference,  # EMD v1.0
-    "resolution": EMDResolution,
+    # "resolution": EMDResolution,
     "grid_type": GridType,  # EMD v1.0
     "cell_variable_type": CellVariableType,  # EMD v1.0
     "truncation_method": TruncationMethod,  # EMD v1.0
