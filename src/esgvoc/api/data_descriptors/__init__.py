@@ -28,7 +28,8 @@ from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
 from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
 from esgvoc.api.data_descriptors.EMD_models.model import Model
 from esgvoc.api.data_descriptors.EMD_models.model_component import EMDModelComponent
-from esgvoc.api.data_descriptors.model_component import ModelComponent
+
+# from esgvoc.api.data_descriptors.model_component import ModelComponent
 from esgvoc.api.data_descriptors.mip_era import MipEra
 from esgvoc.api.data_descriptors.member_id import MemberId
 from esgvoc.api.data_descriptors.license import License
@@ -86,7 +87,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "institution": Institution,
     "license": License,
     "mip_era": MipEra,
-    "model_component": ModelComponent,
+    # "model_component": ModelComponent,
     "organisation": Organisation,
     "physics_index": PhysicsIndex,
     "product": Product,

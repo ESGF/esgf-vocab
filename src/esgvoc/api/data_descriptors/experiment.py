@@ -10,10 +10,12 @@ from typing import Union
 from pydantic import BeforeValidator, Field
 from typing_extensions import Annotated
 
+from esgvoc.api.data_descriptors.EMD_models.component_type import ComponentType
 from esgvoc.api.data_descriptors.activity import Activity
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.mip_era import MipEra
-from esgvoc.api.data_descriptors.model_component import ModelComponent
+
+# from esgvoc.api.data_descriptors.model_component import ModelComponent
 from esgvoc.api.pydantic_handler import create_union
 
 
@@ -73,7 +75,7 @@ class ExperimentCMIP7(PlainTermDataDescriptor):
     # Note: Allowing str or ModelComponent is under discussion.
     # Using this to get things working.
     # Long-term, we might do something different.
-    additional_allowed_model_components: list[str] | list[ModelComponent]
+    additional_allowed_model_components: list[str] | list[ComponentType]
     """
     Non-compulsory model components that are allowed when running this experiment
     """
@@ -146,7 +148,7 @@ class ExperimentCMIP7(PlainTermDataDescriptor):
     # Note: Allowing str or ModelComponent is under discussion.
     # Using this to get things working.
     # Long-term, we might do something different.
-    required_model_components: list[ModelComponent | str]
+    required_model_components: list[ComponentType | str]
     """
     Model components required to run this experiment
     """
@@ -190,8 +192,8 @@ class ExperimentLegacy(PlainTermDataDescriptor):
     min_number_yrs_per_sim: int | None = None
     parent_activity_id: list[str] | None = None
     parent_experiment_id: list[str] | None = None
-    required_model_components: list[ModelComponent | str] | None = None
-    additional_allowed_model_components: list[ModelComponent | str] = Field(default_factory=list)
+    required_model_components: list[ComponentType | str] | None = None
+    additional_allowed_model_components: list[ComponentType | str] = Field(default_factory=list)
 
 
 class ExperimentBase(PlainTermDataDescriptor):
@@ -205,8 +207,8 @@ class ExperimentBase(PlainTermDataDescriptor):
 
     tier: int | None = None
     min_number_yrs_per_sim: float | int | None = None
-    required_model_components: list[ModelComponent | str] | None = None
-    additional_allowed_model_components: list[ModelComponent | str] = Field(default_factory=list)
+    required_model_components: list[ComponentType | str] | None = None
+    additional_allowed_model_components: list[ComponentType | str] = Field(default_factory=list)
 
 
 # Priority: Try strict models first (Legacy, CMIP7), then fall back to Base
