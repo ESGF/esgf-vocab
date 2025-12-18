@@ -49,15 +49,16 @@ def _get_project_session_with_exception(project_id: str) -> Session:
         raise EsgvocNotFoundError(f"unable to find project '{project_id}'")
 
 
-def _resolve_composite_term_part(composite_term_part: dict,
-                                 universe_session: Session,
-                                 project_session: Session) -> UTerm | PTerm | Sequence[UTerm | PTerm]:
+def _resolve_composite_term_part(
+    composite_term_part: dict, universe_session: Session, project_session: Session
+) -> UTerm | PTerm | Sequence[UTerm | PTerm]:
     if constants.TERM_ID_JSON_KEY in composite_term_part:
         # First find the term in the universe than in the current project
         term_id = composite_term_part[constants.TERM_ID_JSON_KEY]
         term_type = composite_term_part[constants.TERM_TYPE_JSON_KEY]
-        uterm = universe._get_term_in_data_descriptor(data_descriptor_id=term_type,
-                                                      term_id=term_id, session=universe_session)
+        uterm = universe._get_term_in_data_descriptor(
+            data_descriptor_id=term_type, term_id=term_id, session=universe_session
+        )
         if uterm:
             return uterm
         else:
@@ -517,11 +518,13 @@ def _get_all_collections_in_project(session: Session) -> list[PCollection]:
     except Exception as e:
         # Enhanced error context for collection retrieval failures
         import logging
+
         logger = logging.getLogger(__name__)
         logger.error(f"Failed to retrieve collections for project '{project.id}': {str(e)}")
 
         # Use raw SQL to inspect collections without Pydantic validation
         from sqlalchemy import text
+
         try:
             # Query raw data to identify problematic collections
             raw_query = text("""
@@ -537,10 +540,12 @@ def _get_all_collections_in_project(session: Session) -> list[PCollection]:
                 collection_id, term_kind_value, data_descriptor_id = row
 
                 # Only empty string is invalid - indicates ingestion couldn't determine termkind
-                if term_kind_value == '' or term_kind_value is None:
+                if term_kind_value == "" or term_kind_value is None:
                     problematic_collections.append((collection_id, term_kind_value, data_descriptor_id))
-                    msg = f"Collection '{collection_id}' has empty term_kind (data_descriptor: " + \
-                          f"{data_descriptor_id}) - CV ingestion failed to determine termkind"
+                    msg = (
+                        f"Collection '{collection_id}' has empty term_kind (data_descriptor: "
+                        + f"{data_descriptor_id}) - CV ingestion failed to determine termkind"
+                    )
                     logger.error(msg)
 
             if problematic_collections:
@@ -548,9 +553,8 @@ def _get_all_collections_in_project(session: Session) -> list[PCollection]:
                 for col_id, _, data_desc in problematic_collections:
                     error_details.append(f"  • Collection '{col_id}' (data_descriptor: {data_desc}): EMPTY termkind")
 
-                error_msg = (
-                    f"Found {len(problematic_collections)} collections with empty term_kind:\n" +
-                    "\n".join(error_details)
+                error_msg = f"Found {len(problematic_collections)} collections with empty term_kind:\n" + "\n".join(
+                    error_details
                 )
                 raise ValueError(error_msg) from e
 
@@ -582,6 +586,7 @@ def get_all_collections_in_project(project_id: str) -> list[str]:
         except Exception as e:
             # Enhanced error context for project collection retrieval
             import logging
+
             logger = logging.getLogger(__name__)
             logger.error(f"Failed to get collections for project '{project_id}': {str(e)}")
 
@@ -664,7 +669,8 @@ def get_all_projects() -> list[str]:
 def _get_term_in_project(term_id: str, session: Session) -> PTerm | None:
     statement = select(PTerm).where(PTerm.id == term_id)
     results = session.exec(statement)
-    result = results.first()  # Term ids are not supposed to be unique within a project.
+    # Term ids are not supposed to be unique within a project.
+    result = results.first()
     return result
 
 
@@ -788,7 +794,7 @@ def get_project(project_id: str) -> ProjectSpecs | None:
             project = session.get(Project, constants.SQLITE_FIRST_PK)
             try:
                 # Project can't be missing if session exists.
-                result = ProjectSpecs(**project.specs)  # type: ignore
+                result = ProjectSpecs(**project.specs, version=project.git_hash)  # type: ignore
             except Exception as e:
                 msg = f"unable to read specs in project '{project_id}'"
                 raise EsgvocDbError(msg) from e
@@ -1229,7 +1235,8 @@ def find_items_in_project(
                 collection_column = col(PCollectionFTS5.id)
                 term_column = col(PTermFTS5.id)
             else:
-                collection_column = col(PCollectionFTS5.id)  # TODO: use specs when implemented!
+                # TODO: use specs when implemented!
+                collection_column = col(PCollectionFTS5.id)
                 term_column = col(PTermFTS5.specs)  # type: ignore
             collection_where_condition = collection_column.match(processed_expression)
             collection_statement = select(

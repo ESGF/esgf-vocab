@@ -131,6 +131,8 @@ class ProjectSpecs(BaseModel):
     """The project id."""
     description: str
     """The description of the project."""
+    version: str
+    """The git_hash used as the version"""
     drs_specs: dict[DrsType, DrsSpecification] | None = None
     """The DRS specifications of the project (directory, file name and dataset id)."""
     # TODO: release = None when all projects have catalog_specs.yaml.
