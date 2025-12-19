@@ -85,6 +85,10 @@ class PlainTermDataDescriptor(DataDescriptor):
     def accept(self, visitor: DataDescriptorVisitor) -> Any:
         return visitor.visit_plain_term(self)
 
+    @root_validator(pre=True)
+    def strip_at_prefix(cls, values):
+        return {k.lstrip("@"): v for k, v in values.items()}
+
 
 class PatternTermDataDescriptor(DataDescriptor):
     """
