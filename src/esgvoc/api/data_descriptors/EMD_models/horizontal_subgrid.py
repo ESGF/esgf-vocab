@@ -11,6 +11,7 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
+from .cell_variable_type import CellVariableType
 from .horizontal_grid_cells import HorizontalGridCells
 
 
@@ -24,7 +25,7 @@ class HorizontalSubgrid(BaseModel):
     be defined as part of a horizontal computational grid.
     """
 
-    cell_variable_type: List[str] = Field(
+    cell_variable_type: List[str | CellVariableType] = Field(
         description="The types of physical variables that are carried at, or representative of conditions at, "
         "the cells described by this horizontal subgrid. Taken from 7.4 cell_variable_type CV. "
         "Options: 'mass', 'x_velocity', 'y_velocity', 'velocity'. "

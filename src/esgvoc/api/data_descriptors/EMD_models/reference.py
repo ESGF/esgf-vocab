@@ -34,11 +34,18 @@ class Reference(BaseModel):
     @field_validator("doi")
     @classmethod
     def validate_doi(cls, v):
-        """Validate that DOI follows proper format."""
-        if not v.startswith("https://doi.org/"):
-            raise ValueError('DOI must start with "https://doi.org/"')
-        if len(v) <= len("https://doi.org/"):
-            raise ValueError('DOI must contain identifier after "https://doi.org/"')
+        """Validate that DOI follows proper format (accepts proxies like doi-org.insu.bib...)."""
+        # Remove all whitespace to handle formatting issues
+        v = "".join(v.split())
+
+        # Accept both canonical DOIs and proxy URLs
+        if not v.startswith("https://doi"):
+            raise ValueError('DOI must start with "https://doi" (canonical: https://doi.org/, proxies: https://doi-...)')
+
+        # Ensure there's an actual identifier after the DOI prefix
+        if len(v) <= len("https://doi"):
+            raise ValueError('DOI must contain identifier after "https://doi"')
+
         return v
 
     @field_validator("citation")

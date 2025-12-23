@@ -1,3 +1,4 @@
+from esgvoc.api.data_descriptors.EMD_models.horizontal_grid_cells import HorizontalGridCells
 from esgvoc.api.data_descriptors.EMD_models.horizontal_units import HorizontalUnits
 from esgvoc.api.data_descriptors.EMD_models.vertical_coordinate import VerticalCoordinate
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
@@ -147,4 +148,5 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "grid_type": GridType,  # EMD v1.0
     "horizontal_units": HorizontalUnits,
     "vertical_coordinate": VerticalCoordinate,
+    "horizontal_grid_cell": HorizontalGridCells,
 }

@@ -12,6 +12,10 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
+from esgvoc.api.data_descriptors.region import Region
+
+from .truncation_method import TruncationMethod
+
 
 class HorizontalGridCells(BaseModel):
     """
@@ -23,7 +27,7 @@ class HorizontalGridCells(BaseModel):
     computational grid, and so may be used to describe an arbitrary output grid.
     """
 
-    region: str = Field(
+    region: Region | str = Field(
         description="The geographical region, or regions, over which the component is simulated. "
         "A region is a contiguous part of the Earth's surface, and may include areas for which "
         "no calculations are made (such as ocean areas for a land surface component). "
@@ -157,7 +161,7 @@ class HorizontalGridCells(BaseModel):
         ge=1,
     )
 
-    truncation_method: Optional[str] = Field(
+    truncation_method: Optional[str | TruncationMethod] = Field(
         default=None,
         description="The method for truncating the spherical harmonic representation of a spectral model "
         "when reporting on this grid. If the grid is not used for reporting spherical harmonic "
@@ -186,24 +190,6 @@ class HorizontalGridCells(BaseModel):
         max_length=2,
     )
 
-    mean_resolution_km: Optional[float] = Field(
-        default=None,
-        description=textwrap.dedent(
-            """
-            The mean resolution (in km) of cells of the horizontal grid.
-
-            Should be calculated according to the algorithm implemented by
-            https://github.com/PCMDI/nominal_resolution/blob/master/lib/api.py
-            """
-        ),
-        gt=0.0,
-    )
-
-    nominal_resolution: Optional[str] = Field(
-        default=None,
-        description="Nominal resolution of the grid. Derived from mean_resolution_km according to a lookup table.",
-    )
-
     @field_validator("horizontal_units", mode="after")
     @classmethod
     def validate_horizontal_units(cls, v, info):
@@ -219,9 +205,7 @@ class HorizontalGridCells(BaseModel):
                 msg = f"horizontal_units must be one of {allowed_values}. Received: {v}"
                 raise ValueError(msg)
         elif v:
-            msg = (
-                f"If all of {resolution_fields} are None, then horizontal_units must also be None. " f"Received: {v}"
-            )
+            msg = f"If all of {resolution_fields} are None, then horizontal_units must also be None. Received: {v}"
             raise ValueError(msg)
 
         return v
@@ -237,18 +221,4 @@ class HorizontalGridCells(BaseModel):
                 raise ValueError("resolution_range_km: minimum must be <= maximum")
             if any(val <= 0 for val in v):
                 raise ValueError("resolution_range_km values must be > 0")
-        return v
-
-    @field_validator("mean_resolution_km", mode="after")
-    @classmethod
-    def validate_mean_resolution_in_range(cls, v, info):
-        """Validate that mean resolution is within the resolution range."""
-        if v is not None and "resolution_range_km" in info.data and info.data["resolution_range_km"]:
-            range_km = info.data["resolution_range_km"]
-            if not (range_km[0] <= v <= range_km[1]):
-                raise ValueError(
-                    f"mean_resolution_km ({v}) must be between "
-                    f"resolution_range_km min ({range_km[0]}) and max ({range_km[1]})"
-                )
-
         return v

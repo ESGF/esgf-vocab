@@ -48,7 +48,7 @@ class Model(PlainTermDataDescriptor):
     )
 
     omitted_components: List[str | ComponentType] = Field(
-        description="The components that are wholly omitted from the top-level model. " "Taken from 7.1 component CV.",
+        description="The components that are wholly omitted from the top-level model. Taken from 7.1 component CV.",
         default_factory=list,
     )
 
@@ -56,6 +56,7 @@ class Model(PlainTermDataDescriptor):
         description="A scientific overview of the top-level model. The description should include a brief mention "
         "of all the components listed in the 7.1 component CV, whether dynamically simulated, prescribed, or omitted.",
         min_length=1,
+        default="",
     )
 
     calendar: List[str | Calendar] = Field(
@@ -75,9 +76,23 @@ class Model(PlainTermDataDescriptor):
         description="One or more references to published work for the top-level model as a whole.", min_length=1
     )
 
-    model_components: Optional[List[EMDModelComponent]] = Field(
-        default=None, description="The model components that dynamically simulate processes within the model."
+    model_components: List[str | EMDModelComponent] = Field(
+        description="The model components that dynamically simulate processes within the model."
     )
+
+    @field_validator("model_components")
+    @classmethod
+    def validate_same_dynamic_components(cls, v, info):
+        """Validate that model_components has the same length as dynamic_components."""
+        if "dynamic_components" in info.data:
+            dynamic_components = info.data["dynamic_components"]
+            if len(v) != len(dynamic_components):
+                raise ValueError(
+                    f"Number of model_components ({len(v)}) must equal number of dynamic_components({
+                        len(dynamic_components)
+                    })"
+                )
+        return v
 
     @field_validator("name", "family", "description", mode="before")
     @classmethod

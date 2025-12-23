@@ -13,6 +13,7 @@ from pydantic import Field, field_validator
 
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 
+from .arrangement import Arrangement
 from .horizontal_subgrid import HorizontalSubgrid
 
 
@@ -28,7 +29,7 @@ class HorizontalComputationalGrid(DataDescriptor):
     temperature, water vapour and other mass constituents).
     """
 
-    arrangement: str = Field(
+    arrangement: str | Arrangement = Field(
         description="A characterisation of the grid staggering defining the relative positions of computed "
         "mass-related and velocity-related variables. Taken from 7.3 arrangement CV. "
         "Options: 'arakawa_a', 'arakawa_b', 'arakawa_c', 'arakawa_d', 'arakawa_e'. "

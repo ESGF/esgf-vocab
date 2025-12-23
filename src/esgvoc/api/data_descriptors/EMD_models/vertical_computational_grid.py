@@ -13,7 +13,6 @@ from pydantic import Field, field_validator
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 
 from .coordinate import Coordinate
-from .vertical_units import VerticalUnits
 
 
 class VerticalComputationalGrid(DataDescriptor):
@@ -43,21 +42,17 @@ class VerticalComputationalGrid(DataDescriptor):
     )
     bottom_layer_thickness: Optional[float] = Field(
         default=None,
-        description="The thickness of the bottom model layer (i.e. the layer closest to the centre of the Earth). The value should be reported as a dimensional (as opposed to parametric) quantity. The value's physical units are given by the vertical_units property.",
+        description="The thickness of the bottom model layer (i.e. the layer closest to the centre of the Earth). The value should be reported as a dimensional (as opposed to parametric) quantity. All measurements are in metres (EMD v1.0).",
         gt=0,
     )
     top_layer_thickness: Optional[float] = Field(
         default=None,
-        description="The thickness of the top model layer (i.e. the layer furthest away from the centre of the Earth). The value should be reported as a dimensional (as opposed to parametric) quantity. The value's physical units are given by the vertical_units property.",
+        description="The thickness of the top model layer (i.e. the layer furthest away from the centre of the Earth). The value should be reported as a dimensional (as opposed to parametric) quantity. All measurements are in metres (EMD v1.0).",
         gt=0,
     )
     top_of_model: Optional[float] = Field(
         default=None,
-        description="The upper boundary of the top model layer (i.e. the upper boundary of the layer that is furthest away from the centre of the Earth). The value should be relative to the lower boundary of the bottom layer of the model, or an appropriate datum (such as mean sea level). The value's physical units are given by the vertical_units property.",
-    )
-    vertical_units: Optional[str | VerticalUnits] = Field(
-        default=None,
-        description="The physical units of the bottom_layer_thickness, top_layer_thickness, and top_of_model property values. Taken from 7.14 vertical_units CV.",
+        description="The upper boundary of the top model layer (i.e. the upper boundary of the layer that is furthest away from the centre of the Earth). The value should be relative to the lower boundary of the bottom layer of the model, or an appropriate datum (such as mean sea level). All measurements are in metres (EMD v1.0).",
     )
 
     @field_validator("vertical_coordinate", mode="before")
@@ -81,19 +76,6 @@ class VerticalComputationalGrid(DataDescriptor):
                 raise ValueError("n_z_range: minimum must be <= maximum")
             if any(val < 1 for val in v):
                 raise ValueError("n_z_range values must be >= 1")
-        return v
-
-    @field_validator("vertical_units", mode="before")
-    @classmethod
-    def validate_units_requirement(cls, v, info):
-        """Validate that vertical_units is provided when thickness/top_of_model values are set."""
-        thickness_fields = ["bottom_layer_thickness", "top_layer_thickness", "top_of_model"]
-        has_thickness_values = any(info.data.get(field) is not None for field in thickness_fields)
-
-        if has_thickness_values and not v:
-            raise ValueError(
-                "vertical_units is required when bottom_layer_thickness, top_layer_thickness, or top_of_model are set"
-            )
         return v
 
     @field_validator("n_z")
