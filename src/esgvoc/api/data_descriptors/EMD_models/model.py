@@ -72,7 +72,7 @@ class Model(PlainTermDataDescriptor):
         le=2100,
     )
 
-    references: List[Reference] = Field(
+    references: List[str | Reference] = Field(
         description="One or more references to published work for the top-level model as a whole.", min_length=1
     )
 

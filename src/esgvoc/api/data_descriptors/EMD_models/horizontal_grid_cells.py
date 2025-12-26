@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field, field_validator
 
 from esgvoc.api.data_descriptors.region import Region
 
+from .grid_mapping import GridMapping
 from .truncation_method import TruncationMethod
 
 
@@ -45,9 +46,11 @@ class HorizontalGridCells(BaseModel):
         "that is not covered by any of the other properties. Omit when not required.",
     )
 
-    grid_mapping: str = Field(
+    grid_mapping: Optional[str | GridMapping] = Field(
+        default=None,
         description="The name of the coordinate reference system of the horizontal coordinates. "
-        "Taken from 7.7 grid_mapping CV. E.g. 'latitude_longitude', 'lambert_conformal_conic'"
+        "Taken from 7.7 grid_mapping CV. E.g. 'latitude_longitude', 'lambert_conformal_conic'. "
+        "Can be None or empty for certain grid types (e.g., tripolar grids)."
     )
 
     temporal_refinement: str = Field(

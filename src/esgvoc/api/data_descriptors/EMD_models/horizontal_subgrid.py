@@ -29,8 +29,9 @@ class HorizontalSubgrid(BaseModel):
         description="The types of physical variables that are carried at, or representative of conditions at, "
         "the cells described by this horizontal subgrid. Taken from 7.4 cell_variable_type CV. "
         "Options: 'mass', 'x_velocity', 'y_velocity', 'velocity'. "
-        "E.g. ['mass'], ['x_velocity'], ['mass', 'x_velocity', 'y_velocity'], ['mass', 'velocity']",
-        min_length=1,
+        "E.g. ['mass'], ['x_velocity'], ['mass', 'x_velocity', 'y_velocity'], ['mass', 'velocity']. "
+        "Can be an empty list in certain cases.",
+        default_factory=list,
     )
 
     horizontal_grid_cells: HorizontalGridCells = Field(

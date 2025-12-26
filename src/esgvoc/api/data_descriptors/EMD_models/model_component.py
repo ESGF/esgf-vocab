@@ -44,7 +44,7 @@ class EMDModelComponent(PlainTermDataDescriptor):
         min_length=1,
     )
 
-    references: List[Reference] = Field(
+    references: List[str | Reference] = Field(
         description="One or more references to published work for the model component.", min_length=1
     )
 
