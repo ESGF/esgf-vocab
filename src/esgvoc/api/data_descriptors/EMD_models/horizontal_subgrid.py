@@ -11,11 +11,13 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+
 from .cell_variable_type import CellVariableType
 from .horizontal_grid_cells import HorizontalGridCells
 
 
-class HorizontalSubgrid(BaseModel):
+class HorizontalSubgrid(PlainTermDataDescriptor):
     """
     Horizontal subgrid description (EMD v1.0 Section 4.1.2).
 

@@ -4,8 +4,10 @@ Academic reference to published work for the top-level model or model components
 
 from pydantic import BaseModel, Field, field_validator
 
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
-class Reference(BaseModel):
+
+class Reference(PlainTermDataDescriptor):
     """
     Academic reference to published work for the top-level model or model components.
 
@@ -40,7 +42,9 @@ class Reference(BaseModel):
 
         # Accept both canonical DOIs and proxy URLs
         if not v.startswith("https://doi"):
-            raise ValueError('DOI must start with "https://doi" (canonical: https://doi.org/, proxies: https://doi-...)')
+            raise ValueError(
+                'DOI must start with "https://doi" (canonical: https://doi.org/, proxies: https://doi-...)'
+            )
 
         # Ensure there's an actual identifier after the DOI prefix
         if len(v) <= len("https://doi"):

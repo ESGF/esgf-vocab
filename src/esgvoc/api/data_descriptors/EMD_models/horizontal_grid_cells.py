@@ -12,13 +12,14 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.region import Region
 
 from .grid_mapping import GridMapping
 from .truncation_method import TruncationMethod
 
 
-class HorizontalGridCells(BaseModel):
+class HorizontalGridCells(PlainTermDataDescriptor):
     """
     Horizontal grid cells description (EMD v1.0 Section 4.1.3).
 
@@ -50,7 +51,7 @@ class HorizontalGridCells(BaseModel):
         default=None,
         description="The name of the coordinate reference system of the horizontal coordinates. "
         "Taken from 7.7 grid_mapping CV. E.g. 'latitude_longitude', 'lambert_conformal_conic'. "
-        "Can be None or empty for certain grid types (e.g., tripolar grids)."
+        "Can be None or empty for certain grid types (e.g., tripolar grids).",
     )
 
     temporal_refinement: str = Field(
