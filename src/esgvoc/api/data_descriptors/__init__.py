@@ -1,6 +1,10 @@
+from esgvoc.api.data_descriptors.EMD_models.horizontal_computational_grid import HorizontalComputationalGrid
 from esgvoc.api.data_descriptors.EMD_models.horizontal_grid_cells import HorizontalGridCells
+from esgvoc.api.data_descriptors.EMD_models.horizontal_subgrid import HorizontalSubgrid
 from esgvoc.api.data_descriptors.EMD_models.horizontal_units import HorizontalUnits
+from esgvoc.api.data_descriptors.EMD_models.vertical_computational_grid import VerticalComputationalGrid
 from esgvoc.api.data_descriptors.EMD_models.vertical_coordinate import VerticalCoordinate
+from esgvoc.api.data_descriptors.model_component import ModelComponent
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
 from esgvoc.api.data_descriptors.variable import Variable
@@ -88,7 +92,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "institution": Institution,
     "license": License,
     "mip_era": MipEra,
-    # "model_component": ModelComponent,
+    "model_component": ModelComponent,
     "organisation": Organisation,
     "physics_index": PhysicsIndex,
     "product": Product,
@@ -115,7 +119,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "grid_arrangement": Arrangement,  # EMD v1.0
     "coordinate": Coordinate,
     "grid_mapping": GridMapping,  # EMD v1.0
-    "model_component": EMDModelComponent,  # EMD v1.0
+    "model_componentEMD": EMDModelComponent,  # EMD v1.0
     "model": Model,  # EMD v1.0
     "reference": Reference,  # EMD v1.0
     # "resolution": EMDResolution,
@@ -149,4 +153,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "horizontal_units": HorizontalUnits,
     "vertical_coordinate": VerticalCoordinate,
     "horizontal_grid_cell": HorizontalGridCells,
+    "horizontal_computational_grid": HorizontalComputationalGrid,
+    "horizontal_subgrid": HorizontalSubgrid,
+    "vertical_computational_grid": VerticalComputationalGrid,
 }
