@@ -489,9 +489,7 @@ class CVTester:
                 errors.append(error_msg)
                 console.print(f"   [red]{error_msg}[/red]")
         else:
-            error_msg = f"❌ Required file {DRS_SPECS_FILENAME} not found"
-            errors.append(error_msg)
-            console.print(f"📄 [red]{error_msg}[/red]")
+            console.print(f"   [yellow]⚠️  Optional file {DRS_SPECS_FILENAME} not found[/yellow]")
 
         # Test catalog_spec.yaml (optional)
         catalog_specs_file = repo_dir / CATALOG_SPECS_FILENAME
@@ -703,13 +701,13 @@ class CVTester:
                         console.print(f"   [yellow]⚠️  Structure difference: YAML type={type(original_attr_specs)}, Ingested type={type(ingested_attr_specs)}[/yellow]")
 
                 elif attr_specs_file.exists():
-                    errors.append(f"❌ attr_specs.yaml exists but not found in ingested project specs")
+                    console.print(f"   [yellow]⚠️  attr_specs.yaml exists but not found in ingested project specs[/yellow]")
 
                 # Test drs_specs ingestion
                 if "drs_specs" in specs:
                     console.print(f"   [green]✅ drs_specs found in ingested project data[/green]")
                 else:
-                    errors.append(f"❌ drs_specs not found in ingested project data")
+                    console.print(f"   [yellow]⚠️  drs_specs not found in ingested project data (may be optional)[/yellow]")
 
                 # Test catalog_specs ingestion
                 if "catalog_specs" in specs:
@@ -719,16 +717,8 @@ class CVTester:
 
             else:
                 # More detailed error message about missing specs
-                expected_specs = ["project_specs", "attr_specs", "drs_specs", "catalog_specs (optional)"]
-                if hasattr(project, 'attr_specs') or hasattr(project, 'drs_specs'):
-                    missing_specs = []
-                    if not hasattr(project, 'attr_specs') or not project.attr_specs:
-                        missing_specs.append("attr_specs")
-                    if not hasattr(project, 'drs_specs') or not project.drs_specs:
-                        missing_specs.append("drs_specs")
-                    errors.append(f"❌ Project '{project_name}' missing required specs: {missing_specs}. Expected specs: {', '.join(expected_specs)}")
-                else:
-                    errors.append(f"❌ Project '{project_name}' has no specs attributes. Expected specs: {', '.join(expected_specs)}")
+                expected_specs = ["project_specs (required)", "attr_specs (optional)", "drs_specs (optional)", "catalog_specs (optional)"]
+                console.print(f"   [yellow]⚠️  Project '{project_name}' has no specs attributes. Expected specs: {', '.join(expected_specs)}[/yellow]")
 
         except Exception as e:
             errors.append(f"❌ Failed to retrieve project '{project_name}' from esgvoc: {e}")
