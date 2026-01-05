@@ -89,8 +89,14 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                 )
                 merged_data = merger.merge_linked_json()[-1]
                 # Resolve all nested @id references using merged context
-                # IMPORTANT: Pass the project repo path so nested IDs use the project context
-                json_specs = merger.resolve_merged_ids(merged_data, context_base_path=str(collection_dir_path.parent))
+                # IMPORTANT: Use universe path for context because:
+                # 1. Universe context defines the data structure and esgvoc_resolve_modes
+                # 2. Project terms are typically lightweight references to universe terms
+                # 3. Even when overriding, the type definition (and resolve modes) live in universe
+                json_specs = merger.resolve_merged_ids(
+                    merged_data,
+                    context_base_path=service.current_state.universe.local_path
+                )
 
                 term_kind = infer_term_kind(json_specs)
                 term_id = json_specs["id"]

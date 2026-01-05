@@ -599,8 +599,17 @@ class DataMerger:
             if isinstance(merged_expanded, list) and len(merged_expanded) > 0:
                 merged_expanded = merged_expanded[0]
 
-            # Resolve with correct expansion
-            return self.resolve_nested_ids(merged_data, expanded_data=merged_expanded)
+            # Temporarily update self.data to use merged resource's context
+            # so that _get_resolve_mode() uses the correct esgvoc_resolve_modes
+            original_data = self.data
+            self.data = merged_resource
+
+            try:
+                # Resolve with correct expansion and context
+                return self.resolve_nested_ids(merged_data, expanded_data=merged_expanded)
+            finally:
+                # Restore original data
+                self.data = original_data
         finally:
             Path(tmp_path).unlink()
 
