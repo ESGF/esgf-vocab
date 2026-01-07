@@ -40,7 +40,7 @@ class DrsApplication:
         """Same as the option of GCC: turn warnings into errors. Default False."""
         project_specs: ProjectSpecs | None = projects.get_project(project_id)
         if not project_specs or project_specs.drs_specs is None:
-            raise EsgvocNotFoundError(f"unable to find project '{project_id}'")
+            raise EsgvocNotFoundError(f"unable to find project spec or only drs_spec for '{project_id}'")
         self.directory_specs: DrsSpecification = project_specs.drs_specs[DrsType.DIRECTORY]
         """The DRS directory specs of the project."""
         self.file_name_specs: DrsSpecification = project_specs.drs_specs[DrsType.FILE_NAME]
