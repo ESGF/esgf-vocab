@@ -16,6 +16,8 @@ from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.region import Region
 
 from .grid_mapping import GridMapping
+from .grid_type import GridType
+from .temporal_refinement import TemporalRefinement
 from .truncation_method import TruncationMethod
 
 
@@ -36,7 +38,7 @@ class HorizontalGridCells(PlainTermDataDescriptor):
         "Taken from 7.5 region CV. E.g. 'global', 'antarctica', 'greenland', 'limited_area'"
     )
 
-    grid_type: str = Field(
+    grid_type: str | GridType = Field(
         description="The horizontal grid type, i.e. the method of distributing grid cells over the region. "
         "Taken from 7.6 grid_type CV. E.g. 'regular_latitude_longitude', 'tripolar'"
     )
@@ -54,7 +56,7 @@ class HorizontalGridCells(PlainTermDataDescriptor):
         "Can be None or empty for certain grid types (e.g., tripolar grids).",
     )
 
-    temporal_refinement: str = Field(
+    temporal_refinement: str | TemporalRefinement = Field(
         description="The grid temporal refinement, indicating how the distribution of grid cells varies with time. "
         "Taken from 7.8 temporal_refinement CV. E.g. 'static'"
     )
