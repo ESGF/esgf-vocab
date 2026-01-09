@@ -124,20 +124,25 @@ def instantiate_pydantic_term(term: "UTerm | PTerm", selected_term_fields: Itera
         model_fields = DataDescriptorSubSet.model_fields
 
         for field in selected_term_fields:
-            # Use model's default value if field is missing from specs
-            if field in model_fields and field not in term.specs:
+            if field in term.specs:
+                # Field exists in specs, use its value
+                setattr(subset, field, term.specs[field])
+            elif field in model_fields:
+                # Field doesn't exist in specs but is a model field, use its default
                 default_value = model_fields[field].default
-                setattr(subset, field, default_value if default_value is not None else term.specs.get(field, None))
-            else:
-                setattr(subset, field, term.specs.get(field, None))
+                if default_value is not None:
+                    setattr(subset, field, default_value)
+            # If field is neither in specs nor in model_fields, don't set it
 
         for field in DataDescriptorSubSet.MANDATORY_TERM_FIELDS:
-            # Use model's default value if field is missing from specs
-            if field in model_fields and field not in term.specs:
+            if field in term.specs:
+                # Field exists in specs, use its value
+                setattr(subset, field, term.specs[field])
+            elif field in model_fields:
+                # Field doesn't exist in specs but is a model field, use its default
                 default_value = model_fields[field].default
-                setattr(subset, field, default_value if default_value is not None else term.specs.get(field, None))
-            else:
-                setattr(subset, field, term.specs.get(field, None))
+                if default_value is not None:
+                    setattr(subset, field, default_value)
         return subset
     else:
         term_class = get_pydantic_class(type)
