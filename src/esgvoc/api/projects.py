@@ -801,34 +801,33 @@ def get_project(project_id: str) -> ProjectSpecs | None:
     return result
 
 
-def _get_collection_from_data_descriptor_in_project(data_descriptor_id: str, session: Session) -> PCollection | None:
+def _get_collection_from_data_descriptor_in_project(data_descriptor_id: str, session: Session) -> list[PCollection]:
     statement = select(PCollection).where(PCollection.data_descriptor_id == data_descriptor_id)
-    result = session.exec(statement).one_or_none()
-    return result
+    results = session.exec(statement).all()
+    return results
 
 
-def get_collection_from_data_descriptor_in_project(project_id: str, data_descriptor_id: str) -> tuple[str, dict] | None:
+def get_collection_from_data_descriptor_in_project(project_id: str, data_descriptor_id: str) -> list[tuple[str, dict]]:
     """
-    Returns the collection, in the given project, that corresponds to the given data descriptor
+    Returns the collections, in the given project, that correspond to the given data descriptor
     in the universe.
     This function performs an exact match on the `project_id` and `data_descriptor_id`,
     and does not search for similar or related projects and data descriptors.
     If any of the provided ids (`project_id` or `data_descriptor_id`) is not found, or if
-    there is no collection corresponding to the given data descriptor, the function returns `None`.
+    there is no collection corresponding to the given data descriptor, the function returns an empty list.
 
     :param project_id: The id of the given project.
     :type project_id: str
     :param data_descriptor_id: The id of the given data descriptor.
     :type data_descriptor_id: str
-    :returns: A collection id and context. Returns `None` if no matches are found.
-    :rtype: tuple[str, dict] | None
+    :returns: A list of collection ids and contexts. Returns an empty list if no matches are found.
+    :rtype: list[tuple[str, dict]]
     """
-    result: tuple[str, dict] | None = None
+    result: list[tuple[str, dict]] = []
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
-            collection_found = _get_collection_from_data_descriptor_in_project(data_descriptor_id, session)
-            if collection_found:
-                result = collection_found.id, collection_found.context
+            collections_found = _get_collection_from_data_descriptor_in_project(data_descriptor_id, session)
+            result = [(collection.id, collection.context) for collection in collections_found]
     return result
 
 
@@ -851,9 +850,9 @@ def get_collection_from_data_descriptor_in_all_projects(data_descriptor_id: str)
     result = list()
     project_ids = get_all_projects()
     for project_id in project_ids:
-        collection_found = get_collection_from_data_descriptor_in_project(project_id, data_descriptor_id)
-        if collection_found:
-            result.append((project_id, collection_found[0], collection_found[1]))
+        collections_found = get_collection_from_data_descriptor_in_project(project_id, data_descriptor_id)
+        for collection_id, context in collections_found:
+            result.append((project_id, collection_id, context))
     return result
 
 

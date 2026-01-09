@@ -68,8 +68,10 @@ def test_get_collection_from_data_descriptor_in_project(get_param) -> None:
         dd_id = "organisation"
     else:
         dd_id = get_param.data_descriptor_id
-    collection_found = projects.get_collection_from_data_descriptor_in_project(get_param.project_id, dd_id)
-    check_id(collection_found, get_param.collection_id)
+    collections_found = projects.get_collection_from_data_descriptor_in_project(get_param.project_id, dd_id)
+    # Now returns a list of tuples [(collection_id, context), ...]
+    assert isinstance(collections_found, list)
+    check_id(collections_found, get_param.collection_id)
 
 
 def test_get_collection_from_data_descriptor_in_all_projects(get_param):
@@ -190,3 +192,56 @@ def test_find_items_in_project(find_proj_item_param) -> None:
 def test_only_id_limit_and_offset_find_items(find_proj_item_param):
     project_id = find_proj_item_param.item.project_id if find_proj_item_param.item else DEFAULT_PROJECT
     _ = projects.find_items_in_project(find_proj_item_param.expression, project_id, limit=10, offset=5)
+
+
+def test_multiple_collections_per_data_descriptor(use_all_dev_config) -> None:
+    """Test that data descriptors with multiple collections return all of them."""
+    # Test cases where we know there are multiple collections per data descriptor
+    test_cases = [
+        ("cordex-cmip6", "mip_era", ["mip_era", "project_id"]),
+        ("cordex-cmip6", "organisation", ["driving_institution_id", "institution_id"]),
+        ("cordex-cmip6", "source", ["driving_source_id", "source_id"]),
+        ("input4mip", "activity", ["activity_id", "target_mip"]),
+        ("input4mip", "realm", ["dataset_category", "realm"]),
+        ("obs4ref", "contact", ["contact", "dataset_contributor"]),
+    ]
+
+    for project_id, data_descriptor_id, expected_collections in test_cases:
+        collections_found = projects.get_collection_from_data_descriptor_in_project(project_id, data_descriptor_id)
+
+        # Should return a list
+        assert isinstance(collections_found, list), f"{project_id}/{data_descriptor_id}: Expected list"
+
+        # Should have the expected number of collections
+        assert len(collections_found) == len(expected_collections), \
+            f"{project_id}/{data_descriptor_id}: Expected {len(expected_collections)} collections, got {len(collections_found)}"
+
+        # Each item should be a tuple (collection_id, context)
+        for collection_id, context in collections_found:
+            assert isinstance(collection_id, str), f"Expected collection_id to be str, got {type(collection_id)}"
+            assert isinstance(context, dict), f"Expected context to be dict, got {type(context)}"
+
+        # Check that all expected collections are present
+        found_collection_ids = {coll_id for coll_id, _ in collections_found}
+        expected_set = set(expected_collections)
+        assert found_collection_ids == expected_set, \
+            f"{project_id}/{data_descriptor_id}: Expected {expected_set}, got {found_collection_ids}"
+
+
+def test_multiple_collections_across_all_projects(use_all_dev_config) -> None:
+    """Test that get_collection_from_data_descriptor_in_all_projects returns all collections flattened."""
+    # Test with 'mip_era' which has duplicates in cordex-cmip6 but single collections in other projects
+    collections = projects.get_collection_from_data_descriptor_in_all_projects("mip_era")
+
+    # Should return a list of tuples (project_id, collection_id, context)
+    assert isinstance(collections, list)
+
+    # Find cordex-cmip6 entries
+    cordex_entries = [(proj, coll, ctx) for proj, coll, ctx in collections if proj == "cordex-cmip6"]
+
+    # Should have 2 entries for cordex-cmip6 (mip_era and project_id)
+    assert len(cordex_entries) == 2, f"Expected 2 collections for cordex-cmip6, got {len(cordex_entries)}"
+
+    cordex_collection_ids = {coll for _, coll, _ in cordex_entries}
+    assert cordex_collection_ids == {"mip_era", "project_id"}, \
+        f"Expected mip_era and project_id, got {cordex_collection_ids}"
