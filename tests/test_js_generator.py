@@ -7,29 +7,30 @@ from esgvoc.api import projects
 from esgvoc.apps.jsg import json_schema_generator as jsg
 from tests.api_inputs import project_id  # noqa: F401
 
-_COMPLIANCE_PROJECT_TESTED = 'cmip6'
+_COMPLIANCE_PROJECT_TESTED = "cmip6"
 
 project_specs_being_tested = projects.get_project(_COMPLIANCE_PROJECT_TESTED)
 
-if project_specs_being_tested is not None and \
-   project_specs_being_tested.catalog_specs is not None:
-  project_version = project_specs_being_tested.catalog_specs.version
-  project_extensions = project_specs_being_tested.catalog_specs.catalog_properties.extensions
-  extension_url_template = project_specs_being_tested.catalog_specs.catalog_properties.url_template
-  extension_urls = list()
-  for project_extension in project_extensions:
-     extension_url = extension_url_template.format(extension_name=project_extension.name,
-                                                   extension_version=project_extension.version)
-     extension_urls.append(extension_url)
-  extension_url = extension_url_template.format(extension_name=_COMPLIANCE_PROJECT_TESTED,
-                                                extension_version=project_version)
-  extension_urls.append(extension_url)
+if project_specs_being_tested is not None and project_specs_being_tested.catalog_specs is not None:
+    project_version = project_specs_being_tested.catalog_specs.version
+    project_extensions = project_specs_being_tested.catalog_specs.catalog_properties.extensions
+    extension_url_template = project_specs_being_tested.catalog_specs.catalog_properties.url_template
+    extension_urls = list()
+    for project_extension in project_extensions:
+        extension_url = extension_url_template.format(
+            extension_name=project_extension.name, extension_version=project_extension.version
+        )
+        extension_urls.append(extension_url)
+    extension_url = extension_url_template.format(
+        extension_name=_COMPLIANCE_PROJECT_TESTED, extension_version=project_version
+    )
+    extension_urls.append(extension_url)
 else:
-   raise RuntimeError('unable to compute extension URL')
+    raise RuntimeError("unable to compute extension URL")
 
 
 json_template = Template(
-"""
+    """
 {
   "type": "Feature",
   "stac_version": "1.1.0",
@@ -178,15 +179,15 @@ json_template = Template(
     }
   }
 }
-""")
+"""
+)
 str_extension_urls = "[" + ", ".join(f'"{url}"' for url in extension_urls) + "]"
 json_example = json.loads(json_template.substitute(extension_urls=str_extension_urls))
 
 
-def test_cmip6_compliance() -> None:
+def test_cmip6_compliance(use_default_config) -> None:
     json_schema = jsg.generate_json_schema(_COMPLIANCE_PROJECT_TESTED)
     validate(instance=json_example, schema=json_schema)
-
 
 
 def test_js_generation(project_id) -> None:
