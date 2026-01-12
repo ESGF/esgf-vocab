@@ -63,6 +63,7 @@ dev = [
     "pytest-cov>=6.0.0",
     "jsonschema>=4.24.0",
     "pip>=25.2",
+    "icecream>=2.1.8",
 ]
 
 [tool.hatch.metadata]
