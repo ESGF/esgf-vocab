@@ -439,6 +439,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.ProjectSpecs.description"><code class="docutils literal notranslate"><span class="pre">ProjectSpecs.description</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.ProjectSpecs.drs_specs"><code class="docutils literal notranslate"><span class="pre">ProjectSpecs.drs_specs</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.ProjectSpecs.project_id"><code class="docutils literal notranslate"><span class="pre">ProjectSpecs.project_id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.ProjectSpecs.version"><code class="docutils literal notranslate"><span class="pre">ProjectSpecs.version</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1196,15 +1197,27 @@ document.write(`
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Description&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Version&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;drs_specs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DrsSpecification&quot;</span>
-<span class="w">         </span><span class="p">},</span>
-<span class="w">         </span><span class="nt">&quot;propertyNames&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DrsType&quot;</span>
-<span class="w">         </span><span class="p">},</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Drs Specs&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                  </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DrsSpecification&quot;</span>
+<span class="w">               </span><span class="p">},</span>
+<span class="w">               </span><span class="nt">&quot;propertyNames&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                  </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DrsType&quot;</span>
+<span class="w">               </span><span class="p">},</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Drs Specs&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;catalog_specs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1529,7 +1542,7 @@ document.write(`
 <span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="s2">&quot;project_id&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="s2">&quot;description&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="s2">&quot;drs_specs&quot;</span>
+<span class="w">      </span><span class="s2">&quot;version&quot;</span>
 <span class="w">   </span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
@@ -1554,7 +1567,7 @@ document.write(`
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.project_specs.ProjectSpecs.drs_specs">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">drs_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#esgvoc.api.project_specs.DrsType" title="esgvoc.api.project_specs.DrsType"><span class="pre">DrsType</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/project_specs.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.project_specs.ProjectSpecs.drs_specs" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">drs_specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#esgvoc.api.project_specs.DrsType" title="esgvoc.api.project_specs.DrsType"><span class="pre">DrsType</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#esgvoc.api.project_specs.DrsSpecification" title="esgvoc.api.project_specs.DrsSpecification"><span class="pre">DrsSpecification</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/project_specs.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.project_specs.ProjectSpecs.drs_specs" title="Link to this definition">#</a></dt>
 <dd><p>The DRS specifications of the project (directory, file name and dataset id).</p>
 </dd></dl>
 
@@ -1562,6 +1575,12 @@ document.write(`
 <dt class="sig sig-object py" id="esgvoc.api.project_specs.ProjectSpecs.project_id">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">project_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/project_specs.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.project_specs.ProjectSpecs.project_id" title="Link to this definition">#</a></dt>
 <dd><p>The project id.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.project_specs.ProjectSpecs.version">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/project_specs.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.project_specs.ProjectSpecs.version" title="Link to this definition">#</a></dt>
+<dd><p>The git_hash used as the version</p>
 </dd></dl>
 
 </dd></dl>
@@ -1675,6 +1694,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.ProjectSpecs.description"><code class="docutils literal notranslate"><span class="pre">ProjectSpecs.description</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.ProjectSpecs.drs_specs"><code class="docutils literal notranslate"><span class="pre">ProjectSpecs.drs_specs</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.ProjectSpecs.project_id"><code class="docutils literal notranslate"><span class="pre">ProjectSpecs.project_id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.project_specs.ProjectSpecs.version"><code class="docutils literal notranslate"><span class="pre">ProjectSpecs.version</span></code></a></li>
 </ul>
 </li>
 </ul>
