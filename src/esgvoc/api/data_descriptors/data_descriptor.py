@@ -45,6 +45,8 @@ class DataDescriptor(ConfiguredBaseModel, ABC):
     """The identifier of the terms."""
     type: str
     """The data descriptor to which the term belongs."""
+    description: str = ""
+    """The description of the term."""
 
     @abstractmethod
     def accept(self, visitor: DataDescriptorVisitor) -> Any:

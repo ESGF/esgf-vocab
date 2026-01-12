@@ -4,6 +4,7 @@ from sqlalchemy import text
 from sqlmodel import Session, col, select
 
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+from esgvoc.api.pydantic_handler import instantiate_pydantic_term
 from esgvoc.api.search import (
     Item,
     execute_find_item_statements,
@@ -11,23 +12,23 @@ from esgvoc.api.search import (
     generate_matching_condition,
     get_universe_session,
     handle_rank_limit_offset,
-    instantiate_pydantic_term,
     instantiate_pydantic_terms,
     process_expression,
 )
 from esgvoc.core.db.models.universe import UDataDescriptor, UDataDescriptorFTS5, UTerm, UTermFTS5
 
 
-def _get_all_terms_in_data_descriptor(data_descriptor: UDataDescriptor,
-                                      selected_term_fields: Iterable[str] | None) -> list[DataDescriptor]:
+def _get_all_terms_in_data_descriptor(
+    data_descriptor: UDataDescriptor, selected_term_fields: Iterable[str] | None
+) -> list[DataDescriptor]:
     result: list[DataDescriptor] = list()
     instantiate_pydantic_terms(data_descriptor.terms, result, selected_term_fields)
     return result
 
 
-def get_all_terms_in_data_descriptor(data_descriptor_id: str,
-                                     selected_term_fields: Iterable[str] | None = None) \
-                                                                            -> list[DataDescriptor]:
+def get_all_terms_in_data_descriptor(
+    data_descriptor_id: str, selected_term_fields: Iterable[str] | None = None
+) -> list[DataDescriptor]:
     """
     Gets all the terms of the given data descriptor.
     This function performs an exact match on the `data_descriptor_id` and does not search
@@ -94,19 +95,16 @@ def get_all_terms_in_universe(selected_term_fields: Iterable[str] | None = None)
     return result
 
 
-def _get_term_in_data_descriptor(data_descriptor_id: str, term_id: str, session: Session) \
-                                                                           -> UTerm | None:
-    statement = select(UTerm).join(UDataDescriptor).where(UDataDescriptor.id == data_descriptor_id,
-                                                          UTerm.id == term_id)
+def _get_term_in_data_descriptor(data_descriptor_id: str, term_id: str, session: Session) -> UTerm | None:
+    statement = select(UTerm).join(UDataDescriptor).where(UDataDescriptor.id == data_descriptor_id, UTerm.id == term_id)
     results = session.exec(statement)
     result = results.one_or_none()
     return result
 
 
-def get_term_in_data_descriptor(data_descriptor_id: str,
-                                term_id: str,
-                                selected_term_fields: Iterable[str] | None = None) \
-                                                                           -> DataDescriptor | None:
+def get_term_in_data_descriptor(
+    data_descriptor_id: str, term_id: str, selected_term_fields: Iterable[str] | None = None
+) -> DataDescriptor | None:
     """
     Returns the term, in the given data descriptor, whose id corresponds exactly to the given term id.
     This function performs an exact match on the `term_id` and the `data_descriptor_id` and does
@@ -139,8 +137,7 @@ def _get_term_in_universe(term_id: str, session: Session) -> UTerm | None:
     return result
 
 
-def get_term_in_universe(term_id: str,
-                         selected_term_fields: Iterable[str] | None = None) -> DataDescriptor | None:
+def get_term_in_universe(term_id: str, selected_term_fields: Iterable[str] | None = None) -> DataDescriptor | None:
     """
     Returns the first occurrence of the terms, in the universe, whose id corresponds exactly to
     the given term id.
@@ -194,22 +191,18 @@ def get_data_descriptor_in_universe(data_descriptor_id: str) -> tuple[str, dict]
     return result
 
 
-def _find_data_descriptors_in_universe(expression: str,
-                                       session: Session,
-                                       only_id: bool = False,
-                                       limit: int | None = None,
-                                       offset: int | None = None) -> Sequence[UDataDescriptor]:
+def _find_data_descriptors_in_universe(
+    expression: str, session: Session, only_id: bool = False, limit: int | None = None, offset: int | None = None
+) -> Sequence[UDataDescriptor]:
     matching_condition = generate_matching_condition(UDataDescriptorFTS5, expression, only_id)
     tmp_statement = select(UDataDescriptorFTS5).where(matching_condition)
-    statement = select(UDataDescriptor).from_statement(handle_rank_limit_offset(tmp_statement,
-                                                                                limit, offset))
+    statement = select(UDataDescriptor).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
     return execute_match_statement(expression, statement, session)
 
 
-def find_data_descriptors_in_universe(expression: str,
-                                      only_id: bool = False,
-                                      limit: int | None = None,
-                                      offset: int | None = None) -> list[tuple[str, dict]]:
+def find_data_descriptors_in_universe(
+    expression: str, only_id: bool = False, limit: int | None = None, offset: int | None = None
+) -> list[tuple[str, dict]]:
     """
     Find data descriptors in the universe based on a full text search defined by the given `expression`.
     The `expression` can be composed of one or multiple keywords.
@@ -245,29 +238,29 @@ def find_data_descriptors_in_universe(expression: str,
     """
     result: list[tuple[str, dict]] = list()
     with get_universe_session() as session:
-        data_descriptors_found = _find_data_descriptors_in_universe(expression, session, only_id,
-                                                                    limit, offset)
+        data_descriptors_found = _find_data_descriptors_in_universe(expression, session, only_id, limit, offset)
         if data_descriptors_found:
             for data_descriptor_found in data_descriptors_found:
                 result.append((data_descriptor_found.id, data_descriptor_found.context))
     return result
 
 
-def _find_terms_in_universe(expression: str, session: Session,
-                            only_id: bool = False,
-                            limit: int | None = None,
-                            offset: int | None = None) -> Sequence[UTerm]:
+def _find_terms_in_universe(
+    expression: str, session: Session, only_id: bool = False, limit: int | None = None, offset: int | None = None
+) -> Sequence[UTerm]:
     matching_condition = generate_matching_condition(UTermFTS5, expression, only_id)
     tmp_statement = select(UTermFTS5).where(matching_condition)
     statement = select(UTerm).from_statement(handle_rank_limit_offset(tmp_statement, limit, offset))
     return execute_match_statement(expression, statement, session)
 
 
-def find_terms_in_universe(expression: str,
-                           only_id: bool = False,
-                           limit: int | None = None,
-                           offset: int | None = None,
-                           selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
+def find_terms_in_universe(
+    expression: str,
+    only_id: bool = False,
+    limit: int | None = None,
+    offset: int | None = None,
+    selected_term_fields: Iterable[str] | None = None,
+) -> list[DataDescriptor]:
     """
     Find terms in the universe based on a full-text search defined by the given `expression`.
     The `expression` can be composed of one or multiple keywords.
@@ -310,11 +303,14 @@ def find_terms_in_universe(expression: str,
     return result
 
 
-def _find_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
-                                   session: Session,
-                                   only_id: bool = False,
-                                   limit: int | None = None,
-                                   offset: int | None = None) -> Sequence[UTerm]:
+def _find_terms_in_data_descriptor(
+    expression: str,
+    data_descriptor_id: str,
+    session: Session,
+    only_id: bool = False,
+    limit: int | None = None,
+    offset: int | None = None,
+) -> Sequence[UTerm]:
     matching_condition = generate_matching_condition(UTermFTS5, expression, only_id)
     where_condition = UDataDescriptor.id == data_descriptor_id, matching_condition
     tmp_statement = select(UTermFTS5).join(UDataDescriptor).where(*where_condition)
@@ -322,12 +318,14 @@ def _find_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
     return execute_match_statement(expression, statement, session)
 
 
-def find_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
-                                  only_id: bool = False,
-                                  limit: int | None = None,
-                                  offset: int | None = None,
-                                  selected_term_fields: Iterable[str] | None = None) \
-                                                                            -> list[DataDescriptor]:
+def find_terms_in_data_descriptor(
+    expression: str,
+    data_descriptor_id: str,
+    only_id: bool = False,
+    limit: int | None = None,
+    offset: int | None = None,
+    selected_term_fields: Iterable[str] | None = None,
+) -> list[DataDescriptor]:
     """
     Find terms in the given data descriptor based on a full-text search defined by the given `expression`.
     The `expression` can be composed of one or multiple keywords.
@@ -367,17 +365,15 @@ def find_terms_in_data_descriptor(expression: str, data_descriptor_id: str,
     """
     result: list[DataDescriptor] = list()
     with get_universe_session() as session:
-        uterms_found = _find_terms_in_data_descriptor(expression, data_descriptor_id,
-                                                      session, only_id, limit, offset)
+        uterms_found = _find_terms_in_data_descriptor(expression, data_descriptor_id, session, only_id, limit, offset)
         if uterms_found:
             instantiate_pydantic_terms(uterms_found, result, selected_term_fields)
     return result
 
 
-def find_items_in_universe(expression: str,
-                           only_id: bool = False,
-                           limit: int | None = None,
-                           offset: int | None = None) -> list[Item]:
+def find_items_in_universe(
+    expression: str, only_id: bool = False, limit: int | None = None, offset: int | None = None
+) -> list[Item]:
     """
     Find items, at the moment terms and data descriptors, in the universe based on a full-text
     search defined by the given `expression`.
@@ -423,16 +419,16 @@ def find_items_in_universe(expression: str,
             dd_column = col(UDataDescriptorFTS5.id)  # TODO: use specs when implemented!
             term_column = col(UTermFTS5.specs)  # type: ignore
         dd_where_condition = dd_column.match(processed_expression)
-        dd_statement = select(UDataDescriptorFTS5.id,
-                              text("'data_descriptor' AS TYPE"),
-                              text("'universe' AS TYPE"),
-                              text('rank')).where(dd_where_condition)
+        dd_statement = select(
+            UDataDescriptorFTS5.id, text("'data_descriptor' AS TYPE"), text("'universe' AS TYPE"), text("rank")
+        ).where(dd_where_condition)
         term_where_condition = term_column.match(processed_expression)
-        term_statement = select(UTermFTS5.id,
-                                text("'term' AS TYPE"),
-                                UDataDescriptor.id,
-                                text('rank')).join(UDataDescriptor) \
-                                             .where(term_where_condition)
-        result = execute_find_item_statements(session, processed_expression, dd_statement,
-                                              term_statement, limit, offset)
+        term_statement = (
+            select(UTermFTS5.id, text("'term' AS TYPE"), UDataDescriptor.id, text("rank"))
+            .join(UDataDescriptor)
+            .where(term_where_condition)
+        )
+        result = execute_find_item_statements(
+            session, processed_expression, dd_statement, term_statement, limit, offset
+        )
         return result

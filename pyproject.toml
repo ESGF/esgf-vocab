@@ -81,7 +81,9 @@ log_cli_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 markers = [
     "integration: marks tests as integration tests",
     "slow: marks tests as slow running",
+    "cvtest: marks tests for CV repositories (slow, not run by default)",
 ]
+addopts = "-m 'not cvtest'"
 
 [tool.mypy]
 exclude = ['^tmp.*\.py']

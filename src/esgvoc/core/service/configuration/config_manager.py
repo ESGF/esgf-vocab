@@ -5,8 +5,15 @@ from platformdirs import PlatformDirs
 from typing import Type, TypeVar, Generic, Protocol
 
 # Setup logging
-logging.basicConfig(level=logging.INFO)
+# Use WARNING level to see important messages (errors, warnings) but not debug/info spam
+logging.basicConfig(
+    level=logging.WARNING,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
+# Explicitly set data_merger logger to WARNING since something else seems to change it to ERROR
+logging.getLogger("esgvoc.core.service.data_merger").setLevel(logging.WARNING)
 
 # Define a generic type for configuration
 T = TypeVar("T", bound="ConfigSchema")
@@ -87,7 +94,7 @@ class ConfigManager(Generic[T]):
         if config_name not in registry["configs"]:
             logger.error(f"Config '{config_name}' not found in registry.")
             raise ValueError(f"Config '{config_name}' not found in registry.")
-        config_path = self.config_cls.load_from_file(registry["configs"][config_name])
+        config_path = registry["configs"][config_name]
         return self.config_cls.load_from_file(str(config_path))
 
     def get_active_config(self) -> T:

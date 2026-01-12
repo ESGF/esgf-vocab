@@ -39,8 +39,8 @@ class DrsApplication:
         self.pedantic: bool = pedantic
         """Same as the option of GCC: turn warnings into errors. Default False."""
         project_specs: ProjectSpecs | None = projects.get_project(project_id)
-        if not project_specs:
-            raise EsgvocNotFoundError(f"unable to find project '{project_id}'")
+        if not project_specs or project_specs.drs_specs is None:
+            raise EsgvocNotFoundError(f"unable to find project spec or only drs_spec for '{project_id}'")
         self.directory_specs: DrsSpecification = project_specs.drs_specs[DrsType.DIRECTORY]
         """The DRS directory specs of the project."""
         self.file_name_specs: DrsSpecification = project_specs.drs_specs[DrsType.FILE_NAME]
@@ -58,11 +58,14 @@ class DrsApplication:
         """
         specs: DrsSpecification = self.file_name_specs
         if specs.properties:
-            full_extension = specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY] + \
-                             specs.properties[constants.FILE_NAME_EXTENSION_KEY]
+            full_extension = (
+                specs.properties[constants.FILE_NAME_EXTENSION_SEPARATOR_KEY]
+                + specs.properties[constants.FILE_NAME_EXTENSION_KEY]
+            )
         else:
-            raise EsgvocDbError('missing properties in the DRS file name specifications of the ' +
-                                f"project '{self.project_id}'")
+            raise EsgvocDbError(
+                "missing properties in the DRS file name specifications of the " + f"project '{self.project_id}'"
+            )
         return full_extension
 
 
@@ -71,8 +74,7 @@ class DrsValidator(DrsApplication):
     Valid a DRS directory, dataset id and file name expression against a project.
     """
 
-    def validate_directory(self, drs_expression: str,
-                           prefix: str | None = None) -> DrsValidationReport:
+    def validate_directory(self, drs_expression: str, prefix: str | None = None) -> DrsValidationReport:
         """
         Validate a DRS directory expression.
 
@@ -110,12 +112,11 @@ class DrsValidator(DrsApplication):
         """
         full_extension = self._get_full_file_name_extension()
         if drs_expression.endswith(full_extension):
-            drs_expression = drs_expression.replace(full_extension, '')
+            drs_expression = drs_expression.replace(full_extension, "")
             result = self._validate(drs_expression, self.file_name_specs)
         else:
             issue = FileNameExtensionIssue(expected_extension=full_extension)
-            result = self._create_report(self.file_name_specs.type, drs_expression,
-                                         [issue], [])
+            result = self._create_report(self.file_name_specs.type, drs_expression, [issue], [])
         return result
 
     def validate(self, drs_expression: str, drs_type: DrsType | str) -> DrsValidationReport:
@@ -139,12 +140,13 @@ class DrsValidator(DrsApplication):
             case _:
                 raise EsgvocDbError(f"unsupported drs type '{drs_type}'")
 
-    def _parse(self,
-               drs_expression: str,
-               separator: str,
-               drs_type: DrsType) -> tuple[list[str] | None,  # terms
-                                           list[DrsIssue],  # Errors
-                                           list[DrsIssue]]:  # Warnings
+    def _parse(
+        self, drs_expression: str, separator: str, drs_type: DrsType
+    ) -> tuple[
+        list[str] | None,  # terms
+        list[DrsIssue],  # Errors
+        list[DrsIssue],
+    ]:  # Warnings
         errors: list[DrsIssue] = list()
         warnings: list[DrsIssue] = list()
         cursor_offset = 0
@@ -170,7 +172,7 @@ class DrsValidator(DrsApplication):
         max_term_index = len(terms)
         cursor_position = initial_cursor_position = len(drs_expression) + 1
         has_white_term = False
-        for index in range(max_term_index-1, -1, -1):
+        for index in range(max_term_index - 1, -1, -1):
             term = terms[index]
             if (is_white_term := term.isspace()) or (not term):
                 has_white_term = has_white_term or is_white_term
@@ -181,7 +183,7 @@ class DrsValidator(DrsApplication):
                 break
         if cursor_position != initial_cursor_position:
             max_term_index = len(terms)
-            column = cursor_position+cursor_offset
+            column = cursor_position + cursor_offset
             if (drs_type == DrsType.DIRECTORY) and (not has_white_term):
                 issue = ExtraSeparator(column=column)
                 if self.pedantic:
@@ -191,7 +193,7 @@ class DrsValidator(DrsApplication):
             else:
                 issue = ExtraChar(column=column)
                 errors.append(issue)
-        for index in range(max_term_index-1, -1, -1):
+        for index in range(max_term_index - 1, -1, -1):
             term = terms[index]
             len_term = len(term)
             if not term:
@@ -220,38 +222,40 @@ class DrsValidator(DrsApplication):
 
     def _validate_term(self, term: str, part: DrsPart) -> bool:
         if part.source_collection_term is None:
-            matching_terms = projects.valid_term_in_collection(
-                term,
-                self.project_id,
-                part.source_collection)
+            matching_terms = projects.valid_term_in_collection(term, self.project_id, part.source_collection)
             if len(matching_terms) > 0:
                 return True
             else:
                 return False
         else:
-            return projects.valid_term(term, self.project_id, part.source_collection,
-                                       part.source_collection_term).validated
+            return projects.valid_term(
+                term, self.project_id, part.source_collection, part.source_collection_term
+            ).validated
 
-    def _create_report(self,
-                       type: DrsType,
-                       drs_expression: str,
-                       errors: list[DrsIssue],
-                       warnings: list[DrsIssue],
-                       mapping_used: dict[str, str] | None = None) -> DrsValidationReport:
+    def _create_report(
+        self,
+        type: DrsType,
+        drs_expression: str,
+        errors: list[DrsIssue],
+        warnings: list[DrsIssue],
+        mapping_used: dict[str, str] | None = None,
+    ) -> DrsValidationReport:
         if mapping_used is None:
             mapping_used = {}
-        return DrsValidationReport(project_id=self.project_id, type=type,
-                                   expression=drs_expression,
-                                   mapping_used=mapping_used,
-                                   errors=cast(list[ValidationError], errors),
-                                   warnings=cast(list[ValidationWarning], warnings))
+        return DrsValidationReport(
+            project_id=self.project_id,
+            type=type,
+            expression=drs_expression,
+            mapping_used=mapping_used,
+            errors=cast(list[ValidationError], errors),
+            warnings=cast(list[ValidationWarning], warnings),
+        )
 
-    def _validate(self,
-                  drs_expression: str,
-                  specs: DrsSpecification) -> DrsValidationReport:
+    def _validate(self, drs_expression: str, specs: DrsSpecification) -> DrsValidationReport:
         terms, errors, warnings = self._parse(drs_expression, specs.separator, specs.type)
         if not terms:
-            return self._create_report(specs.type, drs_expression, errors, warnings)  # Early exit.
+            # Early exit.
+            return self._create_report(specs.type, drs_expression, errors, warnings)
         term_index = 0
         term_max_index = len(terms)
         part_index = 0
@@ -267,9 +271,9 @@ class DrsValidator(DrsApplication):
                 matching_code_mapping[part.__str__()] = 0
                 mapping_used[part.source_collection] = term
             elif part.is_required:
-                issue: ComplianceIssue = InvalidTerm(term=term,
-                                                     term_position=term_index+1,
-                                                     collection_id_or_constant_value=str(part))
+                issue: ComplianceIssue = InvalidTerm(
+                    term=term, term_position=term_index + 1, collection_id_or_constant_value=str(part)
+                )
                 errors.append(issue)
                 matching_code_mapping[part.__str__()] = 1
                 term_index += 1
@@ -289,7 +293,7 @@ class DrsValidator(DrsApplication):
         if part_index < part_max_index:  # Missing terms.
             for index in range(part_index, part_max_index):
                 part = specs.parts[index]
-                issue = MissingTerm(collection_id=str(part), collection_position=index+1)
+                issue = MissingTerm(collection_id=str(part), collection_position=index + 1)
                 if part.is_required:
                     errors.append(issue)
                 else:
@@ -299,8 +303,7 @@ class DrsValidator(DrsApplication):
             for index in range(term_index, term_max_index):
                 term = terms[index]
                 part = specs.parts[part_index]
-                if (not part.is_required) and \
-                    matching_code_mapping[part.__str__()] < 0: # noqa E125
+                if (not part.is_required) and matching_code_mapping[part.__str__()] < 0:  # noqa E125
                     issue = ExtraTerm(term=term, term_position=index, collection_id=str(part))
                 else:
                     issue = ExtraTerm(term=term, term_position=index, collection_id=None)

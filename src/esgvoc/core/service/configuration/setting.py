@@ -91,7 +91,7 @@ class ServiceSettings(BaseModel):
         return Path(dirs.user_data_path).expanduser().resolve()
 
     @classmethod
-    def _get_default_project_configs(cls) -> Dict[str, dict]:
+    def _get_default_project_configs(cls) -> dict[str, dict]:
         """Generate default project configurations with relative paths."""
         return {
             "cmip6": {
@@ -140,6 +140,14 @@ class ServiceSettings(BaseModel):
                 "branch": "esgvoc",
                 "local_path": "repos/CMIP7-CVs",
                 "db_path": "dbs/cmip7.sqlite",
+                "offline_mode": False,
+            },
+            "emd": {
+                "project_name": "emd",
+                "github_repo": "https://github.com/WCRP-CMIP/Essential-Model-Documentation",
+                "branch": "esgvoc",
+                "local_path": "repos/Essential-Model-Documentation",
+                "db_path": "dbs/emd.sqlite",
                 "offline_mode": False,
             },
         }

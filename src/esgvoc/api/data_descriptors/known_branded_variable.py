@@ -56,7 +56,6 @@ class KnownBrandedVariable(PlainTermDataDescriptor):
     branding_suffix_name: str = Field(description="Branding suffix, e.g., 'tavg-p19-hxy-air'")
 
     # Variable metadata
-    description: str = Field(description="Human-readable description")
     dimensions: List[str] = Field(description="NetCDF dimensions")
     cell_methods: str = Field(default="", description="CF cell_methods attribute")
     cell_measures: str = Field(default="", description="CF cell_measures attribute")
