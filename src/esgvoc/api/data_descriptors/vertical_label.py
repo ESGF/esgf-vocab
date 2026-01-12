@@ -1,19 +1,20 @@
+"""
+Model (i.e. schema/definition) of the vertical label data descriptor
+"""
+
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
 class VerticalLabel(PlainTermDataDescriptor):
     """
-    Vertical label.
+    Label that describes a specific vertical sampling approach
 
-    This label provides information about the vertical sampling of a given dataset.
-    For a list of allowed values, see
-    [TODO think about how to cross-reference to somewhere where people can look up the allowed values,
-    e.g. some summary of the values in https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc/vertical_label.]
+    Examples: "h2m", "200hPa", "p19"
 
-    This label is used as the vertical component of a branded variable's suffix
+    This is set to "u" ("unspecified") when the data has no vertical dimension.
+    For underlying details and logic, please see
+    [Taylor et al., 2025](https://docs.google.com/document/d/19jzecgymgiiEsTDzaaqeLP6pTvLT-NzCMaq-wu-QoOc/edit?pli=1&tab=t.0).
+
+    This label is used as the area component of a branded variable's suffix
     (see :py:class:`BrandedSuffix`).
-    By definition, the vertical label must be consistent with the branded suffix.
-    Vertical labels must not contain the separator used when constructing the branded suffix.
-    """
-
-    pass
+    """  # noqa: E501

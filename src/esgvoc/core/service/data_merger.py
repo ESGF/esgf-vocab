@@ -1,11 +1,11 @@
-from typing import Dict, List, Set
 import logging
+from typing import Dict, List, Set
 
 from esgvoc.core.data_handler import JsonLdResource
 from esgvoc.core.service.resolver_config import ResolverConfig
-from esgvoc.core.service.uri_resolver import URIResolver
 from esgvoc.core.service.string_heuristics import StringHeuristics
 from esgvoc.core.service.term_cache import TermCache
+from esgvoc.core.service.uri_resolver import URIResolver
 
 logger = logging.getLogger(__name__)
 
@@ -39,10 +39,10 @@ def merge_dicts(base: list, override: list) -> dict:
     base_data = base[0]
     override_data = override[0]
 
-    # Merge strategy: override first, then base (so base fills in missing fields)
+    # Merge strategy: base first (fills in defaults), then override (takes precedence)
     merged = {
-        **{k: v for k, v in override_data.items() if k != "@id"},
         **{k: v for k, v in base_data.items() if k != "@id"},
+        **{k: v for k, v in override_data.items() if k != "@id"},
     }
     return merged
 
@@ -119,6 +119,29 @@ class DataMerger:
         """Check if a given URI should be resolved based on allowed URIs."""
         return any(uri.startswith(base) for base in self.allowed_base_uris)
 
+    def _get_resolve_mode(self, key: str) -> str:
+        """
+        Get the resolve mode for a field from the context.
+
+        Args:
+            key: The field name to check
+
+        Returns:
+            "full" (default), "shallow", or "reference"
+        """
+        if not hasattr(self.data, "context"):
+            return "full"
+
+        context = self.data.context
+
+        # Check for esgvoc_resolve_modes at the root level (outside @context)
+        if isinstance(context, dict) and "esgvoc_resolve_modes" in context:
+            resolve_modes = context["esgvoc_resolve_modes"]
+            if isinstance(resolve_modes, dict) and key in resolve_modes:
+                return resolve_modes[key]
+
+        return "full"  # Default: full resolution
+
     def _get_next_id(self, data: dict, current_uri: str = None) -> str | None:
         """
         Extract the next @id from the data if it is a valid customization reference.
@@ -164,7 +187,7 @@ class DataMerger:
             next_id_local = self.uri_resolver.to_local_path(next_id)
 
             next_data_instance = JsonLdResource(uri=next_id_local)
-            merged_json_data = merge_dicts([current_json], [next_data_instance.json_dict])
+            merged_json_data = merge_dicts([next_data_instance.json_dict], [current_json])
 
             # Add the merged instance to the result list
             result_list.append(merged_json_data)
@@ -176,7 +199,13 @@ class DataMerger:
         return result_list
 
     def resolve_nested_ids(
-        self, data, expanded_data=None, visited: Set[str] = None, _is_root_call: bool = True
+        self,
+        data,
+        expanded_data=None,
+        visited: Set[str] = None,
+        _is_root_call: bool = True,
+        resolve_mode: str = "full",
+        _current_property: str | None = None,
     ) -> dict | list:
         """
         Recursively resolve all @id references in nested structures.
@@ -189,6 +218,11 @@ class DataMerger:
             expanded_data: The expanded JSON-LD version (with full URIs)
             visited: Set of URIs already visited to prevent circular references
             _is_root_call: Internal flag to detect the top-level call
+            resolve_mode: Resolution mode - "full", "shallow", or "reference"
+                         - "full": Resolve and recurse (default)
+                         - "shallow": Resolve but don't recurse into resolved object
+                         - "reference": Keep as string, validate it exists
+            _current_property: Internal tracking of which property is being resolved (for better error messages)
 
         Returns:
             The data structure with all @id references resolved
@@ -203,7 +237,8 @@ class DataMerger:
                 expanded_data = expanded_data[0]
 
         # Handle the case where expanded_data is a list with a single dict
-        if isinstance(expanded_data, list) and len(expanded_data) == 1:
+        # ONLY on the root call - not for nested list processing!
+        if _is_root_call and isinstance(expanded_data, list) and len(expanded_data) == 1:
             expanded_data = expanded_data[0]
 
         if isinstance(data, dict):
@@ -234,17 +269,27 @@ class DataMerger:
                     # Convert remote URI to local path
                     local_uri = self.uri_resolver.to_local_path(uri)
 
-                    # Fetch the referenced term (raw JSON)
-                    resolved = self._fetch_referenced_term(uri)
-
-                    # Create a temporary resource to get proper expansion for this term
-                    # Use the local path so it can find the context file
+                    # Create a temporary resource for the nested term
                     temp_resource = JsonLdResource(uri=local_uri)
+
+                    # Create a DataMerger for this nested term to get project+universe merge
+                    nested_merger = DataMerger(
+                        data=temp_resource,
+                        allowed_base_uris=self.allowed_base_uris,
+                        locally_available=self.locally_available,
+                        config=self.config,
+                    )
+
+                    # Get the merged project+universe data
+                    merge_results = nested_merger.merge_linked_json()
+                    resolved = merge_results[-1]  # Final merged result
+
+                    # Get proper expansion for the merged term
                     temp_expanded = temp_resource.expanded
                     if isinstance(temp_expanded, list) and len(temp_expanded) > 0:
                         temp_expanded = temp_expanded[0]
 
-                    # Recursively resolve any nested references in the resolved data
+                    # Recursively resolve any nested references in the merged data
                     # Pass the expanded data for this specific term
                     return self.resolve_nested_ids(resolved, temp_expanded, new_visited, _is_root_call=False)
 
@@ -269,12 +314,50 @@ class DataMerger:
                         # Try to find the key in expanded data
                         # It might be under a full URI
                         for exp_key in expanded_data.keys():
-                            if exp_key.endswith("/" + key) or exp_key.endswith("#" + key) or exp_key == key:
+                            # Check for exact match or if the URI contains the key
+                            # URIs may have trailing slashes: https://.../activity/
+                            if (
+                                exp_key == key
+                                or exp_key.endswith("/" + key)
+                                or exp_key.endswith("/" + key + "/")
+                                or exp_key.endswith("#" + key)
+                            ):
                                 expanded_key = exp_key
                                 break
 
+                        # If not found, check the context to see if this key has a different @id
+                        # (e.g., required_model_components has @id of source_type/)
+                        if expanded_key == key and hasattr(self.data, "context"):
+                            context = self.data.context
+                            if isinstance(context, dict) and "@context" in context:
+                                context = context["@context"]
+                            if isinstance(context, dict) and key in context:
+                                term_def = context[key]
+                                if isinstance(term_def, dict) and "@id" in term_def:
+                                    # The @id value should match a key in expanded_data
+                                    id_value = term_def["@id"]
+                                    # Try with and without trailing slash
+                                    if id_value in expanded_data:
+                                        expanded_key = id_value
+                                    elif id_value.rstrip("/") + "/" in expanded_data:
+                                        expanded_key = id_value.rstrip("/") + "/"
+                                    elif id_value.rstrip("/") in expanded_data:
+                                        expanded_key = id_value.rstrip("/")
+
                 expanded_value = expanded_data.get(expanded_key) if isinstance(expanded_data, dict) else None
-                result[key] = self.resolve_nested_ids(value, expanded_value, visited, _is_root_call=False)
+
+                # Check if this field has a @resolve mode in the context
+                field_resolve_mode = self._get_resolve_mode(key)
+
+                resolved = self.resolve_nested_ids(
+                    value,
+                    expanded_value,
+                    visited,
+                    _is_root_call=False,
+                    resolve_mode=field_resolve_mode,
+                    _current_property=key,
+                )
+                result[key] = resolved
             return result
 
         elif isinstance(data, list) and isinstance(expanded_data, list):
@@ -282,20 +365,47 @@ class DataMerger:
             result = []
             for i, item in enumerate(data):
                 expanded_item = expanded_data[i] if i < len(expanded_data) else None
-                # Pass visited set to prevent circular references across list items
-                result.append(self.resolve_nested_ids(item, expanded_item, visited, _is_root_call=False))
+                # Pass visited set and resolve_mode to prevent circular references across list items
+                resolved_item = self.resolve_nested_ids(
+                    item,
+                    expanded_item,
+                    visited,
+                    _is_root_call=False,
+                    resolve_mode=resolve_mode,
+                    _current_property=_current_property,
+                )
+                result.append(resolved_item)
             return result
 
         elif isinstance(data, list):
             # List but no corresponding expanded list, process without expanded data
             # Each list item gets its own visited set
-            return [self.resolve_nested_ids(item, None, set(), _is_root_call=False) for item in data]
+            return [
+                self.resolve_nested_ids(
+                    item,
+                    None,
+                    set(),
+                    _is_root_call=False,
+                    resolve_mode=resolve_mode,
+                    _current_property=_current_property,
+                )
+                for item in data
+            ]
 
         else:
             # Primitive values - but check if they're ID references
             # If the compact form is a string but expanded form is {"@id": "..."},
             # it's an ID reference that needs resolving
+
+            # JSON-LD expansion often wraps values in arrays, unwrap single-element arrays
+            if isinstance(expanded_data, list) and len(expanded_data) == 1:
+                expanded_data = expanded_data[0]
+
             if isinstance(data, str) and isinstance(expanded_data, dict):
+                # Skip empty or whitespace-only strings
+                if not data or not data.strip():
+                    return data
+
                 # Skip if it's a @value (literal string, not a reference)
                 if self.string_heuristics.should_skip_literal(expanded_data):
                     return data
@@ -304,6 +414,17 @@ class DataMerger:
                     return data
 
                 uri = expanded_data["@id"]
+
+                # Check resolve_mode FIRST before any expensive operations
+                if resolve_mode == "reference":
+                    # "reference" mode: just validate the ID exists, keep as string
+                    uri_to_check = self.uri_resolver.ensure_json_extension(uri)
+                    if not self.uri_resolver.exists(uri_to_check):
+                        property_msg = f" in property '{_current_property}'" if _current_property else ""
+                        logger.warning(
+                            f"Reference validation failed: ID '{data}' does not exist at {uri_to_check}{property_msg}"
+                        )
+                    return data  # Keep as string regardless
 
                 # Use string heuristics to determine if this should be resolved
                 if not self.string_heuristics.is_resolvable(data):
@@ -338,9 +459,28 @@ class DataMerger:
 
                     # Check if file exists - if not, it's probably not a resolvable reference
                     if not self.uri_resolver.exists(uri):
+                        property_msg = f"  Property: '{_current_property}'\n" if _current_property else ""
+                        logger.warning(
+                            f"Cannot resolve ID reference: File not found\n"
+                            f"  Current term: {self.data.uri}\n"
+                            f"{property_msg}"
+                            f"  String value: '{data}'\n"
+                            f"  Expected URI: {uri}\n"
+                            f"  Local path tried: {local_uri}\n"
+                            f"  → Keeping as unresolved string"
+                        )
                         return data
                 except (OSError, IOError) as e:
-                    logger.debug(f"Error checking existence of {uri}: {e}")
+                    property_msg = f"  Property: '{_current_property}'\n" if _current_property else ""
+                    logger.warning(
+                        f"Cannot resolve ID reference: Error checking file existence\n"
+                        f"  Current term: {self.data.uri}\n"
+                        f"{property_msg}"
+                        f"  String value: '{data}'\n"
+                        f"  Expected URI: {uri}\n"
+                        f"  Error: {e}\n"
+                        f"  → Keeping as unresolved string"
+                    )
                     return data
 
                 # Add to visited for this branch only
@@ -348,20 +488,56 @@ class DataMerger:
                 new_visited.add(uri)
 
                 try:
-                    # Fetch the referenced term
-                    resolved = self._fetch_referenced_term(uri)
-
-                    # Create a temporary resource to get proper expansion for this term
+                    # Create a temporary resource for the nested term
                     temp_resource = JsonLdResource(uri=local_uri)
+
+                    # Create a DataMerger for this nested term to get project+universe merge
+                    nested_merger = DataMerger(
+                        data=temp_resource,
+                        allowed_base_uris=self.allowed_base_uris,
+                        locally_available=self.locally_available,
+                        config=self.config,
+                    )
+
+                    # Get the merged project+universe data
+                    merge_results = nested_merger.merge_linked_json()
+                    resolved = merge_results[-1]  # Final merged result
+
+                    logger.info(
+                        f"Successfully resolved ID reference\n"
+                        f"  Current term: {self.data.uri}\n"
+                        f"  String value: '{data}'\n"
+                        f"  Resolved to: {uri}\n"
+                        f"  Mode: {resolve_mode}\n"
+                        f"  → Replacing with {'shallow' if resolve_mode == 'shallow' else 'full'} object"
+                    )
+
+                    # Get proper expansion for the merged term
                     temp_expanded = temp_resource.expanded
                     if isinstance(temp_expanded, list) and len(temp_expanded) > 0:
                         temp_expanded = temp_expanded[0]
 
-                    # Recursively resolve any nested references in the resolved data
-                    return self.resolve_nested_ids(resolved, temp_expanded, new_visited, _is_root_call=False)
+                    # Handle resolution based on mode
+                    if resolve_mode == "shallow":
+                        # "shallow" mode: return the merged object but DON'T resolve its nested IDs
+                        return resolved
+                    else:  # "full"
+                        # "full" mode: recursively resolve any nested references in the merged data
+                        return nested_merger.resolve_nested_ids(
+                            resolved, temp_expanded, new_visited, _is_root_call=False, resolve_mode="full"
+                        )
 
                 except Exception as e:
-                    logger.debug(f"Could not resolve string reference {data} -> {uri}: {e}")
+                    property_msg = f"  Property: '{_current_property}'\n" if _current_property else ""
+                    logger.warning(
+                        f"Cannot resolve ID reference: Exception during resolution\n"
+                        f"  Current term: {self.data.uri}\n"
+                        f"{property_msg}"
+                        f"  String value: '{data}'\n"
+                        f"  Expected URI: {uri}\n"
+                        f"  Error: {e}\n"
+                        f"  → Keeping as unresolved string"
+                    )
                     return data
 
             # Regular primitive values are returned as-is
@@ -389,9 +565,9 @@ class DataMerger:
         # Determine the base path for context
         if context_base_path is None:
             # Try to infer from locally_available - use first available path
-            # Preferring the CMIP tables path for backward compatibility
-            if "https://espri-mod.github.io/mip-cmor-tables" in self.locally_available:
-                context_base_path = self.locally_available["https://espri-mod.github.io/mip-cmor-tables"]
+            # Preferring the universe path
+            if "https://esgvoc.ipsl.fr/resource/universe" in self.locally_available:
+                context_base_path = self.locally_available["https://esgvoc.ipsl.fr/resource/universe"]
             elif self.locally_available:
                 # Use first available local path
                 context_base_path = next(iter(self.locally_available.values()))
@@ -423,84 +599,19 @@ class DataMerger:
             if isinstance(merged_expanded, list) and len(merged_expanded) > 0:
                 merged_expanded = merged_expanded[0]
 
-            # Resolve with correct expansion
-            return self.resolve_nested_ids(merged_data, expanded_data=merged_expanded)
+            # Temporarily update self.data to use merged resource's context
+            # so that _get_resolve_mode() uses the correct esgvoc_resolve_modes
+            original_data = self.data
+            self.data = merged_resource
+
+            try:
+                # Resolve with correct expansion and context
+                return self.resolve_nested_ids(merged_data, expanded_data=merged_expanded)
+            finally:
+                # Restore original data
+                self.data = original_data
         finally:
             Path(tmp_path).unlink()
-
-    def _fetch_referenced_term(self, uri: str) -> dict:
-        """
-        Fetch a term from URI and return its data.
-
-        This method:
-        1. Checks the cache first
-        2. Tries the direct local path
-        3. Tries alternate directories (for grid files)
-        4. Falls back to remote fetch if needed
-
-        IMPORTANT: This method reads the JSON file directly without creating
-        a JsonLdResource to avoid triggering expansion which could cause
-        infinite recursion during nested ID resolution.
-
-        Args:
-            uri: The URI of the term to fetch
-
-        Returns:
-            The term data as a dictionary
-
-        Raises:
-            FileNotFoundError: If the term cannot be found locally or remotely
-        """
-        import os
-        import json
-        from pathlib import Path
-
-        # Check cache first
-        cached = self.term_cache.get(uri)
-        if cached is not None:
-            return cached
-
-        # Convert to local path
-        resolved_uri = self.uri_resolver.to_local_path(uri)
-
-        # Try to read the file directly
-        if os.path.exists(resolved_uri):
-            with open(resolved_uri, "r") as f:
-                data = json.load(f)
-                self.term_cache.put(uri, data)
-                return data
-
-        # File doesn't exist at the expanded path
-        # Try to find it in other data descriptor directories
-        filename = self.uri_resolver.get_filename(resolved_uri)
-        parts = Path(resolved_uri).parts
-        if len(parts) >= self.config.min_path_parts:
-            base_dir = Path(*parts[:-2])  # Remove data_descriptor and filename
-
-            # Try common data descriptor directories for grids
-            for alt_dir in self.config.fallback_dirs:
-                alt_path = base_dir / alt_dir / filename
-                if os.path.exists(alt_path):
-                    with open(alt_path, "r") as f:
-                        data = json.load(f)
-                        self.term_cache.put(uri, data)
-                        return data
-
-        # Last resort: try to fetch remotely
-        try:
-            import requests
-
-            response = requests.get(uri, headers={"accept": "application/json"}, verify=self.config.verify_ssl)
-            if response.status_code == 200:
-                data = response.json()
-                self.term_cache.put(uri, data)
-                return data
-            else:
-                raise FileNotFoundError(f"Could not find term at {uri}. HTTP status: {response.status_code}")
-        except Exception as e:
-            raise FileNotFoundError(
-                f"Could not find or fetch term at {uri}. Tried local path: {resolved_uri}. Error: {e}"
-            ) from e
 
 
 if __name__ == "__main__":

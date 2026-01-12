@@ -1,4 +1,5 @@
 import logging
+import traceback
 from pathlib import Path
 
 from sqlalchemy import text
@@ -15,7 +16,6 @@ from esgvoc.core.exceptions import EsgvocDbError
 from esgvoc.core.service.data_merger import DataMerger
 
 _LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 
 def infer_term_kind(json_specs: dict) -> TermKind:
@@ -102,17 +102,21 @@ def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnecti
             if term_file_path.is_file() and term_file_path.suffix == ".json":
                 try:
                     locally_available = {
-                        "https://espri-mod.github.io/mip-cmor-tables": service.current_state.universe.local_path
+                        "https://esgvoc.ipsl.fr/resource/universe": service.current_state.universe.local_path
                     }
 
                     merger = DataMerger(
                         data=JsonLdResource(uri=str(term_file_path)),
                         locally_available=locally_available,
-                        allowed_base_uris={"https://espri-mod.github.io/mip-cmor-tables"},
+                        allowed_base_uris={"https://esgvoc.ipsl.fr/resource/universe"},
                     )
                     merged_data = merger.merge_linked_json()[-1]
                     # Resolve all nested @id references to full objects
-                    json_specs = merger.resolve_nested_ids(merged_data)
+                    # Use resolve_merged_ids to properly handle merged data with correct context
+                    json_specs = merger.resolve_merged_ids(
+                        merged_data,
+                        context_base_path=service.current_state.universe.local_path
+                    )
 
                     term_kind = infer_term_kind(json_specs)
                     term_id = json_specs["id"]
@@ -120,9 +124,13 @@ def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnecti
                     if term_kind_dd is None:
                         term_kind_dd = term_kind
                 except Exception as e:
-                    _LOGGER.warning(
-                        f"Unable to read term {term_file_path} for data descriptor "
-                        + f"{data_descriptor_path}. Skip.\n{str(e)}"
+                    _LOGGER.error(
+                        f"❌ UNIVERSE INGESTION FAILURE - Term skipped\n"
+                        f"   File: {term_file_path}\n"
+                        f"   Descriptor: {data_descriptor_id}\n"
+                        f"   Error Type: {type(e).__name__}\n"
+                        f"   Error Message: {str(e)}\n"
+                        f"   Full Traceback:\n{traceback.format_exc()}"
                     )
                     continue
                 if term_id and json_specs and data_descriptor and term_kind:
