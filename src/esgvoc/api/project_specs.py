@@ -71,8 +71,9 @@ class CatalogProperty(BaseModel):
     A dataset property described in a catalog.
     """
 
-    source_collection: str
-    "The project collection that originated the property."
+    source_collection: str | None
+    "The project collection that originated the property. `None` value means that the property "
+    "is not related to any collection of the project. So the property has limited specifications."
     catalog_field_value_type: str
     "The type of the field value."
     is_required: bool
@@ -130,7 +131,9 @@ class ProjectSpecs(BaseModel):
     """The project id."""
     description: str
     """The description of the project."""
-    drs_specs: dict[DrsType, DrsSpecification]
+    version: str
+    """The git_hash used as the version"""
+    drs_specs: dict[DrsType, DrsSpecification] | None = None
     """The DRS specifications of the project (directory, file name and dataset id)."""
     # TODO: release = None when all projects have catalog_specs.yaml.
     catalog_specs: CatalogSpecification | None = None

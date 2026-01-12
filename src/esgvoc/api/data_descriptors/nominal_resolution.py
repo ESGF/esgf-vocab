@@ -2,7 +2,7 @@
 Model (i.e. schema/definition) of the nominal resolution data descriptor
 """
 
-from pydantic import validator
+from pydantic import field_validator
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
@@ -35,7 +35,8 @@ class NominalResolution(PlainTermDataDescriptor):
     Units of the nominal resolution and range
     """
 
-    @validator("range")
+    @field_validator("range")
+    @classmethod
     def validate_range(cls, v):
         """Validate that range has exactly 2 values and min <= max."""
         if len(v) != 2:

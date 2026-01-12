@@ -1,19 +1,39 @@
 import json
+from string import Template
 
 from jsonschema import validate
 
+from esgvoc.api import projects
 from esgvoc.apps.jsg import json_schema_generator as jsg
 from tests.api_inputs import project_id  # noqa: F401
 
-json_example = json.loads(
+_COMPLIANCE_PROJECT_TESTED = 'cmip6'
+
+project_specs_being_tested = projects.get_project(_COMPLIANCE_PROJECT_TESTED)
+
+if project_specs_being_tested is not None and \
+   project_specs_being_tested.catalog_specs is not None:
+  project_version = project_specs_being_tested.catalog_specs.version
+  project_extensions = project_specs_being_tested.catalog_specs.catalog_properties.extensions
+  extension_url_template = project_specs_being_tested.catalog_specs.catalog_properties.url_template
+  extension_urls = list()
+  for project_extension in project_extensions:
+     extension_url = extension_url_template.format(extension_name=project_extension.name,
+                                                   extension_version=project_extension.version)
+     extension_urls.append(extension_url)
+  extension_url = extension_url_template.format(extension_name=_COMPLIANCE_PROJECT_TESTED,
+                                                extension_version=project_version)
+  extension_urls.append(extension_url)
+else:
+   raise RuntimeError('unable to compute extension URL')
+
+
+json_template = Template(
 """
 {
   "type": "Feature",
   "stac_version": "1.1.0",
-  "stac_extensions": [
-    "https://stac-extensions.github.io/cmip6/v3.0.0/schema.json",
-    "https://stac-extensions.github.io/file/v2.1.0/schema.json"
-  ],
+  "stac_extensions": $extension_urls,
   "id": "CMIP6.ScenarioMIP.THU.CIESM.ssp585.r1i1p1f1.Amon.rsus.gr.v20200806",
   "collection": "CMIP6",
   "geometry": {
@@ -71,21 +91,21 @@ json_example = json.loads(
     "cmip6:data_specs_version": "01.00.29",
     "cmip6:experiment": "CMIP6 historical (CO2 emission-driven)",
     "cmip6:experiment_id": "ssp585",
-    "cmip6:forcing_index": 1,
+    "cmip6:forcing_index": "1",
     "cmip6:frequency": "mon",
     "cmip6:further_info_url": "https://furtherinfo.es-doc.org/CMIP6.THU.CIESM.ssp585.none.r1i1p1f1",
     "cmip6:grid": "zonal mean data reported on a model's native latitude grid",
     "cmip6:grid_label": "gr",
-    "cmip6:initialization_index": 1,
+    "cmip6:initialization_index": "1",
     "cmip6:institution": "National Taiwan University, Taipei 10650, Taiwan",
     "cmip6:institution_id": "THU",
     "cmip6:license": "CC-BY-4.0",
     "cmip6:member_id": "s1989-r1i1p1f1",
     "cmip6:nominal_resolution": "100 km",
-    "cmip6:physics_index": 1,
+    "cmip6:physics_index": "1",
     "cmip6:pid": "hdl:21.14100/7a8097a5-3ebb-4491-8640-01843dbdecd2",
     "cmip6:product": "model-output",
-    "cmip6:realization_index": 1,
+    "cmip6:realization_index": "1",
     "cmip6:realm": [
       "atmos"
     ],
@@ -159,10 +179,12 @@ json_example = json.loads(
   }
 }
 """)
+str_extension_urls = "[" + ", ".join(f'"{url}"' for url in extension_urls) + "]"
+json_example = json.loads(json_template.substitute(extension_urls=str_extension_urls))
 
 
 def test_cmip6_compliance() -> None:
-    json_schema = jsg.generate_json_schema('cmip6')
+    json_schema = jsg.generate_json_schema(_COMPLIANCE_PROJECT_TESTED)
     validate(instance=json_example, schema=json_schema)
 
 

@@ -1,4 +1,5 @@
 import logging
+import traceback
 from pathlib import Path
 
 from sqlalchemy import text
@@ -123,9 +124,13 @@ def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnecti
                     if term_kind_dd is None:
                         term_kind_dd = term_kind
                 except Exception as e:
-                    _LOGGER.warning(
-                        f"Unable to read term {term_file_path} for data descriptor "
-                        + f"{data_descriptor_path}. Skip.\n{str(e)}"
+                    _LOGGER.error(
+                        f"❌ UNIVERSE INGESTION FAILURE - Term skipped\n"
+                        f"   File: {term_file_path}\n"
+                        f"   Descriptor: {data_descriptor_id}\n"
+                        f"   Error Type: {type(e).__name__}\n"
+                        f"   Error Message: {str(e)}\n"
+                        f"   Full Traceback:\n{traceback.format_exc()}"
                     )
                     continue
                 if term_id and json_specs and data_descriptor and term_kind:

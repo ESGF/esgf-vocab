@@ -31,6 +31,8 @@ app.add_typer(test_cv_app, name="test")
 app.add_typer(find_app)
 app.add_typer(cmor_app)
 
+# maybe remove during a future refactor
+
 
 @app.command()
 def list_projects():

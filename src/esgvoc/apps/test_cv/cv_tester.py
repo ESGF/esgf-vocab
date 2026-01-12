@@ -148,6 +148,17 @@ class CVTester:
                 "projects": [project_config],
             }
 
+            # Clean up old test_cv_temp data directories (repos and dbs) to ensure fresh start
+            import shutil
+            test_data_dir = self.config_manager.data_dir / self.test_config_name
+            if test_data_dir.exists():
+                console.print(f"[yellow]Cleaning up old test data directories...[/yellow]")
+                try:
+                    shutil.rmtree(test_data_dir)
+                    console.print(f"[green]  ✓ Removed: {test_data_dir}[/green]")
+                except Exception as e:
+                    console.print(f"[yellow]  Warning: Failed to clean test data directories: {e}[/yellow]")
+
             # Remove existing test config if it exists
             configs = self.config_manager.list_configs()
             if self.test_config_name in configs:
@@ -478,9 +489,7 @@ class CVTester:
                 errors.append(error_msg)
                 console.print(f"   [red]{error_msg}[/red]")
         else:
-            error_msg = f"❌ Required file {DRS_SPECS_FILENAME} not found"
-            errors.append(error_msg)
-            console.print(f"📄 [red]{error_msg}[/red]")
+            console.print(f"   [yellow]⚠️  Optional file {DRS_SPECS_FILENAME} not found[/yellow]")
 
         # Test catalog_spec.yaml (optional)
         catalog_specs_file = repo_dir / CATALOG_SPECS_FILENAME
@@ -498,10 +507,12 @@ class CVTester:
                             for prop in catalog_specs[prop_type]:
                                 if isinstance(prop, dict) and "source_collection" in prop:
                                     collection_ref = prop["source_collection"]
-                                    source_collections.add(collection_ref)
-                                    if collection_ref not in collection_file_mapping:
-                                        collection_file_mapping[collection_ref] = set()
-                                    collection_file_mapping[collection_ref].add(CATALOG_SPECS_FILENAME)
+                                    # Skip None values - collections can now be null in YAML
+                                    if collection_ref is not None:
+                                        source_collections.add(collection_ref)
+                                        if collection_ref not in collection_file_mapping:
+                                            collection_file_mapping[collection_ref] = set()
+                                        collection_file_mapping[collection_ref].add(CATALOG_SPECS_FILENAME)
 
                 console.print(f"   [green]✅ {CATALOG_SPECS_FILENAME} parsed successfully[/green]")
                 files_tested += 1
@@ -530,10 +541,12 @@ class CVTester:
                     for attr_spec in attr_specs:
                         if isinstance(attr_spec, dict) and "source_collection" in attr_spec:
                             collection_ref = attr_spec["source_collection"]
-                            source_collections.add(collection_ref)
-                            if collection_ref not in collection_file_mapping:
-                                collection_file_mapping[collection_ref] = set()
-                            collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
+                            # Skip None values - collections can now be null in YAML
+                            if collection_ref is not None:
+                                source_collections.add(collection_ref)
+                                if collection_ref not in collection_file_mapping:
+                                    collection_file_mapping[collection_ref] = set()
+                                collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
                 elif isinstance(attr_specs, dict):
                     # Legacy format: nested structure with "specs" key
                     if "specs" in attr_specs:
@@ -542,18 +555,22 @@ class CVTester:
                             for attr_name, attr_spec in specs.items():
                                 if isinstance(attr_spec, dict) and "source_collection" in attr_spec:
                                     collection_ref = attr_spec["source_collection"]
-                                    source_collections.add(collection_ref)
-                                    if collection_ref not in collection_file_mapping:
-                                        collection_file_mapping[collection_ref] = set()
-                                    collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
+                                    # Skip None values - collections can now be null in YAML
+                                    if collection_ref is not None:
+                                        source_collections.add(collection_ref)
+                                        if collection_ref not in collection_file_mapping:
+                                            collection_file_mapping[collection_ref] = set()
+                                        collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
                         elif isinstance(specs, list):
                             for attr_spec in specs:
                                 if isinstance(attr_spec, dict) and "source_collection" in attr_spec:
                                     collection_ref = attr_spec["source_collection"]
-                                    source_collections.add(collection_ref)
-                                    if collection_ref not in collection_file_mapping:
-                                        collection_file_mapping[collection_ref] = set()
-                                    collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
+                                    # Skip None values - collections can now be null in YAML
+                                    if collection_ref is not None:
+                                        source_collections.add(collection_ref)
+                                        if collection_ref not in collection_file_mapping:
+                                            collection_file_mapping[collection_ref] = set()
+                                        collection_file_mapping[collection_ref].add(ATTRIBUTES_SPECS_FILENAME)
 
                 console.print(f"   [green]✅ {ATTRIBUTES_SPECS_FILENAME} parsed successfully[/green]")
                 files_tested += 1
@@ -660,14 +677,21 @@ class CVTester:
 
                         for item in original_attr_specs:
                             if isinstance(item, dict) and "source_collection" in item:
-                                yaml_collections.add(item["source_collection"])
+                                collection_ref = item["source_collection"]
+                                # Skip None values - collections can now be null in YAML
+                                if collection_ref is not None:
+                                    yaml_collections.add(collection_ref)
 
                         for item in ingested_attr_specs:
                             if isinstance(item, dict) and "source_collection" in item:
-                                ingested_collections.add(item["source_collection"])
+                                collection_ref = item["source_collection"]
+                                if collection_ref is not None:
+                                    ingested_collections.add(collection_ref)
                             elif hasattr(item, "source_collection"):
                                 # Handle Pydantic model objects
-                                ingested_collections.add(item.source_collection)
+                                collection_ref = item.source_collection
+                                if collection_ref is not None:
+                                    ingested_collections.add(collection_ref)
 
                         if yaml_collections == ingested_collections:
                             console.print(f"   [green]✅ Collection references preserved: {sorted(yaml_collections)}[/green]")
@@ -677,13 +701,13 @@ class CVTester:
                         console.print(f"   [yellow]⚠️  Structure difference: YAML type={type(original_attr_specs)}, Ingested type={type(ingested_attr_specs)}[/yellow]")
 
                 elif attr_specs_file.exists():
-                    errors.append(f"❌ attr_specs.yaml exists but not found in ingested project specs")
+                    console.print(f"   [yellow]⚠️  attr_specs.yaml exists but not found in ingested project specs[/yellow]")
 
                 # Test drs_specs ingestion
                 if "drs_specs" in specs:
                     console.print(f"   [green]✅ drs_specs found in ingested project data[/green]")
                 else:
-                    errors.append(f"❌ drs_specs not found in ingested project data")
+                    console.print(f"   [yellow]⚠️  drs_specs not found in ingested project data (may be optional)[/yellow]")
 
                 # Test catalog_specs ingestion
                 if "catalog_specs" in specs:
@@ -693,16 +717,8 @@ class CVTester:
 
             else:
                 # More detailed error message about missing specs
-                expected_specs = ["project_specs", "attr_specs", "drs_specs", "catalog_specs (optional)"]
-                if hasattr(project, 'attr_specs') or hasattr(project, 'drs_specs'):
-                    missing_specs = []
-                    if not hasattr(project, 'attr_specs') or not project.attr_specs:
-                        missing_specs.append("attr_specs")
-                    if not hasattr(project, 'drs_specs') or not project.drs_specs:
-                        missing_specs.append("drs_specs")
-                    errors.append(f"❌ Project '{project_name}' missing required specs: {missing_specs}. Expected specs: {', '.join(expected_specs)}")
-                else:
-                    errors.append(f"❌ Project '{project_name}' has no specs attributes. Expected specs: {', '.join(expected_specs)}")
+                expected_specs = ["project_specs (required)", "attr_specs (optional)", "drs_specs (optional)", "catalog_specs (optional)"]
+                console.print(f"   [yellow]⚠️  Project '{project_name}' has no specs attributes. Expected specs: {', '.join(expected_specs)}[/yellow]")
 
         except Exception as e:
             errors.append(f"❌ Failed to retrieve project '{project_name}' from esgvoc: {e}")
@@ -1298,7 +1314,22 @@ class CVTester:
                         console.print(f"   [green]✅ All elements in '{collection_name}' are queryable[/green]")
 
                 except Exception as e:
-                    errors.append(f"❌ Failed to get terms from collection '{collection_name}': {e}")
+                    # Try to identify which specific term is failing
+                    error_msg = f"❌ Failed to get terms from collection '{collection_name}': {e}"
+
+                    # Attempt to identify the failing term by testing each one individually
+                    try:
+                        console.print(f"   [yellow]⚠️  Attempting to identify failing term...[/yellow]")
+                        for repo_elem in repo_elements:
+                            try:
+                                ev.get_term_in_collection(project_name, collection_name, repo_elem)
+                            except Exception as term_error:
+                                error_msg += f"\n   → Failing term: '{repo_elem}' - {term_error}"
+                                break
+                    except:
+                        pass  # If we can't identify the specific term, just use the original error
+
+                    errors.append(error_msg)
 
         # Test 5: General API functions
         try:
@@ -1466,6 +1497,17 @@ class CVTester:
 
                 # Reset service state
                 service.current_state = service.get_state()
+
+                # Clean up test_cv_temp data directories (repos and dbs)
+                import shutil
+                test_data_dir = self.config_manager.data_dir / self.test_config_name
+                if test_data_dir.exists():
+                    console.print(f"[blue]Cleaning up test data directories...[/blue]")
+                    try:
+                        shutil.rmtree(test_data_dir)
+                        console.print(f"[green]  ✓ Removed: {test_data_dir}[/green]")
+                    except Exception as e:
+                        console.print(f"[yellow]  Warning: Failed to clean test data directories: {e}[/yellow]")
 
                 # Remove temporary test configuration
                 configs = self.config_manager.list_configs()

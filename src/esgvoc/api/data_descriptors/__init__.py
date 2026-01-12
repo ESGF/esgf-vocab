@@ -1,21 +1,26 @@
+from esgvoc.api.data_descriptors.EMD_models.horizontal_computational_grid import HorizontalComputationalGrid
+from esgvoc.api.data_descriptors.EMD_models.horizontal_grid_cells import HorizontalGridCells
+from esgvoc.api.data_descriptors.EMD_models.horizontal_subgrid import HorizontalSubgrid
+from esgvoc.api.data_descriptors.EMD_models.horizontal_units import HorizontalUnits
+from esgvoc.api.data_descriptors.EMD_models.vertical_computational_grid import VerticalComputationalGrid
+from esgvoc.api.data_descriptors.EMD_models.vertical_coordinate import VerticalCoordinate
+from esgvoc.api.data_descriptors.model_component import ModelComponent
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
 from esgvoc.api.data_descriptors.variable import Variable
-from esgvoc.api.data_descriptors.unit_new import Unit
 from esgvoc.api.data_descriptors.tracking_id import TrackingId
 from esgvoc.api.data_descriptors.title import Title
 from esgvoc.api.data_descriptors.time_range import TimeRange
-from esgvoc.api.data_descriptors.temporal_refinement_new import TemporalRefinement
 from esgvoc.api.data_descriptors.temporal_label import TemporalLabel
 from esgvoc.api.data_descriptors.table import Table
 from esgvoc.api.data_descriptors.sub_experiment import SubExperiment
 from esgvoc.api.data_descriptors.source_type import SourceType
 from esgvoc.api.data_descriptors.source import Source
-from esgvoc.api.data_descriptors.resolution_new import EMDResolution
+from esgvoc.api.data_descriptors.EMD_models.resolution import EMDResolution
 from esgvoc.api.data_descriptors.resolution import Resolution
 from esgvoc.api.data_descriptors.region import Region
 from esgvoc.api.data_descriptors.regex import Regex
-from esgvoc.api.data_descriptors.reference_new import Reference
+from esgvoc.api.data_descriptors.EMD_models.reference import Reference
 from esgvoc.api.data_descriptors.realm import Realm
 from esgvoc.api.data_descriptors.realization_index import RealizationIndex
 from esgvoc.api.data_descriptors.publication_status import PublicationStatus
@@ -24,12 +29,12 @@ from esgvoc.api.data_descriptors.physics_index import PhysicsIndex
 from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.obs_type import ObsType
 from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
-from esgvoc.api.data_descriptors.native_vertical_grid_new import NativeVerticalGrid
-from esgvoc.api.data_descriptors.native_horizontal_grid_new import NativeHorizontalGrid
+
 from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
-from esgvoc.api.data_descriptors.model_new import Model
-from esgvoc.api.data_descriptors.model_component_new import EMDModelComponent
-from esgvoc.api.data_descriptors.model_component import ModelComponent
+from esgvoc.api.data_descriptors.EMD_models.model import Model
+from esgvoc.api.data_descriptors.EMD_models.model_component import EMDModelComponent
+
+# from esgvoc.api.data_descriptors.model_component import ModelComponent
 from esgvoc.api.data_descriptors.mip_era import MipEra
 from esgvoc.api.data_descriptors.member_id import MemberId
 from esgvoc.api.data_descriptors.license import License
@@ -37,19 +42,15 @@ from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVaria
 from esgvoc.api.data_descriptors.institution import Institution
 from esgvoc.api.data_descriptors.initialization_index import InitializationIndex
 from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
-from esgvoc.api.data_descriptors.horizontal_grid_mapping import HorizontalGridMapping
 from esgvoc.api.data_descriptors.activity import Activity
 from esgvoc.api.data_descriptors.archive import Archive
 from esgvoc.api.data_descriptors.area_label import AreaLabel
 from esgvoc.api.data_descriptors.branded_suffix import BrandedSuffix
 from esgvoc.api.data_descriptors.branded_variable import BrandedVariable
-from esgvoc.api.data_descriptors.calendar_new import Calendar
+from esgvoc.api.data_descriptors.EMD_models.calendar import Calendar
 from esgvoc.api.data_descriptors.citation_url import CitationUrl
-from esgvoc.api.data_descriptors.component_type_new import ComponentType
-from esgvoc.api.data_descriptors.consortium import Consortium
+from esgvoc.api.data_descriptors.EMD_models.component_type import ComponentType
 from esgvoc.api.data_descriptors.contact import Contact
-from esgvoc.api.data_descriptors.contributor import Contributor
-from esgvoc.api.data_descriptors.contributor_member import ContributorMember
 from esgvoc.api.data_descriptors.conventions import Convention
 from esgvoc.api.data_descriptors.creation_date import CreationDate
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
@@ -57,50 +58,35 @@ from esgvoc.api.data_descriptors.data_specs_version import DataSpecsVersion
 from esgvoc.api.data_descriptors.date import Date
 from esgvoc.api.data_descriptors.directory_date import DirectoryDate
 from esgvoc.api.data_descriptors.drs_specs import DRSSpecs
-
-# # Import new EMD CV models
-# from esgvoc.api.data_descriptors.EMD import (
-#     CellVariableType,
-#     GridType,
-#     HorizontalUnits,
-#     MeshLocation,
-#     TruncationMethod,
-#     VerticalUnits,
-# )
 from esgvoc.api.data_descriptors.experiment import Experiment
 from esgvoc.api.data_descriptors.forcing_index import ForcingIndex
 from esgvoc.api.data_descriptors.frequency import Frequency
 from esgvoc.api.data_descriptors.further_info_url import FurtherInfoUrl
 from esgvoc.api.data_descriptors.grid import Grid
-from esgvoc.api.data_descriptors.grid_arrangement_new import GridArrangement
-from esgvoc.api.data_descriptors.grid_coordinate_new import Coordinate
+from esgvoc.api.data_descriptors.EMD_models.coordinate import Coordinate
+from esgvoc.api.data_descriptors.EMD_models.arrangement import Arrangement
+from esgvoc.api.data_descriptors.EMD_models.cell_variable_type import CellVariableType
+from esgvoc.api.data_descriptors.EMD_models.grid_mapping import GridMapping
+from esgvoc.api.data_descriptors.EMD_models.grid_region import GridRegion
+from esgvoc.api.data_descriptors.EMD_models.grid_type import GridType
+from esgvoc.api.data_descriptors.EMD_models.temporal_refinement import TemporalRefinement
+from esgvoc.api.data_descriptors.EMD_models.truncation_method import TruncationMethod
+from esgvoc.api.data_descriptors.EMD_models.vertical_units import VerticalUnits
 
-# from esgvoc.api.data_descriptors.grid_label import GridLabel
-# from esgvoc.api.data_descriptors.grid_mapping_new import GridMapping
-from esgvoc.api.data_descriptors.horizontal_grid_arrangement import HorizontalGridArrangement
-from esgvoc.api.data_descriptors.horizontal_grid_cell_variable_type import HorizontalGridCellVariableType
-from esgvoc.api.data_descriptors.horizontal_grid_region import HorizontalGridRegion
-from esgvoc.api.data_descriptors.horizontal_grid_temporal_refinement import HorizontalGridTemporalRefinement
-from esgvoc.api.data_descriptors.horizontal_grid_truncation_method import HorizontalGridTruncationMethod
-from esgvoc.api.data_descriptors.horizontal_grid_type import HorizontalGridType
+from esgvoc.api.data_descriptors.activity import ActivityCMIP7
 
-# Model rebuilding to handle cross-links
-# Needs Experiment links made
-Activity.model_rebuild()
+ActivityCMIP7.model_rebuild()
 
 DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "PlainTermDDex": PlainTermDDex,
     "PatternTermDDex": PatternTermDDex,
     "CompositeTermDDex": CompositeTermDDex,
     "activity": Activity,
-    "consortium": Consortium,
     "date": Date,
     "directory_date": DirectoryDate,
     "experiment": Experiment,
     "forcing_index": ForcingIndex,
     "frequency": Frequency,
-    # "grid": GridLabel,  # Universe
-    # "grid_label": GridLabel,  # cmip6, cmip6plus
     "grid": Grid,
     "initialization_index": InitializationIndex,
     "institution": Institution,
@@ -128,31 +114,20 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "branded_variable": BrandedVariable,
     "publication_status": PublicationStatus,
     "known_branded_variable": KnownBrandedVariable,
-    "calendar_new": Calendar,
     "calendar": Calendar,
-    "component_type_new": ComponentType,
     "component_type": ComponentType,
-    "grid_arrangement_new": GridArrangement,
-    "grid_arrangement": GridArrangement,
-    "grid_coordinate_new": Coordinate,
+    "grid_arrangement": Arrangement,  # EMD v1.0
     "coordinate": Coordinate,
-    # "grid_mapping_new": GridMapping,
-    "model_component_new": EMDModelComponent,
-    "model_new": Model,
-    "native_horizontal_grid_new": NativeHorizontalGrid,
-    "horizontal_grid": NativeHorizontalGrid,
-    "native_vertical_grid_new": NativeVerticalGrid,
-    "vertical_grid": NativeVerticalGrid,
-    "reference_new": Reference,
-    "resolution_new": EMDResolution,
-    "unit_new": Unit,
-    "temporal_refinement": TemporalRefinement,
-    # "grid_type": GridType,
-    # "cell_variable_type": CellVariableType,
-    # "mesh_location": MeshLocation,
-    # "horizontal_units": HorizontalUnits,
-    # "truncation_method": TruncationMethod,
-    # "vertical_units": VerticalUnits,
+    "grid_mapping": GridMapping,  # EMD v1.0
+    "model_componentEMD": EMDModelComponent,  # EMD v1.0
+    "model": Model,  # EMD v1.0
+    "reference": Reference,  # EMD v1.0
+    # "resolution": EMDResolution,
+    "grid_type": GridType,  # EMD v1.0
+    "cell_variable_type": CellVariableType,  # EMD v1.0
+    "truncation_method": TruncationMethod,  # EMD v1.0
+    "vertical_units": VerticalUnits,  # EMD v1.0
+    "grid_region": GridRegion,  # EMD v1.0
     "data_specs_version": DataSpecsVersion,
     "further_info_url": FurtherInfoUrl,
     "tracking_id": TrackingId,
@@ -167,14 +142,18 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "citation_url": CitationUrl,
     "archive": Archive,
     "drs_specs": DRSSpecs,
-    "contributor": Contributor,
-    "contributor_member": ContributorMember,
     "nominal_resolution": NominalResolution,
-    "horizontal_grid_arrangement": HorizontalGridArrangement,
-    "horizontal_grid_cell_variable_type": HorizontalGridCellVariableType,
-    "horizontal_grid_mapping": HorizontalGridMapping,
-    "horizontal_grid_region": HorizontalGridRegion,
-    "horizontal_grid_temporal_refinement": HorizontalGridTemporalRefinement,
-    "horizontal_grid_truncation_method": HorizontalGridTruncationMethod,
-    "horizontal_grid_type": HorizontalGridType,
+    "grid_arrangement": Arrangement,  # EMD v1.0
+    "cell_variable_type": CellVariableType,  # EMD v1.0
+    "grid_mapping": GridMapping,  # EMD v1.0
+    "grid_region": GridRegion,  # EMD v1.0
+    "grid_temporal_refinement": TemporalRefinement,  # EMD v1.0
+    "truncation_method": TruncationMethod,  # EMD v1.0
+    "grid_type": GridType,  # EMD v1.0
+    "horizontal_units": HorizontalUnits,
+    "vertical_coordinate": VerticalCoordinate,
+    "horizontal_grid_cell": HorizontalGridCells,
+    "horizontal_computational_grid": HorizontalComputationalGrid,
+    "horizontal_subgrid": HorizontalSubgrid,
+    "vertical_computational_grid": VerticalComputationalGrid,
 }

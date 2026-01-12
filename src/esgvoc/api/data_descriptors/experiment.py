@@ -10,10 +10,12 @@ from typing import Union
 from pydantic import BeforeValidator, Field
 from typing_extensions import Annotated
 
+from esgvoc.api.data_descriptors.EMD_models.component_type import ComponentType
 from esgvoc.api.data_descriptors.activity import Activity
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.mip_era import MipEra
-from esgvoc.api.data_descriptors.model_component import ModelComponent
+
+# from esgvoc.api.data_descriptors.model_component import ModelComponent
 from esgvoc.api.pydantic_handler import create_union
 
 
@@ -73,7 +75,7 @@ class ExperimentCMIP7(PlainTermDataDescriptor):
     # Note: Allowing str or ModelComponent is under discussion.
     # Using this to get things working.
     # Long-term, we might do something different.
-    additional_allowed_model_components: list[str] | list[ModelComponent]
+    additional_allowed_model_components: list[str] | list[ComponentType]
     """
     Non-compulsory model components that are allowed when running this experiment
     """
@@ -146,7 +148,7 @@ class ExperimentCMIP7(PlainTermDataDescriptor):
     # Note: Allowing str or ModelComponent is under discussion.
     # Using this to get things working.
     # Long-term, we might do something different.
-    required_model_components: list[ModelComponent | str]
+    required_model_components: list[ComponentType | str]
     """
     Model components required to run this experiment
     """
@@ -168,7 +170,7 @@ class ExperimentCMIP7(PlainTermDataDescriptor):
     """
 
 
-class ExperimentBeforeCMIP7(PlainTermDataDescriptor):
+class ExperimentLegacy(PlainTermDataDescriptor):
     """
     An 'experiment' refers to a specific, controlled simulation conducted using climate models to \
     investigate particular aspects of the Earth's climate system. These experiments are designed \
@@ -177,18 +179,37 @@ class ExperimentBeforeCMIP7(PlainTermDataDescriptor):
     under various scenarios and conditions.
     """
 
-    activity: list[str] = Field(default_factory=list)
-    tier: int | None
-    experiment_id: str
-    sub_experiment_id: list[str] | None
+    # Required fields
+    experiment_id: str  # Discriminator - distinguishes Legacy from CMIP7
+    activity_id: list[str]
     experiment: str
-    required_model_components: list[str] | None
-    additional_allowed_model_components: list[str] = Field(default_factory=list)
-    start_year: str | int | None
-    end_year: str | int | None
-    min_number_yrs_per_sim: int | None
-    parent_activity_id: list[str] | None
-    parent_experiment_id: list[str] | None
+    tier: int | None
+
+    # Optional fields
+    sub_experiment_id: list[str] | None = None
+    start_year: str | int | None = None
+    end_year: str | int | None = None
+    min_number_yrs_per_sim: int | None = None
+    parent_activity_id: list[str] | None = None
+    parent_experiment_id: list[str] | None = None
+    required_model_components: list[ComponentType | str] | None = None
+    additional_allowed_model_components: list[ComponentType | str] = Field(default_factory=list)
 
 
-Experiment = create_union(ExperimentCMIP7, ExperimentBeforeCMIP7)
+class ExperimentBase(PlainTermDataDescriptor):
+    """
+    Base experiment model for Universe data.
+
+    This loose model accepts experiment data that doesn't fully conform to either
+    ExperimentLegacy or ExperimentCMIP7. Used as fallback for incomplete experiments.
+    Only contains fields common to both Legacy and CMIP7 models.
+    """
+
+    tier: int | None = None
+    min_number_yrs_per_sim: float | int | None = None
+    required_model_components: list[ComponentType | str] | None = None
+    additional_allowed_model_components: list[ComponentType | str] = Field(default_factory=list)
+
+
+# Priority: Try strict models first (Legacy, CMIP7), then fall back to Base
+Experiment = create_union(ExperimentLegacy, ExperimentCMIP7, ExperimentBase)

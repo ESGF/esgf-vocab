@@ -2,14 +2,17 @@
 Model (i.e. schema/definition) of the source descriptor
 """
 
-from esgvoc.api.data_descriptors.contributor import Contributor
+from pydantic import Field
+
+from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
-from esgvoc.api.data_descriptors.model_component_new import EMDModelComponent
+from esgvoc.api.data_descriptors.EMD_models.model_component import EMDModelComponent
+from esgvoc.api.pydantic_handler import create_union
 
 
-class Source(PlainTermDataDescriptor):
+class SourceCMIP7(PlainTermDataDescriptor):
     """
-    Source of the dataset
+    Source of the dataset (CMIP7 format with contributors and model_components)
 
     Examples: "CanESM6-MR", "CR-CMIP-1-0-0"
 
@@ -50,11 +53,11 @@ class Source(PlainTermDataDescriptor):
     # Note: Allowing str is under discussion.
     # Using this to get things working.
     # Long-term, we might do something different.
-    contributors: list[Contributor | str]
+    contributors: list[Organisation | str]
     """
-    Contributor(s) using this source
+    Organisation(s) using this source
 
-    Using is a bit vaguely defined, but in practice it is the contributor(s)
+    Using is a bit vaguely defined, but in practice it is the organisation(s)
     that submit data using this source.
     """
 
@@ -77,3 +80,41 @@ class Source(PlainTermDataDescriptor):
         # Something like:
         # label (release year from EMD if known):
         # (for each model component)\n component: component name (description)
+
+
+class SourceLegacy(PlainTermDataDescriptor):
+    """
+    Legacy source model for CMIP6 and earlier versions.
+
+    This version uses different field names and structure compared to the CMIP7 format.
+    """
+
+    activity_participation: list[str] | None = None
+    """Activities this source participates in."""
+
+    cohort: list[str] = Field(default_factory=list)
+    """Cohort grouping for this source."""
+
+    organisation_id: list[str] = Field(default_factory=list)
+    """Organisation IDs associated with this source."""
+
+    label: str
+    """Label to use for this source."""
+
+    label_extended: str | None = None
+    """Extended label to use for this source."""
+
+    license: dict = Field(default_factory=dict)
+    """License information for this source."""
+
+    model_component: dict | None = Field(
+        default=None,
+        description="Dictionary containing the model components that make up this climate source"
+    )
+    """Model component information (legacy format)."""
+
+    release_year: int | None = None
+    """Year this source was released."""
+
+
+Source = create_union(SourceCMIP7, SourceLegacy)

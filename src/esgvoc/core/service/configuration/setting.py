@@ -91,7 +91,7 @@ class ServiceSettings(BaseModel):
         return Path(dirs.user_data_path).expanduser().resolve()
 
     @classmethod
-    def _get_default_project_configs(cls) -> Dict[str, dict]:
+    def _get_default_project_configs(cls) -> dict[str, dict]:
         """Generate default project configurations with relative paths."""
         return {
             "cmip6": {
@@ -142,6 +142,14 @@ class ServiceSettings(BaseModel):
                 "db_path": "dbs/cmip7.sqlite",
                 "offline_mode": False,
             },
+            "emd": {
+                "project_name": "emd",
+                "github_repo": "https://github.com/WCRP-CMIP/Essential-Model-Documentation",
+                "branch": "esgvoc",
+                "local_path": "repos/Essential-Model-Documentation",
+                "db_path": "dbs/emd.sqlite",
+                "offline_mode": False,
+            },
         }
 
     @classmethod
@@ -179,8 +187,7 @@ class ServiceSettings(BaseModel):
         except FileNotFoundError:
             data = cls._get_default_settings().copy()  # Use defaults if the file is missing
 
-        projects = {p["project_name"]: ProjectSettings(
-            **p) for p in data.pop("projects", [])}
+        projects = {p["project_name"]: ProjectSettings(**p) for p in data.pop("projects", [])}
         return cls(universe=UniverseSettings(**data["universe"]), projects=projects)
 
     @classmethod
@@ -191,8 +198,7 @@ class ServiceSettings(BaseModel):
     @classmethod
     def load_from_dict(cls, config_data: dict) -> "ServiceSettings":
         """Load configuration from a dictionary."""
-        projects = {p["project_name"]: ProjectSettings(
-            **p) for p in config_data.get("projects", [])}
+        projects = {p["project_name"]: ProjectSettings(**p) for p in config_data.get("projects", [])}
         return cls(universe=UniverseSettings(**config_data["universe"]), projects=projects)
 
     def save_to_file(self, file_path: str):
@@ -228,8 +234,7 @@ class ServiceSettings(BaseModel):
 
         default_configs = self._get_default_project_configs()
         if project_name not in default_configs:
-            raise ValueError(f"Unknown project '{project_name}'. Available defaults: {
-                             list(default_configs.keys())}")
+            raise ValueError(f"Unknown project '{project_name}'. Available defaults: {list(default_configs.keys())}")
 
         config = default_configs[project_name].copy()
         self.projects[project_name] = ProjectSettings(**config)
@@ -288,8 +293,7 @@ class ServiceSettings(BaseModel):
         # Handle boolean conversion for offline_mode if present
         if "offline_mode" in kwargs:
             if isinstance(kwargs["offline_mode"], str):
-                kwargs["offline_mode"] = kwargs["offline_mode"].lower() in (
-                    "true", "1", "yes", "on")
+                kwargs["offline_mode"] = kwargs["offline_mode"].lower() in ("true", "1", "yes", "on")
 
         # Get current config and update with new values
         current_config = self.projects[project_name].model_dump()
@@ -331,8 +335,7 @@ def main():
     added_obs4mip = settings.add_project_from_default("obs4mip")
     print(f"Added obs4mip: {added_obs4mip}")
 
-    print(f"Projects after adding optional ones: {
-          list(settings.projects.keys())}")
+    print(f"Projects after adding optional ones: {list(settings.projects.keys())}")
 
     # Remove a project if no longer needed
     removed = settings.remove_project("obs4mip")
@@ -352,8 +355,7 @@ def main():
     print(f"Final projects: {list(settings.projects.keys())}")
 
     # Update a project
-    updated = settings.update_project(
-        "my_custom_project", branch="main", db_path="dbs/updated.sqlite")
+    updated = settings.update_project("my_custom_project", branch="main", db_path="dbs/updated.sqlite")
     print(f"Updated custom project: {updated}")
 
 

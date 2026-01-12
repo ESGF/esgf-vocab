@@ -1,27 +1,80 @@
 """
 Model (i.e. schema/definition) of the institution data descriptor
-
-Note: this is kept for legacy reasons,
-but is redundant given we have :py:class:`Contributor` and :py:class:`ContributorMember`.
 """
 
-from pydantic import Field
+from pydantic import BaseModel, Field, HttpUrl
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
-class Institution(PlainTermDataDescriptor):
+class Location(BaseModel):
+    """Location"""
+
+    city: str
     """
-    An registered institution for WCRP modelisation MIP.
+    City
     """
 
-    acronyms: list[str] = Field(
-        default_factory=list, description="it is the acronym that btw doesnt belong here anymore"
-    )
-    aliases: list[str] = Field(default_factory=list)
-    established: int | None
-    labels: list[str] = Field(default_factory=list)
-    location: dict = Field(default_factory=dict)
-    name: str
+    country: str
+    """
+    Country
+    """
+
+    lat: float = Field(ge=-90.0, le=90.0)
+    """
+    Latitude in degrees north
+    """
+
+    lon: float = Field(ge=-180.0, le=180.0)
+    """
+    Longitude in degrees east (range: -180 to 180)
+    """
+
+
+class Institution(PlainTermDataDescriptor):
+    """
+    A registered institution
+
+    Examples: "IPSL", "CR", "NCAR", "CNRM"
+
+    Unlike :py:class:`Organisation`, this can only refer to a single entity
+    (institute, group, person).
+    """
+
+    acronyms: list[str]
+    """
+    Known acronyms for this member/entity apart from the registered one
+
+    The registered/official acronym is given in `self.drs_name`.
+    """
+
+    labels: list[str]
+    """
+    Labels that can be used for this institute
+
+    These are free-text and can be used when the member/entity needs to be referred to in full,
+    rather than by its acronym.
+    This can also be thought of as 'long names'.
+    """
+    # TODO: discuss whether there is any meaning to the order of these
+    # and what it means to have more than one label.
+    # TODO: discuss whether we should just call this long_names
+    # for consistency with other conventions.
+
+    location: list[Location]
+    """
+    Location(s) of the institute
+    """
+
     ror: str | None
-    url: list[str] = Field(default_factory=list)
+    """
+    Research organisation registry (https://ror.org/) ID
+
+    If `None`, this organisation is not registered with ROR
+    or the ROR was not supplied at the time of registration.
+    """
+
+    urls: list[HttpUrl]
+    """
+    URL(s) relevant for finding out more information about this member/entity
+    """

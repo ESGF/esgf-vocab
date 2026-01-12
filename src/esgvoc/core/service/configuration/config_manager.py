@@ -94,7 +94,7 @@ class ConfigManager(Generic[T]):
         if config_name not in registry["configs"]:
             logger.error(f"Config '{config_name}' not found in registry.")
             raise ValueError(f"Config '{config_name}' not found in registry.")
-        config_path = self.config_cls.load_from_file(registry["configs"][config_name])
+        config_path = registry["configs"][config_name]
         return self.config_cls.load_from_file(str(config_path))
 
     def get_active_config(self) -> T:

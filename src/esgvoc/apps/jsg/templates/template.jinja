@@ -18,6 +18,11 @@
         },
         {
           "contains": {
+            "const": "https://stac-extensions.github.io/alternate-assets/{{ alternate_assets_extension_version }}/schema.json"
+          }
+        },
+        {
+          "contains": {
             "const": "https://stac-extensions.github.io/{{ project_id|lower }}/{{ catalog_version }}/schema.json"
           }
         }
@@ -58,9 +63,6 @@
             "allOf": [
               {
                 "$ref": "#/definitions/require_asset_fields"
-              },
-              {
-                "$ref": "https://stac-extensions.github.io/file/{{ file_extension_version }}/schema.json#/definitions/fields"
               },
               {
                 "$ref": "#/definitions/asset_fields"
@@ -135,15 +137,15 @@
           "required": [
             "updated"
           ]
-        },
+        }
         {% for dataset_property in catalog_dataset_properties|sort(attribute="field_name") %}
           {% if dataset_property.is_required %}
+            ,
             {
               "required": [
                 "{{ dataset_property.field_name }}"
               ]
             }
-            {% if not loop.last %},{% endif %}
           {% endif %}
         {% endfor %}
       ]
@@ -158,16 +160,6 @@
         },
         {
           "required": [
-            "file:checksum"
-          ]
-        },
-        {
-          "required": [
-            "file:size"
-          ]
-        },
-        {
-          "required": [
             "protocol"
           ]
         },
@@ -175,15 +167,15 @@
           "required": [
             "updated"
           ]
-        },
+        }
         {% for file_property in catalog_file_properties|sort(attribute="field_name") %}
           {% if file_property.is_required %}
+            ,
             {
               "required": [
                 "{{ file_property.field_name }}"
               ]
             }
-            {% if not loop.last %},{% endif %}
           {% endif %}
         {% endfor %}
       ]
@@ -206,14 +198,14 @@
             "wps",
             "s3"
           ]
-        },
+        }
         {% for file_property in catalog_file_properties|sort(attribute="field_name") %}
-          "{{ file_property.field_name }}": {
+          ,"{{ file_property.field_name }}": {
           {% for key, value in file_property.field_value|dictsort(reverse=true) %}
             "{{ key }}": {{ value|tojson }}
             {% if not loop.last %},{% endif %}
           {% endfor %}
-          }{% if not loop.last %},{% endif %}
+          }
         {% endfor %}
       }
     },
@@ -230,14 +222,14 @@
         "size": {
           "type": "integer",
           "minimum": 0
-        },
+        }
         {% for dataset_property in catalog_dataset_properties|sort(attribute="field_name") %}
-          "{{ dataset_property.field_name }}": {
+          ,"{{ dataset_property.field_name }}": {
           {% for key, value in dataset_property.field_value|dictsort(reverse=true) %}
             "{{ key }}": {{ value|tojson }}
             {% if not loop.last %},{% endif %}
           {% endfor %}
-        }{% if not loop.last %},{% endif %}
+        }
         {% endfor %}
       },
       "patternProperties": {

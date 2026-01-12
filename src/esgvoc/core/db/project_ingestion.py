@@ -1,4 +1,5 @@
 import logging
+import traceback
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -81,11 +82,20 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                 merger = DataMerger(
                     data=JsonLdResource(uri=str(term_file_path)),
                     locally_available=locally_avail,
-                    allowed_base_uris={"https://esgvoc.ipsl.fr/resource/universe", f"https://esgvoc.ipsl.fr/resource/{project.id}"},
+                    allowed_base_uris={
+                        "https://esgvoc.ipsl.fr/resource/universe",
+                        f"https://esgvoc.ipsl.fr/resource/{project.id}",
+                    },
                 )
                 merged_data = merger.merge_linked_json()[-1]
                 # Resolve all nested @id references using merged context
-                json_specs = merger.resolve_merged_ids(merged_data)
+                # IMPORTANT: Use universe path for context because:
+                # 1. Universe context defines the data structure and esgvoc_resolve_modes
+                # 2. Project terms are typically lightweight references to universe terms
+                # 3. Even when overriding, the type definition (and resolve modes) live in universe
+                json_specs = merger.resolve_merged_ids(
+                    merged_data, context_base_path=service.current_state.universe.local_path
+                )
 
                 term_kind = infer_term_kind(json_specs)
                 term_id = json_specs["id"]
@@ -94,9 +104,14 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                     term_kind_collection = term_kind
 
             except Exception as e:
-                _LOGGER.warning(
-                    f"Unable to read term file {term_file_path} in collection '{collection_id}' "
-                    + f"of project '{project.id}'. Skip.\n{str(e)}"
+                _LOGGER.error(
+                    f"❌ INGESTION FAILURE - Term skipped\n"
+                    f"   File: {term_file_path}\n"
+                    f"   Collection: {collection_id}\n"
+                    f"   Project: {project.id}\n"
+                    f"   Error Type: {type(e).__name__}\n"
+                    f"   Error Message: {str(e)}\n"
+                    f"   Full Traceback:\n{traceback.format_exc()}"
                 )
                 continue
             try:
@@ -108,12 +123,28 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                 )
                 project_db_session.add(term)
             except Exception as e:
-                # Enhanced error reporting for term validation failures
                 _LOGGER.error(
-                    f"Failed to create term '{term_id}' in collection '{collection_id}' "
-                    + f"of project '{project.id}' from file '{term_file_path}': {str(e)}"
+                    f"❌ DATABASE INSERTION FAILURE\n"
+                    f"   Term ID: {term_id}\n"
+                    f"   Collection: {collection_id}\n"
+                    f"   Project: {project.id}\n"
+                    f"   Error Type: {type(e).__name__}\n"
+                    f"   Error Message: {str(e)}\n"
+                    f"   Full Traceback:\n{traceback.format_exc()}"
                 )
                 continue
+    # Report ingestion results for this collection
+    json_file_count = len([f for f in collection_dir_path.glob("*.json")])
+    ingested_term_count = len([t for t in collection.terms])
+    _LOGGER.info(
+        f"Collection '{collection_id}' in project '{project.id}': "
+        f"{ingested_term_count}/{json_file_count} terms ingested"
+    )
+    if ingested_term_count < json_file_count:
+        _LOGGER.warning(
+            f"⚠️  {json_file_count - ingested_term_count} term(s) failed to ingest "
+            f"in collection '{collection_id}'. See error messages above."
+        )
     if term_kind_collection is not None:
         collection.term_kind = term_kind_collection
     else:
@@ -136,15 +167,17 @@ def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash:
 
     with project_connection.create_session() as project_db_session:
         project_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.PROJECT_SPECS_FILENAME)
+
         drs_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.DRS_SPECS_FILENAME)
         catalog_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.CATALOG_SPECS_FILENAME)
         attr_specs_file_path = project_dir_path.joinpath(esgvoc.core.constants.ATTRIBUTES_SPECS_FILENAME)
         try:
             raw_project_specs = read_yaml_file(project_specs_file_path)
             project_id = raw_project_specs[esgvoc.core.constants.PROJECT_ID_JSON_KEY]
-            raw_drs_specs = read_yaml_file(drs_specs_file_path)
             project_specs = raw_project_specs
-            project_specs["drs_specs"] = raw_drs_specs
+            if drs_specs_file_path.exists():
+                raw_drs_specs = read_yaml_file(drs_specs_file_path)
+                project_specs["drs_specs"] = raw_drs_specs
             if catalog_specs_file_path.exists():
                 raw_catalog_specs = read_yaml_file(catalog_specs_file_path)
                 project_specs["catalog_specs"] = raw_catalog_specs
