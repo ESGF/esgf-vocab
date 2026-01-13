@@ -107,7 +107,7 @@ def display(data: Any):
 @app.command()
 def get(
     keys: List[str] = typer.Argument(..., help="List of keys in XXXX:YYYY:ZZZZ format"),
-    select: Optional[List[str]] = typer.Option(None, "--select", help="keys selected for the result"),
+    select: Optional[List[str]] = typer.Option(None, "--select", help="keys selected for the result. Can be used as --select field1 --select field2 or --select [field1,field2]"),
 ):
     """
     Retrieve a specific value from the database system.\n
@@ -117,25 +117,65 @@ def get(
 
     Usage:\n
         `get <project>:<collection>:<term>`\n
+        `get <project>:<collection>:<term> --select <field>`\n
+        `get <project>:<collection>:<term> --select [<field1>,<field2>,...]`\n
     \n
     Arguments:\n
         <project>\tThe project id to query. like `cmip6plus`\n
         <collection>\tThe collection id in the specified database.\n
         <term>\t\tThe term id within the specified collection.\n
     \n
-    Example:
-        To retrieve the value from the "cmip6plus" project, under the "institution_id" column, the term with the identifier "ipsl", you would use: \n
+    Options:\n
+        --select\tSelect specific fields to display. By default, all fields are returned.\n
+        \t\tThe result will always include the 'id' field plus the selected fields.\n
+        \t\tYou can use this option in multiple ways:\n
+        \t\t  - Single field: --select drs_name\n
+        \t\t  - Multiple flags: --select drs_name --select description\n
+        \t\t  - Bracket notation: --select [drs_name,description]\n
+    \n
+    Examples:\n
+        Retrieve full term information:\n
             `get cmip6plus:institution_id:ipsl`\n
-        The default project is the universe CV : the argument would be like `universe:institution:ipsl` or `:institution:ipsl` \n
-        - to get list of available term from universe institution `:institution:` \n
+        \n
+        Retrieve only specific fields:\n
+            `get :activity:volmip --select drs_name`\n
+            Returns: id='volmip' drs_name='VolMIP'\n
+        \n
+        Retrieve multiple fields using bracket notation:\n
+            `get :activity:volmip --select [drs_name,description]`\n
+            Returns: id='volmip' drs_name='VolMIP' description=...\n
+        \n
+        Retrieve multiple fields using multiple flags:\n
+            `get :activity:volmip --select drs_name --select description`\n
+        \n
+        List all terms in a collection with selected fields:\n
+            `get :activity: --select drs_name`\n
+        \n
+        The default project is the universe CV: the argument would be like `universe:institution:ipsl` or `:institution:ipsl`\n
         \n
     \n
     Notes:\n
         - Ensure data exist in your system before using this command (use `esgvoc status` command to see whats available).\n
         - Use a colon (`:`) to separate the parts of the argument.  \n
-        - if more than one argument is given i.e get X:Y:Z A:B:C the 2 results are appended. \n
+        - If more than one argument is given i.e get X:Y:Z A:B:C the 2 results are appended. \n
+        - The 'id' field is always included in the result, even when using --select.\n
     \n
     """
+    # Parse select parameter to handle bracket notation [field1,field2,...]
+    parsed_select = None
+    if select is not None:
+        parsed_select = []
+        for item in select:
+            # Check if item is in bracket notation like [field1,field2]
+            if item.startswith("[") and item.endswith("]"):
+                # Remove brackets and split by comma
+                fields = item[1:-1].split(",")
+                # Strip whitespace and quotes from each field
+                parsed_select.extend([f.strip().strip("'\"") for f in fields if f.strip()])
+            else:
+                # Regular field, just add it
+                parsed_select.append(item.strip().strip("'\""))
+
     known_projects = get_all_projects()
 
     # Validate and process each key
@@ -146,9 +186,9 @@ def get(
         what = what if what != "" else None
         who = who if who != "" else None
         if where == "" or where == "universe":
-            res = handle_universe(what, who, select)
+            res = handle_universe(what, who, parsed_select)
         elif where in known_projects:
-            res = handle_project(where, what, who, select)
+            res = handle_project(where, what, who, parsed_select)
         else:
             res = handle_unknown(where, what, who)
 

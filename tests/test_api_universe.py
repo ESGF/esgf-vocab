@@ -86,3 +86,98 @@ def test_find_items_in_universe(find_univ_item_param) -> None:
                  parent_id)
     else:
         pass
+
+
+def test_get_term_with_selected_fields() -> None:
+    """Test that --select option returns only the selected fields."""
+    # Get a term with only drs_name selected
+    term = universe.get_term_in_data_descriptor("activity", "volmip", selected_term_fields=["drs_name"])
+
+    # Check mandatory field 'id' is present
+    assert hasattr(term, "id")
+    assert term.id == "volmip"
+
+    # Check selected field is present
+    assert hasattr(term, "drs_name")
+    assert term.drs_name == "VolMIP"
+
+    # Check non-selected fields are NOT present
+    assert not hasattr(term, "type")
+    assert not hasattr(term, "description")
+
+
+def test_get_all_terms_with_selected_fields() -> None:
+    """Test that selected_term_fields works for get_all_terms_in_data_descriptor."""
+    terms = universe.get_all_terms_in_data_descriptor("activity", selected_term_fields=["drs_name"])
+
+    assert len(terms) > 0
+
+    # Check the first term
+    first_term = terms[0]
+
+    # Check mandatory field 'id' is present
+    assert hasattr(first_term, "id")
+
+    # Check selected field is present
+    assert hasattr(first_term, "drs_name")
+
+    # Check non-selected fields are NOT present
+    assert not hasattr(first_term, "type")
+    assert not hasattr(first_term, "description")
+
+
+def test_find_terms_with_selected_fields() -> None:
+    """Test that selected_term_fields works for find_terms_in_data_descriptor."""
+    terms = universe.find_terms_in_data_descriptor("volmip", "activity", selected_term_fields=["drs_name"])
+
+    assert len(terms) > 0
+
+    # Check the found term
+    term = terms[0]
+
+    # Check mandatory field 'id' is present
+    assert hasattr(term, "id")
+    assert term.id == "volmip"
+
+    # Check selected field is present
+    assert hasattr(term, "drs_name")
+    assert term.drs_name == "VolMIP"
+
+    # Check non-selected fields are NOT present
+    assert not hasattr(term, "type")
+    assert not hasattr(term, "description")
+
+
+def test_get_term_with_multiple_selected_fields() -> None:
+    """Test selecting multiple fields."""
+    # Get a term with multiple fields selected
+    term = universe.get_term_in_data_descriptor("activity", "volmip", selected_term_fields=["drs_name", "description"])
+
+    # Check mandatory field 'id' is present
+    assert hasattr(term, "id")
+
+    # Check both selected fields are present
+    assert hasattr(term, "drs_name")
+    assert hasattr(term, "description")
+
+    # Check non-selected field is NOT present
+    assert not hasattr(term, "type")
+
+
+def test_get_term_with_type_selected() -> None:
+    """Test that 'type' can be explicitly selected."""
+    # Get a term with type explicitly selected
+    term = universe.get_term_in_data_descriptor("activity", "volmip", selected_term_fields=["type", "drs_name"])
+
+    # Check mandatory field 'id' is present
+    assert hasattr(term, "id")
+    assert term.id == "volmip"
+
+    # Check selected fields are present
+    assert hasattr(term, "type")
+    assert term.type == "activity"
+    assert hasattr(term, "drs_name")
+    assert term.drs_name == "VolMIP"
+
+    # Check non-selected field is NOT present
+    assert not hasattr(term, "description")
