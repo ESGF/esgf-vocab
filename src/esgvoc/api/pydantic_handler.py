@@ -118,26 +118,35 @@ def instantiate_pydantic_term(term: "UTerm | PTerm", selected_term_fields: Itera
 
     type = term.specs[api_settings.TERM_TYPE_JSON_KEY]
     if selected_term_fields is not None:
-        subset = DataDescriptorSubSet(id=term.id, type=type)
+        # Build data dict with only id (truly mandatory) + selected fields
+        data = {
+            "id": term.id,
+        }
 
-        # Get model field defaults to use when fields are missing from term.specs
-        model_fields = DataDescriptorSubSet.model_fields
-
+        # Add selected fields from term.specs
+        # Note: 'type' is in term.specs, so if user selects it, it will be included
         for field in selected_term_fields:
-            # Use model's default value if field is missing from specs
-            if field in model_fields and field not in term.specs:
-                default_value = model_fields[field].default
-                setattr(subset, field, default_value if default_value is not None else term.specs.get(field, None))
-            else:
-                setattr(subset, field, term.specs.get(field, None))
+            data[field] = term.specs.get(field)
 
-        for field in DataDescriptorSubSet.MANDATORY_TERM_FIELDS:
-            # Use model's default value if field is missing from specs
-            if field in model_fields and field not in term.specs:
-                default_value = model_fields[field].default
-                setattr(subset, field, default_value if default_value is not None else term.specs.get(field, None))
-            else:
-                setattr(subset, field, term.specs.get(field, None))
+        # If 'type' wasn't selected, we still need it for model construction
+        # but we'll remove it afterwards
+        if "type" not in data:
+            data["type"] = type
+
+        # Create instance and mark which fields were set
+        subset = DataDescriptorSubSet.model_construct(**data)
+        subset.__pydantic_fields_set__ = set(data.keys())
+
+        # Remove fields that weren't selected
+        # Get all model fields defined in DataDescriptor/DataDescriptorSubSet
+        all_model_fields = set(DataDescriptorSubSet.model_fields.keys())
+        # Fields to keep: 'id' (always) + selected_term_fields
+        fields_to_keep = {"id"} | set(selected_term_fields)
+        # Delete fields that exist in the model but weren't selected
+        for field_name in all_model_fields - fields_to_keep:
+            if hasattr(subset, field_name):
+                delattr(subset, field_name)
+
         return subset
     else:
         term_class = get_pydantic_class(type)
