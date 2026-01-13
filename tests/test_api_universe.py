@@ -150,18 +150,19 @@ def test_find_terms_with_selected_fields() -> None:
 
 def test_get_term_with_multiple_selected_fields() -> None:
     """Test selecting multiple fields."""
-    # Get a term with multiple fields selected
-    term = universe.get_term_in_data_descriptor("activity", "volmip", selected_term_fields=["drs_name", "description"])
+    # Get a term with multiple fields selected (using fields that actually exist in term.specs)
+    term = universe.get_term_in_data_descriptor("activity", "volmip", selected_term_fields=["drs_name", "long_name"])
 
     # Check mandatory field 'id' is present
     assert hasattr(term, "id")
 
     # Check both selected fields are present
     assert hasattr(term, "drs_name")
-    assert hasattr(term, "description")
+    assert hasattr(term, "long_name")
 
-    # Check non-selected field is NOT present
+    # Check non-selected fields are NOT present
     assert not hasattr(term, "type")
+    assert not hasattr(term, "description")
 
 
 def test_get_term_with_type_selected() -> None:
@@ -180,4 +181,25 @@ def test_get_term_with_type_selected() -> None:
     assert term.drs_name == "VolMIP"
 
     # Check non-selected field is NOT present
+    assert not hasattr(term, "description")
+
+
+def test_get_term_with_non_existent_field() -> None:
+    """Test that non-existent fields are not included in the response."""
+    # Request a field that doesn't exist in the term data
+    term = universe.get_term_in_data_descriptor("activity", "volmip", selected_term_fields=["drs_name", "nothing"])
+
+    # Check mandatory field 'id' is present
+    assert hasattr(term, "id")
+    assert term.id == "volmip"
+
+    # Check the existing selected field is present
+    assert hasattr(term, "drs_name")
+    assert term.drs_name == "VolMIP"
+
+    # Check the non-existent field is NOT present
+    assert not hasattr(term, "nothing")
+
+    # Check other fields are also NOT present
+    assert not hasattr(term, "type")
     assert not hasattr(term, "description")

@@ -123,10 +123,11 @@ def instantiate_pydantic_term(term: "UTerm | PTerm", selected_term_fields: Itera
             "id": term.id,
         }
 
-        # Add selected fields from term.specs
+        # Add selected fields from term.specs, but only if they exist
         # Note: 'type' is in term.specs, so if user selects it, it will be included
         for field in selected_term_fields:
-            data[field] = term.specs.get(field)
+            if field in term.specs:
+                data[field] = term.specs[field]
 
         # If 'type' wasn't selected, we still need it for model construction
         # but we'll remove it afterwards
@@ -137,11 +138,12 @@ def instantiate_pydantic_term(term: "UTerm | PTerm", selected_term_fields: Itera
         subset = DataDescriptorSubSet.model_construct(**data)
         subset.__pydantic_fields_set__ = set(data.keys())
 
-        # Remove fields that weren't selected
+        # Remove fields that weren't selected or don't exist
         # Get all model fields defined in DataDescriptor/DataDescriptorSubSet
         all_model_fields = set(DataDescriptorSubSet.model_fields.keys())
-        # Fields to keep: 'id' (always) + selected_term_fields
-        fields_to_keep = {"id"} | set(selected_term_fields)
+        # Fields to keep: only those that were actually added to data
+        fields_to_keep = set(data.keys()) - {"type"} if "type" not in selected_term_fields else set(data.keys())
+        fields_to_keep.add("id")  # Always keep id
         # Delete fields that exist in the model but weren't selected
         for field_name in all_model_fields - fields_to_keep:
             if hasattr(subset, field_name):
