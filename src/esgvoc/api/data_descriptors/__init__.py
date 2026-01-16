@@ -87,7 +87,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "experiment": Experiment,
     "forcing_index": ForcingIndex,
     "frequency": Frequency,
-    "grid": Grid,
+    "grid_label": Grid,
     "initialization_index": InitializationIndex,
     "institution": Institution,
     "license": License,
