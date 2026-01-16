@@ -8,7 +8,7 @@ from sqlmodel import Session, and_, col, select
 import esgvoc.api.universe as universe
 import esgvoc.core.constants as constants
 import esgvoc.core.service as service
-from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
 from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
 from esgvoc.api.pydantic_handler import instantiate_pydantic_term
@@ -483,7 +483,7 @@ def valid_term_in_all_projects(value: str) -> list[MatchingTerm]:
 
 def get_all_terms_in_collection(
     project_id: str, collection_id: str, selected_term_fields: Iterable[str] | None = None
-) -> list[DataDescriptor]:
+) -> list[DataDescriptor | DataDescriptorSubSet]:
     """
     Gets all terms of the given collection of a project.
     This function performs an exact match on the `project_id` and `collection_id`,
@@ -496,10 +496,13 @@ def get_all_terms_in_collection(
     :param collection_id: A collection id
     :type collection_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned. If empty, selects the id and type fields.
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
     :type selected_term_fields: Iterable[str] | None
-    :returns: a list of term instances. Returns an empty list if no matches are found.
-    :rtype: list[DataDescriptor]
+    :returns: A list of term instances. Each term is a full DataDescriptor when \
+    selected_term_fields is None, or a DataDescriptorSubSet when selected_term_fields is provided. \
+    Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor | DataDescriptorSubSet]
     """
     result = list()
     if connection := _get_project_connection(project_id):
@@ -610,7 +613,7 @@ def _get_all_terms_in_collection(
 
 def get_all_terms_in_project(
     project_id: str, selected_term_fields: Iterable[str] | None = None
-) -> list[DataDescriptor]:
+) -> list[DataDescriptor | DataDescriptorSubSet]:
     """
     Gets all terms of the given project.
     This function performs an exact match on the `project_id` and
@@ -621,10 +624,13 @@ def get_all_terms_in_project(
     :param project_id: A project id
     :type project_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned. If empty, selects the id and type fields.
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
     :type selected_term_fields: Iterable[str] | None
-    :returns: A list of term instances. Returns an empty list if no matches are found.
-    :rtype: list[DataDescriptor]
+    :returns: A list of term instances. Each term is a full DataDescriptor when \
+    selected_term_fields is None, or a DataDescriptorSubSet when selected_term_fields is provided. \
+    Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor | DataDescriptorSubSet]
     """
     result = list()
     if connection := _get_project_connection(project_id):
@@ -638,15 +644,17 @@ def get_all_terms_in_project(
 
 def get_all_terms_in_all_projects(
     selected_term_fields: Iterable[str] | None = None,
-) -> list[tuple[str, list[DataDescriptor]]]:
+) -> list[tuple[str, list[DataDescriptor | DataDescriptorSubSet]]]:
     """
     Gets all terms of all projects.
 
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned. If empty, selects the id and type fields.
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
     :type selected_term_fields: Iterable[str] | None
-    :returns: A list of tuple project_id and term instances of that project.
-    :rtype: list[tuple[str, list[DataDescriptor]]]
+    :returns: A list of tuples containing (project_id, terms). Each term is a full DataDescriptor when \
+    selected_term_fields is None, or a DataDescriptorSubSet when selected_term_fields is provided.
+    :rtype: list[tuple[str, list[DataDescriptor | DataDescriptorSubSet]]]
     """
     project_ids = get_all_projects()
     result = list()
@@ -676,7 +684,7 @@ def _get_term_in_project(term_id: str, session: Session) -> PTerm | None:
 
 def get_term_in_project(
     project_id: str, term_id: str, selected_term_fields: Iterable[str] | None = None
-) -> DataDescriptor | None:
+) -> DataDescriptor | DataDescriptorSubSet | None:
     """
     Returns the first occurrence of the terms, in the given project, whose id corresponds exactly to
     the given term id.
@@ -691,12 +699,14 @@ def get_term_in_project(
     :param term_id: The id of a term to be found.
     :type term_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned. If empty, selects the id and type fields.
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
     :type selected_term_fields: Iterable[str] | None
-    :returns: A term instance. Returns `None` if no match is found.
-    :rtype: DataDescriptor | None
+    :returns: A term instance. The term is a full DataDescriptor when selected_term_fields is None, \
+    or a DataDescriptorSubSet when selected_term_fields is provided. Returns `None` if no match is found.
+    :rtype: DataDescriptor | DataDescriptorSubSet | None
     """
-    result: DataDescriptor | None = None
+    result: DataDescriptor | DataDescriptorSubSet | None = None
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
             term_found = _get_term_in_project(term_id, session)
@@ -714,7 +724,7 @@ def _get_term_in_collection(collection_id: str, term_id: str, session: Session) 
 
 def get_term_in_collection(
     project_id: str, collection_id: str, term_id: str, selected_term_fields: Iterable[str] | None = None
-) -> DataDescriptor | None:
+) -> DataDescriptor | DataDescriptorSubSet | None:
     """
     Returns the term, in the given project and collection,
     whose id corresponds exactly to the given term id.
@@ -730,12 +740,14 @@ def get_term_in_collection(
     :param term_id: The id of a term to be found.
     :type term_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned. If empty, selects the id and type fields.
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
     :type selected_term_fields: Iterable[str] | None
-    :returns: A term instance. Returns `None` if no match is found.
-    :rtype: DataDescriptor | None
+    :returns: A term instance. The term is a full DataDescriptor when selected_term_fields is None, \
+    or a DataDescriptorSubSet when selected_term_fields is provided. Returns `None` if no match is found.
+    :rtype: DataDescriptor | DataDescriptorSubSet | None
     """
-    result: DataDescriptor | None = None
+    result: DataDescriptor | DataDescriptorSubSet | None = None
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
             term_found = _get_term_in_collection(collection_id, term_id, session)
@@ -871,7 +883,7 @@ def _get_term_from_universe_term_id_in_project(
 
 def get_term_from_universe_term_id_in_project(
     project_id: str, data_descriptor_id: str, universe_term_id: str, selected_term_fields: Iterable[str] | None = None
-) -> tuple[str, DataDescriptor] | None:
+) -> tuple[str, DataDescriptor | DataDescriptorSubSet] | None:
     """
     Returns the term, in the given project, that corresponds to the given term in the universe.
     This function performs an exact match on the `project_id`, `data_descriptor_id`
@@ -887,12 +899,15 @@ def get_term_from_universe_term_id_in_project(
     :param universe_term_id: The id of the given universe term.
     :type universe_term_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned. If empty, selects the id and type fields.
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
     :type selected_term_fields: Iterable[str] | None
-    :returns: A collection id and the project term instance. Returns `None` if no matches are found.
-    :rtype: tuple[str, DataDescriptor] | None
+    :returns: A collection id and the project term instance. The term is a full DataDescriptor when \
+    selected_term_fields is None, or a DataDescriptorSubSet when selected_term_fields is provided. \
+    Returns `None` if no matches are found.
+    :rtype: tuple[str, DataDescriptor | DataDescriptorSubSet] | None
     """
-    result: tuple[str, DataDescriptor] | None = None
+    result: tuple[str, DataDescriptor | DataDescriptorSubSet] | None = None
     if connection := _get_project_connection(project_id):
         with connection.create_session() as session:
             term_found = _get_term_from_universe_term_id_in_project(data_descriptor_id, universe_term_id, session)
@@ -904,7 +919,7 @@ def get_term_from_universe_term_id_in_project(
 
 def get_term_from_universe_term_id_in_all_projects(
     data_descriptor_id: str, universe_term_id: str, selected_term_fields: Iterable[str] | None = None
-) -> list[tuple[str, str, DataDescriptor]]:
+) -> list[tuple[str, str, DataDescriptor | DataDescriptorSubSet]]:
     """
     Returns the terms, in all projects, that correspond to the given term in the universe.
     This function performs an exact match on the `data_descriptor_id`
@@ -918,13 +933,15 @@ def get_term_from_universe_term_id_in_all_projects(
     :param universe_term_id: The id of the given universe term.
     :type universe_term_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned. If empty, selects the id and type fields.
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
     :type selected_term_fields: Iterable[str] | None
-    :returns: A project_id, collection id and the project term instance. \
-    Returns an empty list if no matches are found.
-    :rtype: list[tuple[str, str, DataDescriptor]]
+    :returns: A list of tuples containing (project_id, collection_id, term). The term is a full \
+    DataDescriptor when selected_term_fields is None, or a DataDescriptorSubSet when \
+    selected_term_fields is provided. Returns an empty list if no matches are found.
+    :rtype: list[tuple[str, str, DataDescriptor | DataDescriptorSubSet]]
     """
-    result: list[tuple[str, str, DataDescriptor]] = list()
+    result: list[tuple[str, str, DataDescriptor | DataDescriptorSubSet]] = list()
     project_ids = get_all_projects()
     for project_id in project_ids:
         term_found = get_term_from_universe_term_id_in_project(

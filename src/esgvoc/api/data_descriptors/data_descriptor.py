@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, ClassVar, Protocol
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, model_serializer
 
 
 class ConfiguredBaseModel(BaseModel):
@@ -68,10 +68,39 @@ class DataDescriptor(ConfiguredBaseModel, ABC):
 class DataDescriptorSubSet(DataDescriptor):
     """
     A sub set of the information contains in a term.
+    When using selected_term_fields, only id is guaranteed to be present.
+    Other fields (type, description) may be None if not selected.
     """
 
-    MANDATORY_TERM_FIELDS: ClassVar[tuple[str, str]] = ("id", "type")
-    """The set of mandatory term fields."""
+    # Override inherited fields to make them truly optional using Field()
+    # Using default_factory to ensure Pydantic treats them as optional
+    type: str | None = Field(default=None, validate_default=False)  # type: ignore[assignment]
+    """The data descriptor to which the term belongs (optional in subset)."""
+    description: str | None = Field(default=None, validate_default=False)  # type: ignore[assignment]
+    """The description of the term (optional in subset)."""
+
+    MANDATORY_TERM_FIELDS: ClassVar[tuple[str]] = ("id",)
+    """The set of mandatory term fields (only id is guaranteed when using selected_term_fields)."""
+
+    @model_serializer(mode='wrap')
+    def serialize_model(self, serializer: Any) -> dict[str, Any]:
+        """
+        Custom serializer that only includes fields that actually exist on the instance.
+        This prevents Pydantic warnings when fields are removed via delattr().
+        Uses 'wrap' mode to override default serialization behavior completely.
+        """
+        # Serialize all attributes from __dict__ that are not private
+        result = {
+            field_name: field_value
+            for field_name, field_value in self.__dict__.items()
+            if not field_name.startswith('_')
+        }
+
+        # Also include extra fields (like drs_name) that are stored in __pydantic_extra__
+        if hasattr(self, '__pydantic_extra__') and self.__pydantic_extra__:
+            result.update(self.__pydantic_extra__)
+
+        return result
 
     def accept(self, visitor: DataDescriptorVisitor) -> Any:
         return visitor.visit_sub_set_term(self)

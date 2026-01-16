@@ -6,7 +6,7 @@ import esgvoc.core.constants as api_settings
 from esgvoc.core.exceptions import EsgvocDbError
 
 if TYPE_CHECKING:
-    from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+    from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
     from esgvoc.core.db.models.project import PTerm
     from esgvoc.core.db.models.universe import UTerm
 
@@ -103,7 +103,7 @@ def get_pydantic_class(data_descriptor_id_or_term_type: str) -> type["DataDescri
         raise EsgvocDbError(f"'{data_descriptor_id_or_term_type}' pydantic class not found")
 
 
-def instantiate_pydantic_term(term: "UTerm | PTerm", selected_term_fields: Iterable[str] | None) -> "DataDescriptor":
+def instantiate_pydantic_term(term: "UTerm | PTerm", selected_term_fields: Iterable[str] | None) -> "DataDescriptor | DataDescriptorSubSet":
     """
     Instantiate a Pydantic DataDescriptor from a database term.
 
@@ -112,7 +112,8 @@ def instantiate_pydantic_term(term: "UTerm | PTerm", selected_term_fields: Itera
         selected_term_fields: Optional list of specific fields to include. If None, all fields are included.
 
     Returns:
-        A DataDescriptor instance (either DataDescriptorSubSet or the full model)
+        A DataDescriptor instance (full model) when selected_term_fields is None,
+        or a DataDescriptorSubSet instance when selected_term_fields is provided.
     """
     from esgvoc.api.data_descriptors.data_descriptor import DataDescriptorSubSet
 
@@ -124,30 +125,28 @@ def instantiate_pydantic_term(term: "UTerm | PTerm", selected_term_fields: Itera
         }
 
         # Add selected fields from term.specs, but only if they exist
-        # Note: 'type' is in term.specs, so if user selects it, it will be included
         for field in selected_term_fields:
             if field in term.specs:
                 data[field] = term.specs[field]
 
-        # If 'type' wasn't selected, we still need it for model construction
-        # but we'll remove it afterwards
+        # Create instance with all fields initially
+        # We need type for validation, will remove it if not selected
         if "type" not in data:
             data["type"] = type
+        if "description" not in data:
+            data["description"] = ""  # Use default value
 
-        # Create instance and mark which fields were set
         subset = DataDescriptorSubSet.model_construct(**data)
-        subset.__pydantic_fields_set__ = set(data.keys())
 
-        # Remove fields that weren't selected or don't exist
-        # Get all model fields defined in DataDescriptor/DataDescriptorSubSet
-        all_model_fields = set(DataDescriptorSubSet.model_fields.keys())
-        # Fields to keep: only those that were actually added to data
-        fields_to_keep = set(data.keys()) - {"type"} if "type" not in selected_term_fields else set(data.keys())
-        fields_to_keep.add("id")  # Always keep id
-        # Delete fields that exist in the model but weren't selected
-        for field_name in all_model_fields - fields_to_keep:
-            if hasattr(subset, field_name):
-                delattr(subset, field_name)
+        # Now remove unselected optional fields using delattr
+        # This maintains backward compatibility (hasattr will return False)
+        if "type" not in selected_term_fields and hasattr(subset, "type"):
+            delattr(subset, "type")
+        if "description" not in selected_term_fields and hasattr(subset, "description"):
+            delattr(subset, "description")
+
+        # Mark which fields were actually set
+        subset.__pydantic_fields_set__ = {"id"} | set(selected_term_fields)
 
         return subset
     else:
