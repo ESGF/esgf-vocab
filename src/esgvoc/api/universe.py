@@ -3,7 +3,7 @@ from typing import Iterable, Sequence
 from sqlalchemy import text
 from sqlmodel import Session, col, select
 
-from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
 from esgvoc.api.pydantic_handler import instantiate_pydantic_term
 from esgvoc.api.search import (
     Item,
@@ -28,7 +28,7 @@ def _get_all_terms_in_data_descriptor(
 
 def get_all_terms_in_data_descriptor(
     data_descriptor_id: str, selected_term_fields: Iterable[str] | None = None
-) -> list[DataDescriptor]:
+) -> list[DataDescriptor | DataDescriptorSubSet]:
     """
     Gets all the terms of the given data descriptor.
     This function performs an exact match on the `data_descriptor_id` and does not search
@@ -38,10 +38,13 @@ def get_all_terms_in_data_descriptor(
     :param data_descriptor_id: A data descriptor id
     :type data_descriptor_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned. If empty, selects the id and type fields.
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
     :type selected_term_fields: Iterable[str] | None
-    :returns: a list of term instances. Returns an empty list if no matches are found.
-    :rtype: list[DataDescriptor]
+    :returns: A list of term instances. Each term is a full DataDescriptor when \
+    selected_term_fields is None, or a DataDescriptorSubSet when selected_term_fields is provided. \
+    Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor | DataDescriptorSubSet]
     """
     with get_universe_session() as session:
         data_descriptor = _get_data_descriptor_in_universe(data_descriptor_id, session)
@@ -74,16 +77,18 @@ def get_all_data_descriptors_in_universe() -> list[str]:
     return result
 
 
-def get_all_terms_in_universe(selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor]:
+def get_all_terms_in_universe(selected_term_fields: Iterable[str] | None = None) -> list[DataDescriptor | DataDescriptorSubSet]:
     """
     Gets all the terms of the universe.
     Terms are unique within a data descriptor but may have some synonyms in the universe.
 
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned. If empty, selects the id and type fields.
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
     :type selected_term_fields: Iterable[str] | None
-    :returns: A list of term instances.
-    :rtype: list[DataDescriptor]
+    :returns: A list of term instances. Each term is a full DataDescriptor when \
+    selected_term_fields is None, or a DataDescriptorSubSet when selected_term_fields is provided.
+    :rtype: list[DataDescriptor | DataDescriptorSubSet]
     """
     result = list()
     with get_universe_session() as session:
@@ -104,7 +109,7 @@ def _get_term_in_data_descriptor(data_descriptor_id: str, term_id: str, session:
 
 def get_term_in_data_descriptor(
     data_descriptor_id: str, term_id: str, selected_term_fields: Iterable[str] | None = None
-) -> DataDescriptor | None:
+) -> DataDescriptor | DataDescriptorSubSet | None:
     """
     Returns the term, in the given data descriptor, whose id corresponds exactly to the given term id.
     This function performs an exact match on the `term_id` and the `data_descriptor_id` and does
@@ -116,10 +121,12 @@ def get_term_in_data_descriptor(
     :param term_id: The id of a term to be found.
     :type term_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned. If empty, selects the id and type fields.
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
     :type selected_term_fields: Iterable[str] | None
-    :returns: A term instance. Returns `None` if no match is found.
-    :rtype: DataDescriptor | None
+    :returns: A term instance. The term is a full DataDescriptor when selected_term_fields is None, \
+    or a DataDescriptorSubSet when selected_term_fields is provided. Returns `None` if no match is found.
+    :rtype: DataDescriptor | DataDescriptorSubSet | None
     """
     with get_universe_session() as session:
         term_found = _get_term_in_data_descriptor(data_descriptor_id, term_id, session)
@@ -137,7 +144,7 @@ def _get_term_in_universe(term_id: str, session: Session) -> UTerm | None:
     return result
 
 
-def get_term_in_universe(term_id: str, selected_term_fields: Iterable[str] | None = None) -> DataDescriptor | None:
+def get_term_in_universe(term_id: str, selected_term_fields: Iterable[str] | None = None) -> DataDescriptor | DataDescriptorSubSet | None:
     """
     Returns the first occurrence of the terms, in the universe, whose id corresponds exactly to
     the given term id.
@@ -148,10 +155,12 @@ def get_term_in_universe(term_id: str, selected_term_fields: Iterable[str] | Non
     :param term_id: The id of a term to be found.
     :type term_id: str
     :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
-    fields of the terms are returned. If empty, selects the id and type fields.
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
     :type selected_term_fields: Iterable[str] | None
-    :returns: A term instance. Returns `None` if no match is found.
-    :rtype: DataDescriptor | None
+    :returns: A term instance. The term is a full DataDescriptor when selected_term_fields is None, \
+    or a DataDescriptorSubSet when selected_term_fields is provided. Returns `None` if no match is found.
+    :rtype: DataDescriptor | DataDescriptorSubSet | None
     """
     with get_universe_session() as session:
         term_found = _get_term_in_universe(term_id, session)
