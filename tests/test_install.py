@@ -129,26 +129,31 @@ def test_install():
     _ensure_default_dev_config_exists()
     _ensure_all_dev_config_exists()
 
-    # Test with the selected default config (cmip6 + cmip6plus)
+    # Test with the selected default config (cmip6 + cmip6plus or all projects)
     service.config_manager.switch_config(test_config)
     current_state = service.get_state()
     assert current_state is not None
     current_state.synchronize_all()
-    # Verify only the expected projects are present
+    # Verify the expected projects are present
     projects = ev.get_all_projects()
-    assert len(projects) == 2
+    # default_dev and default have 2 projects, "all" has 7
+    if test_config in ["default_dev", "default"]:
+        assert len(projects) == 2
     assert "cmip6" in projects
     assert "cmip6plus" in projects
 
-    # Test with all_dev config to initialize all projects
-    service.config_manager.switch_config("all_dev")
-    current_state = service.get_state()
-    assert current_state is not None
-    current_state.synchronize_all()
-    # Verify a project that's only in all_dev
-    assert "cordex-cmip6" in ev.get_all_projects()
+    # Only test with all_dev config if we're in development mode (default_dev)
+    # Skip this if using production configs (default, all, etc.)
+    if test_config == "default_dev":
+        # Test with all_dev config to initialize all projects
+        service.config_manager.switch_config("all_dev")
+        current_state = service.get_state()
+        assert current_state is not None
+        current_state.synchronize_all()
+        # Verify a project that's only in all_dev
+        assert "cordex-cmip6" in ev.get_all_projects()
 
-    # Switch back to the selected test config for the rest of the tests
-    # (The session fixture will restore the original config at the very end)
-    service.config_manager.switch_config(test_config)
-    current_state = service.get_state()
+        # Switch back to the selected test config for the rest of the tests
+        # (The session fixture will restore the original config at the very end)
+        service.config_manager.switch_config(test_config)
+        current_state = service.get_state()
