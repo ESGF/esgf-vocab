@@ -317,7 +317,7 @@ def generate_json_schema(project_id: str) -> dict:
             )
             del property_translator
             json_raw_str = template.render(
-                project_id=project_id,  # TODO project_id NEED to be DRS style
+                project_id=project_specs.drs_name,
                 catalog_version=catalog_specs.version,
                 dataset_id_regex=dataset_id_regex,
                 base_id_regex=base_id_regex,

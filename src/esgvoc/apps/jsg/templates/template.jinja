@@ -40,16 +40,16 @@
         "type": {
           "const": "Feature"
         },
-        "regex_id": {
+        "id": {
           "type": "string",
           "pattern": {{ dataset_id_regex|tojson }}
         },
-        "regex_base_id": {
+        "base_id": {
           "type": "string",
           "pattern": {{ base_id_regex|tojson }}
         },
         "collection": {
-          "const": "{{ project_id|upper }}"
+          "const": "{{ project_id }}"
         },
         "properties": {
           "allOf": [
