@@ -100,6 +100,10 @@ class CatalogProperties(BaseModel):
     """The URI template of the catalog system."""
     extensions: list[CatalogExtension]
     """The extensions of the catalog."""
+    regex_id: str
+    """ simple constrainst regex for dataset_id str (with version)"""
+    regex_base_id: str
+    """ simple constrainst regex for base_id str (without version)"""
 
 
 AttributeSpecification = list[AttributeProperty]
