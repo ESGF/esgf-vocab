@@ -88,9 +88,7 @@ class Model(PlainTermDataDescriptor):
             dynamic_components = info.data["dynamic_components"]
             if len(v) != len(dynamic_components):
                 raise ValueError(
-                    f"Number of model_components ({len(v)}) must equal number of dynamic_components({
-                        len(dynamic_components)
-                    })"
+                    f"Number of model_components ({len(v)}) must equal number of dynamic_components({len(dynamic_components)})"
                 )
         return v
 

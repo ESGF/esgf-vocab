@@ -9,24 +9,27 @@ from tests.api_inputs import project_id  # noqa: F401
 
 _COMPLIANCE_PROJECT_TESTED = "cmip6"
 
-project_specs_being_tested = projects.get_project(_COMPLIANCE_PROJECT_TESTED)
 
-if project_specs_being_tested is not None and project_specs_being_tested.catalog_specs is not None:
-    project_version = project_specs_being_tested.catalog_specs.version
-    project_extensions = project_specs_being_tested.catalog_specs.catalog_properties.extensions
-    extension_url_template = project_specs_being_tested.catalog_specs.catalog_properties.url_template
-    extension_urls = list()
+def _get_extension_urls(project_id: str) -> list[str]:
+    """Get extension URLs for a project. Must be called after config is set."""
+    project_specs = projects.get_project(project_id)
+    if project_specs is None or project_specs.catalog_specs is None:
+        raise RuntimeError("unable to compute extension URL")
+
+    project_version = project_specs.catalog_specs.version
+    project_extensions = project_specs.catalog_specs.catalog_properties.extensions
+    extension_url_template = project_specs.catalog_specs.catalog_properties.url_template
+    extension_urls = []
     for project_extension in project_extensions:
         extension_url = extension_url_template.format(
             extension_name=project_extension.name, extension_version=project_extension.version
         )
         extension_urls.append(extension_url)
     extension_url = extension_url_template.format(
-        extension_name=_COMPLIANCE_PROJECT_TESTED, extension_version=project_version
+        extension_name=project_id, extension_version=project_version
     )
     extension_urls.append(extension_url)
-else:
-    raise RuntimeError("unable to compute extension URL")
+    return extension_urls
 
 
 json_template = Template(
@@ -181,11 +184,12 @@ json_template = Template(
 }
 """
 )
-str_extension_urls = "[" + ", ".join(f'"{url}"' for url in extension_urls) + "]"
-json_example = json.loads(json_template.substitute(extension_urls=str_extension_urls))
 
 
-def test_cmip6_compliance(use_default_config) -> None:
+def test_cmip6_compliance(use_default_dev_config) -> None:
+    extension_urls = _get_extension_urls(_COMPLIANCE_PROJECT_TESTED)
+    str_extension_urls = "[" + ", ".join(f'"{url}"' for url in extension_urls) + "]"
+    json_example = json.loads(json_template.substitute(extension_urls=str_extension_urls))
     json_schema = jsg.generate_json_schema(_COMPLIANCE_PROJECT_TESTED)
     validate(instance=json_example, schema=json_schema)
 

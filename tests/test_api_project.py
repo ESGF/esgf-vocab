@@ -213,10 +213,9 @@ def test_multiple_collections_per_data_descriptor(use_all_dev_config) -> None:
         assert isinstance(collections_found, list), f"{project_id}/{data_descriptor_id}: Expected list"
 
         # Should have the expected number of collections
-        assert len(collections_found) == len(expected_collections), f"{project_id}/{data_descriptor_id}: Expected {
-            len(expected_collections)
-        } collections, got {len(collections_found)}"
-
+        assert len(collections_found) == len(expected_collections), (
+            f"{project_id}/{data_descriptor_id}: Expected {len(expected_collections)} collections, got {len(collections_found)}"
+        )
         # Each item should be a tuple (collection_id, context)
         for collection_id, context in collections_found:
             assert isinstance(collection_id, str), f"Expected collection_id to be str, got {type(collection_id)}"
@@ -225,9 +224,9 @@ def test_multiple_collections_per_data_descriptor(use_all_dev_config) -> None:
         # Check that all expected collections are present
         found_collection_ids = {coll_id for coll_id, _ in collections_found}
         expected_set = set(expected_collections)
-        assert found_collection_ids == expected_set, f"{project_id}/{data_descriptor_id}: Expected {expected_set}, got {
-            found_collection_ids
-        }"
+        assert found_collection_ids == expected_set, (
+            f"{project_id}/{data_descriptor_id}: Expected {expected_set}, got {found_collection_ids}"
+        )
 
 
 def test_multiple_collections_across_all_projects(use_all_dev_config) -> None:
@@ -245,4 +244,6 @@ def test_multiple_collections_across_all_projects(use_all_dev_config) -> None:
     assert len(cordex_entries) == 2, f"Expected 2 collections for cordex-cmip6, got {len(cordex_entries)}"
 
     cordex_collection_ids = {coll for _, coll, _ in cordex_entries}
-    assert cordex_collection_ids == {"mip_era", "project_id"},(f"Expected mip_era and project_id, got {cordex_collection_ids}")
+    assert cordex_collection_ids == {"mip_era", "project_id"}, (
+        f"Expected mip_era and project_id, got {cordex_collection_ids}"
+    )
