@@ -47,12 +47,12 @@ class CMORDRSDefinition(BaseModel):
     Template to use for generating directory paths
     """
 
-    filename_path_example: str
+    filename_example: str
     """
     Example of a filename path that follows this DRS
     """
 
-    filename_path_template: str
+    filename_template: str
     """
     Template to use for generating filename paths
     """
@@ -816,11 +816,12 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
     directory_path_template = ev_project.drs_specs["directory"].separator.join(directory_path_template_l)
     directory_path_example = ev_project.drs_specs["directory"].separator.join(directory_path_example_l)
 
-    filename_path_template_l = []
-    filename_path_example_l = []
+    filename_template_l = []
+    filename_example_l = []
     for i, part in enumerate(ev_project.drs_specs["file_name"].parts):
         if i > 0:
             prefix = ev_project.drs_specs["file_name"].separator
+
         else:
             prefix = ""
 
@@ -857,23 +858,28 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
                     0
                 ].drs_name
 
+        # For some reason, CMOR doesn't use a separator in its template.
+        # I assume that "_" is hard-coded in CMOR somewhere.
+        filename_template_prefix = ""
         if part.is_required:
-            filename_path_template_l.append(f"{prefix}<{cmor_placeholder}>")
+            filename_template_l.append(f"{filename_template_prefix}<{cmor_placeholder}>")
         else:
-            filename_path_template_l.append(f"[{prefix}<{cmor_placeholder}>]")
+            filename_template_l.append(f"[{filename_template_prefix}<{cmor_placeholder}>]")
 
-        filename_path_example_l.append(f"{prefix}{example_value}")
+        filename_example_l.append(f"{prefix}{example_value}")
 
-    filename_path_template_excl_ext = "".join(filename_path_template_l)
-    filename_path_template = f"{filename_path_template_excl_ext}.nc"
-    filename_path_example_excl_ext = "".join(filename_path_example_l)
-    filename_path_example = f"{filename_path_example_excl_ext}.nc"
+    filename_template_excl_ext = "".join(filename_template_l)
+    # TBC: inclusion or exclusion of .nc extension
+    # filename_template = f"{filename_template_excl_ext}.nc"
+    filename_template = f"{filename_template_excl_ext}"
+    filename_example_excl_ext = "".join(filename_example_l)
+    filename_example = f"{filename_example_excl_ext}.nc"
 
     res = CMORDRSDefinition(
         directory_path_example=directory_path_example,
         directory_path_template=directory_path_template,
-        filename_path_example=filename_path_example,
-        filename_path_template=filename_path_template,
+        filename_example=filename_example,
+        filename_template=filename_template,
     )
 
     return res
