@@ -693,7 +693,6 @@ def get_cmor_source_id_definitions(
 ) -> dict[str, CMORSourceDefinition]:
     terms = ev_api.get_all_terms_in_collection(ev_project.project_id, source_collection)
 
-    get_term = partial(ev_api.get_term_in_project, ev_project.project_id)
     res = {}
     for v in terms:
         model_components = {}
@@ -702,7 +701,9 @@ def get_cmor_source_id_definitions(
 
         source = "\n".join([f"{v.drs_name}:", *[f"{key}: {v.description}" for key, v in model_components.items()]])
         res[v.drs_name] = CMORSourceDefinition(
-            institution_id=[get_term(vv).drs_name for vv in v.contributors],
+            # Did default resolution mode change?
+            # institution_id=[get_term(vv).drs_name for vv in v.contributors],
+            institution_id=[vv.drs_name for vv in v.contributors],
             label=v.label,
             label_extended=v.label_extended,
             model_component=model_components,
@@ -745,15 +746,20 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
     institution_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "organisation")[0]
     sources = ev_api.get_all_terms_in_collection(ev_project.project_id, "source")
     for source in sources:
-        if institution_example.id in source.contributors:
+        # Did default resolution mode change?
+        if institution_example.id in (s.id for s in source.contributors):
             source_example = source
             break
     else:
         msg = f"No example source found for {institution_example.id}"
         raise AssertionError(msg)
 
-    grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid")[0]
-    region_example = ev_api.get_term_in_collection(ev_project.project_id, "region", grid_example.region)
+    # grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid")[0]
+    # Why did this change?!
+    grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid_label")[0]
+    # Did default resolution change to full?!
+    # region_example = ev_api.get_term_in_collection(ev_project.project_id, "region", grid_example.region)
+    region_example = ev_api.get_term_in_collection(ev_project.project_id, "region", grid_example.region.id)
 
     frequency_example = "mon"
     time_range_example = "185001-202112"

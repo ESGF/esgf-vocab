@@ -37,7 +37,8 @@ class DrsSpecification(BaseModel):
 
     type: DrsType
     """The type of the specification."""
-    regex: str
+    # @Laurent what is this
+    regex: str | None = None
     """General pattern for simples checks"""
     separator: str
     """The textual separator string or character."""
