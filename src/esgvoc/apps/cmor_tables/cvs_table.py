@@ -861,7 +861,11 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
         # For some reason, CMOR doesn't use a separator in its template.
         # I assume that "_" is hard-coded in CMOR somewhere.
         filename_template_prefix = ""
-        if part.is_required:
+        if part.source_collection == "time_range":
+            # Don't put time range in the CMOR template as CMOR doesn't support it anymore
+            # Details: https://github.com/WCRP-CMIP/CMIP7-CVs/pull/336#discussion_r2731049844
+            pass
+        elif part.is_required:
             filename_template_l.append(f"{filename_template_prefix}<{cmor_placeholder}>")
         else:
             filename_template_l.append(f"[{filename_template_prefix}<{cmor_placeholder}>]")
