@@ -211,20 +211,6 @@ class CMORSourceDefinition(BaseModel):
     Institution ID for this source
     """
 
-    label: str
-    """
-    Label to use for this source ID
-
-    TODO: check, does this mean in graphs/plots?
-    """
-
-    label_extended: str
-    """
-    Extended label to use for this source ID
-
-    TODO: check, does this mean in graphs/plots?
-    """
-
     model_component: dict[str, CMORModelComponentDefintion]
     """
     Model components of this source
