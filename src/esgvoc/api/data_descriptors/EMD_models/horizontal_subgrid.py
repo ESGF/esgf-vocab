@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
@@ -31,11 +31,28 @@ class HorizontalSubgrid(PlainTermDataDescriptor):
         description="The types of physical variables that are carried at, or representative of conditions at, "
         "the cells described by this horizontal subgrid. Taken from 7.4 cell_variable_type CV. "
         "Options: 'mass', 'x_velocity', 'y_velocity', 'velocity'. "
-        "E.g. ['mass'], ['x_velocity'], ['mass', 'x_velocity', 'y_velocity'], ['mass', 'velocity']. "
-        "Can be an empty list in certain cases.",
-        default_factory=list,
+        "E.g. ['mass'], ['x_velocity'], ['mass', 'x_velocity', 'y_velocity'], ['mass', 'velocity'].",
+        min_length=1,
     )
 
     horizontal_grid_cells: HorizontalGridCells = Field(
         description="A description of the characteristics and location of the grid cells of this subgrid."
     )
+
+    @field_validator("cell_variable_type")
+    @classmethod
+    def validate_cell_variable_type_unique(cls, v):
+        """Validate that cell_variable_type has 1+ different values (EMD Conformance Section 4.1.2)."""
+        if not v:
+            raise ValueError("At least one cell_variable_type must be specified")
+
+        # Extract identifiers and check for duplicates
+        seen = set()
+        for item in v:
+            item_id = item if isinstance(item, str) else getattr(item, "id", str(item))
+            if item_id in seen:
+                raise ValueError(
+                    f"cell_variable_type values must be different, '{item_id}' appears multiple times"
+                )
+            seen.add(item_id)
+        return v

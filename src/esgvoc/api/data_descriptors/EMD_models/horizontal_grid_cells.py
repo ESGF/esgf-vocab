@@ -10,7 +10,7 @@ from __future__ import annotations
 import textwrap
 from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.region import Region
@@ -152,7 +152,7 @@ class HorizontalGridCells(PlainTermDataDescriptor):
             """
         ),
         ge=0.0,
-        le=360.0,
+        lt=360.0,
     )
 
     n_cells: Optional[int] = Field(
@@ -178,6 +178,7 @@ class HorizontalGridCells(PlainTermDataDescriptor):
         default=None,
         description="The zonal (east-west) wave number at which a spectral model is truncated when "
         "reporting on this grid. If the grid is not used for reporting spectral models, set to None.",
+        ge=1,
     )
 
     resolution_range_km: Optional[list[float]] = Field(
@@ -228,3 +229,30 @@ class HorizontalGridCells(PlainTermDataDescriptor):
             if any(val <= 0 for val in v):
                 raise ValueError("resolution_range_km values must be > 0")
         return v
+
+    @model_validator(mode="after")
+    def validate_lat_lon_pair(self):
+        """Validate southernmost_latitude and westernmost_longitude are both set or neither (EMD Conformance 4.1.3)."""
+        lat_set = self.southernmost_latitude is not None
+        lon_set = self.westernmost_longitude is not None
+        if lat_set != lon_set:
+            raise ValueError(
+                "southernmost_latitude and westernmost_longitude must both be set or neither"
+            )
+        return self
+
+    @model_validator(mode="after")
+    def validate_truncation_pair(self):
+        """Validate truncation_method requires truncation_number (EMD Conformance 4.1.3)."""
+        has_method = self.truncation_method is not None
+        has_number = self.truncation_number is not None
+
+        if has_method and not has_number:
+            raise ValueError(
+                "truncation_number is required when truncation_method is set"
+            )
+        if has_number and not has_method:
+            raise ValueError(
+                "truncation_method is required when truncation_number is set"
+            )
+        return self
