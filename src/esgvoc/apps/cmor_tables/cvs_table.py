@@ -862,8 +862,7 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
         filename_example_l.append(f"{prefix}{example_value}")
 
     filename_template_excl_ext = "".join(filename_template_l)
-    # TBC: inclusion or exclusion of .nc extension
-    # filename_template = f"{filename_template_excl_ext}.nc"
+    # Current CMOR versions don't need/want the extension for whatever eason
     filename_template = f"{filename_template_excl_ext}"
     filename_example_excl_ext = "".join(filename_example_l)
     filename_example = f"{filename_example_excl_ext}.nc"
