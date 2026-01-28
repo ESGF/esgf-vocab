@@ -10,8 +10,8 @@ import esgvoc.core.constants as constants
 import esgvoc.core.service as service
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
 from esgvoc.api.project_specs import ProjectSpecs
-from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
 from esgvoc.api.pydantic_handler import instantiate_pydantic_term
+from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
 from esgvoc.api.search import (
     Item,
     MatchingTerm,

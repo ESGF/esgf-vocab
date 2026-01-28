@@ -47,12 +47,12 @@ class CMORDRSDefinition(BaseModel):
     Template to use for generating directory paths
     """
 
-    filename_path_example: str
+    filename_example: str
     """
     Example of a filename path that follows this DRS
     """
 
-    filename_path_template: str
+    filename_template: str
     """
     Template to use for generating filename paths
     """
@@ -209,20 +209,6 @@ class CMORSourceDefinition(BaseModel):
     institution_id: RegularExpressionValidators
     """
     Institution ID for this source
-    """
-
-    label: str
-    """
-    Label to use for this source ID
-
-    TODO: check, does this mean in graphs/plots?
-    """
-
-    label_extended: str
-    """
-    Extended label to use for this source ID
-
-    TODO: check, does this mean in graphs/plots?
     """
 
     model_component: dict[str, CMORModelComponentDefintion]
@@ -693,7 +679,6 @@ def get_cmor_source_id_definitions(
 ) -> dict[str, CMORSourceDefinition]:
     terms = ev_api.get_all_terms_in_collection(ev_project.project_id, source_collection)
 
-    get_term = partial(ev_api.get_term_in_project, ev_project.project_id)
     res = {}
     for v in terms:
         model_components = {}
@@ -702,7 +687,9 @@ def get_cmor_source_id_definitions(
 
         source = "\n".join([f"{v.drs_name}:", *[f"{key}: {v.description}" for key, v in model_components.items()]])
         res[v.drs_name] = CMORSourceDefinition(
-            institution_id=[get_term(vv).drs_name for vv in v.contributors],
+            # Did default resolution mode change?
+            # institution_id=[get_term(vv).drs_name for vv in v.contributors],
+            institution_id=[vv.drs_name for vv in v.contributors],
             label=v.label,
             label_extended=v.label_extended,
             model_component=model_components,
@@ -745,15 +732,20 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
     institution_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "organisation")[0]
     sources = ev_api.get_all_terms_in_collection(ev_project.project_id, "source")
     for source in sources:
-        if institution_example.id in source.contributors:
+        # Did default resolution mode change?
+        if institution_example.id in (s.id for s in source.contributors):
             source_example = source
             break
     else:
         msg = f"No example source found for {institution_example.id}"
         raise AssertionError(msg)
 
-    grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid")[0]
-    region_example = ev_api.get_term_in_collection(ev_project.project_id, "region", grid_example.region)
+    # grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid")[0]
+    # Why did this change?!
+    grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid_label")[0]
+    # Did default resolution change to full?!
+    # region_example = ev_api.get_term_in_collection(ev_project.project_id, "region", grid_example.region)
+    region_example = ev_api.get_term_in_collection(ev_project.project_id, "region", grid_example.region.id)
 
     frequency_example = "mon"
     time_range_example = "185001-202112"
@@ -810,11 +802,12 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
     directory_path_template = ev_project.drs_specs["directory"].separator.join(directory_path_template_l)
     directory_path_example = ev_project.drs_specs["directory"].separator.join(directory_path_example_l)
 
-    filename_path_template_l = []
-    filename_path_example_l = []
+    filename_template_l = []
+    filename_example_l = []
     for i, part in enumerate(ev_project.drs_specs["file_name"].parts):
         if i > 0:
             prefix = ev_project.drs_specs["file_name"].separator
+
         else:
             prefix = ""
 
@@ -851,23 +844,32 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
                     0
                 ].drs_name
 
-        if part.is_required:
-            filename_path_template_l.append(f"{prefix}<{cmor_placeholder}>")
+        # For some reason, CMOR doesn't use a separator in its template.
+        # I assume that "_" is hard-coded in CMOR somewhere.
+        filename_template_prefix = ""
+        if part.source_collection == "time_range":
+            # Don't put time range in the CMOR template as CMOR doesn't support it anymore
+            # Details: https://github.com/WCRP-CMIP/CMIP7-CVs/pull/336#discussion_r2731049844
+            pass
+        elif part.is_required:
+            filename_template_l.append(f"{filename_template_prefix}<{cmor_placeholder}>")
         else:
-            filename_path_template_l.append(f"[{prefix}<{cmor_placeholder}>]")
+            filename_template_l.append(f"[{filename_template_prefix}<{cmor_placeholder}>]")
 
-        filename_path_example_l.append(f"{prefix}{example_value}")
+        filename_example_l.append(f"{prefix}{example_value}")
 
-    filename_path_template_excl_ext = "".join(filename_path_template_l)
-    filename_path_template = f"{filename_path_template_excl_ext}.nc"
-    filename_path_example_excl_ext = "".join(filename_path_example_l)
-    filename_path_example = f"{filename_path_example_excl_ext}.nc"
+    filename_template_excl_ext = "".join(filename_template_l)
+    # TBC: inclusion or exclusion of .nc extension
+    # filename_template = f"{filename_template_excl_ext}.nc"
+    filename_template = f"{filename_template_excl_ext}"
+    filename_example_excl_ext = "".join(filename_example_l)
+    filename_example = f"{filename_example_excl_ext}.nc"
 
     res = CMORDRSDefinition(
         directory_path_example=directory_path_example,
         directory_path_template=directory_path_template,
-        filename_path_example=filename_path_example,
-        filename_path_template=filename_path_template,
+        filename_example=filename_example,
+        filename_template=filename_template,
     )
 
     return res

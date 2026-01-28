@@ -103,7 +103,9 @@ def get_pydantic_class(data_descriptor_id_or_term_type: str) -> type["DataDescri
         raise EsgvocDbError(f"'{data_descriptor_id_or_term_type}' pydantic class not found")
 
 
-def instantiate_pydantic_term(term: "UTerm | PTerm", selected_term_fields: Iterable[str] | None) -> "DataDescriptor | DataDescriptorSubSet":
+def instantiate_pydantic_term(
+    term: "UTerm | PTerm", selected_term_fields: Iterable[str] | None
+) -> "DataDescriptor | DataDescriptorSubSet":
     """
     Instantiate a Pydantic DataDescriptor from a database term.
 
