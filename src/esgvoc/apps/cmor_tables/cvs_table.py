@@ -928,6 +928,12 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             kwarg = attr_property.field_name
             value = get_allowed_dict_for_attribute(attr_property.field_name, ev_project)
 
+        elif attr_property.field_name == "grid_label":
+            # Not sure why this is a necessary exception
+            kwarg = attr_property.field_name
+            attribute_instances = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid_label")
+            value = {v.drs_name: v.description for v in attribute_instances}
+
         else:
             kwarg = attr_property.field_name
             pydantic_class = ev_api.pydantic_handler.get_pydantic_class(attr_property.source_collection)
