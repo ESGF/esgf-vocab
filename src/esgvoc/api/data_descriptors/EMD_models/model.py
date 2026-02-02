@@ -6,6 +6,7 @@ The following properties provide a top-level description of the model as a whole
 
 from __future__ import annotations
 
+import warnings
 from typing import List, Optional, Tuple
 
 from pydantic import Field, field_validator, model_validator
@@ -151,7 +152,7 @@ class Model(PlainTermDataDescriptor):
 
     @model_validator(mode="after")
     def validate_model_components_match_dynamic(self):
-        """Validate each model_component.component matches a unique dynamic_component."""
+        """Validate each model_component.component matches a unique dynamic_component (warning mode)."""
         dynamic_ids = {self._get_component_id(c) for c in self.dynamic_components}
         seen_components = set()
 
@@ -160,15 +161,23 @@ class Model(PlainTermDataDescriptor):
                 continue  # Skip string references
             mc_component = self._get_component_id(mc.component)
             if mc_component not in dynamic_ids:
-                raise ValueError(f"Model component '{mc_component}' is not in dynamic_components: {dynamic_ids}")
+                warnings.warn(
+                    f"EMD Conformance: Model component '{mc_component}' is not in dynamic_components: {dynamic_ids}",
+                    UserWarning,
+                    stacklevel=2,
+                )
             if mc_component in seen_components:
-                raise ValueError(f"Model component '{mc_component}' appears multiple times - each must be unique")
+                warnings.warn(
+                    f"EMD Conformance: Model component '{mc_component}' appears multiple times - each must be unique",
+                    UserWarning,
+                    stacklevel=2,
+                )
             seen_components.add(mc_component)
         return self
 
     @model_validator(mode="after")
     def validate_embedded_components(self):
-        """Validate embedded_components pairs (EMD Conformance Section 2)."""
+        """Validate embedded_components pairs (EMD Conformance Section 2) (warning mode)."""
         if not self.embedded_components:
             return self
 
@@ -181,18 +190,32 @@ class Model(PlainTermDataDescriptor):
 
             # Components in each pair MUST be from dynamic_components
             if embedded_id not in dynamic_ids:
-                raise ValueError(f"Embedded component '{embedded_id}' is not in dynamic_components")
+                warnings.warn(
+                    f"EMD Conformance: Embedded component '{embedded_id}' is not in dynamic_components",
+                    UserWarning,
+                    stacklevel=2,
+                )
             if host_id not in dynamic_ids:
-                raise ValueError(f"Host component '{host_id}' is not in dynamic_components")
+                warnings.warn(
+                    f"EMD Conformance: Host component '{host_id}' is not in dynamic_components",
+                    UserWarning,
+                    stacklevel=2,
+                )
 
             # Components in each pair MUST be different
             if embedded_id == host_id:
-                raise ValueError(f"Embedded and host components must be different, got '{embedded_id}' for both")
+                warnings.warn(
+                    f"EMD Conformance: Embedded and host components must be different, got '{embedded_id}' for both",
+                    UserWarning,
+                    stacklevel=2,
+                )
 
             # Each embedded component MUST only be embedded in one host
             if embedded_id in embedded_set:
-                raise ValueError(
-                    f"Component '{embedded_id}' is embedded in multiple hosts - each can only be embedded once"
+                warnings.warn(
+                    f"EMD Conformance: Component '{embedded_id}' is embedded in multiple hosts - each can only be embedded once",
+                    UserWarning,
+                    stacklevel=2,
                 )
             embedded_set.add(embedded_id)
 
@@ -200,7 +223,7 @@ class Model(PlainTermDataDescriptor):
 
     @model_validator(mode="after")
     def validate_coupled_components(self):
-        """Validate coupled_components pairs (EMD Conformance Section 2)."""
+        """Validate coupled_components pairs (EMD Conformance Section 2) (warning mode)."""
         if not self.coupled_components:
             return self
 
@@ -212,13 +235,25 @@ class Model(PlainTermDataDescriptor):
 
             # Components in each pair MUST be from dynamic_components
             if comp1_id not in dynamic_ids:
-                raise ValueError(f"Coupled component '{comp1_id}' is not in dynamic_components")
+                warnings.warn(
+                    f"EMD Conformance: Coupled component '{comp1_id}' is not in dynamic_components",
+                    UserWarning,
+                    stacklevel=2,
+                )
             if comp2_id not in dynamic_ids:
-                raise ValueError(f"Coupled component '{comp2_id}' is not in dynamic_components")
+                warnings.warn(
+                    f"EMD Conformance: Coupled component '{comp2_id}' is not in dynamic_components",
+                    UserWarning,
+                    stacklevel=2,
+                )
 
             # Components in each pair MUST be different
             if comp1_id == comp2_id:
-                raise ValueError(f"Coupled components in a pair must be different, got '{comp1_id}' for both")
+                warnings.warn(
+                    f"EMD Conformance: Coupled components in a pair must be different, got '{comp1_id}' for both",
+                    UserWarning,
+                    stacklevel=2,
+                )
 
         # When there are two or more pairs, each pair must share at least one component with another pair
         if len(self.coupled_components) >= 2:
@@ -232,13 +267,17 @@ class Model(PlainTermDataDescriptor):
                         shares_component = True
                         break
                 if not shares_component:
-                    raise ValueError(f"Coupled pair {pair} does not share any component with other pairs")
+                    warnings.warn(
+                        f"EMD Conformance: Coupled pair {pair} does not share any component with other pairs",
+                        UserWarning,
+                        stacklevel=2,
+                    )
 
         return self
 
     @model_validator(mode="after")
     def validate_embedded_coupled_exclusivity(self):
-        """Validate every component is embedded XOR coupled, not both (EMD Conformance Section 2)."""
+        """Validate every component is embedded XOR coupled, not both (EMD Conformance Section 2) (warning mode)."""
         dynamic_ids = {self._get_component_id(c) for c in self.dynamic_components}
 
         # Collect embedded components
@@ -255,14 +294,20 @@ class Model(PlainTermDataDescriptor):
         # An embedded component MUST NOT be a coupled component
         overlap = embedded_ids & coupled_ids
         if overlap:
-            raise ValueError(f"Components cannot be both embedded and coupled: {overlap}")
+            warnings.warn(
+                f"EMD Conformance: Components cannot be both embedded and coupled: {overlap}",
+                UserWarning,
+                stacklevel=2,
+            )
 
         # All non-embedded components MUST be coupled components
         non_embedded = dynamic_ids - embedded_ids
         non_coupled_non_embedded = non_embedded - coupled_ids
         if non_coupled_non_embedded:
-            raise ValueError(
-                f"All non-embedded dynamic components must be coupled: {non_coupled_non_embedded} are neither embedded nor coupled"
+            warnings.warn(
+                f"EMD Conformance: All non-embedded dynamic components must be coupled: {non_coupled_non_embedded} are neither embedded nor coupled",
+                UserWarning,
+                stacklevel=2,
             )
 
         return self

@@ -71,7 +71,7 @@ def get_config_manager():
         # Initialize version checker after config is ready
         _initialize_version_check(config_manager)
 
-    return config_manager   
+    return config_manager
 
 
 def get_state():
@@ -81,7 +81,7 @@ def get_state():
         current_state = StateService(service_settings)
     return current_state
 
+
 # Singleton Access Function
 config_manager = get_config_manager()
 current_state = get_state()
-

@@ -6,6 +6,7 @@ The model component's vertical computational grid is described by a subset of th
 
 from __future__ import annotations
 
+import warnings
 from typing import List, Optional
 
 from pydantic import Field, field_validator, model_validator
@@ -98,7 +99,7 @@ class VerticalComputationalGrid(DataDescriptor):
 
     @model_validator(mode="after")
     def validate_description_requirements(self):
-        """Validate description is required when certain fields are not set (EMD Conformance 4.2)."""
+        """Validate description is required when certain fields are not set (EMD Conformance 4.2) (warning mode)."""
         missing_fields = []
 
         # If vertical_coordinate is "none", description is required
@@ -119,8 +120,10 @@ class VerticalComputationalGrid(DataDescriptor):
 
         # If any conditions require description but it's not set
         if missing_fields and not self.description:
-            raise ValueError(
-                f"description is required when: {', '.join(missing_fields)}"
+            warnings.warn(
+                f"EMD Conformance: description is required when: {', '.join(missing_fields)}",
+                UserWarning,
+                stacklevel=2,
             )
 
         return self

@@ -7,6 +7,7 @@ of a horizontal computational grid.
 
 from __future__ import annotations
 
+import warnings
 from typing import List
 
 from pydantic import BaseModel, Field, field_validator
@@ -32,7 +33,7 @@ class HorizontalSubgrid(PlainTermDataDescriptor):
         "the cells described by this horizontal subgrid. Taken from 7.4 cell_variable_type CV. "
         "Options: 'mass', 'x_velocity', 'y_velocity', 'velocity'. "
         "E.g. ['mass'], ['x_velocity'], ['mass', 'x_velocity', 'y_velocity'], ['mass', 'velocity'].",
-        min_length=1,
+        default_factory=list,
     )
 
     horizontal_grid_cells: HorizontalGridCells = Field(
@@ -42,17 +43,24 @@ class HorizontalSubgrid(PlainTermDataDescriptor):
     @field_validator("cell_variable_type")
     @classmethod
     def validate_cell_variable_type_unique(cls, v):
-        """Validate that cell_variable_type has 1+ different values (EMD Conformance Section 4.1.2)."""
+        """Validate that cell_variable_type has 1+ different values (EMD Conformance Section 4.1.2) (warning mode)."""
         if not v:
-            raise ValueError("At least one cell_variable_type must be specified")
+            warnings.warn(
+                "EMD Conformance: At least one cell_variable_type must be specified",
+                UserWarning,
+                stacklevel=2,
+            )
+            return v
 
         # Extract identifiers and check for duplicates
         seen = set()
         for item in v:
             item_id = item if isinstance(item, str) else getattr(item, "id", str(item))
             if item_id in seen:
-                raise ValueError(
-                    f"cell_variable_type values must be different, '{item_id}' appears multiple times"
+                warnings.warn(
+                    f"EMD Conformance: cell_variable_type values must be different, '{item_id}' appears multiple times",
+                    UserWarning,
+                    stacklevel=2,
                 )
             seen.add(item_id)
         return v
