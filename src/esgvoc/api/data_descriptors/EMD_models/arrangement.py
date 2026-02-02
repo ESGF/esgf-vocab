@@ -4,6 +4,7 @@ EMD v1.0 Section 7.3 - arrangement CV
 Horizontal grid arrangement types (Arakawa grids).
 """
 
+from pydantic import Field
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
@@ -18,4 +19,4 @@ class Arrangement(PlainTermDataDescriptor):
     Thuburn et al. (2009)).
     """
 
-    pass
+    n_sub_grid: int = Field(description="maximum number of sub_grids for this arrangement")

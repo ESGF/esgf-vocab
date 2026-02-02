@@ -82,7 +82,7 @@ class DataDescriptorSubSet(DataDescriptor):
     MANDATORY_TERM_FIELDS: ClassVar[tuple[str]] = ("id",)
     """The set of mandatory term fields (only id is guaranteed when using selected_term_fields)."""
 
-    @model_serializer(mode='wrap')
+    @model_serializer(mode="wrap")
     def serialize_model(self, serializer: Any) -> dict[str, Any]:
         """
         Custom serializer that only includes fields that actually exist on the instance.
@@ -93,11 +93,11 @@ class DataDescriptorSubSet(DataDescriptor):
         result = {
             field_name: field_value
             for field_name, field_value in self.__dict__.items()
-            if not field_name.startswith('_')
+            if not field_name.startswith("_")
         }
 
         # Also include extra fields (like drs_name) that are stored in __pydantic_extra__
-        if hasattr(self, '__pydantic_extra__') and self.__pydantic_extra__:
+        if hasattr(self, "__pydantic_extra__") and self.__pydantic_extra__:
             result.update(self.__pydantic_extra__)
 
         return result
