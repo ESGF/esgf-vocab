@@ -47,12 +47,12 @@ class CMORDRSDefinition(BaseModel):
     Template to use for generating directory paths
     """
 
-    filename_path_example: str
+    filename_example: str
     """
     Example of a filename path that follows this DRS
     """
 
-    filename_path_template: str
+    filename_template: str
     """
     Template to use for generating filename paths
     """
@@ -209,20 +209,6 @@ class CMORSourceDefinition(BaseModel):
     institution_id: RegularExpressionValidators
     """
     Institution ID for this source
-    """
-
-    label: str
-    """
-    Label to use for this source ID
-
-    TODO: check, does this mean in graphs/plots?
-    """
-
-    label_extended: str
-    """
-    Extended label to use for this source ID
-
-    TODO: check, does this mean in graphs/plots?
     """
 
     model_component: dict[str, CMORModelComponentDefintion]
@@ -482,7 +468,7 @@ def convert_python_regex_to_cmor_regex(inv: str) -> list[str]:
     # Not ideal that we have to do this ourselves,
     # but I can't see another way
     # (it doesn't make sense to use posix regex in the CV JSON
-    # because then esgvoc's Python API won't work) <= YES it works, I dont know why though ^^ but it does with every "valid" function
+    # because then esgvoc's Python API won't work)
 
     if "|" in inv:
         or_sections = re.findall(r"\([^|(]*\|[^)]*\)", inv)
@@ -735,7 +721,6 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
     # Creating a valid example is quite hard because of the coupling between elements.
     # Try and anticipate those here.
     # Note that a perfect way to do this is beyond me right now.
-    # grid region
     activity_example = ev_api.get_term_in_collection(ev_project.project_id, "activity", "cmip")
     experiment_example = ev_api.get_term_in_collection(
         ev_project.project_id, "experiment", activity_example.experiments[0]
@@ -814,11 +799,12 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
     directory_path_template = ev_project.drs_specs["directory"].separator.join(directory_path_template_l)
     directory_path_example = ev_project.drs_specs["directory"].separator.join(directory_path_example_l)
 
-    filename_path_template_l = []
-    filename_path_example_l = []
+    filename_template_l = []
+    filename_example_l = []
     for i, part in enumerate(ev_project.drs_specs["file_name"].parts):
         if i > 0:
             prefix = ev_project.drs_specs["file_name"].separator
+
         else:
             prefix = ""
 
@@ -855,23 +841,31 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
                     0
                 ].drs_name
 
-        if part.is_required:
-            filename_path_template_l.append(f"{prefix}<{cmor_placeholder}>")
+        # For some reason, CMOR doesn't use a separator in its template.
+        # I assume that "_" is hard-coded in CMOR somewhere.
+        filename_template_prefix = ""
+        if part.source_collection == "time_range":
+            # Don't put time range in the CMOR template as CMOR doesn't support it anymore
+            # Details: https://github.com/WCRP-CMIP/CMIP7-CVs/pull/336#discussion_r2731049844
+            pass
+        elif part.is_required:
+            filename_template_l.append(f"{filename_template_prefix}<{cmor_placeholder}>")
         else:
-            filename_path_template_l.append(f"[{prefix}<{cmor_placeholder}>]")
+            filename_template_l.append(f"[{filename_template_prefix}<{cmor_placeholder}>]")
 
-        filename_path_example_l.append(f"{prefix}{example_value}")
+        filename_example_l.append(f"{prefix}{example_value}")
 
-    filename_path_template_excl_ext = "".join(filename_path_template_l)
-    filename_path_template = f"{filename_path_template_excl_ext}.nc"
-    filename_path_example_excl_ext = "".join(filename_path_example_l)
-    filename_path_example = f"{filename_path_example_excl_ext}.nc"
+    filename_template_excl_ext = "".join(filename_template_l)
+    # Current CMOR versions don't need/want the extension for whatever eason
+    filename_template = f"{filename_template_excl_ext}"
+    filename_example_excl_ext = "".join(filename_example_l)
+    filename_example = f"{filename_example_excl_ext}.nc"
 
     res = CMORDRSDefinition(
         directory_path_example=directory_path_example,
         directory_path_template=directory_path_template,
-        filename_path_example=filename_path_example,
-        filename_path_template=filename_path_template,
+        filename_example=filename_example,
+        filename_template=filename_template,
     )
 
     return res
@@ -927,13 +921,14 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             kwarg = attr_property.field_name
             value = get_allowed_dict_for_attribute(attr_property.field_name, ev_project)
 
+        elif attr_property.field_name == "grid_label":
+            # Not sure why this is a necessary exception
+            kwarg = attr_property.field_name
+            attribute_instances = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid_label")
+            value = {v.drs_name: v.description for v in attribute_instances}
+
         else:
             kwarg = attr_property.field_name
-            # pydantic_class = ev_api.pydantic_handler.get_pydantic_class(attr_property.source_collection)
-
-            ## getting the datadescriptor from the collection_name is kind of tricky at the moment (not handle by esgvoc) => The issue is that this way of doing it can be false ! the only way i see fir now is .. instance the first one with esgvoc => get his class, forget about the term then pass the class to the generic algo
-            ## API update to get the DD name pointed by the collecton so can comment this : TODO : Remove those comments when merging to main
-            # pydantic_class = ev_api.get_all_terms_in_collection(project, attr_property.source_collection)[0].__class__
 
             DD_name = ev_api.get_data_descriptor_from_collection_in_project(project, attr_property.source_collection)
             from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING

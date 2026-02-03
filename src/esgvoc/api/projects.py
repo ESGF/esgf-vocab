@@ -10,8 +10,8 @@ import esgvoc.core.constants as constants
 import esgvoc.core.service as service
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
 from esgvoc.api.project_specs import ProjectSpecs
-from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
 from esgvoc.api.pydantic_handler import instantiate_pydantic_term
+from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
 from esgvoc.api.search import (
     Item,
     MatchingTerm,
@@ -872,7 +872,7 @@ def _get_data_descriptor_from_collection_in_project(collection_id: str, session:
     statement = select(PCollection.data_descriptor_id).where(PCollection.id == collection_id)
     try:
         result = session.exec(statement).one()
-    except Exception as e:
+    except Exception:
         result = None
     return result
 
@@ -882,7 +882,8 @@ def get_data_descriptor_from_collection_in_project(project_id: str, collection_i
     Returns the datadescriptor name, in project, that is pointed by the given collection in project.
     This function performs an exact match on `collection_id`.
     If the provided `colleciton_id` is not found, or if
-    there is no collection_id in the project or  no corresponding datadescriptor to the given collection, the function return None.
+    there is no collection_id in the project
+    or no corresponding datadescriptor to the given collection, the function return None.
     :param project_id : name of the concerned project
     :type project_id :str
     :param collection_id : The id of the given collection.
