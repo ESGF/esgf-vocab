@@ -79,14 +79,6 @@ class VerticalComputationalGrid(DataDescriptor):
                 raise ValueError("n_z_range values must be >= 1")
         return v
 
-    @field_validator("n_z")
-    @classmethod
-    def validate_n_z_exclusivity(cls, v, info):
-        """Validate that n_z and n_z_range are mutually exclusive."""
-        if v is not None and info.data.get("n_z_range") is not None:
-            raise ValueError("n_z and n_z_range cannot both be set")
-        return v
-
     def accept(self, visitor):
         """Accept a data descriptor visitor."""
         return visitor.visit_plain_term(self)
@@ -96,6 +88,13 @@ class VerticalComputationalGrid(DataDescriptor):
         if isinstance(self.vertical_coordinate, str):
             return self.vertical_coordinate.lower()
         return getattr(self.vertical_coordinate, "id", str(self.vertical_coordinate)).lower()
+
+    @model_validator(mode="after")
+    def validate_n_z_exclusivity(self):
+        """Validate that n_z and n_z_range are mutually exclusive."""
+        if self.n_z is not None and self.n_z_range is not None:
+            raise ValueError("n_z and n_z_range cannot both be set")
+        return self
 
     @model_validator(mode="after")
     def validate_description_requirements(self):
