@@ -48,12 +48,7 @@
           "type": "string",
           "pattern": {{ base_id_regex|tojson }}
         },
-        "base_id": {
-          "type": "string"
-          "pattern": {{ drs_dataset_base_id_regex|tojson }}
-        },
         "collection": {
-
           "const": "{{ project_id }}"
         },
         "properties": {
