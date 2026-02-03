@@ -42,14 +42,14 @@
         },
         "id": {
           "type": "string",
-          "pattern": {{ drs_dataset_id_regex|tojson }}
+          "pattern": {{ dataset_id_regex|tojson }}
         },
         "base_id": {
-          "type": "string"
-          "pattern": {{ drs_dataset_base_id_regex|tojson }}
+          "type": "string",
+          "pattern": {{ base_id_regex|tojson }}
         },
         "collection": {
-          "const": "{{ project_id_drs_name }}"
+          "const": "{{ project_id }}"
         },
         "properties": {
           "allOf": [

@@ -53,7 +53,7 @@ class EMDModelComponent(PlainTermDataDescriptor):
         "Set to 'private' if not publicly available.",
         min_length=1,
     )
-
+    """
     embedded_in: Optional[str | ComponentType] = Field(
         default=None,
         description="The host model component (identified by its component property) in which this component "
@@ -65,7 +65,7 @@ class EMDModelComponent(PlainTermDataDescriptor):
         description="The model components (identified by their component properties) with which this component "
         "is 'coupled'. Taken from 7.1 component CV. Omit when this component is embedded in another component.",
     )
-
+    """
     horizontal_computational_grid: HorizontalComputationalGrid = Field(
         description="A standardised description of the model component's horizontal computational grid."
     )
@@ -84,10 +84,11 @@ class EMDModelComponent(PlainTermDataDescriptor):
             return v.strip()
         return v
 
+    """
     @field_validator("coupled_with")
     @classmethod
     def validate_coupling_exclusivity(cls, v, info):
-        """Validate that a component cannot be both embedded and coupled."""
+        ""Validate that a component cannot be both embedded and coupled.""
         if v is not None and info.data.get("embedded_in") is not None:
             raise ValueError(
                 "A component cannot be both embedded_in another component and coupled_with other components"
@@ -97,12 +98,13 @@ class EMDModelComponent(PlainTermDataDescriptor):
     @field_validator("embedded_in")
     @classmethod
     def validate_embedding_exclusivity(cls, v, info):
-        """Validate that a component cannot be both embedded and coupled."""
+        ""Validate that a component cannot be both embedded and coupled.""
         if v is not None and info.data.get("coupled_with") is not None:
             raise ValueError(
                 "A component cannot be both embedded_in another component and coupled_with other components"
             )
         return v
+    """
 
     @field_validator("code_base", mode="before")
     @classmethod

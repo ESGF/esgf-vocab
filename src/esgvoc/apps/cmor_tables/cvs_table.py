@@ -455,7 +455,6 @@ def get_allowed_dict_for_attribute(attribute_name: str, ev_project: ev_api.proje
         attribute_to_match="field_name",
         ev_project=ev_project,
     )
-
     attribute_instances = ev_api.get_all_terms_in_collection(
         ev_project.project_id, ev_attribute_property.source_collection
     )
@@ -679,6 +678,7 @@ def get_cmor_source_id_definitions(
 ) -> dict[str, CMORSourceDefinition]:
     terms = ev_api.get_all_terms_in_collection(ev_project.project_id, source_collection)
 
+    get_term = partial(ev_api.get_term_in_project, ev_project.project_id)
     res = {}
     for v in terms:
         model_components = {}
@@ -687,9 +687,7 @@ def get_cmor_source_id_definitions(
 
         source = "\n".join([f"{v.drs_name}:", *[f"{key}: {v.description}" for key, v in model_components.items()]])
         res[v.drs_name] = CMORSourceDefinition(
-            # Did default resolution mode change?
-            # institution_id=[get_term(vv).drs_name for vv in v.contributors],
-            institution_id=[vv.drs_name for vv in v.contributors],
+            institution_id=[get_term(vv).drs_name if isinstance(vv, str) else vv.drs_name for vv in v.contributors],
             label=v.label,
             label_extended=v.label_extended,
             model_component=model_components,
@@ -731,24 +729,20 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
     institution_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "organisation")[0]
     sources = ev_api.get_all_terms_in_collection(ev_project.project_id, "source")
     for source in sources:
-        # Did default resolution mode change?
-        if institution_example.id in (s.id for s in source.contributors):
+        contributor_ids = [c if isinstance(c, str) else c.id for c in source.contributors]
+        if institution_example.id in contributor_ids:
             source_example = source
             break
     else:
         msg = f"No example source found for {institution_example.id}"
         raise AssertionError(msg)
 
-    # Note: this will only work for CMIP7.
-    # If a project uses a different name for the grid collection
-    # (e.g. simply "grid" or "grid_id")
-    # then we would need to use that collection name here instead of CMIP7's "grid_label".
-    # For more details, see this comment: https://github.com/ESGF/esgf-vocab/pull/187#discussion_r2735866256
-    # A fix may come soon, which could then be implemented here to remove this potential issue.
     grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid_label")[0]
-    # Did default resolution change to full?!
-    # region_example = ev_api.get_term_in_collection(ev_project.project_id, "region", grid_example.region)
-    region_example = ev_api.get_term_in_collection(ev_project.project_id, "region", grid_example.region.id)
+    region_example = (
+        grid_example.region
+        if not isinstance(grid_example.region, str)
+        else ev_api.get_term_in_collection(ev_project.project_id, "region", grid_example.region)
+    )
 
     frequency_example = "mon"
     time_range_example = "185001-202112"
@@ -917,7 +911,6 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
         elif attr_property.field_name == "nominal_resolution":
             kwarg = attr_property.field_name
             value = get_cmor_nominal_resolution_defintions(attr_property.field_name, ev_project)
-
         elif attr_property.field_name == "source_id":
             value = get_cmor_source_id_definitions(attr_property.source_collection, ev_project)
             kwarg = attr_property.field_name
@@ -936,7 +929,11 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
 
         else:
             kwarg = attr_property.field_name
-            pydantic_class = ev_api.pydantic_handler.get_pydantic_class(attr_property.source_collection)
+
+            DD_name = ev_api.get_data_descriptor_from_collection_in_project(project, attr_property.source_collection)
+            from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
+
+            pydantic_class = DATA_DESCRIPTOR_CLASS_MAPPING[DD_name]
             if issubclass(pydantic_class, ev_api.data_descriptors.data_descriptor.PlainTermDataDescriptor):
                 value = get_allowed_dict_for_attribute(attr_property.field_name, ev_project)
 
@@ -956,3 +953,8 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
     cmor_cvs_table = CMORCVsTable(**init_kwargs)
 
     return cmor_cvs_table
+
+
+if __name__ == "__main__":
+    json_data = generate_cvs_table("cmip7")
+    print(json_data)

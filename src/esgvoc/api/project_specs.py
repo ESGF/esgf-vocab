@@ -37,9 +37,6 @@ class DrsSpecification(BaseModel):
 
     type: DrsType
     """The type of the specification."""
-    # @Laurent what is this
-    regex: str | None = None
-    """General pattern for simples checks"""
     separator: str
     """The textual separator string or character."""
     properties: dict | None = None
@@ -101,6 +98,10 @@ class CatalogProperties(BaseModel):
     """The URI template of the catalog system."""
     extensions: list[CatalogExtension]
     """The extensions of the catalog."""
+    regex_id: str
+    """ simple constrainst regex for dataset_id str (with version)"""
+    regex_base_id: str
+    """ simple constrainst regex for base_id str (without version)"""
 
 
 AttributeSpecification = list[AttributeProperty]
@@ -113,10 +114,8 @@ class CatalogSpecification(BaseModel):
 
     version: str
     """The version of the catalog."""
-
     catalog_properties: CatalogProperties
     """The properties of the catalog."""
-
     dataset_properties: list[CatalogProperty]
     "The properties of the dataset described in a catalog."
     file_properties: list[CatalogProperty]
@@ -132,6 +131,8 @@ class ProjectSpecs(BaseModel):
     """The project id."""
     description: str
     """The description of the project."""
+    drs_name: str
+    """ official typo for this project. """
     version: str
     """The git_hash used as the version"""
     drs_specs: dict[DrsType, DrsSpecification] | None = None

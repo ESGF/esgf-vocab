@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import List
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, AfterValidator
 
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 
@@ -50,6 +50,16 @@ class HorizontalComputationalGrid(DataDescriptor):
         if not v or len(v) < 1:
             raise ValueError("At least one horizontal subgrid must be provided")
         return v
+
+    """
+    @field_validator("horizontal_subgrids")
+    def validate_at_most_n_sub_grid(self, v):
+        ""Validate that there is at most n_sub_grid horizontal subgrid.""
+        if type(self.arrangement) is not str:
+            if not v or len(v) > self.arrangement.n_sub_grid:
+                raise ValueError("At most n_sub_grid from arragement for horizontal subgrid must be provided")
+        return v
+    """
 
     def accept(self, visitor):
         """Accept a data descriptor visitor."""
