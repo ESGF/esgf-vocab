@@ -9,7 +9,7 @@ class DataSpecsVersion(PlainTermDataDescriptor):
     """
     Data specifications version number
 
-    Examples: "MIP-DS7-0.0.0", "01.00.33"
+    Examples: "MIP-DS7.0.0.0", "01.00.33"
 
     The data specifications describe the overall set of data specifications
     used when writing the dataset.
