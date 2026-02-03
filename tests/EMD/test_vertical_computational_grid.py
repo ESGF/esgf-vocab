@@ -23,6 +23,7 @@ def _create_base_vcg_data(**overrides) -> dict:
         "id": "test_vcg",
         "type": "vertical_computational_grid",
         "vertical_coordinate": "height",
+        "description": "Test vertical grid",  # Missing this field will trigger a warning
     }
     data.update(overrides)
     return data
@@ -35,7 +36,7 @@ class TestDescriptionRequirementsValidation:
         """Test warning when vertical_coordinate is 'none' and no description."""
         data = _create_base_vcg_data(
             vertical_coordinate="none",
-            # No description
+            description=None,  # Missing this field will trigger a warning
         )
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
@@ -64,9 +65,9 @@ class TestDescriptionRequirementsValidation:
         """Test warning when n_z and n_z_range are both not set and no description."""
         data = _create_base_vcg_data(
             vertical_coordinate="height",
+            description=None,  # Missing this field will trigger a warning
             # n_z not set
             # n_z_range not set
-            # description not set
         )
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
@@ -108,6 +109,7 @@ class TestDescriptionRequirementsValidation:
         """Test warning when thickness fields are missing and no description."""
         data = _create_base_vcg_data(
             vertical_coordinate="height",
+            description=None,  # Missing this field will trigger a warning
             n_z=50,
             # top_of_model not set
             # bottom_layer_thickness not set
