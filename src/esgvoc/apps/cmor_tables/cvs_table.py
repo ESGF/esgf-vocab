@@ -723,7 +723,6 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
     # Creating a valid example is quite hard because of the coupling between elements.
     # Try and anticipate those here.
     # Note that a perfect way to do this is beyond me right now.
-    # grid region
     activity_example = ev_api.get_term_in_collection(ev_project.project_id, "activity", "cmip")
     experiment_example = ev_api.get_term_in_collection(
         ev_project.project_id, "experiment", activity_example.experiments[0]
@@ -740,8 +739,12 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
         msg = f"No example source found for {institution_example.id}"
         raise AssertionError(msg)
 
-    # grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid")[0]
-    # Why did this change?!
+    # Note: this will only work for CMIP7.
+    # If a project uses a different name for the grid collection
+    # (e.g. simply "grid" or "grid_id")
+    # then we would need to use that collection name here instead of CMIP7's "grid_label".
+    # For more details, see this comment: https://github.com/ESGF/esgf-vocab/pull/187#discussion_r2735866256
+    # A fix may come soon, which could then be implemented here to remove this potential issue.
     grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid_label")[0]
     # Did default resolution change to full?!
     # region_example = ev_api.get_term_in_collection(ev_project.project_id, "region", grid_example.region)
@@ -859,8 +862,7 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
         filename_example_l.append(f"{prefix}{example_value}")
 
     filename_template_excl_ext = "".join(filename_template_l)
-    # TBC: inclusion or exclusion of .nc extension
-    # filename_template = f"{filename_template_excl_ext}.nc"
+    # Current CMOR versions don't need/want the extension for whatever eason
     filename_template = f"{filename_template_excl_ext}"
     filename_example_excl_ext = "".join(filename_example_l)
     filename_example = f"{filename_example_excl_ext}.nc"
@@ -925,6 +927,12 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             # TODO: figure out how to unpack typing.Annotated
             kwarg = attr_property.field_name
             value = get_allowed_dict_for_attribute(attr_property.field_name, ev_project)
+
+        elif attr_property.field_name == "grid_label":
+            # Not sure why this is a necessary exception
+            kwarg = attr_property.field_name
+            attribute_instances = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid_label")
+            value = {v.drs_name: v.description for v in attribute_instances}
 
         else:
             kwarg = attr_property.field_name

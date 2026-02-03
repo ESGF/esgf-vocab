@@ -9,17 +9,11 @@ class DataSpecsVersion(PlainTermDataDescriptor):
     """
     Data specifications version number
 
-    Examples: "MIPDS7-2025p10p1"
+    Examples: "MIP-DS7.0.0.0", "01.00.33"
 
     The data specifications describe the overall set of data specifications
     used when writing the dataset.
-    This version number captures exactly which set of data specifications
-    are consistent (or intended to be consistent) with this dataset.
-    The DRS values can't contain '.' so we use 'p' instead.
-    To go from a DRS value back to a standard version,
-    get everything after the hyphen (everything before the hyphen is a prefix)
-    then replace "p" with ".".
-    Something like, `drs_name.split('-')[-1].replace('p', '.')`.
-    (At the moment, exactly what this means is still vague, particularly for CMIP7.
-    When it solidifies, more details and examples will be added here.)
+    The details of what exactly this means are not always precisely defined
+    and can vary across different CMIP projects.
+    Please check your specific project's documentation for details.
     """
