@@ -35,5 +35,8 @@ jobs:
       - name: Install
         run: uv run esgvoc install
 
-      - name: Test
+      - name: Library Tests
         run: uv run pytest tests
+
+      - name: CVs Tests branch esgvoc_dev
+        run: uv run pytest tests/integration/test_all_cvs.py -m cvtest -v
