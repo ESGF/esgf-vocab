@@ -74,7 +74,7 @@ class Institution(PlainTermDataDescriptor):
     or the ROR was not supplied at the time of registration.
     """
 
-    urls: list[HttpUrl]
+    urls: list[HttpUrl | None]
     """
     URL(s) relevant for finding out more information about this member/entity
     """
