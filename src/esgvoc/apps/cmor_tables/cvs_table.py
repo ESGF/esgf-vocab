@@ -876,6 +876,9 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
 
     init_kwargs = {"required_global_attributes": []}
     for attr_property in ev_project.attr_specs:
+        # Use source_collection as fallback when field_name is None
+        if attr_property.field_name is None:
+            attr_property.field_name = attr_property.source_collection
         if attr_property.is_required:
             init_kwargs["required_global_attributes"].append(attr_property.field_name)
 
