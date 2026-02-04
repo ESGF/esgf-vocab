@@ -297,3 +297,113 @@ def test_get_data_descriptor_from_collection_invalid_project() -> None:
 
     # Should return None when project is not found
     assert data_descriptor is None, f"Expected None for non-existent project, got {data_descriptor}"
+
+
+def test_get_terms_in_collection_by_key_value_plain_term() -> None:
+    """Test that get_terms_in_collection_by_key_value returns correct terms for plain terms."""
+    # Test with a known plain term: institution_id/IPSL
+    terms_found = projects.get_terms_in_collection_by_key_value(
+        "cmip6plus", "institution_id", "drs_name", "IPSL"
+    )
+    assert isinstance(terms_found, list)
+    assert len(terms_found) == 1
+    check_id(terms_found, "ipsl")
+
+
+def test_get_terms_in_collection_by_key_value_composite_term() -> None:
+    """Test that get_terms_in_collection_by_key_value works for composite terms."""
+    # Test with separator key for composite terms (member_id uses "-")
+    terms_found = projects.get_terms_in_collection_by_key_value(
+        "cmip6", "member_id", "separator", "-"
+    )
+    assert isinstance(terms_found, list)
+    assert len(terms_found) >= 1
+
+
+def test_get_terms_in_project_by_key_value_plain_term() -> None:
+    """Test that get_terms_in_project_by_key_value returns correct terms for plain terms."""
+    # Test with a known plain term: IPSL
+    terms_found = projects.get_terms_in_project_by_key_value(
+        "cmip6plus", "drs_name", "IPSL"
+    )
+    assert isinstance(terms_found, list)
+    assert len(terms_found) >= 1
+    check_id(terms_found, "ipsl")
+
+
+def test_get_terms_in_project_by_key_value_composite_term() -> None:
+    """Test that get_terms_in_project_by_key_value works for composite terms."""
+    # Test with separator key - should find multiple composite terms
+    terms_found = projects.get_terms_in_project_by_key_value(
+        "cmip6", "separator", "-"
+    )
+    assert isinstance(terms_found, list)
+    assert len(terms_found) >= 1
+
+
+def test_get_terms_in_all_projects_by_key_value() -> None:
+    """Test that get_terms_in_all_projects_by_key_value returns terms from multiple projects."""
+    # Use a term that exists in multiple projects (e.g., "IPSL" institution)
+    results = projects.get_terms_in_all_projects_by_key_value("drs_name", "IPSL")
+
+    # Should return a list of tuples (project_id, terms_list)
+    assert isinstance(results, list)
+    assert len(results) >= 1
+
+    # Check structure of results
+    for project_id, terms in results:
+        assert isinstance(project_id, str)
+        assert isinstance(terms, list)
+        assert len(terms) >= 1
+        check_id(terms, "ipsl")
+
+
+def test_get_terms_in_project_by_key_value_multiple_results() -> None:
+    """Test that get_terms_in_project_by_key_value returns all matching terms."""
+    # Use separator="-" which should match multiple composite terms
+    terms_found = projects.get_terms_in_project_by_key_value("cmip6", "separator", "-")
+
+    # Should return a list with multiple terms
+    assert isinstance(terms_found, list)
+    assert len(terms_found) >= 1  # At least member_id uses "-"
+
+
+def test_get_terms_in_collection_by_key_value_not_found() -> None:
+    """Test that get_terms_in_collection_by_key_value returns empty list for non-existent value."""
+    terms_found = projects.get_terms_in_collection_by_key_value(
+        "cmip6plus", "institution_id", "drs_name", "NON_EXISTENT_VALUE_12345"
+    )
+    assert terms_found == []
+
+
+def test_get_terms_in_project_by_key_value_not_found() -> None:
+    """Test that get_terms_in_project_by_key_value returns empty list for non-existent value."""
+    terms_found = projects.get_terms_in_project_by_key_value(
+        "cmip6plus", "drs_name", "NON_EXISTENT_VALUE_12345"
+    )
+    assert terms_found == []
+
+
+def test_get_terms_in_collection_by_key_value_invalid_project() -> None:
+    """Test that get_terms_in_collection_by_key_value returns empty list for non-existent project."""
+    terms_found = projects.get_terms_in_collection_by_key_value(
+        "non_existent_project", "institution_id", "drs_name", "IPSL"
+    )
+    assert terms_found == []
+
+
+def test_get_terms_in_all_projects_by_key_value_not_found() -> None:
+    """Test that get_terms_in_all_projects_by_key_value returns empty list for non-existent value."""
+    terms_found = projects.get_terms_in_all_projects_by_key_value("drs_name", "NON_EXISTENT_VALUE_12345")
+    assert terms_found == []
+
+
+def test_get_terms_in_collection_by_key_value_with_selected_fields() -> None:
+    """Test that get_terms_in_collection_by_key_value respects selected_term_fields."""
+    # Test with selected fields
+    terms_found = projects.get_terms_in_collection_by_key_value(
+        "cmip6plus", "institution_id", "drs_name", "IPSL", selected_term_fields=[]
+    )
+    assert isinstance(terms_found, list)
+    assert len(terms_found) >= 1
+    check_id(terms_found, "ipsl")

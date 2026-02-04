@@ -722,6 +722,128 @@ def _get_term_in_collection(collection_id: str, term_id: str, session: Session) 
     return result
 
 
+def _get_terms_by_key_value_in_collection(
+    key: str, value: str, collection_id: str, session: Session
+) -> Sequence[PTerm]:
+    where_expression = and_(PCollection.id == collection_id, PTerm.specs[key] == f'"{value}"')
+    statement = select(PTerm).join(PCollection).where(where_expression)
+    return session.exec(statement).all()
+
+
+def _get_terms_by_key_value_in_project(key: str, value: str, session: Session) -> Sequence[PTerm]:
+    statement = select(PTerm).where(PTerm.specs[key] == f'"{value}"')
+    return session.exec(statement).all()
+
+
+def get_terms_in_collection_by_key_value(
+    project_id: str,
+    collection_id: str,
+    key: str,
+    value: str,
+    selected_term_fields: Iterable[str] | None = None,
+) -> list[DataDescriptor | DataDescriptorSubSet]:
+    """
+    Returns the terms, in the given project and collection, whose specs field `key` matches
+    exactly the given `value`.
+    This function performs an exact match on the `project_id`, `collection_id`, `key` and `value`,
+    and does not search for similar or related projects, collections and terms.
+    If any of the provided ids (`project_id` or `collection_id`) is not found, or if no term
+    matches the given key-value pair, the function returns an empty list.
+
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :param collection_id: The id of the given collection.
+    :type collection_id: str
+    :param key: The specs field key to search on.
+    :type key: str
+    :param value: The value to match for the given key.
+    :type value: str
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
+    :type selected_term_fields: Iterable[str] | None
+    :returns: A list of term instances. Each term is a full DataDescriptor when \
+    selected_term_fields is None, or a DataDescriptorSubSet when selected_term_fields is provided. \
+    Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor | DataDescriptorSubSet]
+    """
+    result: list[DataDescriptor | DataDescriptorSubSet] = []
+    if connection := _get_project_connection(project_id):
+        with connection.create_session() as session:
+            terms_found = _get_terms_by_key_value_in_collection(key, value, collection_id, session)
+            instantiate_pydantic_terms(terms_found, result, selected_term_fields)
+    return result
+
+
+def get_terms_in_project_by_key_value(
+    project_id: str,
+    key: str,
+    value: str,
+    selected_term_fields: Iterable[str] | None = None,
+) -> list[DataDescriptor | DataDescriptorSubSet]:
+    """
+    Returns all terms, in the given project, whose specs field `key` matches exactly the given `value`.
+    This function performs an exact match on the `project_id`, `key` and `value`,
+    and does not search for similar or related projects and terms.
+    If the provided `project_id` is not found, or if no term matches the given key-value pair,
+    the function returns an empty list.
+
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :param key: The specs field key to search on.
+    :type key: str
+    :param value: The value to match for the given key.
+    :type value: str
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
+    :type selected_term_fields: Iterable[str] | None
+    :returns: A list of term instances. Each term is a full DataDescriptor when \
+    selected_term_fields is None, or a DataDescriptorSubSet when selected_term_fields is provided. \
+    Returns an empty list if no matches are found.
+    :rtype: list[DataDescriptor | DataDescriptorSubSet]
+    """
+    result: list[DataDescriptor | DataDescriptorSubSet] = []
+    if connection := _get_project_connection(project_id):
+        with connection.create_session() as session:
+            terms_found = _get_terms_by_key_value_in_project(key, value, session)
+            instantiate_pydantic_terms(terms_found, result, selected_term_fields)
+    return result
+
+
+def get_terms_in_all_projects_by_key_value(
+    key: str,
+    value: str,
+    selected_term_fields: Iterable[str] | None = None,
+) -> list[tuple[str, list[DataDescriptor | DataDescriptorSubSet]]]:
+    """
+    Returns the terms, in all projects, whose specs field `key` matches exactly the given `value`.
+    This function performs an exact match on the `key` and `value`,
+    and does not search for similar or related terms.
+    If no term matches the given key-value pair, the function returns an empty list.
+
+    :param key: The specs field key to search on.
+    :type key: str
+    :param value: The value to match for the given key.
+    :type value: str
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
+    :type selected_term_fields: Iterable[str] | None
+    :returns: A list of tuples containing (project_id, terms). Each term is a full DataDescriptor when \
+    selected_term_fields is None, or a DataDescriptorSubSet when selected_term_fields is provided. \
+    Returns an empty list if no matches are found.
+    :rtype: list[tuple[str, list[DataDescriptor | DataDescriptorSubSet]]]
+    """
+    result: list[tuple[str, list[DataDescriptor | DataDescriptorSubSet]]] = list()
+    project_ids = get_all_projects()
+    for project_id in project_ids:
+        terms_found = get_terms_in_project_by_key_value(project_id, key, value, selected_term_fields)
+        if terms_found:
+            result.append((project_id, terms_found))
+    return result
+
+
 def get_term_in_collection(
     project_id: str, collection_id: str, term_id: str, selected_term_fields: Iterable[str] | None = None
 ) -> DataDescriptor | DataDescriptorSubSet | None:
