@@ -6,9 +6,10 @@ The model component's vertical computational grid is described by a subset of th
 
 from __future__ import annotations
 
+import warnings
 from typing import List, Optional
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 
@@ -78,14 +79,50 @@ class VerticalComputationalGrid(DataDescriptor):
                 raise ValueError("n_z_range values must be >= 1")
         return v
 
-    @field_validator("n_z")
-    @classmethod
-    def validate_n_z_exclusivity(cls, v, info):
-        """Validate that n_z and n_z_range are mutually exclusive."""
-        if v is not None and info.data.get("n_z_range") is not None:
-            raise ValueError("n_z and n_z_range cannot both be set")
-        return v
-
     def accept(self, visitor):
         """Accept a data descriptor visitor."""
         return visitor.visit_plain_term(self)
+
+    def _get_coordinate_id(self) -> str:
+        """Extract coordinate identifier from string or Coordinate object."""
+        if isinstance(self.vertical_coordinate, str):
+            return self.vertical_coordinate.lower()
+        return getattr(self.vertical_coordinate, "id", str(self.vertical_coordinate)).lower()
+
+    @model_validator(mode="after")
+    def validate_n_z_exclusivity(self):
+        """Validate that n_z and n_z_range are mutually exclusive."""
+        if self.n_z is not None and self.n_z_range is not None:
+            raise ValueError("n_z and n_z_range cannot both be set")
+        return self
+
+    @model_validator(mode="after")
+    def validate_description_requirements(self):
+        """Validate description is required when certain fields are not set (EMD Conformance 4.2) (warning mode)."""
+        missing_fields = []
+
+        # If vertical_coordinate is "none", description is required
+        if self._get_coordinate_id() == "none":
+            missing_fields.append("vertical_coordinate is 'none'")
+
+        # If n_z and n_z_range are both not set, description is required
+        if self.n_z is None and self.n_z_range is None:
+            missing_fields.append("n_z and n_z_range are both not set")
+
+        # If thickness fields are not set, description is required
+        if self.top_of_model is None:
+            missing_fields.append("top_of_model (total_thickness) is not set")
+        if self.bottom_layer_thickness is None:
+            missing_fields.append("bottom_layer_thickness is not set")
+        if self.top_layer_thickness is None:
+            missing_fields.append("top_layer_thickness is not set")
+
+        # If any conditions require description but it's not set
+        if missing_fields and not self.description:
+            warnings.warn(
+                f"EMD Conformance: description is required when: {', '.join(missing_fields)}",
+                UserWarning,
+                stacklevel=2,
+            )
+
+        return self

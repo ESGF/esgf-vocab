@@ -23,7 +23,7 @@
         },
         {
           "contains": {
-            "const": "https://stac-extensions.github.io/{{ project_id|lower }}/{{ catalog_version }}/schema.json"
+            "const": "https://esgf.github.io/stac-transaction-api/{{ project_id|lower }}/{{ catalog_version }}/schema.json"
           }
         }
       ]
@@ -42,10 +42,14 @@
         },
         "id": {
           "type": "string",
-          "pattern": {{ drs_dataset_id_regex|tojson }}
+          "pattern": {{ dataset_id_regex|tojson }}
+        },
+        "base_id": {
+          "type": "string",
+          "pattern": {{ base_id_regex|tojson }}
         },
         "collection": {
-          "const": "{{ project_id|upper }}"
+          "const": "{{ project_id }}"
         },
         "properties": {
           "allOf": [
@@ -130,11 +134,6 @@
         },
         {
           "required": [
-            "title"
-          ]
-        },
-        {
-          "required": [
             "updated"
           ]
         }
@@ -160,12 +159,12 @@
         },
         {
           "required": [
-            "protocol"
+            "node"
           ]
         },
         {
           "required": [
-            "updated"
+            "protocol"
           ]
         }
         {% for file_property in catalog_file_properties|sort(attribute="field_name") %}
@@ -184,6 +183,10 @@
       "$comment": " Don't require fields here, do that above in the corresponding schema.",
       "type": "object",
       "properties": {
+        "node": {
+          "type": "string",
+          "pattern": "^([a-z0-9]+(-[a-z0-9]+)*\\.)+[a-z]{2,}$"
+        },
         "protocol": {
           "type": "string",
           "enum": [

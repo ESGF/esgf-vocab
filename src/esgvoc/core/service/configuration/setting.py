@@ -74,9 +74,21 @@ class UniverseSettings(BaseModel):
         return resolve_path_to_absolute(self.db_path, self._config_name)
 
 
+class VersionCheckSettings(BaseModel):
+    """Settings for version checking behavior."""
+
+    enabled: bool = True
+    """Whether version checking is enabled."""
+    check_interval_hours: int = 12
+    """Hours between PyPI version checks."""
+    reminder_interval_hours: int = 72
+    """Hours between showing update reminders (3 days)."""
+
+
 class ServiceSettings(BaseModel):
     universe: UniverseSettings
     projects: Dict[str, ProjectSettings] = Field(default_factory=dict)
+    version_check: VersionCheckSettings = Field(default_factory=VersionCheckSettings)
 
     def set_config_name(self, config_name: str):
         """Set the config name for all settings components."""
@@ -168,6 +180,11 @@ class ServiceSettings(BaseModel):
                 project_configs["cmip6"],
                 project_configs["cmip6plus"],
             ],
+            "version_check": {
+                "enabled": True,
+                "check_interval_hours": 12,
+                "reminder_interval_hours": 72,
+            },
         }
 
     # 🔹 Properties that provide access to the dynamic configurations
@@ -188,7 +205,9 @@ class ServiceSettings(BaseModel):
             data = cls._get_default_settings().copy()  # Use defaults if the file is missing
 
         projects = {p["project_name"]: ProjectSettings(**p) for p in data.pop("projects", [])}
-        return cls(universe=UniverseSettings(**data["universe"]), projects=projects)
+        version_check_data = data.pop("version_check", {})
+        version_check = VersionCheckSettings(**version_check_data)
+        return cls(universe=UniverseSettings(**data["universe"]), projects=projects, version_check=version_check)
 
     @classmethod
     def load_default(cls) -> "ServiceSettings":
@@ -199,13 +218,16 @@ class ServiceSettings(BaseModel):
     def load_from_dict(cls, config_data: dict) -> "ServiceSettings":
         """Load configuration from a dictionary."""
         projects = {p["project_name"]: ProjectSettings(**p) for p in config_data.get("projects", [])}
-        return cls(universe=UniverseSettings(**config_data["universe"]), projects=projects)
+        version_check_data = config_data.get("version_check", {})
+        version_check = VersionCheckSettings(**version_check_data)
+        return cls(universe=UniverseSettings(**config_data["universe"]), projects=projects, version_check=version_check)
 
     def save_to_file(self, file_path: str):
         """Save the configuration to a TOML file."""
         data = {
             "universe": self.universe.model_dump(),
             "projects": [p.model_dump() for p in self.projects.values()],
+            "version_check": self.version_check.model_dump(),
         }
         with open(file_path, "w") as f:
             toml.dump(data, f)
@@ -215,6 +237,7 @@ class ServiceSettings(BaseModel):
         return {
             "universe": self.universe.model_dump(),
             "projects": [p.model_dump() for p in self.projects.values()],
+            "version_check": self.version_check.model_dump(),
         }
 
     # 🔹 NEW: Project management methods

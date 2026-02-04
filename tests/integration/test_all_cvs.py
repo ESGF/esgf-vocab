@@ -46,6 +46,7 @@ class TestAllCVs:
         "cmip6plus",
         "cmip7",
         "cordex-cmip6",
+        "emd",
         "input4mip",
         "obs4ref",
     ]

@@ -17,7 +17,7 @@ class License(PlainTermDataDescriptor):
     before they can be used in CMIP exercises.
     """
 
-    spdx_id: str
+    spdx_id: str | None
     """
     SPDX license identifier (https://spdx.org/licenses/)
     """
