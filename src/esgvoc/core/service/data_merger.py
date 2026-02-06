@@ -543,7 +543,12 @@ class DataMerger:
             # Regular primitive values are returned as-is
             return data
 
-    def resolve_merged_ids(self, merged_data: dict, context_base_path: str | None = None) -> dict:
+    def resolve_merged_ids(
+        self,
+        merged_data: dict,
+        context_base_path: str | None = None,
+        fallback_context_base_path: str | None = None,
+    ) -> dict:
         """
         Resolve nested IDs in merged data by re-expanding it with proper context.
 
@@ -554,6 +559,10 @@ class DataMerger:
             merged_data: The merged dictionary from merge_linked_json()
             context_base_path: Base path containing context directories. If None,
                               attempts to infer from locally_available mappings.
+            fallback_context_base_path: Fallback base path to use if the primary
+                              context_base_path doesn't contain the data descriptor
+                              directory. Useful for project ingestion where the project
+                              path is primary and universe path is fallback.
 
         Returns:
             Dictionary with all nested IDs resolved to full objects
@@ -583,8 +592,12 @@ class DataMerger:
         context_dir = Path(context_base_path) / data_descriptor
 
         if not context_dir.exists():
-            # Fallback if directory doesn't exist
-            return self.resolve_nested_ids(merged_data)
+            if fallback_context_base_path:
+                context_dir = Path(fallback_context_base_path) / data_descriptor
+                if not context_dir.exists():
+                    return self.resolve_nested_ids(merged_data)
+            else:
+                return self.resolve_nested_ids(merged_data)
 
         # Create temp file in the universe data descriptor directory
         # This ensures JsonLdResource picks up the correct context
