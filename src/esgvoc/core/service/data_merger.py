@@ -543,7 +543,12 @@ class DataMerger:
             # Regular primitive values are returned as-is
             return data
 
-    def resolve_merged_ids(self, merged_data: dict, context_base_path: str | None = None) -> dict:
+    def resolve_merged_ids(
+        self,
+        merged_data: dict,
+        context_base_path: str | None = None,
+        fallback_context_base_path: str | None = None,
+    ) -> dict:
         """
         Resolve nested IDs in merged data by re-expanding it with proper context.
 
@@ -554,6 +559,10 @@ class DataMerger:
             merged_data: The merged dictionary from merge_linked_json()
             context_base_path: Base path containing context directories. If None,
                               attempts to infer from locally_available mappings.
+            fallback_context_base_path: Fallback base path to use if the primary
+                              context_base_path doesn't contain the data descriptor
+                              directory. Useful for project ingestion where the project
+                              path is primary and universe path is fallback.
 
         Returns:
             Dictionary with all nested IDs resolved to full objects
@@ -580,16 +589,67 @@ class DataMerger:
         if not data_descriptor:
             return self.resolve_nested_ids(merged_data)
 
-        context_dir = Path(context_base_path) / data_descriptor
+        # Determine context directories for both primary and fallback
+        primary_context_dir = Path(context_base_path) / data_descriptor
+        fallback_context_dir = (
+            Path(fallback_context_base_path) / data_descriptor
+            if fallback_context_base_path
+            else None
+        )
 
-        if not context_dir.exists():
-            # Fallback if directory doesn't exist
+        # We need at least one context directory to exist
+        if not primary_context_dir.exists() and (fallback_context_dir is None or not fallback_context_dir.exists()):
             return self.resolve_nested_ids(merged_data)
 
-        # Create temp file in the universe data descriptor directory
-        # This ensures JsonLdResource picks up the correct context
+        # Merge contexts: start with fallback (universe) and overlay primary (project)
+        # This ensures we have complete nested @context definitions from universe
+        # while respecting project-specific overrides
+        merged_context = {}
+
+        # Load fallback context first (universe - has complete nested definitions)
+        if fallback_context_dir and fallback_context_dir.exists():
+            fallback_context_file = fallback_context_dir / "000_context.jsonld"
+            if fallback_context_file.exists():
+                try:
+                    with open(fallback_context_file, "r", encoding="utf-8") as f:
+                        merged_context = json.load(f)
+                except Exception:
+                    pass
+
+        # Overlay primary context (project - may have project-specific overrides)
+        if primary_context_dir.exists():
+            primary_context_file = primary_context_dir / "000_context.jsonld"
+            if primary_context_file.exists():
+                try:
+                    with open(primary_context_file, "r", encoding="utf-8") as f:
+                        primary_context = json.load(f)
+                        # Deep merge: project overrides universe for matching keys
+                        merged_context = self._deep_merge_contexts(merged_context, primary_context)
+                except Exception:
+                    pass
+
+        # Determine which directory to use for temp file
+        # Prefer primary if it exists, otherwise fallback
+        context_dir = primary_context_dir if primary_context_dir.exists() else fallback_context_dir
+
+        # Create temp merged context file and temp data file
+        temp_context_path = None
+        if merged_context:
+            # Write the merged context to a temp file
+            with tempfile.NamedTemporaryFile(
+                mode="w", suffix=".jsonld", delete=False, dir=str(context_dir), prefix="merged_context_"
+            ) as ctx_tmp:
+                json.dump(merged_context, ctx_tmp)
+                temp_context_path = ctx_tmp.name
+
+            # Update merged_data to reference the temp context file
+            data_with_merged_context = merged_data.copy()
+            data_with_merged_context["@context"] = Path(temp_context_path).name
+        else:
+            data_with_merged_context = merged_data
+
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, dir=str(context_dir)) as tmp:
-            json.dump(merged_data, tmp)
+            json.dump(data_with_merged_context, tmp)
             tmp_path = tmp.name
 
         try:
@@ -612,6 +672,37 @@ class DataMerger:
                 self.data = original_data
         finally:
             Path(tmp_path).unlink()
+            if temp_context_path:
+                Path(temp_context_path).unlink()
+
+    def _deep_merge_contexts(self, base: dict, overlay: dict) -> dict:
+        """
+        Deep merge two context dictionaries, with overlay taking precedence.
+
+        This merges both the @context and esgvoc_resolve_modes, ensuring:
+        - esgvoc_resolve_modes from overlay override base
+        - @context fields from overlay override base, but base fields are preserved
+        """
+        result = base.copy()
+
+        # Merge esgvoc_resolve_modes
+        if "esgvoc_resolve_modes" in overlay:
+            if "esgvoc_resolve_modes" not in result:
+                result["esgvoc_resolve_modes"] = {}
+            result["esgvoc_resolve_modes"].update(overlay["esgvoc_resolve_modes"])
+
+        # Merge @context
+        if "@context" in overlay:
+            if "@context" not in result:
+                result["@context"] = {}
+            base_ctx = result["@context"] if isinstance(result["@context"], dict) else {}
+            overlay_ctx = overlay["@context"] if isinstance(overlay["@context"], dict) else {}
+            # Overlay takes precedence for matching keys
+            merged_ctx = base_ctx.copy()
+            merged_ctx.update(overlay_ctx)
+            result["@context"] = merged_ctx
+
+        return result
 
 
 if __name__ == "__main__":

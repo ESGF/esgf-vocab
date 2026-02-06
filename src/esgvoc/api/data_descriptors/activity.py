@@ -56,7 +56,7 @@ class ActivityCMIP7(PlainTermDataDescriptor):
         return v
 
 
-class ActivityLegacy(DataDescriptor):
+class ActivityLegacy(PlainTermDataDescriptor):
     """
     Legacy activity model for CMIP6 and earlier versions.
 
