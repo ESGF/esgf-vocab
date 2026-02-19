@@ -685,7 +685,7 @@ def get_cmor_source_id_definitions(
         for mc in v.model_components:
             raise NotImplementedError(mc)
 
-        source = "\n".join([f"{v.drs_name}:", *[f"{key}: {v.description}" for key, v in model_components.items()]])
+        source = "; ".join([f"{v.drs_name}:", *[f"{key}: {v.description}" for key, v in model_components.items()]])
         res[v.drs_name] = CMORSourceDefinition(
             institution_id=[get_term(vv).drs_name if isinstance(vv, str) else vv.drs_name for vv in v.contributors],
             label=v.label,
