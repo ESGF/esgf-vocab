@@ -72,6 +72,7 @@ from esgvoc.api.data_descriptors.EMD_models.grid_type import GridType
 from esgvoc.api.data_descriptors.EMD_models.temporal_refinement import TemporalRefinement
 from esgvoc.api.data_descriptors.EMD_models.truncation_method import TruncationMethod
 from esgvoc.api.data_descriptors.EMD_models.vertical_units import VerticalUnits
+from esgvoc.api.data_descriptors.cmipld_voc_translator import pycmipld
 
 from esgvoc.api.data_descriptors.activity import ActivityCMIP7
 
