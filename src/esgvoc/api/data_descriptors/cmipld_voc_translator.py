@@ -53,7 +53,7 @@ class pycmipld(BaseModel, Generic[T]):
             for k, v in {
                 "id": values.get("@id"),
                 "type": type_value,
-                "context": values.get("@context"),
+                "context": values.get("@context").replace("_context", "000_context.jsonld"),
                 "drs_name": values.get("validation_key"),
                 **{k: v for k, v in values.items() if not k.startswith("@")}
             }.items()
