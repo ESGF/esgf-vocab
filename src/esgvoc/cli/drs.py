@@ -151,7 +151,12 @@ def drsvalid(
         for report in reports:
             console.print(str(report))
 
-    return reports
+    # reports have a __bool__ method that returns True if validation passes,
+    # hence propagate suitable exit status to caller programmatically
+    if all(reports):
+        raise typer.Exit(0)
+    else:
+        raise typer.Exit(1)
 
 
 @app.command()
@@ -260,7 +265,11 @@ def drsgen(
         for report in generated_reports:
             console.print(str(report))
 
-    return generated_reports
+    # see comment at end of function 'drsvalid' above
+    if all(generated_reports):
+        raise typer.Exit(0)
+    else:
+        raise typer.Exit(1)
 
 
 if __name__ == "__main__":
