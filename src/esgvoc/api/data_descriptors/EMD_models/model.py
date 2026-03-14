@@ -7,7 +7,7 @@ The following properties provide a top-level description of the model as a whole
 from __future__ import annotations
 
 import warnings
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 from pydantic import Field, field_validator, model_validator
 
@@ -77,6 +77,7 @@ class Model(PlainTermDataDescriptor):
         description="One or more references to published work for the top-level model as a whole.", min_length=1
     )
 
+    # Why is str allowed here ?!
     model_components: List[str | EMDModelComponent] = Field(
         description="The model components that dynamically simulate processes within the model."
     )
