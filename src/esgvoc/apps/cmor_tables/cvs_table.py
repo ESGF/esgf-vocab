@@ -661,8 +661,14 @@ def get_cmor_nominal_resolution_defintions(
 
     terms = ev_api.get_all_terms_in_collection(ev_project.project_id, source_collection)
     res = []
+    special_cases = ["1x1"]
     for t in terms:
-        size_km = ur.Quantity(t.magnitude, t.units).to("km").m
+        if t.value in special_cases:
+            res.append(t.value)
+            continue
+
+        value_f = float(t.value)
+        size_km = ur.Quantity(value_f, t.unit).to("km").m
         if int(size_km) == size_km:
             allowed = f"{size_km:.0f} km"
         else:
@@ -678,18 +684,36 @@ def get_cmor_source_id_definitions(
 ) -> dict[str, CMORSourceDefinition]:
     terms = ev_api.get_all_terms_in_collection(ev_project.project_id, source_collection)
 
-    get_term = partial(ev_api.get_term_in_project, ev_project.project_id)
     res = {}
     for v in terms:
         model_components = {}
         for mc in v.model_components:
-            raise NotImplementedError(mc)
+            if isinstance(mc, str):
+                print(f"Not using component {mc} for {v.drs_name} because it is a string!!")
+                continue
+
+            native_nominal_resolution = ". ".join(
+                (
+                    f"subgrid {v.drs_name}: {v.horizontal_grid_cells.x_resolution} {v.horizontal_grid_cells.horizontal_units}"
+                    for v in mc.horizontal_computational_grid.horizontal_subgrids
+                )
+            )
+            model_components[mc.component] = CMORModelComponentDefintion(
+                description=mc.description,
+                native_nominal_resolution=native_nominal_resolution,
+            )
 
         source = "; ".join([f"{v.drs_name}:", *[f"{key}: {v.description}" for key, v in model_components.items()]])
         res[v.drs_name] = CMORSourceDefinition(
-            institution_id=[get_term(vv).drs_name if isinstance(vv, str) else vv.drs_name for vv in v.contributors],
-            label=v.label,
-            label_extended=v.label_extended,
+            # # No idea how to get this information from the current model
+            # # (maybe rightly not there)
+            # get_term = partial(ev_api.get_term_in_project, ev_project.project_id)
+            # institution_id=[get_term(vv).drs_name if isinstance(vv, str) else vv.drs_name for vv in v.contributors],
+            # Workaround
+            institution_id=[],
+            label=v.name,
+            # Not sure what is meant to be in here with the current model
+            label_extended=f"{v.name} ({v.release_year})",
             model_component=model_components,
             source=source,
             source_id=v.drs_name,
@@ -726,16 +750,9 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
         ev_project.project_id, "experiment", activity_example.experiments[0]
     )
 
-    institution_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "organisation")[0]
-    sources = ev_api.get_all_terms_in_collection(ev_project.project_id, "source")
-    for source in sources:
-        contributor_ids = [c if isinstance(c, str) else c.id for c in source.contributors]
-        if institution_example.id in contributor_ids:
-            source_example = source
-            break
-    else:
-        msg = f"No example source found for {institution_example.id}"
-        raise AssertionError(msg)
+    # Hard-code CNRM while the source <-> institution link is unclear
+    organisation_example = ev_api.get_term_in_collection(ev_project.project_id, "organisation", "cnrm-cerfacs")
+    source_example = ev_api.get_term_in_collection(ev_project.project_id, "source", "cnrm_esm2_1e")
 
     grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid_label")[0]
     region_example = (
@@ -765,10 +782,19 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
 
             continue
 
-        project_attribute_property = get_project_attribute_property(
-            attribute_value=part.source_collection, attribute_to_match="source_collection", ev_project=ev_project
-        )
-        directory_path_template_l.append(f"<{project_attribute_property.field_name}>")
+        if part.source_collection == "branded_suffix":
+            # New project specs don't make sense.
+            # I don't know how I'm meant to know that the values
+            # for the branded_suffix DRS part come from the branded_suffix collection.
+            # Also, why is the attribute field_name branding_suffix
+            # but the DRS part branded_suffix.
+            directory_path_template_l.append("branded_suffix")
+
+        else:
+            project_attribute_property = get_project_attribute_property(
+                attribute_value=part.source_collection, attribute_to_match="source_collection", ev_project=ev_project
+            )
+            directory_path_template_l.append(f"<{project_attribute_property.field_name}>")
 
         if part.source_collection == "activity":
             directory_path_example_l.append(activity_example.drs_name)
@@ -776,8 +802,8 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             directory_path_example_l.append(experiment_example.drs_name)
         elif part.source_collection == "frequency":
             directory_path_example_l.append(frequency_example)
-        elif part.source_collection == "institution":
-            directory_path_example_l.append(institution_example.drs_name)
+        elif part.source_collection == "organisation":
+            directory_path_example_l.append(organisation_example.drs_name)
         elif part.source_collection == "source":
             directory_path_example_l.append(source_example.drs_name)
         elif part.source_collection == "grid":
@@ -814,6 +840,15 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             cmor_placeholder = "timeRange"
             example_value = time_range_example
 
+        elif part.source_collection == "branded_suffix":
+            # New project specs don't make sense.
+            # I don't know how I'm meant to know that the values
+            # for the branded_suffix DRS part come from the branded_suffix collection.
+            # Also, why is the attribute field_name branding_suffix
+            # but the DRS part branded_suffix.
+            cmor_placeholder = "branded_suffix"
+            example_value = branded_suffix_example
+
         else:
             project_attribute_property = get_project_attribute_property(
                 attribute_value=part.source_collection, attribute_to_match="source_collection", ev_project=ev_project
@@ -833,9 +868,6 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             elif part.source_collection == "variant_label":
                 # Urgh
                 example_value = variant_label_example
-            elif part.source_collection == "branded_suffix":
-                # Urgh
-                example_value = branded_suffix_example
             else:
                 example_value = ev_api.get_all_terms_in_collection(ev_project.project_id, part.source_collection)[
                     0
@@ -929,6 +961,29 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             kwarg = attr_property.field_name
             attribute_instances = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid_label")
             value = {v.drs_name: v.description for v in attribute_instances}
+
+        elif attr_property.field_name == "branding_suffix":
+            # Not sure why branding_suffix ends up pointing at known_branded_variable.
+            # Issue in project specs?
+            kwarg = attr_property.field_name
+
+            # here branded_suffix, above branding_suffix ?!
+            terms = ev_api.get_all_terms_in_collection(ev_project.project_id, "branded_suffix")
+            if len(terms) > 1:
+                raise AssertionError(terms)
+
+            term = terms[0]
+
+            parts_l = []
+            for v in term.parts:
+                va = get_project_attribute_property(v.type, "source_collection", ev_project)
+                parts_l.append(f"<{va.field_name}>")
+
+            if term.separator != "-":
+                msg = f"CMOR only supports '-' as a separator, received {term.separator=} for {term=}"
+                raise NotImplementedError(msg)
+
+            value = "".join(parts_l)
 
         else:
             kwarg = attr_property.field_name
