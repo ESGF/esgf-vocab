@@ -692,9 +692,15 @@ def get_cmor_source_id_definitions(
                 print(f"Not using component {mc} for {v.drs_name} because it is a string!!")
                 continue
 
+            # I don't think this is what is meant to be in here.
+            # Let's see if we get any feedback from CMOR developers,
+            # then we can adjust.
             native_nominal_resolution = ". ".join(
                 (
-                    f"subgrid {v.drs_name}: {v.horizontal_grid_cells.x_resolution} {v.horizontal_grid_cells.horizontal_units}"
+                    (
+                        f"subgrid {v.drs_name}: "
+                        f"{v.horizontal_grid_cells.x_resolution} {v.horizontal_grid_cells.horizontal_units}"
+                    )
                     for v in mc.horizontal_computational_grid.horizontal_subgrids
                 )
             )
