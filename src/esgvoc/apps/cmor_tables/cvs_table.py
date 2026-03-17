@@ -975,8 +975,13 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             value = {v.drs_name: v.description for v in attribute_instances}
 
         elif attr_property.field_name == "branding_suffix":
-            # Not sure why branding_suffix ends up pointing at known_branded_variable.
-            # Issue in project specs?
+            # Branded suffix is a bit speical so hard-code.
+            # In short, the DRS specs tell you how to validate
+            # (so, if you know the branded variable,
+            # you know what the branded suffix has to be).
+            # However, here I just want to know what the components
+            # of branded suffix are so I can write the CMOR table.
+            # This is different, hence we can't use the project specs.
             kwarg = attr_property.field_name
 
             # here branded_suffix, above branding_suffix ?!
