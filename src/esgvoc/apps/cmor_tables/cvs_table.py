@@ -689,6 +689,8 @@ def get_cmor_source_id_definitions(
         model_components = {}
         for mc in v.model_components:
             if isinstance(mc, str):
+                # Hopefully fixed once we address
+                # https://github.com/WCRP-CMIP/WCRP-universe/issues/114
                 print(f"Not using component {mc} for {v.drs_name} because it is a string!!")
                 continue
 
@@ -789,11 +791,13 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             continue
 
         if part.source_collection == "branded_suffix":
-            # New project specs don't make sense.
-            # I don't know how I'm meant to know that the values
-            # for the branded_suffix DRS part come from the branded_suffix collection.
-            # Also, why is the attribute field_name branding_suffix
-            # but the DRS part branded_suffix.
+            # Branded suffix is a bit speical so hard-code.
+            # In short, the DRS specs tell you how to validate
+            # (so, if you know the branded variable,
+            # you know what the branded suffix has to be).
+            # However, here I just want to know what the components
+            # of branded suffix are so I can write the CMOR table.
+            # This is different, hence we can't use the project specs.
             directory_path_template_l.append("branded_suffix")
 
         else:
@@ -847,11 +851,13 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             example_value = time_range_example
 
         elif part.source_collection == "branded_suffix":
-            # New project specs don't make sense.
-            # I don't know how I'm meant to know that the values
-            # for the branded_suffix DRS part come from the branded_suffix collection.
-            # Also, why is the attribute field_name branding_suffix
-            # but the DRS part branded_suffix.
+            # Branded suffix is a bit speical so hard-code.
+            # In short, the DRS specs tell you how to validate
+            # (so, if you know the branded variable,
+            # you know what the branded suffix has to be).
+            # However, here I just want to know what the components
+            # of branded suffix are so I can write the CMOR table.
+            # This is different, hence we can't use the project specs.
             cmor_placeholder = "branded_suffix"
             example_value = branded_suffix_example
 
