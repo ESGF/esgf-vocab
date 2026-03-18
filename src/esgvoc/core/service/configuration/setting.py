@@ -146,6 +146,14 @@ class ServiceSettings(BaseModel):
                 "db_path": "dbs/cordex-cmip6.sqlite",
                 "offline_mode": False,
             },
+            "cordex-cmip5": {
+                "project_name": "cordex-cmip5",
+                "github_repo": "https://github.com/WCRP-CORDEX/cordex-cmip5",
+                "branch": "esgvoc",
+                "local_path": "repos/cordex-cmip5",
+                "db_path": "dbs/cordex-cmip5.sqlite",
+                "offline_mode": False,
+            },
             "cmip7": {
                 "project_name": "cmip7",
                 "github_repo": "https://github.com/WCRP-CMIP/CMIP7-CVs",
