@@ -192,38 +192,6 @@ class CMORSourceDefinition(BaseModel):
     but for CMIP phases it refers to the model which provided the simulation.
     """
 
-    # # Don't think this is used or relevant hence drop
-    # activity_participation: RegularExpressionValidators
-    # """
-    # Activities in which this source has participated
-    # """
-
-    # # Don't know what this is hence drop
-    # cohort: RegularExpressionValidators
-    # """
-    # Cohort to which this source belongs
-    #
-    # TODO: clarify what this means
-    # """
-
-    institution_id: RegularExpressionValidators
-    """
-    Institution ID for this source
-    """
-
-    model_component: dict[str, CMORModelComponentDefintion]
-    """
-    Model components of this source
-    """
-
-    # # Not relevant hence drop
-    # release_year: int | None
-    # """
-    # Release year of the model/source
-    #
-    # `None` if the release concept does not apply to this source
-    # """
-
     source: str
     """
     Source information
@@ -685,46 +653,19 @@ def get_cmor_source_id_definitions(
     terms = ev_api.get_all_terms_in_collection(ev_project.project_id, source_collection)
 
     res = {}
-    for v in terms:
-        model_components = {}
-        for mc in v.model_components:
-            if isinstance(mc, str):
-                # Hopefully fixed once we address
-                # https://github.com/WCRP-CMIP/WCRP-universe/issues/114
-                print(f"Not using component {mc} for {v.drs_name} because it is a string!!")
-                continue
+    for term in terms:
+        source_l = []
+        for mc in term.model_components:
+            source_l.append(f"{mc.component}: {mc.name}")
 
-            # I don't think this is what is meant to be in here.
-            # Let's see if we get any feedback from CMOR developers,
-            # then we can adjust.
-            native_nominal_resolution = ". ".join(
-                (
-                    (
-                        f"subgrid {v.drs_name}: "
-                        f"{v.horizontal_grid_cells.x_resolution} {v.horizontal_grid_cells.horizontal_units}"
-                    )
-                    for v in mc.horizontal_computational_grid.horizontal_subgrids
-                )
-            )
-            model_components[mc.component] = CMORModelComponentDefintion(
-                description=mc.description,
-                native_nominal_resolution=native_nominal_resolution,
-            )
+        source = "; ".join([f"{term.drs_name}:", *source_l])
 
-        source = "; ".join([f"{v.drs_name}:", *[f"{key}: {v.description}" for key, v in model_components.items()]])
-        res[v.drs_name] = CMORSourceDefinition(
-            # # No idea how to get this information from the current model
-            # # (maybe rightly not there)
-            # get_term = partial(ev_api.get_term_in_project, ev_project.project_id)
-            # institution_id=[get_term(vv).drs_name if isinstance(vv, str) else vv.drs_name for vv in v.contributors],
-            # Workaround
-            institution_id=[],
-            label=v.name,
+        res[term.drs_name] = CMORSourceDefinition(
+            label=term.name,
             # Not sure what is meant to be in here with the current model
-            label_extended=f"{v.name} ({v.release_year})",
-            model_component=model_components,
+            label_extended=f"{term.name} ({term.release_year})",
             source=source,
-            source_id=v.drs_name,
+            source_id=term.drs_name,
         )
 
     return res
