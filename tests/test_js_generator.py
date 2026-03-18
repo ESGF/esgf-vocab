@@ -81,7 +81,6 @@ json_template = Template(
     "start_datetime": "4029-01-16T12:00:00Z",
     "title": "This is my dataset",
     "updated": "2025-01-24T14:29:23.741213Z",
-    "cmip6:version": "20250724",
     "cmip6:activity_id": [
       "CMIP",
       "PAMIP"
