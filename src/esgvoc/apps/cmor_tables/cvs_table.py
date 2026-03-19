@@ -658,7 +658,8 @@ def get_cmor_source_id_definitions(
         for mc in term.model_components:
             source_l.append(f"{mc.component}: {mc.name}")
 
-        source = "; ".join([f"{term.drs_name}:", *source_l])
+        source_suffix = "; ".join(source_l)
+        source = f"{term.drs_name}: {source_suffix}"
 
         res[term.drs_name] = CMORSourceDefinition(
             label=term.name,
@@ -732,14 +733,14 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             continue
 
         if part.source_collection == "branded_suffix":
-            # Branded suffix is a bit speical so hard-code.
+            # Branded suffix is a bit special so hard-code.
             # In short, the DRS specs tell you how to validate
             # (so, if you know the branded variable,
             # you know what the branded suffix has to be).
             # However, here I just want to know what the components
             # of branded suffix are so I can write the CMOR table.
             # This is different, hence we can't use the project specs.
-            directory_path_template_l.append("branded_suffix")
+            directory_path_template_l.append("<branding_suffix>")
 
         else:
             project_attribute_property = get_project_attribute_property(
@@ -792,14 +793,14 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             example_value = time_range_example
 
         elif part.source_collection == "branded_suffix":
-            # Branded suffix is a bit speical so hard-code.
+            # Branded suffix is a bit special so hard-code.
             # In short, the DRS specs tell you how to validate
             # (so, if you know the branded variable,
             # you know what the branded suffix has to be).
             # However, here I just want to know what the components
             # of branded suffix are so I can write the CMOR table.
             # This is different, hence we can't use the project specs.
-            cmor_placeholder = "branded_suffix"
+            cmor_placeholder = "branding_suffix"
             example_value = branded_suffix_example
 
         else:
@@ -916,7 +917,7 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             value = {v.drs_name: v.description for v in attribute_instances}
 
         elif attr_property.field_name == "branding_suffix":
-            # Branded suffix is a bit speical so hard-code.
+            # Branded suffix is a bit special so hard-code.
             # In short, the DRS specs tell you how to validate
             # (so, if you know the branded variable,
             # you know what the branded suffix has to be).
