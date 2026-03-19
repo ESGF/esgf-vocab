@@ -629,12 +629,7 @@ def get_cmor_nominal_resolution_defintions(
 
     terms = ev_api.get_all_terms_in_collection(ev_project.project_id, source_collection)
     res = []
-    special_cases = ["1x1"]
     for t in terms:
-        if t.value in special_cases:
-            res.append(t.value)
-            continue
-
         value_f = float(t.value)
         size_km = ur.Quantity(value_f, t.unit).to("km").m
         if int(size_km) == size_km:
