@@ -45,7 +45,7 @@ from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
 from esgvoc.api.data_descriptors.activity import Activity
 from esgvoc.api.data_descriptors.archive import Archive
 from esgvoc.api.data_descriptors.area_label import AreaLabel
-from esgvoc.api.data_descriptors.branded_suffix import BrandedSuffix
+from esgvoc.api.data_descriptors.branding_suffix import BrandingSuffix
 from esgvoc.api.data_descriptors.branded_variable import BrandedVariable
 from esgvoc.api.data_descriptors.EMD_models.calendar import Calendar
 from esgvoc.api.data_descriptors.citation_url import CitationUrl
@@ -110,7 +110,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "temporal_label": TemporalLabel,
     "vertical_label": VerticalLabel,
     "horizontal_label": HorizontalLabel,
-    "branded_suffix": BrandedSuffix,
+    "branding_suffix": BrandingSuffix,
     "branded_variable": BrandedVariable,
     "publication_status": PublicationStatus,
     "known_branded_variable": KnownBrandedVariable,
