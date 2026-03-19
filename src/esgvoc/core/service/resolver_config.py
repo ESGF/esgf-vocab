@@ -1,7 +1,10 @@
 """Configuration for JSON-LD reference resolution behavior."""
 
 from dataclasses import dataclass, field
-from typing import List
+from typing import TYPE_CHECKING, List, Optional
+
+if TYPE_CHECKING:
+    from esgvoc.core.service.missing_links import MissingLinksTracker
 
 
 @dataclass
@@ -45,6 +48,13 @@ class ResolverConfig:
     # Logging and debugging
     log_depth_warnings: bool = True
     """Whether to log warnings when max_depth is exceeded"""
+
+    # Missing links tracking
+    missing_links_tracker: Optional["MissingLinksTracker"] = None
+    """Tracker for missing @id references (used with --fail-on-missing-links)"""
+
+    ingestion_context: str = ""
+    """Context string for error messages (e.g., 'universe' or 'project:cmip7')"""
 
     def __post_init__(self):
         """Validate configuration values."""
