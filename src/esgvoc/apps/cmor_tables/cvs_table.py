@@ -711,7 +711,7 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
 
     # Creating example regexp terms on the fly also doesn't work
     variant_label_example = "r1i1p1f1"
-    branded_suffix_example = "tavg-h2m-hxy-u"
+    branding_suffix_example = "tavg-h2m-hxy-u"
 
     directory_path_template_l = []
     directory_path_example_l = []
@@ -727,13 +727,13 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
 
             continue
 
-        if part.source_collection == "branded_suffix":
-            # Branded suffix is a bit special so hard-code.
+        if part.source_collection == "branding_suffix":
+            # Branding suffix is a bit special so hard-code.
             # In short, the DRS specs tell you how to validate
             # (so, if you know the branded variable,
-            # you know what the branded suffix has to be).
+            # you know what the branding suffix has to be).
             # However, here I just want to know what the components
-            # of branded suffix are so I can write the CMOR table.
+            # of branding suffix are so I can write the CMOR table.
             # This is different, hence we can't use the project specs.
             directory_path_template_l.append("<branding_suffix>")
 
@@ -760,9 +760,9 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
         elif part.source_collection == "variant_label":
             # Urgh
             directory_path_example_l.append(variant_label_example)
-        elif part.source_collection == "branded_suffix":
+        elif part.source_collection == "branding_suffix":
             # Urgh
-            directory_path_example_l.append(branded_suffix_example)
+            directory_path_example_l.append(branding_suffix_example)
         else:
             example_drs_name = ev_api.get_all_terms_in_collection(ev_project.project_id, part.source_collection)[
                 0
@@ -789,16 +789,16 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             cmor_placeholder = "timeRange"
             example_value = time_range_example
 
-        elif part.source_collection == "branded_suffix":
-            # Branded suffix is a bit special so hard-code.
+        elif part.source_collection == "branding_suffix":
+            # Branding suffix is a bit special so hard-code.
             # In short, the DRS specs tell you how to validate
             # (so, if you know the branded variable,
-            # you know what the branded suffix has to be).
+            # you know what the branding suffix has to be).
             # However, here I just want to know what the components
-            # of branded suffix are so I can write the CMOR table.
+            # of branding suffix are so I can write the CMOR table.
             # This is different, hence we can't use the project specs.
             cmor_placeholder = "branding_suffix"
-            example_value = branded_suffix_example
+            example_value = branding_suffix_example
 
         else:
             project_attribute_property = get_project_attribute_property(
@@ -914,17 +914,16 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             value = {v.drs_name: v.description for v in attribute_instances}
 
         elif attr_property.field_name == "branding_suffix":
-            # Branded suffix is a bit special so hard-code.
+            # Branding suffix is a bit special so hard-code.
             # In short, the DRS specs tell you how to validate
             # (so, if you know the branded variable,
-            # you know what the branded suffix has to be).
+            # you know what the branding suffix has to be).
             # However, here I just want to know what the components
-            # of branded suffix are so I can write the CMOR table.
+            # of branding suffix are so I can write the CMOR table.
             # This is different, hence we can't use the project specs.
             kwarg = attr_property.field_name
 
-            # here branded_suffix, above branding_suffix ?!
-            terms = ev_api.get_all_terms_in_collection(ev_project.project_id, "branded_suffix")
+            terms = ev_api.get_all_terms_in_collection(ev_project.project_id, "branding_suffix")
             if len(terms) > 1:
                 raise AssertionError(terms)
 
