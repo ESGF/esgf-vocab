@@ -77,6 +77,31 @@
               }
             ]
           }
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/link_fields"
+          }
+          {% if required_link_rels %},
+          "allOf": [
+            {% for rel in required_link_rels|sort %}
+            {% if not loop.first %},{% endif %}
+            {
+              "contains": {
+                "properties": {
+                  "rel": {
+                    "const": "{{ rel }}"
+                  }
+                },
+                "required": [
+                  "rel"
+                ]
+              }
+            }
+            {% endfor %}
+          ]
+          {% endif %}
         }
       }
     },
@@ -163,11 +188,6 @@
         },
         {
           "required": [
-            "node"
-          ]
-        },
-        {
-          "required": [
             "protocol"
           ]
         }
@@ -187,10 +207,6 @@
       "$comment": " Don't require fields here, do that above in the corresponding schema.",
       "type": "object",
       "properties": {
-        "node": {
-          "type": "string",
-          "pattern": "^([a-z0-9]+(-[a-z0-9]+)*\\.)+[a-z]{2,}$"
-        },
         "protocol": {
           "type": "string",
           "enum": [
@@ -243,6 +259,54 @@
         "^(?!{{ project_id|lower }}:)": {}
       },
       "additionalProperties": false
+    },
+    "link_fields": {
+      "$comment": "Validation schema for STAC links. See https://github.com/radiantearth/stac-spec/blob/master/commons/links.md",
+      "type": "object",
+      "properties": {
+        "href": {
+          "format": "uri"
+        }
+      }
+      {% set constrained_links = catalog_link_properties|selectattr("has_constraints")|list %}
+      {% if constrained_links %},
+      "allOf": [
+        {% for link_prop in constrained_links|sort(attribute="rel") %}
+        {% if not loop.first %},{% endif %}
+        {
+          "if": {
+            "properties": {
+              "rel": {
+                "const": "{{ link_prop.rel }}"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              {% set ns = namespace(first=true) %}
+              {% if link_prop.href_pattern %}
+              {% set ns.first = false %}
+              "href": {
+                "pattern": {{ link_prop.href_pattern|tojson }}
+              }
+              {% endif %}
+              {% if link_prop.title_const %}
+              {% if not ns.first %},{% endif %}
+              {% set ns.first = false %}
+              "title": {
+                "const": {{ link_prop.title_const|tojson }}
+              }
+              {% endif %}
+              {% if link_prop.type_constraint %}
+              {% if not ns.first %},{% endif %}
+              "type": {{ link_prop.type_constraint|tojson }}
+              {% endif %}
+            }
+          }
+        }
+        {% endfor %}
+      ]
+      {% endif %}
     }
   }
 }
