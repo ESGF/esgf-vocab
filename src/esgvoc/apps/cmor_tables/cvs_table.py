@@ -769,7 +769,9 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             ].drs_name
             directory_path_example_l.append(example_drs_name)
 
-    directory_path_template = ev_project.drs_specs["directory"].separator.join(directory_path_template_l)
+    # CMOR hard-codes "/" as a separator
+    # and doesn't want the separator in the template.
+    directory_path_template = "".join(directory_path_template_l)
     directory_path_example = ev_project.drs_specs["directory"].separator.join(directory_path_example_l)
 
     filename_template_l = []
@@ -822,8 +824,8 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
                     0
                 ].drs_name
 
-        # For some reason, CMOR doesn't use a separator in its template.
-        # I assume that "_" is hard-coded in CMOR somewhere.
+        # CMOR hard-codes "_" as a separator
+        # and doesn't want the separator in the template.
         filename_template_prefix = ""
         if part.source_collection == "time_range":
             # Don't put time range in the CMOR template as CMOR doesn't support it anymore
