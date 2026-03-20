@@ -153,5 +153,4 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "horizontal_computational_grid": HorizontalComputationalGrid,
     "horizontal_subgrid": HorizontalSubgrid,
     "vertical_computational_grid": VerticalComputationalGrid,
-    "branding_suffix": BrandedSuffix,
 }

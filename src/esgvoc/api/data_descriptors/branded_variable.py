@@ -14,7 +14,7 @@ class BrandedVariable(CompositeTermDataDescriptor):
     The concept of a branded variable was introduced in CMIP7.
     A branded variable is composed of two parts.
     The first part is the root variable (see :py:class:`Variable`).
-    The second is the suffix (see :py:class:`BrandedSuffix`).
+    The second is the suffix (see :py:class:`BrandingSuffix`).
 
     For underlying details and logic, please see
     [Taylor et al., 2025](https://docs.google.com/document/d/19jzecgymgiiEsTDzaaqeLP6pTvLT-NzCMaq-wu-QoOc/edit?pli=1&tab=t.0).
