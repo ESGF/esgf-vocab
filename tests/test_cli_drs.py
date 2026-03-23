@@ -64,7 +64,7 @@ _SOME_VALID_CLI_ENTRIES = [
 ]
 
 
-def test_valid_drs(monkeypatch):
+def test_valid_drs(monkeypatch, use_default_dev_config):
     for entry in _SOME_VALID_CLI_ENTRIES:
         monkeypatch.setattr("sys.stdin", io.StringIO(""))
         monkeypatch.setattr("sys.stdin.isatty", (lambda: False))

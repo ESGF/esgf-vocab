@@ -5,7 +5,7 @@ Model (i.e. schema/definition) of the branded suffix data descriptor
 from esgvoc.api.data_descriptors.data_descriptor import CompositeTermDataDescriptor
 
 
-class BrandedSuffix(CompositeTermDataDescriptor):
+class BrandingSuffix(CompositeTermDataDescriptor):
     """
     The suffix of a branded variable.
 

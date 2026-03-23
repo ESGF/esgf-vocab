@@ -19,7 +19,7 @@ class ResolverConfig:
     """Maximum recursion depth when resolving nested references"""
 
     # String filtering for primitive resolution
-    max_string_length: int = 100
+    max_string_length: int = 200
     """Maximum length for strings to be considered as ID references"""
 
     exclude_patterns: List[str] = field(default_factory=lambda: [" ", ".", "http", "/", "@"])

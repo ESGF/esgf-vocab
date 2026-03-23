@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Annotated, Any, Iterable, Type, Union, get_args, get_origin
+from functools import reduce
+from typing import TYPE_CHECKING, Annotated, Any, Iterable, Type, Union
 
 from pydantic import BaseModel, Discriminator, Tag, TypeAdapter
 
@@ -37,25 +38,15 @@ def create_union(*classes: Type[BaseModel]):
 
         # Try each class and see which one's required fields match
         for cls in classes_list:
-            # Get required fields for this class (excluding nullable fields)
-            required_fields = set()
-            for field_name, field_info in cls.model_fields.items():
-                # Only consider fields that are required AND not nullable
-                if field_info.is_required():
-                    # Check if None is allowed in the field type
-                    annotation = field_info.annotation
-                    is_nullable = False
-
-                    # Check for Optional[X] or X | None patterns using get_origin and get_args
-                    origin = get_origin(annotation)
-                    if origin is Union:
-                        # Check if None is in the union args
-                        args = get_args(annotation)
-                        is_nullable = type(None) in args
-
-                    # Only add to required fields if not nullable
-                    if not is_nullable:
-                        required_fields.add(field_name)
+            # Get required fields for this class
+            # Note: We include ALL required fields (even nullable ones) because pydantic
+            # requires fields without defaults to be present, regardless of nullability.
+            # This makes the discriminator strict and consistent across Python versions.
+            required_fields = {
+                field_name
+                for field_name, field_info in cls.model_fields.items()
+                if field_info.is_required()
+            }
 
             # Check if all required fields are present in input
             missing_fields = required_fields - input_fields
@@ -76,8 +67,9 @@ def create_union(*classes: Type[BaseModel]):
     # Create annotated versions with tags
     tagged_classes = tuple(Annotated[cls, Tag(cls.__name__)] for cls in classes_list)
 
-    # Create Union dynamically
-    union_type = Union.__getitem__(tagged_classes)
+    # Create Union dynamically using | operator (works in Python 3.10+, including 3.14)
+    # Note: Union.__getitem__ changed behavior in Python 3.14
+    union_type = reduce(lambda x, y: x | y, tagged_classes)
 
     return Annotated[union_type, Discriminator(property_discriminator)]
 
