@@ -81,12 +81,10 @@ json_template = Template(
     "start_datetime": "4029-01-16T12:00:00Z",
     "title": "This is my dataset",
     "updated": "2025-01-24T14:29:23.741213Z",
-    "cmip6:version": "20250724",
     "cmip6:activity_id": [
       "CMIP",
       "PAMIP"
     ],
-    "cmip6:citation_url": "http://cera-www.dkrz.de/WDCC/meta/CMIP6/CMIP6.ScenarioMIP.THU.CIESM.ssp585.r1i1p1f1.Amon.rsus.gr.v20200806.json",
     "cmip6:conventions": [
       "CF-1.7",
       "CMIP-6.2"
@@ -96,7 +94,6 @@ json_template = Template(
     "cmip6:experiment_id": "ssp585",
     "cmip6:forcing_index": "1",
     "cmip6:frequency": "mon",
-    "cmip6:further_info_url": "https://furtherinfo.es-doc.org/CMIP6.THU.CIESM.ssp585.none.r1i1p1f1",
     "cmip6:grid": "zonal mean data reported on a model's native latitude grid",
     "cmip6:grid_label": "gr",
     "cmip6:initialization_index": "1",
@@ -146,6 +143,18 @@ json_template = Template(
       "rel": "root",
       "type": "application/json",
       "href": "https://api.stac.ceda.ac.uk/"
+    },
+    {
+      "rel": "cite-as",
+      "type": "application/json",
+      "title": "Citation URL",
+      "href": "http://cera-www.dkrz.de/WDCC/meta/CMIP6/CMIP6.ScenarioMIP.THU.CIESM.ssp585.r1i1p1f1.Amon.rsus.gr.v20200806.json"
+    },
+    {
+      "rel": "describedby",
+      "type": "text/html",
+      "title": "ES-DOC",
+      "href": "https://furtherinfo.es-doc.org/CMIP6.THU.CIESM.ssp585.none.r1i1p1f1"
     }
   ],
   "assets": {

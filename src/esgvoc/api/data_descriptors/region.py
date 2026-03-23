@@ -16,7 +16,7 @@ class Region(PlainTermDataDescriptor):
     and is not precisely defined.
     """
 
-    cf_standard_region: str | None
+    cf_standard_region: str | None = None
     """
     CF standard region
 
@@ -25,7 +25,7 @@ class Region(PlainTermDataDescriptor):
     If `None`, there is no CF standard region for this region
     """
 
-    iso_region: str | None
+    iso_region: str | None = None
     """
     ISO 3166-1 alpha-3 region code
 

@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class DrsType(str, Enum):
@@ -107,6 +107,25 @@ class CatalogProperties(BaseModel):
 AttributeSpecification = list[AttributeProperty]
 
 
+class LinkProperty(BaseModel):
+    """
+    A link property specification for the catalog schema.
+    Defines validation constraints for links in STAC catalogs.
+    See https://github.com/radiantearth/stac-spec/blob/master/commons/links.md
+    """
+
+    rel: str
+    """REQUIRED. The link relation type (e.g., 'cite-as', 'describedby')."""
+    is_required: bool
+    """Specifies if a link with this rel must be present in the links array."""
+    link_pattern: str | None = None
+    """Regex pattern for href validation (in addition to format: uri)."""
+    link_type: str | dict[str, list[str]] | None = None
+    """Media type constraint: string for const, or {"enum": [...]} for enum."""
+    title: str | None = None
+    """If set, the title must equal this value (const)."""
+
+
 class CatalogSpecification(BaseModel):
     """
     A catalog specifications.
@@ -120,6 +139,8 @@ class CatalogSpecification(BaseModel):
     "The properties of the dataset described in a catalog."
     file_properties: list[CatalogProperty]
     "The properties of the files described in a catalog."
+    link_properties: list[LinkProperty] = Field(default_factory=list)
+    "The properties of the links described in a catalog."
 
 
 class ProjectSpecs(BaseModel):

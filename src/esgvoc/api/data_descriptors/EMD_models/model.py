@@ -7,7 +7,7 @@ The following properties provide a top-level description of the model as a whole
 from __future__ import annotations
 
 import warnings
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 from pydantic import Field, field_validator, model_validator
 

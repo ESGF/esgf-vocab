@@ -4,6 +4,7 @@ from esgvoc.api.project_specs import (
     DrsType,
     ProjectSpecs,
 )
+from esgvoc.api.service import install
 from esgvoc.api.projects import (
     find_collections_in_project,
     find_items_in_project,
@@ -56,6 +57,7 @@ __all__ = [
     "DrsSpecification",
     "DrsType",
     "find_collections_in_project",
+    "install",
     "find_data_descriptors_in_universe",
     "find_items_in_project",
     "find_items_in_universe",

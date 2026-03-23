@@ -12,7 +12,7 @@ class AreaLabel(PlainTermDataDescriptor):
     Examples: "lnd", "air", "sea", "u"
 
     This label is used as the area component of a branded variable's suffix
-    (see :py:class:`BrandedSuffix`).
+    (see :py:class:`BrandingSuffix`).
     """
 
     cf_area_type: str | None

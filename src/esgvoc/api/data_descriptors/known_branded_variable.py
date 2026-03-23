@@ -12,7 +12,7 @@ from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 #     The concept of a branded variable was introduced in CMIP7.
 #     A branded variable is composed of two parts.
 #     The first part is the root variable (see :py:class:`Variable`).
-#     The second is the suffix (see :py:class:`BrandedSuffix`).
+#     The second is the suffix (see :py:class:`BrandingSuffix`).
 #
 #     For further details on the development of branded variables,
 #     see [this paper draft](https://docs.google.com/document/d/19jzecgymgiiEsTDzaaqeLP6pTvLT-NzCMaq-wu-QoOc/edit?pli=1&tab=t.0).
@@ -33,7 +33,7 @@ class KnownBrandedVariable(PlainTermDataDescriptor):
     The concept of a branded variable was introduced in CMIP7.
     A branded variable is composed of two parts.
     The first part is the root variable (see :py:class:`Variable`).
-    The second is the suffix (see :py:class:`BrandedSuffix`).
+    The second is the suffix (see :py:class:`BrandingSuffix`).
 
     For further details on the development of branded variables,
     see [this paper draft](https://docs.google.com/document/d/19jzecgymgiiEsTDzaaqeLP6pTvLT-NzCMaq-wu-QoOc/edit?pli=1&tab=t.0).
