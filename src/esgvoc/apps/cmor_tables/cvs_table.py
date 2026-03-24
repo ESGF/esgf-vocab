@@ -911,7 +911,10 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             # Not sure why this is a necessary exception
             kwarg = attr_property.field_name
             attribute_instances = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid_label")
-            value = {v.drs_name: v.description for v in attribute_instances}
+            # value = {v.drs_name: v.description for v in attribute_instances}
+            # Empty string for now following:
+            # https://github.com/WCRP-CMIP/cmip7-cmor-tables/issues/40#issuecomment-4114290634
+            value = {v.drs_name: "" for v in attribute_instances}
 
         elif attr_property.field_name == "branding_suffix":
             # Branding suffix is a bit special so hard-code.
