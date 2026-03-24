@@ -166,6 +166,14 @@ class BaseState:
                 universe_create_db(Path(self.db_path))
                 self.db_connection = DBConnection(db_file_path=Path(self.db_path))
 
+                if self.local_version is None:
+                    raise RuntimeError(
+                        f"Unable to determine git version for repository at {self.local_path}.\n"
+                        "Possible causes:\n"
+                        "  - Git is not installed on this machine. Install git and try again.\n"
+                        "  - The repository folder exists but is not a valid git repository.\n"
+                        f"    Try removing it and reinstalling: rm -rf {self.local_path} && esgvoc install"
+                    )
                 ingest_metadata_universe(self.db_connection, self.local_version)
                 print("Filling Universe DB")
                 if self.local_path:
@@ -175,6 +183,14 @@ class BaseState:
                 print("Building Project DB from ", self.local_path)
                 project_create_db(Path(self.db_path))
                 print("Filling project DB")
+                if self.local_path and self.local_version is None:
+                    raise RuntimeError(
+                        f"Unable to determine git version for repository at {self.local_path}.\n"
+                        "Possible causes:\n"
+                        "  - Git is not installed on this machine. Install git and try again.\n"
+                        "  - The repository folder exists but is not a valid git repository.\n"
+                        f"    Try removing it and reinstalling: rm -rf {self.local_path} && esgvoc install"
+                    )
                 if self.local_path and self.local_version:
                     ingest_project(Path(self.local_path), Path(self.db_path), self.local_version, missing_links_tracker)
         self.fetch_version_db()
