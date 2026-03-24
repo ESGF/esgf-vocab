@@ -687,35 +687,28 @@ def get_cmor_frequency_definitions(
 
 
 def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CMORDRSDefinition:
-    # Creating a valid example is quite hard because of the coupling between elements.
-    # Try and anticipate those here.
-    # Note that a perfect way to do this is beyond me right now.
-    activity_example = ev_api.get_term_in_collection(ev_project.project_id, "activity", "cmip")
-    experiment_example = ev_api.get_term_in_collection(
-        ev_project.project_id, "experiment", activity_example.experiments[0]
-    )
+    # Hard-code examples to avoid spurious changes
+    # (this obviously isn't a general solution)
 
-    # Hard-code CNRM while the source <-> institution link is unclear
+    drs_specs_example = ev_api.get_term_in_collection(ev_project.project_id, "drs_specs", "mip-drs7")
+    mip_era_example = ev_api.get_term_in_collection(ev_project.project_id, "mip_era", "cmip7")
+    activity_example = ev_api.get_term_in_collection(ev_project.project_id, "activity", "cmip")
     organisation_example = ev_api.get_term_in_collection(ev_project.project_id, "organisation", "cnrm-cerfacs")
     source_example = ev_api.get_term_in_collection(ev_project.project_id, "source", "cnrm_esm2_1e")
-
-    grid_example = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid_label")[0]
-    region_example = (
-        grid_example.region
-        if not isinstance(grid_example.region, str)
-        else ev_api.get_term_in_collection(ev_project.project_id, "region", grid_example.region)
-    )
-
-    frequency_example = "mon"
-    time_range_example = "185001-202112"
-
-    # Creating example regexp terms on the fly also doesn't work
+    experiment_example = ev_api.get_term_in_collection(ev_project.project_id, "experiment", "1pctco2")
     variant_label_example = "r1i1p1f1"
+    region_example = ev_api.get_term_in_collection(ev_project.project_id, "region", "global")
+    frequency_example = "mon"
+    variable_example = ev_api.get_term_in_collection(ev_project.project_id, "variable", "rsus")
     branding_suffix_example = "tavg-h2m-hxy-u"
+    grid_example = ev_api.get_term_in_collection(ev_project.project_id, "grid_label", "g101")
+    directory_path_example = "20251104"
+    time_range_example = "185001-202112"
 
     directory_path_template_l = []
     directory_path_example_l = []
     for part in ev_project.drs_specs["directory"].parts:
+        print(f"Processing {part=}")
         if not part.is_required:
             raise NotImplementedError
 
@@ -723,11 +716,8 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             # Maybe should be using catalogue specs rather than attr specs?
             # Hard-coded CMOR weirdness
             directory_path_template_l.append("<version>")
-            directory_path_example_l.append("20251104")
 
-            continue
-
-        if part.source_collection == "branding_suffix":
+        elif part.source_collection == "branding_suffix":
             # Branding suffix is a bit special so hard-code.
             # In short, the DRS specs tell you how to validate
             # (so, if you know the branded variable,
@@ -743,31 +733,37 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             )
             directory_path_template_l.append(f"<{project_attribute_property.field_name}>")
 
-        if part.source_collection == "activity":
+        if part.source_collection == "drs_specs":
+            directory_path_example_l.append(drs_specs_example.drs_name)
+        elif part.source_collection == "mip_era":
+            directory_path_example_l.append(mip_era_example.drs_name)
+        elif part.source_collection == "activity":
             directory_path_example_l.append(activity_example.drs_name)
-        elif part.source_collection == "experiment":
-            directory_path_example_l.append(experiment_example.drs_name)
-        elif part.source_collection == "frequency":
-            directory_path_example_l.append(frequency_example)
         elif part.source_collection == "organisation":
             directory_path_example_l.append(organisation_example.drs_name)
         elif part.source_collection == "source":
             directory_path_example_l.append(source_example.drs_name)
-        elif part.source_collection == "grid":
-            directory_path_example_l.append(grid_example.drs_name)
+        elif part.source_collection == "experiment":
+            directory_path_example_l.append(experiment_example.drs_name)
         elif part.source_collection == "region":
             directory_path_example_l.append(region_example.drs_name)
-        elif part.source_collection == "variant_label":
-            # Urgh
-            directory_path_example_l.append(variant_label_example)
+        elif part.source_collection == "frequency":
+            directory_path_example_l.append(frequency_example)
+        elif part.source_collection == "variable":
+            directory_path_example_l.append(variable_example.drs_name)
         elif part.source_collection == "branding_suffix":
-            # Urgh
             directory_path_example_l.append(branding_suffix_example)
+        elif part.source_collection == "grid_label":
+            directory_path_example_l.append(grid_example.drs_name)
+        elif part.source_collection == "variant_label":
+            directory_path_example_l.append(variant_label_example)
+        elif part.source_collection == "directory_date":
+            directory_path_example_l.append(directory_path_example)
         else:
-            example_drs_name = ev_api.get_all_terms_in_collection(ev_project.project_id, part.source_collection)[
-                0
-            ].drs_name
-            directory_path_example_l.append(example_drs_name)
+            msg = f"Examples should be hard-coded: {part=}"
+            raise AssertionError(msg)
+
+        print(f"Finished {part=}")
 
     # CMOR hard-codes "/" as a separator
     # and doesn't want the separator in the template.
@@ -787,7 +783,6 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             # Maybe should be using catalogue specs rather than attr specs?
             # Hard-coded CMOR weirdness
             cmor_placeholder = "timeRange"
-            example_value = time_range_example
 
         elif part.source_collection == "branding_suffix":
             # Branding suffix is a bit special so hard-code.
@@ -798,7 +793,6 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             # of branding suffix are so I can write the CMOR table.
             # This is different, hence we can't use the project specs.
             cmor_placeholder = "branding_suffix"
-            example_value = branding_suffix_example
 
         else:
             project_attribute_property = get_project_attribute_property(
@@ -806,23 +800,27 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             )
             cmor_placeholder = project_attribute_property.field_name
 
-            if part.source_collection == "experiment":
-                example_value = experiment_example.drs_name
+            if part.source_collection == "variable":
+                example_value = variable_example.drs_name
+            elif part.source_collection == "branding_suffix":
+                example_value = branding_suffix_example
             elif part.source_collection == "frequency":
                 example_value = frequency_example
-            elif part.source_collection == "source":
-                example_value = source_example.drs_name
-            elif part.source_collection == "grid":
-                example_value = grid_example.drs_name
             elif part.source_collection == "region":
                 example_value = region_example.drs_name
+            elif part.source_collection == "grid_label":
+                example_value = grid_example.drs_name
+            elif part.source_collection == "source":
+                example_value = source_example.drs_name
+            elif part.source_collection == "experiment":
+                example_value = experiment_example.drs_name
             elif part.source_collection == "variant_label":
-                # Urgh
                 example_value = variant_label_example
+            elif part.source_collection == "time_range":
+                example_value = time_range_example
             else:
-                example_value = ev_api.get_all_terms_in_collection(ev_project.project_id, part.source_collection)[
-                    0
-                ].drs_name
+                msg = f"Examples should be hard-coded: {part=}"
+                raise AssertionError(msg)
 
         # CMOR hard-codes "_" as a separator
         # and doesn't want the separator in the template.
@@ -911,7 +909,10 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             # Not sure why this is a necessary exception
             kwarg = attr_property.field_name
             attribute_instances = ev_api.get_all_terms_in_collection(ev_project.project_id, "grid_label")
-            value = {v.drs_name: v.description for v in attribute_instances}
+            # value = {v.drs_name: v.description for v in attribute_instances}
+            # Empty string for now following:
+            # https://github.com/WCRP-CMIP/cmip7-cmor-tables/issues/40#issuecomment-4114290634
+            value = {v.drs_name: "" for v in attribute_instances}
 
         elif attr_property.field_name == "branding_suffix":
             # Branding suffix is a bit special so hard-code.
