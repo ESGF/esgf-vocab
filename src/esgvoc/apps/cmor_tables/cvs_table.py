@@ -800,27 +800,27 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             )
             cmor_placeholder = project_attribute_property.field_name
 
-            if part.source_collection == "variable":
-                example_value = variable_example.drs_name
-            elif part.source_collection == "branding_suffix":
-                example_value = branding_suffix_example
-            elif part.source_collection == "frequency":
-                example_value = frequency_example
-            elif part.source_collection == "region":
-                example_value = region_example.drs_name
-            elif part.source_collection == "grid_label":
-                example_value = grid_example.drs_name
-            elif part.source_collection == "source":
-                example_value = source_example.drs_name
-            elif part.source_collection == "experiment":
-                example_value = experiment_example.drs_name
-            elif part.source_collection == "variant_label":
-                example_value = variant_label_example
-            elif part.source_collection == "time_range":
-                example_value = time_range_example
-            else:
-                msg = f"Examples should be hard-coded: {part=}"
-                raise AssertionError(msg)
+        if part.source_collection == "variable":
+            example_value = variable_example.drs_name
+        elif part.source_collection == "branding_suffix":
+            example_value = branding_suffix_example
+        elif part.source_collection == "frequency":
+            example_value = frequency_example
+        elif part.source_collection == "region":
+            example_value = region_example.drs_name
+        elif part.source_collection == "grid_label":
+            example_value = grid_example.drs_name
+        elif part.source_collection == "source":
+            example_value = source_example.drs_name
+        elif part.source_collection == "experiment":
+            example_value = experiment_example.drs_name
+        elif part.source_collection == "variant_label":
+            example_value = variant_label_example
+        elif part.source_collection == "time_range":
+            example_value = time_range_example
+        else:
+            msg = f"Examples should be hard-coded: {part=}"
+            raise AssertionError(msg)
 
         # CMOR hard-codes "_" as a separator
         # and doesn't want the separator in the template.
