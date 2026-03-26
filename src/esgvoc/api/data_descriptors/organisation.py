@@ -2,8 +2,13 @@
 Model (i.e. schema/definition) of the organisation data descriptor
 """
 
-from esgvoc.api.data_descriptors.institution import Institution
+from typing import List
+
+from pydantic import Field
+
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.EMD_models.model import Model
+from esgvoc.api.data_descriptors.institution import Institution
 
 
 class Organisation(PlainTermDataDescriptor):
@@ -20,3 +25,7 @@ class Organisation(PlainTermDataDescriptor):
     """
     Members associated with this organisation
     """
+
+    publishable_models: List[Model | str] = Field(
+        default_factory=list, description="Models that this organisation can publish"
+    )
