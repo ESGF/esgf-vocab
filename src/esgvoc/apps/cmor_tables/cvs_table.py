@@ -8,6 +8,7 @@ not esgvoc. Anyway, can do that later.
 
 import itertools
 import re
+from collections import defaultdict
 from functools import partial
 from typing import Any, TypeAlias
 
@@ -202,6 +203,11 @@ class CMORSourceDefinition(BaseModel):
     source_id: str
     """
     Source ID for `self`
+    """
+
+    institution_id: RegularExpressionValidators
+    """
+    Institutions which are 'registered' to publish this source
     """
 
 
@@ -647,6 +653,12 @@ def get_cmor_source_id_definitions(
 ) -> dict[str, CMORSourceDefinition]:
     terms = ev_api.get_all_terms_in_collection(ev_project.project_id, source_collection)
 
+    publishing_institutions = defaultdict(list)
+    organisations = ev_api.get_all_terms_in_collection(ev_project.project_id, "organisation")
+    for org in organisations:
+        for model in org.publishable_models:
+            publishing_institutions[model.drs_name].append(org.drs_name)
+
     res = {}
     for term in terms:
         source_l = []
@@ -662,6 +674,7 @@ def get_cmor_source_id_definitions(
             label_extended=f"{term.name} ({term.release_year})",
             source=source,
             source_id=term.drs_name,
+            institution_id=publishing_institutions[term.drs_name],
         )
 
     return res
@@ -895,6 +908,7 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
         elif attr_property.field_name == "nominal_resolution":
             kwarg = attr_property.field_name
             value = get_cmor_nominal_resolution_defintions(attr_property.field_name, ev_project)
+
         elif attr_property.field_name == "source_id":
             value = get_cmor_source_id_definitions(attr_property.source_collection, ev_project)
             kwarg = attr_property.field_name
