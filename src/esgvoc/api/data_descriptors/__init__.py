@@ -1,6 +1,9 @@
 from esgvoc.api.data_descriptors.activity import Activity, ActivityCMIP7
 from esgvoc.api.data_descriptors.archive import Archive
 from esgvoc.api.data_descriptors.area_label import AreaLabel
+from esgvoc.api.data_descriptors.axis_coordinate import AxisCoordinate
+from esgvoc.api.data_descriptors.axis_dimension import AxisDimension
+from esgvoc.api.data_descriptors.axis_entry import AxisEntry
 from esgvoc.api.data_descriptors.branding_suffix import BrandingSuffix
 from esgvoc.api.data_descriptors.branded_variable import BrandedVariable
 from esgvoc.api.data_descriptors.citation_url import CitationUrl
@@ -35,9 +38,12 @@ from esgvoc.api.data_descriptors.EMD_models.vertical_coordinate import VerticalC
 from esgvoc.api.data_descriptors.EMD_models.vertical_units import VerticalUnits
 from esgvoc.api.data_descriptors.experiment import Experiment
 from esgvoc.api.data_descriptors.forcing_index import ForcingIndex
+from esgvoc.api.data_descriptors.formula_term import FormulaTerm
 from esgvoc.api.data_descriptors.frequency import Frequency
 from esgvoc.api.data_descriptors.further_info_url import FurtherInfoUrl
 from esgvoc.api.data_descriptors.grid import Grid
+from esgvoc.api.data_descriptors.grid_axis import GridAxis
+from esgvoc.api.data_descriptors.grid_variable import GridVariable
 from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
 from esgvoc.api.data_descriptors.initialization_index import InitializationIndex
 from esgvoc.api.data_descriptors.institution import Institution
@@ -153,4 +159,10 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "horizontal_computational_grid": HorizontalComputationalGrid,
     "horizontal_subgrid": HorizontalSubgrid,
     "vertical_computational_grid": VerticalComputationalGrid,
+    # CMOR axis/coordinate entries
+    "axis_dimension": AxisDimension,
+    "axis_coordinate": AxisCoordinate,
+    "formula_term": FormulaTerm,
+    "grid_axis": GridAxis,
+    "grid_variable": GridVariable,
 }
