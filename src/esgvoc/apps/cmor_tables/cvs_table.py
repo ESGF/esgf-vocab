@@ -558,7 +558,8 @@ def get_cmor_license_definition(
         license_template=(
             "<license_id>; CMIP7 data produced by <institution_id> "
             "is licensed under a <license_type> License (<license_url>). "
-            "Consult [TODO terms of use link] for terms of use governing CMIP7 output, "
+            "Consult https://wcrp-cmip.github.io/cmip7-guidance/docs/CMIP7/Guidance_for_users/#2-terms-of-use-and-citations-requirements "  # noqa: E501
+            "for terms of use governing CMIP7 output, "
             "including citation requirements and proper acknowledgment. "
             "The data producers and data providers make no warranty, "
             "either express or implied, including, but not limited to, "
