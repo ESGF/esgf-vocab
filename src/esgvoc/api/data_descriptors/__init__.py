@@ -12,6 +12,8 @@ from esgvoc.api.data_descriptors.data_specs_version import DataSpecsVersion
 from esgvoc.api.data_descriptors.date import Date
 from esgvoc.api.data_descriptors.directory_date import DirectoryDate
 from esgvoc.api.data_descriptors.drs_specs import DRSSpecs
+
+# EMD
 from esgvoc.api.data_descriptors.EMD_models.arrangement import Arrangement
 from esgvoc.api.data_descriptors.EMD_models.calendar import Calendar
 from esgvoc.api.data_descriptors.EMD_models.cell_variable_type import CellVariableType
@@ -33,6 +35,8 @@ from esgvoc.api.data_descriptors.EMD_models.truncation_method import TruncationM
 from esgvoc.api.data_descriptors.EMD_models.vertical_computational_grid import VerticalComputationalGrid
 from esgvoc.api.data_descriptors.EMD_models.vertical_coordinate import VerticalCoordinate
 from esgvoc.api.data_descriptors.EMD_models.vertical_units import VerticalUnits
+from esgvoc.api.data_descriptors.EMD_models.component_config import ComponentConfig
+
 from esgvoc.api.data_descriptors.experiment import Experiment
 from esgvoc.api.data_descriptors.forcing_index import ForcingIndex
 from esgvoc.api.data_descriptors.frequency import Frequency
@@ -117,6 +121,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "coordinate": Coordinate,
     "grid_mapping": GridMapping,  # EMD v1.0
     "model_componentEMD": EMDModelComponent,  # EMD v1.0
+    "component_config": ComponentConfig, # EMD v 1.2
     "model": Model,  # EMD v1.0
     "reference": Reference,  # EMD v1.0
     # "resolution": EMDResolution,
