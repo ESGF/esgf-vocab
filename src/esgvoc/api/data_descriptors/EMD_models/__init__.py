@@ -16,6 +16,7 @@ Major changes from v0.993:
 from .model import Model
 from .model_component import EMDModelComponent
 from .reference import Reference
+from .component_config import ComponentConfig
 
 # Grid models (v1.0 nested structure)
 from .horizontal_computational_grid import HorizontalComputationalGrid
@@ -44,12 +45,14 @@ __all__ = [
     "Model",
     "EMDModelComponent",
     "Reference",
+    "ComponentConfig",
     # Grid models
     "HorizontalComputationalGrid",
     "HorizontalSubgrid",
     "HorizontalGridCells",
     "VerticalComputationalGrid",
     "VerticalUnits",
+  
     # Supporting
     "EMDResolution",
     # CV models (Section 7)
