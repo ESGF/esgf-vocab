@@ -246,6 +246,7 @@ class CMORCVsTable(BaseModel):
     # Allowed values of `archive_id`
     # """
 
+    # Conventions added in following https://github.com/PCMDI/cmor/issues/937
     Conventions: AllowedDict
     """
     Allowed values of `Conventions`
@@ -870,6 +871,7 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             init_kwargs["required_global_attributes"].append(attr_property.field_name)
 
         # Logic: https://github.com/WCRP-CMIP/CMIP7-CVs/issues/271#issuecomment-3286291815
+        # Conventions added back in following https://github.com/PCMDI/cmor/issues/937
         if attr_property.field_name in [
             "branded_variable",
             "variable_id",
