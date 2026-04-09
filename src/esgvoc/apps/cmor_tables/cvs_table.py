@@ -246,6 +246,11 @@ class CMORCVsTable(BaseModel):
     # Allowed values of `archive_id`
     # """
 
+    Conventions: AllowedDict
+    """
+    Allowed values of `Conventions`
+    """
+
     activity_id: AllowedDict
     """
     Allowed values of `activity_id`
@@ -866,7 +871,6 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
 
         # Logic: https://github.com/WCRP-CMIP/CMIP7-CVs/issues/271#issuecomment-3286291815
         if attr_property.field_name in [
-            "Conventions",
             "branded_variable",
             "variable_id",
         ]:
