@@ -700,7 +700,11 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
     drs_specs_example = ev_api.get_term_in_collection(ev_project.project_id, "drs_specs", "mip-drs7")
     mip_era_example = ev_api.get_term_in_collection(ev_project.project_id, "mip_era", "cmip7")
     activity_example = ev_api.get_term_in_collection(ev_project.project_id, "activity", "cmip")
-    organisation_example = ev_api.get_term_in_collection(ev_project.project_id, "organisation", "cnrm-cerfacs")
+    # Collection still moving around
+    # organisation_example = ev_api.get_term_in_collection(ev_project.project_id, "organisation", "cnrm-cerfacs")
+    organisation_example = ev_api.get_term_in_collection(ev_project.project_id, "institution", "cnrm-cerfacs")
+    if organisation_example is None:
+        raise AssertionError
     source_example = ev_api.get_term_in_collection(ev_project.project_id, "source", "cnrm_esm2_1e")
     experiment_example = ev_api.get_term_in_collection(ev_project.project_id, "experiment", "1pctco2")
     variant_label_example = "r1i1p1f1"
@@ -746,7 +750,8 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             directory_path_example_l.append(mip_era_example.drs_name)
         elif part.source_collection == "activity":
             directory_path_example_l.append(activity_example.drs_name)
-        elif part.source_collection == "organisation":
+        # Name still moving around, see https://github.com/WCRP-CMIP/CMIP7-CVs/pull/368
+        elif part.source_collection in ("organisation", "institution"):
             directory_path_example_l.append(organisation_example.drs_name)
         elif part.source_collection == "source":
             directory_path_example_l.append(source_example.drs_name)
