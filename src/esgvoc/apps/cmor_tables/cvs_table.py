@@ -277,9 +277,9 @@ class CMORCVsTable(BaseModel):
     Allowed value of `data_specs_version`
     """
 
-    drs_specs: AllowedDict
+    drs_specs: str
     """
-    Allowed values of `drs_specs`
+    Allowed value of `drs_specs`
     """
 
     experiment_id: dict[str, CMORExperimentDefinition]
@@ -889,6 +889,7 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
 
         elif attr_property.field_name in [
             "data_specs_version",
+            "drs_specs",
             "mip_era",
         ]:
             # Special single value entries
