@@ -701,10 +701,13 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
     mip_era_example = ev_api.get_term_in_collection(ev_project.project_id, "mip_era", "cmip7")
     activity_example = ev_api.get_term_in_collection(ev_project.project_id, "activity", "cmip")
     # Collection still moving around
-    # organisation_example = ev_api.get_term_in_collection(ev_project.project_id, "organisation", "cnrm-cerfacs")
-    organisation_example = ev_api.get_term_in_collection(ev_project.project_id, "institution", "cnrm-cerfacs")
-    if organisation_example is None:
+    for collection in ("organisation", "institution"):
+        organisation_example = ev_api.get_term_in_collection(ev_project.project_id, collection, "cnrm-cerfacs")
+        if organisation_example is not None:
+            break
+    else:
         raise AssertionError
+
     source_example = ev_api.get_term_in_collection(ev_project.project_id, "source", "cnrm_esm2_1e")
     experiment_example = ev_api.get_term_in_collection(ev_project.project_id, "experiment", "1pctco2")
     variant_label_example = "r1i1p1f1"
