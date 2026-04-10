@@ -246,6 +246,12 @@ class CMORCVsTable(BaseModel):
     # Allowed values of `archive_id`
     # """
 
+    # Conventions added in following https://github.com/PCMDI/cmor/issues/937
+    Conventions: AllowedDict
+    """
+    Allowed values of `Conventions`
+    """
+
     activity_id: AllowedDict
     """
     Allowed values of `activity_id`
@@ -694,7 +700,14 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
     drs_specs_example = ev_api.get_term_in_collection(ev_project.project_id, "drs_specs", "mip-drs7")
     mip_era_example = ev_api.get_term_in_collection(ev_project.project_id, "mip_era", "cmip7")
     activity_example = ev_api.get_term_in_collection(ev_project.project_id, "activity", "cmip")
-    organisation_example = ev_api.get_term_in_collection(ev_project.project_id, "organisation", "cnrm-cerfacs")
+    # Collection still moving around
+    for collection in ("organisation", "institution"):
+        organisation_example = ev_api.get_term_in_collection(ev_project.project_id, collection, "cnrm-cerfacs")
+        if organisation_example is not None:
+            break
+    else:
+        raise AssertionError
+
     source_example = ev_api.get_term_in_collection(ev_project.project_id, "source", "cnrm_esm2_1e")
     experiment_example = ev_api.get_term_in_collection(ev_project.project_id, "experiment", "1pctco2")
     variant_label_example = "r1i1p1f1"
@@ -740,7 +753,8 @@ def get_cmor_drs_definition(ev_project: ev_api.project_specs.ProjectSpecs) -> CM
             directory_path_example_l.append(mip_era_example.drs_name)
         elif part.source_collection == "activity":
             directory_path_example_l.append(activity_example.drs_name)
-        elif part.source_collection == "organisation":
+        # Name still moving around, see https://github.com/WCRP-CMIP/CMIP7-CVs/pull/368
+        elif part.source_collection in ("organisation", "institution"):
             directory_path_example_l.append(organisation_example.drs_name)
         elif part.source_collection == "source":
             directory_path_example_l.append(source_example.drs_name)
@@ -865,8 +879,8 @@ def generate_cvs_table(project: str) -> CMORCVsTable:
             init_kwargs["required_global_attributes"].append(attr_property.field_name)
 
         # Logic: https://github.com/WCRP-CMIP/CMIP7-CVs/issues/271#issuecomment-3286291815
+        # Conventions added back in following https://github.com/PCMDI/cmor/issues/937
         if attr_property.field_name in [
-            "Conventions",
             "branded_variable",
             "variable_id",
         ]:
