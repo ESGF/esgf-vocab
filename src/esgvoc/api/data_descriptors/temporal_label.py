@@ -16,5 +16,5 @@ class TemporalLabel(PlainTermDataDescriptor):
     [Taylor et al., 2025](https://docs.google.com/document/d/19jzecgymgiiEsTDzaaqeLP6pTvLT-NzCMaq-wu-QoOc/edit?pli=1&tab=t.0).
 
     This label is used as the area component of a branded variable's suffix
-    (see :py:class:`BrandedSuffix`).
+    (see :py:class:`BrandingSuffix`).
     """  # noqa: E501

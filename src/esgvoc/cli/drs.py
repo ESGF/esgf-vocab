@@ -17,10 +17,13 @@ app = typer.Typer()
 console = Console()
 
 
-# Predefined list of projects and DRS types
-# projects = ["cmip5", "cmip6","cmip6plus", "cmip7"]
-projects = ev.get_all_projects()
+# Predefined list of DRS types
 drs_types = ["filename", "directory", "dataset"]
+
+
+def get_projects() -> list[str]:
+    """Get available projects dynamically (not at import time)."""
+    return ev.get_all_projects()
 
 
 def display(table):
@@ -100,7 +103,7 @@ def drsvalid(
             i += 1
             continue
 
-        if entries[i] in projects:
+        if entries[i] in get_projects():
             current_project = entries[i]
             i += 1
             continue
@@ -218,7 +221,7 @@ def drsgen(
         if entries[i] in ["", " "]:
             i += 1
             continue
-        if entries[i] in projects:
+        if entries[i] in get_projects():
             current_project = entries[i]
             i += 1
             continue

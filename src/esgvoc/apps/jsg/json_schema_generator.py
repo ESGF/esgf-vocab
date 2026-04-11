@@ -8,7 +8,7 @@ from jinja2 import Environment, FileSystemLoader
 from sqlmodel import Session
 
 from esgvoc.api import projects, search
-from esgvoc.api.project_specs import CatalogProperty, DrsType
+from esgvoc.api.project_specs import CatalogProperty, DrsType, LinkProperty
 from esgvoc.core.constants import COMPOSITE_REQUIRED_KEY, DRS_SPECS_JSON_KEY, PATTERN_JSON_KEY
 from esgvoc.core.db.models.project import PCollection, PTerm, TermKind
 from esgvoc.core.db.models.universe import UTerm
@@ -26,6 +26,41 @@ class _CatalogProperty:
     field_name: str
     field_value: dict
     is_required: bool
+
+
+@dataclass
+class _LinkProperty:
+    """Processed link property ready for template rendering."""
+
+    rel: str
+    is_required: bool
+    href_pattern: str | None
+    title_const: str | None
+    type_constraint: dict | None
+
+    @property
+    def has_constraints(self) -> bool:
+        """Check if this link has any validation constraints beyond rel."""
+        return self.href_pattern is not None or self.title_const is not None or self.type_constraint is not None
+
+
+def _process_link_property(link_prop: LinkProperty) -> _LinkProperty:
+    """Transform a LinkProperty into template-ready format."""
+    # Process link_type: string → const, dict with enum → enum
+    type_constraint = None
+    if link_prop.link_type is not None:
+        if isinstance(link_prop.link_type, str):
+            type_constraint = {"const": link_prop.link_type}
+        elif isinstance(link_prop.link_type, dict) and "enum" in link_prop.link_type:
+            type_constraint = {"enum": link_prop.link_type["enum"]}
+
+    return _LinkProperty(
+        rel=link_prop.rel,
+        is_required=link_prop.is_required,
+        href_pattern=link_prop.link_pattern,
+        title_const=link_prop.title,
+        type_constraint=type_constraint,
+    )
 
 
 def _process_col_plain_terms(collection: PCollection, source_collection_key: str) -> tuple[str, list[str]]:
@@ -316,6 +351,13 @@ def generate_json_schema(project_id: str) -> dict:
                 property_translator, catalog_specs.file_properties
             )
             del property_translator
+
+            # Process link properties
+            catalog_link_properties = [
+                _process_link_property(lp) for lp in catalog_specs.link_properties
+            ]
+            required_link_rels = [lp.rel for lp in catalog_specs.link_properties if lp.is_required]
+
             json_raw_str = template.render(
                 project_id=project_specs.drs_name,
                 catalog_version=catalog_specs.version,
@@ -323,6 +365,8 @@ def generate_json_schema(project_id: str) -> dict:
                 base_id_regex=base_id_regex,
                 catalog_dataset_properties=catalog_dataset_properties,
                 catalog_file_properties=catalog_file_properties,
+                catalog_link_properties=catalog_link_properties,
+                required_link_rels=required_link_rels,
                 **extension_specs,
             )
             # Json compliance checking.
