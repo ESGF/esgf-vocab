@@ -2,6 +2,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
+from esgvoc.admin.cli import app as admin_app
 from esgvoc.cli.clean import app as clean_app
 from esgvoc.cli.config import app as config_app
 from esgvoc.cli.drs import app as drs_app
@@ -30,6 +31,7 @@ app.add_typer(clean_app, name="clean")
 app.add_typer(test_cv_app, name="test")
 app.add_typer(find_app)
 app.add_typer(schema_app)
+app.add_typer(admin_app, name="admin")
 
 # maybe remove during a future refactor
 
