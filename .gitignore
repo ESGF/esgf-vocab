@@ -30,3 +30,6 @@ sb.py
 CHANGELOG.md
 .coverage
 codemcp.toml
+
+# esgvoc local dev config (ESGVOC_HOME override)
+.esgvoc_config_vers/

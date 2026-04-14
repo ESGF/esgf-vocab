@@ -1,8 +1,9 @@
 import toml
 import logging
 from pathlib import Path
-from platformdirs import PlatformDirs
 from typing import Type, TypeVar, Generic, Protocol
+
+from esgvoc.core.service.configuration.home import EsgvocHome
 
 # Setup logging
 # Use WARNING level to see important messages (errors, warnings) but not debug/info spam
@@ -35,20 +36,18 @@ class ConfigManager(Generic[T]):
         - config_cls: A class that implements `ConfigSchema` (e.g., ServiceSettings).
         - app_name: Name of the application (used for directory paths).
         - app_author: Name of the author/organization (used for directory paths).
+
+        The root directory is resolved via EsgvocHome (see ESGVOC_HOME env var).
         """
         self.config_cls = config_cls
-        self.dirs = PlatformDirs(app_name, app_author)
+        self.home = EsgvocHome.resolve()
 
-        # Define standard paths
-        self.config_dir = Path(self.dirs.user_config_path).expanduser().resolve()
-        self.data_dir = Path(self.dirs.user_data_path).expanduser().resolve()
-        self.data_config_dir = None  # depends on loaded settings
-
-        self.cache_dir = Path(self.dirs.user_cache_path).expanduser().resolve()
-
-        self.config_dir.mkdir(parents=True, exist_ok=True)
-        self.data_dir.mkdir(parents=True, exist_ok=True)
-        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        # Dev tier directory: toml configs and registry live here
+        self.config_dir = self.home.dev_dir
+        # Data dir kept for backward compatibility (used by state.py via data_config_dir)
+        self.data_dir = self.home.dev_dir
+        self.data_config_dir = None  # depends on loaded settings (set after init)
+        self.cache_dir = self.home.user_cache_dir
 
         self.registry_path = self.config_dir / "config_registry.toml"
         self.default_config_path = self.config_dir / "default_setting.toml"

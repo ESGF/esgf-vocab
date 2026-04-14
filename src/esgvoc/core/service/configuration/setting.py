@@ -3,7 +3,8 @@ from pathlib import Path
 
 import toml
 from pydantic import BaseModel, Field
-from platformdirs import PlatformDirs
+
+from esgvoc.core.service.configuration.home import EsgvocHome
 
 
 def resolve_path_to_absolute(relative_path: Optional[str], config_name: Optional[str] = None) -> Optional[str]:
@@ -23,11 +24,9 @@ def resolve_path_to_absolute(relative_path: Optional[str], config_name: Optional
     if relative_path.startswith("."):
         return str((Path.cwd() / relative_path).resolve())
 
-    # Handle plain relative paths using PlatformDirs with config name (default behavior)
-    dirs = PlatformDirs("esgvoc", "ipsl")
-    base_path = Path(dirs.user_data_path).expanduser().resolve()
-    if config_name:
-        base_path = base_path / config_name
+    # Handle plain relative paths using EsgvocHome dev tier (respects ESGVOC_HOME)
+    home = EsgvocHome.resolve()
+    base_path = home.dev_config_dir(config_name) if config_name else home.dev_dir
     return str(base_path / relative_path)
 
 
@@ -98,9 +97,8 @@ class ServiceSettings(BaseModel):
 
     @staticmethod
     def _get_default_base_path() -> Path:
-        """Get the default base path for data storage using PlatformDirs."""
-        dirs = PlatformDirs("esgvoc", "ipsl")
-        return Path(dirs.user_data_path).expanduser().resolve()
+        """Get the default base path for data storage (respects ESGVOC_HOME)."""
+        return EsgvocHome.resolve().dev_dir
 
     @classmethod
     def _get_default_project_configs(cls) -> dict[str, dict]:

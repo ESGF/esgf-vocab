@@ -65,8 +65,8 @@ def get_config_manager():
             default_settings=ServiceSettings._get_default_settings(),
         )
         active_config_name = config_manager.get_active_config_name()
-        config_manager.data_config_dir = config_manager.data_dir / active_config_name
-        config_manager.data_config_dir.mkdir(parents=True, exist_ok=True)
+        # Use home-aware per-config directory (dev tier isolation)
+        config_manager.data_config_dir = config_manager.home.dev_config_dir(active_config_name)
 
         # Initialize version checker after config is ready
         _initialize_version_check(config_manager)
