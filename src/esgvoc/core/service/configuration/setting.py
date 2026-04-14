@@ -30,7 +30,14 @@ def resolve_path_to_absolute(relative_path: Optional[str], config_name: Optional
     return str(base_path / relative_path)
 
 
-class ProjectSettings(BaseModel):
+class SourceProjectSettings(BaseModel):
+    """
+    Dev Tier project settings (source-based workflow).
+
+    Used by the config system when building databases from cloned git repos.
+    This is the preserved form of the original ProjectSettings.
+    """
+
     project_name: str
     github_repo: str
     branch: Optional[str] = "main"
@@ -50,6 +57,10 @@ class ProjectSettings(BaseModel):
     def get_absolute_db_path(self) -> Optional[str]:
         """Get the absolute db path without modifying the stored value."""
         return resolve_path_to_absolute(self.db_path, self._config_name)
+
+
+# Backward-compatible alias — existing code using ProjectSettings keeps working.
+ProjectSettings = SourceProjectSettings
 
 
 class UniverseSettings(BaseModel):
