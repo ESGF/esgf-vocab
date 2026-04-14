@@ -96,12 +96,67 @@ class DBBuilder:
     # Public API
     # ------------------------------------------------------------------
 
+    def build_dev(
+        self,
+        project_path: Path,
+        universe_path: Path,
+        output_path: Path,
+        manifest_overrides: Optional[dict] = None,
+        validate: bool = False,
+    ) -> BuildResult:
+        """
+        Fully local build: both repos already on disk, no git clone needed.
+
+        This is the recommended mode during development when:
+        - Repos are not yet tagged (only branches exist)
+        - No esgvoc_manifest.yaml exists yet in the repo
+        - You want to test local CV changes before committing
+
+        Parameters
+        ----------
+        project_path:
+            Root of the locally checked-out project CV repo.
+        universe_path:
+            Root of the locally checked-out universe repo.
+        output_path:
+            Where to write the final .db file.
+        manifest_overrides:
+            Dict of manifest field overrides (project_id, cv_version,
+            universe_version, esgvoc_min_version, esgvoc_max_version).
+            These take precedence over esgvoc_manifest.yaml if present.
+        validate:
+            If True, run DBValidator.validate() on the result.
+        """
+        project_path = project_path.resolve()
+        universe_path = universe_path.resolve()
+
+        self._log(f"Project path:  {project_path}")
+        self._log(f"Universe path: {universe_path}")
+
+        with self._temp_workspace() as tmp:
+            result = self._run_build(
+                project_path=project_path,
+                universe_path=universe_path,
+                project_sha=self._git_sha(project_path),
+                universe_sha=self._git_sha(universe_path),
+                output_path=output_path,
+                tmp=tmp,
+                manifest_overrides=manifest_overrides,
+            )
+
+        if validate:
+            from esgvoc.admin.validator import DBValidator
+            DBValidator().validate(output_path, full=True)
+
+        return result
+
     def build_local(
         self,
         project_path: Path,
         universe_repo: str,
         universe_ref: str,
         output_path: Path,
+        manifest_overrides: Optional[dict] = None,
         validate: bool = False,
     ) -> BuildResult:
         """
@@ -114,9 +169,11 @@ class DBBuilder:
         universe_repo:
             owner/repo or full URL of the universe GitHub repository.
         universe_ref:
-            Branch, tag, or commit ref to clone universe at.
+            Branch or tag to clone universe at.
         output_path:
             Where to write the final .db file.
+        manifest_overrides:
+            Dict of manifest field overrides (project_id, cv_version, …).
         validate:
             If True, run DBValidator.validate() on the result.
         """
@@ -135,6 +192,7 @@ class DBBuilder:
                 universe_sha=universe_sha,
                 output_path=output_path,
                 tmp=tmp,
+                manifest_overrides=manifest_overrides,
             )
 
         if validate:
@@ -150,6 +208,7 @@ class DBBuilder:
         universe_repo: str,
         universe_ref: str,
         output_path: Path,
+        manifest_overrides: Optional[dict] = None,
         validate: bool = False,
     ) -> BuildResult:
         """
@@ -161,6 +220,8 @@ class DBBuilder:
             owner/repo or full URL of the project CV repository.
         project_ref:
             Branch, tag, or commit ref to clone project at.
+        manifest_overrides:
+            Dict of manifest field overrides (project_id, cv_version, …).
         """
         with self._temp_workspace() as tmp:
             project_path = tmp / "project"
@@ -181,6 +242,7 @@ class DBBuilder:
                 universe_sha=universe_sha,
                 output_path=output_path,
                 tmp=tmp,
+                manifest_overrides=manifest_overrides,
             )
 
         if validate:
@@ -249,12 +311,25 @@ class DBBuilder:
         universe_sha: Optional[str],
         output_path: Path,
         tmp: Path,
+        manifest_overrides: Optional[dict] = None,
     ) -> BuildResult:
         """Build universe DB + project DB, merge, embed metadata, compute checksum."""
         manifest = Manifest.load_or_default(
             project_path,
             project_id=project_path.name,
         )
+        # Apply overrides on top of whatever was loaded (or defaulted)
+        if manifest_overrides:
+            if "project_id" in manifest_overrides:
+                manifest.project.id = manifest_overrides["project_id"]
+            if "cv_version" in manifest_overrides:
+                manifest.cv_version = manifest_overrides["cv_version"]
+            if "universe_version" in manifest_overrides:
+                manifest.universe_version = manifest_overrides["universe_version"]
+            if "esgvoc_min_version" in manifest_overrides:
+                manifest.esgvoc.min_version = manifest_overrides["esgvoc_min_version"]
+            if "esgvoc_max_version" in manifest_overrides:
+                manifest.esgvoc.max_version = manifest_overrides["esgvoc_max_version"]
         self._log(f"Project: {manifest.project.id} cv_version={manifest.cv_version}")
 
         universe_db = tmp / "universe.db"

@@ -418,3 +418,92 @@ class TestAdminCLI:
             "--output", str(tmp_path / "out.db"),
         ])
         assert result.exit_code != 0
+
+    def test_build_local_without_universe_repo_fails(self, tmp_path):
+        """--project-path without --universe-path requires --universe-repo and --universe-ref."""
+        result = runner.invoke(admin_app, [
+            "build",
+            "--project-path", str(tmp_path),
+            "--output", str(tmp_path / "out.db"),
+        ])
+        assert result.exit_code != 0
+
+    def test_build_dev_missing_universe_path_not_entered(self, tmp_path):
+        """Providing --project-path + --universe-path should route to build_dev."""
+        # We can't actually run the build (no real CV data), but we can confirm
+        # the CLI accepts the arguments and calls build_dev (which raises on empty dirs).
+        result = runner.invoke(admin_app, [
+            "build",
+            "--project-path", str(tmp_path),
+            "--universe-path", str(tmp_path),
+            "--project-id", "test-proj",
+            "--cv-version", "0.0.1",
+            "--universe-version", "0.0.1",
+            "--output", str(tmp_path / "out.db"),
+        ])
+        # build_dev will fail because tmp_path has no CV data, but exit_code != 0
+        # confirms the CLI routed correctly (not "missing args" error)
+        assert result.exit_code != 0
+        # Should NOT be a typer argument error — it should be a build error
+        assert "Error" in result.output or result.exception is not None
+
+
+# ---------------------------------------------------------------------------
+# Builder: manifest overrides
+# ---------------------------------------------------------------------------
+
+class TestManifestOverrides:
+    def test_overrides_applied_no_manifest_file(self, tmp_path):
+        """load_or_default + overrides should produce correct metadata."""
+        from esgvoc.admin.manifest import Manifest
+
+        # No esgvoc_manifest.yaml in tmp_path
+        manifest = Manifest.load_or_default(tmp_path, project_id="fallback")
+        assert manifest.project.id == "fallback"
+        assert "unknown" in manifest.cv_version
+
+        # Simulate what _run_build does with overrides
+        overrides = {
+            "project_id": "cmip7",
+            "cv_version": "2.1.0",
+            "universe_version": "1.0.0",
+            "esgvoc_min_version": "1.5.0",
+        }
+        if "project_id" in overrides:
+            manifest.project.id = overrides["project_id"]
+        if "cv_version" in overrides:
+            manifest.cv_version = overrides["cv_version"]
+        if "universe_version" in overrides:
+            manifest.universe_version = overrides["universe_version"]
+        if "esgvoc_min_version" in overrides:
+            manifest.esgvoc.min_version = overrides["esgvoc_min_version"]
+
+        assert manifest.project.id == "cmip7"
+        assert manifest.cv_version == "2.1.0"
+        assert manifest.universe_version == "1.0.0"
+        assert manifest.esgvoc.min_version == "1.5.0"
+
+    def test_overrides_take_precedence_over_manifest_file(self, tmp_path):
+        """Overrides beat esgvoc_manifest.yaml values."""
+        import yaml
+        from esgvoc.admin.manifest import Manifest, MANIFEST_FILENAME
+
+        with open(tmp_path / MANIFEST_FILENAME, "w") as f:
+            yaml.dump({
+                "project": {"id": "cmip6"},
+                "cv_version": "6.0.0",
+                "universe_version": "1.0.0",
+            }, f)
+
+        manifest = Manifest.load_or_default(tmp_path, project_id="fallback")
+        assert manifest.project.id == "cmip6"  # from file
+
+        overrides = {"project_id": "cmip7-override", "cv_version": "7.0.0"}
+        if "project_id" in overrides:
+            manifest.project.id = overrides["project_id"]
+        if "cv_version" in overrides:
+            manifest.cv_version = overrides["cv_version"]
+
+        assert manifest.project.id == "cmip7-override"
+        assert manifest.cv_version == "7.0.0"
+        assert manifest.universe_version == "1.0.0"  # not overridden

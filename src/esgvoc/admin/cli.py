@@ -36,7 +36,11 @@ console = Console()
 def build(
     project_path: Optional[Path] = typer.Option(
         None, "--project-path", "-p",
-        help="Path to a locally checked-out project CV repo (local mode).",
+        help="Path to a locally checked-out project CV repo (local or dev mode).",
+    ),
+    universe_path: Optional[Path] = typer.Option(
+        None, "--universe-path", "-u",
+        help="Path to a locally checked-out universe repo (dev mode, no clone).",
     ),
     project_repo: Optional[str] = typer.Option(
         None, "--project-repo",
@@ -46,17 +50,37 @@ def build(
         None, "--project-ref",
         help="Branch or tag of the project repo to build from.",
     ),
-    universe_repo: str = typer.Option(
-        ..., "--universe-repo",
+    universe_repo: Optional[str] = typer.Option(
+        None, "--universe-repo",
         help="owner/repo or URL of the universe repo (e.g. WCRP-CMIP/WCRP-universe).",
     ),
-    universe_ref: str = typer.Option(
-        ..., "--universe-ref",
+    universe_ref: Optional[str] = typer.Option(
+        None, "--universe-ref",
         help="Branch or tag of the universe repo (e.g. esgvoc_dev or v1.2.0).",
     ),
     output: Path = typer.Option(
         ..., "--output", "-o",
         help="Output .db file path.",
+    ),
+    project_id: Optional[str] = typer.Option(
+        None, "--project-id",
+        help="Override manifest project.id (useful when no esgvoc_manifest.yaml exists).",
+    ),
+    cv_version: Optional[str] = typer.Option(
+        None, "--cv-version",
+        help="Override manifest cv_version.",
+    ),
+    universe_version: Optional[str] = typer.Option(
+        None, "--universe-version",
+        help="Override manifest universe_version.",
+    ),
+    esgvoc_min_version: Optional[str] = typer.Option(
+        None, "--esgvoc-min-version",
+        help="Override esgvoc compatibility min_version.",
+    ),
+    esgvoc_max_version: Optional[str] = typer.Option(
+        None, "--esgvoc-max-version",
+        help="Override esgvoc compatibility max_version.",
     ),
     validate: bool = typer.Option(
         False, "--validate",
@@ -71,7 +95,11 @@ def build(
     Build a pre-built project database.
 
     \b
-    Local mode  (project already checked out):
+    Dev mode (both repos local, no cloning — useful when repos have no tags yet):
+      esgvoc admin build --project-path ./CMIP7-CVs --universe-path ./WCRP-universe --project-id cmip7 --cv-version dev --universe-version dev --output cmip7.db
+
+    \b
+    Local mode (project checked out, universe cloned):
       esgvoc admin build --project-path . --universe-repo WCRP-CMIP/WCRP-universe --universe-ref esgvoc_dev --output cmip7.db
 
     \b
@@ -82,28 +110,68 @@ def build(
 
     builder = DBBuilder(fail_on_missing_links=fail_on_missing_links, verbose=True)
 
+    # Collect manifest overrides from CLI flags
+    manifest_overrides: dict = {}
+    if project_id:
+        manifest_overrides["project_id"] = project_id
+    if cv_version:
+        manifest_overrides["cv_version"] = cv_version
+    if universe_version:
+        manifest_overrides["universe_version"] = universe_version
+    if esgvoc_min_version:
+        manifest_overrides["esgvoc_min_version"] = esgvoc_min_version
+    if esgvoc_max_version:
+        manifest_overrides["esgvoc_max_version"] = esgvoc_max_version
+
     try:
-        if project_path is not None:
+        if project_path is not None and universe_path is not None:
+            # Dev mode: both repos local, no clone
+            result = builder.build_dev(
+                project_path=project_path,
+                universe_path=universe_path,
+                output_path=output,
+                manifest_overrides=manifest_overrides or None,
+                validate=validate,
+            )
+        elif project_path is not None:
+            # Local mode: project checked out, clone universe
+            if not universe_repo or not universe_ref:
+                console.print(
+                    "[red]Error:[/red] --universe-repo and --universe-ref are required "
+                    "when using --project-path without --universe-path."
+                )
+                raise typer.Exit(1)
             result = builder.build_local(
                 project_path=project_path,
                 universe_repo=universe_repo,
                 universe_ref=universe_ref,
                 output_path=output,
+                manifest_overrides=manifest_overrides or None,
                 validate=validate,
             )
         elif project_repo is not None and project_ref is not None:
+            # Remote mode: clone both
+            if not universe_repo or not universe_ref:
+                console.print(
+                    "[red]Error:[/red] --universe-repo and --universe-ref are required "
+                    "in remote mode."
+                )
+                raise typer.Exit(1)
             result = builder.build_remote(
                 project_repo=project_repo,
                 project_ref=project_ref,
                 universe_repo=universe_repo,
                 universe_ref=universe_ref,
                 output_path=output,
+                manifest_overrides=manifest_overrides or None,
                 validate=validate,
             )
         else:
             console.print(
-                "[red]Error:[/red] Provide either --project-path (local mode) "
-                "or both --project-repo and --project-ref (remote mode)."
+                "[red]Error:[/red] Provide one of:\n"
+                "  --project-path + --universe-path          (dev mode, fully local)\n"
+                "  --project-path + --universe-repo/ref      (local mode)\n"
+                "  --project-repo + --project-ref + --universe-repo/ref  (remote mode)"
             )
             raise typer.Exit(1)
 
