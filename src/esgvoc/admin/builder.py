@@ -130,6 +130,11 @@ class DBBuilder:
         project_path = project_path.resolve()
         universe_path = universe_path.resolve()
 
+        if not project_path.exists():
+            raise FileNotFoundError(f"Project path not found: {project_path}")
+        if not universe_path.exists():
+            raise FileNotFoundError(f"Universe path not found: {universe_path}")
+
         self._log(f"Project path:  {project_path}")
         self._log(f"Universe path: {universe_path}")
 
@@ -178,6 +183,8 @@ class DBBuilder:
             If True, run DBValidator.validate() on the result.
         """
         project_path = project_path.resolve()
+        if not project_path.exists():
+            raise FileNotFoundError(f"Project path not found: {project_path}")
         with self._temp_workspace() as tmp:
             universe_path = tmp / "universe"
             self._log(f"Cloning universe {universe_repo} @ {universe_ref}…")
