@@ -36,7 +36,7 @@ class HorizontalSubgrid(PlainTermDataDescriptor):
         default_factory=list,
     )
 
-    horizontal_grid_cells: HorizontalGridCells = Field(
+    horizontal_grid_cells: str | HorizontalGridCells = Field(
         description="A description of the characteristics and location of the grid cells of this subgrid."
     )
 

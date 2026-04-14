@@ -190,6 +190,23 @@
           "required": [
             "protocol"
           ]
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "application/netcdf"
+              }
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "required": [
+              "file:size",
+              "file:checksum",
+              "file:local_path"
+              ]
+          }
         }
         {% for file_property in catalog_file_properties|sort(attribute="field_name") %}
           {% if file_property.is_required %}

@@ -180,13 +180,13 @@ GET_PARAMETERS: list[Parameter] = [
     Parameter("cmip6plus", "source", "source_id", "miroc6"),
     Parameter("cmip6plus", "variable", "variable_id", "airmass"),
     Parameter("cmip6plus", "institution", "institution_id", "cnes"),
-    Parameter("cmip6plus", "table", "table_id", "ACmon"),
+    Parameter("cmip6plus", "table", "table_id", "acmon"),
     Parameter("cmip6plus", "variant_label", "variant_label", "ripf"),
     Parameter("cmip6", "institution", "institution_id", "ipsl"),
     Parameter("cmip6", "time_range", "time_range", "daily"),
     Parameter("cmip6", "source", "source_id", "miroc6"),
     Parameter("cmip6", "variable", "variable_id", "airmass"),
-    Parameter("cmip6", "table", "table_id", "Eyr"),
+    Parameter("cmip6", "table", "table_id", "eyr"),
     Parameter("cmip6", "experiment", "experiment_id", "ssp245-aer"),
     Parameter("cmip6", "variable", "variable_id", "prw2h"),
     Parameter("cmip6", "member_id", "member_id", "subexp_variant"),
@@ -228,7 +228,7 @@ FIND_DATA_DESCRIPTOR_PARAMETERS: list[FindExpression] = [
 # FindExpression('', PARAMETERS[''], ItemKind.COLLECTION),
 FIND_COLLECTION_PARAMETERS: list[FindExpression] = [
     FindExpression("institution_id", PARAMETERS["cmip6plus_ipsl"], ItemKind.COLLECTION),
-    FindExpression("tab*_id", PARAMETERS["cmip6_Eyr"], ItemKind.COLLECTION),
+    FindExpression("tab*_id", PARAMETERS["cmip6_eyr"], ItemKind.COLLECTION),
     FindExpression("var* NOT ver*", PARAMETERS["cmip6plus_airmass"], ItemKind.COLLECTION),
 ]
 

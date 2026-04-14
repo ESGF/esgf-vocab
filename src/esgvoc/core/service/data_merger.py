@@ -469,6 +469,16 @@ class DataMerger:
                             f"  Local path tried: {local_uri}\n"
                             f"  → Keeping as unresolved string"
                         )
+                        # Report to missing links tracker if available
+                        if self.config.missing_links_tracker is not None:
+                            self.config.missing_links_tracker.add_from_params(
+                                ingestion_context=self.config.ingestion_context,
+                                current_term=self.data.uri,
+                                string_value=data,
+                                expected_uri=uri,
+                                local_path=local_uri,
+                                property_name=_current_property,
+                            )
                         return data
                 except (OSError, IOError) as e:
                     property_msg = f"  Property: '{_current_property}'\n" if _current_property else ""
@@ -481,6 +491,16 @@ class DataMerger:
                         f"  Error: {e}\n"
                         f"  → Keeping as unresolved string"
                     )
+                    # Report to missing links tracker if available
+                    if self.config.missing_links_tracker is not None:
+                        self.config.missing_links_tracker.add_from_params(
+                            ingestion_context=self.config.ingestion_context,
+                            current_term=self.data.uri,
+                            string_value=data,
+                            expected_uri=uri,
+                            local_path=local_uri,
+                            property_name=_current_property,
+                        )
                     return data
 
                 # Add to visited for this branch only

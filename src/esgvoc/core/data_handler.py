@@ -21,6 +21,10 @@ def unified_document_loader(uri: str) -> Dict:
             _LOGGER.error(f"Failed to fetch remote document: {response.status_code} - {response.text}")
             return {}
     else:
+        # Handle file:// URIs by converting to local path
+        if uri.startswith("file://"):
+            from urllib.parse import unquote, urlparse
+            uri = unquote(urlparse(uri).path)
         with open(uri, "r") as f:
             return json.load(f)
 
@@ -144,7 +148,12 @@ class JsonLdResource(BaseModel):
             preprocessed["@context"] = data["@context"]
 
         # Expand the preprocessed data
-        return jsonld.expand(preprocessed, options={"base": self.uri})
+        # Convert file paths to file:// URIs for pyld 3.0+ compatibility
+        base_uri = self.uri
+        if not base_uri.startswith(("http://", "https://", "file://")):
+            from pathlib import Path
+            base_uri = Path(base_uri).as_uri()
+        return jsonld.expand(preprocessed, options={"base": base_uri})
 
     @cached_property
     def context(self) -> Dict:
@@ -170,7 +179,12 @@ class JsonLdResource(BaseModel):
     def normalized(self) -> str:
         """Normalize the JSON-LD data."""
         _LOGGER.info(f"Normalizing JSON-LD data for {self.uri}")
-        return jsonld.normalize(self.uri, options={"algorithm": "URDNA2015", "format": "application/n-quads"})
+        # Convert file paths to file:// URIs for pyld 3.0+ compatibility
+        uri = self.uri
+        if not uri.startswith(("http://", "https://", "file://")):
+            from pathlib import Path
+            uri = Path(uri).as_uri()
+        return jsonld.normalize(uri, options={"algorithm": "URDNA2015", "format": "application/n-quads"})
 
     def _extract_model_key(self, uri: str) -> Optional[str]:
         """Extract a model key from the URI."""

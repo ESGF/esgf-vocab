@@ -65,7 +65,7 @@ def schema(
             output.write_text(json_str)
             console.print(f"[green]Schema written to {output}[/green]")
         else:
-            console.print(json_str)
+            print(json_str)
 
     except Exception as e:
         console.print(f"[red]Error generating schema: {e}[/red]")

@@ -182,6 +182,7 @@ json_template = Template(
       "created": "2025-01-24T14:29:23.741213Z",
       "file:checksum": "90e402107a7f2588a85362b9beea2a12d4514d45",
       "file:size": 23553,
+      "file:local_path": "/badc/cmip6/data/CMIP6/ScenarioMIP/THU/CIESM/ssp585/r1i1p1f1/Amon/rsus/gr/v20200806/rsus_Amon_CIESM_ssp585_r1i1p1f1_gr_402901-411412.nc",
       "node": "dap.ceda.ac.uk",
       "protocol": "s3",
       "updated": "2025-01-24T14:29:23.741213Z",

@@ -1,6 +1,7 @@
 import logging
 import traceback
 from pathlib import Path
+from typing import TYPE_CHECKING, Optional
 
 from pydantic import BaseModel
 from sqlalchemy import text
@@ -14,6 +15,9 @@ from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import PCollection, Project, PTerm
 from esgvoc.core.exceptions import EsgvocDbError
 from esgvoc.core.service.data_merger import DataMerger
+
+if TYPE_CHECKING:
+    from esgvoc.core.service.missing_links import MissingLinksTracker
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -49,7 +53,14 @@ def instantiate_project_term(
     return updated_term.model_dump()
 
 
-def ingest_collection(collection_dir_path: Path, project: Project, project_db_session) -> None:
+def ingest_collection(
+    collection_dir_path: Path,
+    project: Project,
+    project_db_session,
+    missing_links_tracker: Optional["MissingLinksTracker"] = None,
+) -> None:
+    from esgvoc.core.service.resolver_config import ResolverConfig
+
     collection_id = collection_dir_path.name
     collection_context_file_path = collection_dir_path.joinpath(esgvoc.core.constants.CONTEXT_FILENAME)
     try:
@@ -79,6 +90,13 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                     "https://esgvoc.ipsl.fr/resource/universe": service.current_state.universe.local_path,
                     f"https://esgvoc.ipsl.fr/resource/{project.id}": str(collection_dir_path.parent),
                 }
+
+                # Create config with tracker if available
+                config = ResolverConfig(
+                    missing_links_tracker=missing_links_tracker,
+                    ingestion_context=f"project:{project.id}",
+                )
+
                 merger = DataMerger(
                     data=JsonLdResource(uri=str(term_file_path)),
                     locally_available=locally_avail,
@@ -86,6 +104,7 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
                         "https://esgvoc.ipsl.fr/resource/universe",
                         f"https://esgvoc.ipsl.fr/resource/{project.id}",
                     },
+                    config=config,
                 )
                 merged_data = merger.merge_linked_json()[-1]
                 # Resolve all nested @id references using merged context
@@ -161,7 +180,12 @@ def ingest_collection(collection_dir_path: Path, project: Project, project_db_se
     project_db_session.add(collection)
 
 
-def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash: str):
+def ingest_project(
+    project_dir_path: Path,
+    project_db_file_path: Path,
+    git_hash: str,
+    missing_links_tracker: Optional["MissingLinksTracker"] = None,
+):
     try:
         project_connection = db.DBConnection(project_db_file_path)
     except Exception as e:
@@ -201,7 +225,7 @@ def ingest_project(project_dir_path: Path, project_db_file_path: Path, git_hash:
             if collection_dir_path.is_dir() and (collection_dir_path / "000_context.jsonld").exists():
                 _LOGGER.debug(f"found collection dir : {collection_dir_path}")
                 try:
-                    ingest_collection(collection_dir_path, project, project_db_session)
+                    ingest_collection(collection_dir_path, project, project_db_session, missing_links_tracker)
                 except Exception as e:
                     msg = f"unexpected error while ingesting collection {collection_dir_path}"
                     _LOGGER.fatal(msg)

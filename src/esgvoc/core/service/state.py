@@ -1,7 +1,7 @@
 import logging
 import os
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from rich.table import Table
 from sqlalchemy.exc import NoResultFound
@@ -12,6 +12,9 @@ from esgvoc.core.db.models.project import Project
 from esgvoc.core.db.models.universe import Universe
 from esgvoc.core.repo_fetcher import RepoFetcher
 from esgvoc.core.service.configuration.setting import ProjectSettings, ServiceSettings, UniverseSettings
+
+if TYPE_CHECKING:
+    from esgvoc.core.service.missing_links import MissingLinksTracker
 
 logger = logging.getLogger(__name__)
 
@@ -146,7 +149,7 @@ class BaseState:
         self.rf.clone_repository(owner, repo, self.branch, self.local_path)
         self.fetch_version_local()
 
-    def build_db(self):
+    def build_db(self, missing_links_tracker: Optional["MissingLinksTracker"] = None):
         from esgvoc.core.db.models.project import project_create_db
         from esgvoc.core.db.models.universe import universe_create_db
         from esgvoc.core.db.project_ingestion import ingest_project
@@ -163,20 +166,36 @@ class BaseState:
                 universe_create_db(Path(self.db_path))
                 self.db_connection = DBConnection(db_file_path=Path(self.db_path))
 
+                if self.local_version is None:
+                    raise RuntimeError(
+                        f"Unable to determine git version for repository at {self.local_path}.\n"
+                        "Possible causes:\n"
+                        "  - Git is not installed on this machine. Install git and try again.\n"
+                        "  - The repository folder exists but is not a valid git repository.\n"
+                        f"    Try removing it and reinstalling: rm -rf {self.local_path} && esgvoc install"
+                    )
                 ingest_metadata_universe(self.db_connection, self.local_version)
                 print("Filling Universe DB")
                 if self.local_path:
-                    ingest_universe(Path(self.local_path), Path(self.db_path))
+                    ingest_universe(Path(self.local_path), Path(self.db_path), missing_links_tracker)
 
             elif self.db_sqlmodel == Project:
                 print("Building Project DB from ", self.local_path)
                 project_create_db(Path(self.db_path))
                 print("Filling project DB")
+                if self.local_path and self.local_version is None:
+                    raise RuntimeError(
+                        f"Unable to determine git version for repository at {self.local_path}.\n"
+                        "Possible causes:\n"
+                        "  - Git is not installed on this machine. Install git and try again.\n"
+                        "  - The repository folder exists but is not a valid git repository.\n"
+                        f"    Try removing it and reinstalling: rm -rf {self.local_path} && esgvoc install"
+                    )
                 if self.local_path and self.local_version:
-                    ingest_project(Path(self.local_path), Path(self.db_path), self.local_version)
+                    ingest_project(Path(self.local_path), Path(self.db_path), self.local_version, missing_links_tracker)
         self.fetch_version_db()
 
-    def sync(self):
+    def sync(self, missing_links_tracker: Optional["MissingLinksTracker"] = None):
         summary = self.check_sync_status()
         updated = False
 
@@ -184,13 +203,13 @@ class BaseState:
             print("Running in offline mode - only using local repositories and databases")
             if self.local_access:
                 if not summary["local_db_sync"] and summary["local_db_sync"] is not None:
-                    self.build_db()
+                    self.build_db(missing_links_tracker)
                     updated = True
                 else:
                     print("Cache db is uptodate from local repository")
             elif not self.db_access:  # it can happen if the db is created but not filled
                 if self.local_path and os.path.exists(self.local_path):
-                    self.build_db()
+                    self.build_db(missing_links_tracker)
                     updated = True
                 else:
                     print(f"No local repository found at {self.local_path} - cannot sync in offline mode")
@@ -206,12 +225,12 @@ class BaseState:
             and summary["github_local_sync"] is None
         ):
             self.clone_remote()
-            self.build_db()
+            self.build_db(missing_links_tracker)
             updated = True
         elif self.github_access and not summary["github_db_sync"]:
             if not summary["local_db_sync"] and summary["local_db_sync"] is not None:
                 self.clone_remote()
-                self.build_db()
+                self.build_db(missing_links_tracker)
                 updated = True
             elif not summary["github_local_sync"]:
                 # Critical fix: when local and remote diverge in online mode,
@@ -219,19 +238,19 @@ class BaseState:
                 print(f"Local and remote repositories have diverged (local: {summary['local'][:8] if summary['local'] else 'N/A'}, remote: {summary['github'][:8] if summary['github'] else 'N/A'})")
                 print("Prioritizing remote repository truth - removing local repository and re-cloning from GitHub...")
                 self.clone_remote(force_clean=True)
-                self.build_db()
+                self.build_db(missing_links_tracker)
                 updated = True
             else:  # can be simply build in root and clone if neccessary
-                self.build_db()
+                self.build_db(missing_links_tracker)
                 updated = True
         elif self.local_access:
             if not summary["local_db_sync"] and summary["local_db_sync"] is not None:
-                self.build_db()
+                self.build_db(missing_links_tracker)
                 updated = True
             else:
                 print("Cache db is uptodate from local repository")
         elif not self.db_access:  # it can happen if the db is created but not filled
-            self.build_db()
+            self.build_db(missing_links_tracker)
             updated = True
         else:
             print("Nothing to install, everything up to date")
@@ -279,19 +298,38 @@ class StateService:
         for _, proj_state in self.projects.items():
             proj_state.connect_db()
 
-    def synchronize_all(self):
+    def synchronize_all(self, fail_on_missing_links: bool = False) -> int:
+        """
+        Synchronize all repositories and databases.
+
+        Args:
+            fail_on_missing_links: If True, track missing @id references.
+
+        Returns:
+            0 if successful, -1 if missing links were found (when fail_on_missing_links=True).
+        """
+        from esgvoc.core.service.missing_links import MissingLinksTracker
+
+        # Create tracker only if fail_on_missing_links is enabled
+        tracker = MissingLinksTracker() if fail_on_missing_links else None
+
         print("sync universe")
         if self.universe.offline_mode:
             print("Universe is in offline mode")
-        universe_updated = self.universe.sync()
+        universe_updated = self.universe.sync(tracker)
         print("sync projects")
         for project_name, project in self.projects.items():
             if project.offline_mode:
                 print(f"Project {project_name} is in offline mode")
-            project_updated = project.sync()
+            project_updated = project.sync(tracker)
             if universe_updated and not project_updated:
-                project.build_db()
+                project.build_db(tracker)
         self.connect_db()
+
+        # Print summary and return code
+        if tracker is not None and tracker.print_summary():
+            return -1
+        return 0
 
     def table(self):
         table = Table(show_header=False, show_lines=True)
