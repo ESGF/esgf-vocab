@@ -40,17 +40,23 @@ from esgvoc.admin.validator import DBValidator, ValidationResult
 runner = CliRunner()
 
 
-def _make_db(path: Path, *, with_metadata: bool = True, with_data: bool = False) -> None:
-    """Create a minimal SQLite DB matching esgvoc schema."""
+def _make_db(path: Path, *, with_metadata: bool = True, with_data: bool = False,
+             db_type: str = "project") -> None:
+    """
+    Create a minimal SQLite DB matching esgvoc schema.
+
+    db_type: "project" (default) or "universe"
+    """
     with sqlite3.connect(str(path)) as conn:
         if with_metadata:
+            project_id = "universe" if db_type == "universe" else "cmip7"
             conn.execute(
                 "CREATE TABLE _esgvoc_metadata (key TEXT PRIMARY KEY, value TEXT)"
             )
             conn.executemany(
                 "INSERT INTO _esgvoc_metadata VALUES (?, ?)",
                 [
-                    ("project_id", "cmip7"),
+                    ("project_id", project_id),
                     ("cv_version", "v2.1.0"),
                     ("universe_version", "v1.2.0"),
                     ("build_date", "2024-03-25T15:30:00+00:00"),
@@ -60,50 +66,65 @@ def _make_db(path: Path, *, with_metadata: bool = True, with_data: bool = False)
                 ],
             )
 
-        conn.execute("CREATE TABLE universes (pk INTEGER PRIMARY KEY, git_hash TEXT)")
-        conn.execute(
-            "CREATE TABLE udata_descriptors "
-            "(pk INTEGER PRIMARY KEY, id TEXT, universe_pk INTEGER, context TEXT, term_kind TEXT)"
-        )
-        conn.execute(
-            "CREATE TABLE uterms "
-            "(pk INTEGER PRIMARY KEY, id TEXT, specs TEXT, kind TEXT, data_descriptor_pk INTEGER)"
-        )
-        conn.execute(
-            "CREATE TABLE pterms "
-            "(pk INTEGER PRIMARY KEY, id TEXT, specs TEXT, kind TEXT, collection_pk INTEGER)"
-        )
-        conn.execute(
-            "CREATE TABLE pcollections "
-            "(pk INTEGER PRIMARY KEY, id TEXT, context TEXT, project_pk INTEGER, "
-            "data_descriptor_id TEXT, term_kind TEXT)"
-        )
-        # Virtual FTS tables (simplified for testing)
-        conn.execute(
-            "CREATE TABLE uterms_fts5 "
-            "(pk INTEGER, id TEXT, specs TEXT, kind TEXT, data_descriptor_pk INTEGER)"
-        )
-        conn.execute(
-            "CREATE TABLE udata_descriptors_fts5 "
-            "(pk INTEGER, id TEXT, universe_pk INTEGER, context TEXT, term_kind TEXT)"
-        )
-
-        if with_data:
-            conn.execute("INSERT INTO universes VALUES (1, 'abc1234')")
+        if db_type == "universe":
+            conn.execute("CREATE TABLE universes (pk INTEGER PRIMARY KEY, git_hash TEXT)")
             conn.execute(
-                "INSERT INTO udata_descriptors VALUES (1, 'institution', 1, '{}', 'PLAIN')"
+                "CREATE TABLE udata_descriptors "
+                "(pk INTEGER PRIMARY KEY, id TEXT, universe_pk INTEGER, context TEXT, term_kind TEXT)"
             )
             conn.execute(
-                "INSERT INTO uterms VALUES (1, 'ipsl', '{}', 'PLAIN', 1)"
+                "CREATE TABLE uterms "
+                "(pk INTEGER PRIMARY KEY, id TEXT, specs TEXT, kind TEXT, data_descriptor_pk INTEGER)"
             )
             conn.execute(
-                "INSERT INTO uterms_fts5 VALUES (1, 'ipsl', '{}', 'PLAIN', 1)"
+                "CREATE TABLE uterms_fts5 "
+                "(pk INTEGER, id TEXT, specs TEXT, kind TEXT, data_descriptor_pk INTEGER)"
             )
             conn.execute(
-                "INSERT INTO udata_descriptors_fts5 VALUES (1, 'institution', 1, '{}', 'PLAIN')"
+                "CREATE TABLE udata_descriptors_fts5 "
+                "(pk INTEGER, id TEXT, universe_pk INTEGER, context TEXT, term_kind TEXT)"
             )
-            conn.execute("INSERT INTO pcollections VALUES (1, 'institution', '{}', 1, 'institution', 'PLAIN')")
-            conn.execute("INSERT INTO pterms VALUES (1, 'ipsl', '{}', 'PLAIN', 1)")
+            if with_data:
+                conn.execute("INSERT INTO universes VALUES (1, 'abc1234')")
+                conn.execute(
+                    "INSERT INTO udata_descriptors VALUES (1, 'institution', 1, '{}', 'PLAIN')"
+                )
+                conn.execute(
+                    "INSERT INTO uterms VALUES (1, 'ipsl', '{}', 'PLAIN', 1)"
+                )
+                conn.execute(
+                    "INSERT INTO uterms_fts5 VALUES (1, 'ipsl', '{}', 'PLAIN', 1)"
+                )
+                conn.execute(
+                    "INSERT INTO udata_descriptors_fts5 VALUES (1, 'institution', 1, '{}', 'PLAIN')"
+                )
+        else:
+            # Project DB: only project tables
+            conn.execute(
+                "CREATE TABLE pterms "
+                "(pk INTEGER PRIMARY KEY, id TEXT, specs TEXT, kind TEXT, collection_pk INTEGER)"
+            )
+            conn.execute(
+                "CREATE TABLE pcollections "
+                "(pk INTEGER PRIMARY KEY, id TEXT, context TEXT, project_pk INTEGER, "
+                "data_descriptor_id TEXT, term_kind TEXT)"
+            )
+            conn.execute(
+                "CREATE TABLE pterms_fts5 "
+                "(pk INTEGER, id TEXT, specs TEXT, kind TEXT, collection_pk INTEGER)"
+            )
+            conn.execute(
+                "CREATE TABLE pcollections_fts5 "
+                "(pk INTEGER, id TEXT, context TEXT, project_pk INTEGER, "
+                "data_descriptor_id TEXT, term_kind TEXT)"
+            )
+            if with_data:
+                conn.execute("INSERT INTO pcollections VALUES (1, 'institution', '{}', 1, 'institution', 'PLAIN')")
+                conn.execute("INSERT INTO pterms VALUES (1, 'ipsl', '{}', 'PLAIN', 1)")
+                conn.execute("INSERT INTO pterms_fts5 VALUES (1, 'ipsl', '{}', 'PLAIN', 1)")
+                conn.execute(
+                    "INSERT INTO pcollections_fts5 VALUES (1, 'institution', '{}', 1, 'institution', 'PLAIN')"
+                )
 
         conn.commit()
 

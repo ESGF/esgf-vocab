@@ -87,13 +87,21 @@ class DBValidator:
             val = metadata.get(key, "")
             result.add(f"metadata.{key}", bool(val), val or "missing")
 
-        # 5. Core tables have data
-        for table, count_query in [
-            ("universes", "SELECT COUNT(*) FROM universes"),
-            ("udata_descriptors", "SELECT COUNT(*) FROM udata_descriptors"),
-            ("uterms", "SELECT COUNT(*) FROM uterms"),
-            ("pterms", "SELECT COUNT(*) FROM pterms"),
-        ]:
+        # 5. Core tables have data — checked based on DB type
+        is_universe = metadata.get("project_id", "") == "universe"
+        if is_universe:
+            core_tables = [
+                ("universes", "SELECT COUNT(*) FROM universes"),
+                ("udata_descriptors", "SELECT COUNT(*) FROM udata_descriptors"),
+                ("uterms", "SELECT COUNT(*) FROM uterms"),
+            ]
+        else:
+            core_tables = [
+                ("pcollections", "SELECT COUNT(*) FROM pcollections"),
+                ("pterms", "SELECT COUNT(*) FROM pterms"),
+            ]
+
+        for table, count_query in core_tables:
             try:
                 count = conn.execute(count_query).fetchone()[0]
                 result.add(f"{table} not empty", count > 0, f"{count} rows")
@@ -101,8 +109,9 @@ class DBValidator:
                 result.add(f"{table} exists", False, str(e))
 
         if full:
-            self._check_fts(conn, result)
-            self._check_sample_query(conn, result)
+            self._check_fts(conn, result, is_universe=is_universe)
+            if not is_universe:
+                self._check_sample_query(conn, result)
 
         conn.close()
         return result
@@ -157,9 +166,13 @@ class DBValidator:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _check_fts(conn: sqlite3.Connection, result: ValidationResult) -> None:
+    def _check_fts(conn: sqlite3.Connection, result: ValidationResult, *, is_universe: bool = False) -> None:
         """Verify that the FTS5 full-text-search index is functional."""
-        for table in ("uterms_fts5", "udata_descriptors_fts5"):
+        fts_tables = (
+            ("uterms_fts5", "udata_descriptors_fts5") if is_universe
+            else ("pterms_fts5", "pcollections_fts5")
+        )
+        for table in fts_tables:
             try:
                 count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
                 result.add(f"FTS index {table}", count > 0, f"{count} rows")
@@ -168,11 +181,11 @@ class DBValidator:
 
     @staticmethod
     def _check_sample_query(conn: sqlite3.Connection, result: ValidationResult) -> None:
-        """Run a representative query that exercises joins."""
+        """Run a representative query that exercises joins (project DB only)."""
         try:
             row = conn.execute(
-                "SELECT t.id FROM uterms t "
-                "JOIN udata_descriptors d ON t.data_descriptor_pk = d.pk "
+                "SELECT t.id FROM pterms t "
+                "JOIN pcollections c ON t.collection_pk = c.pk "
                 "LIMIT 1"
             ).fetchone()
             result.add("Sample join query", row is not None, row[0] if row else "no rows")
