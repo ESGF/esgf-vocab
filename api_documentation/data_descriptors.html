@@ -1904,7 +1904,7 @@ of the schemas for these two classes.</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.ActivityCMIP7.urls">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">urls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/networks/#pydantic.networks.HttpUrl" title="(in Pydantic Validation v0.0.0)"><span class="pre">HttpUrl</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.ActivityCMIP7.urls" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">urls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/networks/#pydantic.networks.HttpUrl" title="(in Pydantic v0.0.0)"><span class="pre">HttpUrl</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.ActivityCMIP7.urls" title="Link to this definition">#</a></dt>
 <dd><p>URL with more information about this activity</p>
 </dd></dl>
 
@@ -4374,8 +4374,16 @@ land ice, ocean, ocean biogeochemistry, and sea ice.</p>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">&quot;horizontal_grid_cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/HorizontalGridCells&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A description of the characteristics and location of the grid cells of this subgrid.&quot;</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/HorizontalGridCells&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A description of the characteristics and location of the grid cells of this subgrid.&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Horizontal Grid Cells&quot;</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -4862,7 +4870,7 @@ description=”The model components (identified by their component properties) w
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">family</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">component</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">name</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">code_base</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model_component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">family</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">name</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">component</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">code_base</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model_component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings" title="Link to this definition">#</a></dt>
 <dd><p>Validate that string fields are not empty.</p>
 </dd></dl>
 
@@ -6239,8 +6247,16 @@ temperature, water vapour and other mass constituents).</p>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">&quot;horizontal_grid_cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/HorizontalGridCells&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A description of the characteristics and location of the grid cells of this subgrid.&quot;</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/HorizontalGridCells&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A description of the characteristics and location of the grid cells of this subgrid.&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Horizontal Grid Cells&quot;</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -7390,8 +7406,16 @@ be defined as part of a horizontal computational grid.</p>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;horizontal_grid_cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/HorizontalGridCells&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A description of the characteristics and location of the grid cells of this subgrid.&quot;</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/HorizontalGridCells&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A description of the characteristics and location of the grid cells of this subgrid.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Horizontal Grid Cells&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -7882,7 +7906,7 @@ be defined as part of a horizontal computational grid.</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.HorizontalSubgrid.horizontal_grid_cells">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">horizontal_grid_cells</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#esgvoc.api.data_descriptors.HorizontalGridCells" title="esgvoc.api.data_descriptors.HorizontalGridCells"><span class="pre">HorizontalGridCells</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.HorizontalSubgrid.horizontal_grid_cells" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">horizontal_grid_cells</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#esgvoc.api.data_descriptors.HorizontalGridCells" title="esgvoc.api.data_descriptors.HorizontalGridCells"><span class="pre">HorizontalGridCells</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.HorizontalSubgrid.horizontal_grid_cells" title="Link to this definition">#</a></dt>
 <dd><p>A description of the characteristics and location of the grid cells of this subgrid.</p>
 </dd></dl>
 
@@ -8294,7 +8318,7 @@ or the ROR was not supplied at the time of registration.</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Institution.urls">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">urls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.pydantic.dev/latest/api/networks/#pydantic.networks.HttpUrl" title="(in Pydantic Validation v0.0.0)"><span class="pre">HttpUrl</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Institution.urls" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">urls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/networks/#pydantic.networks.HttpUrl" title="(in Pydantic v0.0.0)"><span class="pre">HttpUrl</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Institution.urls" title="Link to this definition">#</a></dt>
 <dd><p>URL(s) relevant for finding out more information about this member/entity</p>
 </dd></dl>
 
@@ -8712,7 +8736,7 @@ before they can be used in CMIP exercises.</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.License.url">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.pydantic.dev/latest/api/networks/#pydantic.networks.HttpUrl" title="(in Pydantic Validation v0.0.0)"><span class="pre">HttpUrl</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.License.url" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/networks/#pydantic.networks.HttpUrl" title="(in Pydantic v0.0.0)"><span class="pre">HttpUrl</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.License.url" title="Link to this definition">#</a></dt>
 <dd><p>URL with details of the full license and other information</p>
 </dd></dl>
 
@@ -8957,7 +8981,7 @@ This difference can be identified using the MIP era data descriptor.</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.MipEra.url">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.pydantic.dev/latest/api/networks/#pydantic.networks.HttpUrl" title="(in Pydantic Validation v0.0.0)"><span class="pre">HttpUrl</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.MipEra.url" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/networks/#pydantic.networks.HttpUrl" title="(in Pydantic v0.0.0)"><span class="pre">HttpUrl</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.MipEra.url" title="Link to this definition">#</a></dt>
 <dd><p>URL that links to further information about the MIP era</p>
 </dd></dl>
 
@@ -9825,8 +9849,16 @@ This difference can be identified using the MIP era data descriptor.</p>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">&quot;horizontal_grid_cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/HorizontalGridCells&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A description of the characteristics and location of the grid cells of this subgrid.&quot;</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/HorizontalGridCells&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A description of the characteristics and location of the grid cells of this subgrid.&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Horizontal Grid Cells&quot;</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -10461,7 +10493,7 @@ This difference can be identified using the MIP era data descriptor.</p>
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Model.validate_component_lists">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_component_lists</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">omitted_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">dynamic_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">prescribed_components</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_component_lists" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_component_lists</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">omitted_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">prescribed_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">dynamic_components</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_component_lists" title="Link to this definition">#</a></dt>
 <dd><p>Validate component lists contain valid strings or ComponentType objects.</p>
 </dd></dl>
 
@@ -10491,7 +10523,7 @@ This difference can be identified using the MIP era data descriptor.</p>
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Model.validate_non_empty_strings">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">name</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">family</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_non_empty_strings" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">name</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">family</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_non_empty_strings" title="Link to this definition">#</a></dt>
 <dd><p>Validate that string fields are not empty.</p>
 </dd></dl>
 
@@ -14147,7 +14179,7 @@ Options include: m, Pa, K</p>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.data_descriptor.ConfiguredBaseModel">
 <em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.data_descriptor.</span></span><span class="sig-name descname"><span class="pre">ConfiguredBaseModel</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/data_descriptor.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.data_descriptor.ConfiguredBaseModel" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic Validation v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ConfiguredBaseModel&quot;</span><span class="p">,</span>

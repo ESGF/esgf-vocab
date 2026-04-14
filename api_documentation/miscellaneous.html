@@ -389,6 +389,7 @@
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.core.exceptions.EsgvocDbError"><code class="docutils literal notranslate"><span class="pre">EsgvocDbError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.core.exceptions.EsgvocException"><code class="docutils literal notranslate"><span class="pre">EsgvocException</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.core.exceptions.EsgvocMissingLinksError"><code class="docutils literal notranslate"><span class="pre">EsgvocMissingLinksError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.core.exceptions.EsgvocNotFoundError"><code class="docutils literal notranslate"><span class="pre">EsgvocNotFoundError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.core.exceptions.EsgvocNotImplementedError"><code class="docutils literal notranslate"><span class="pre">EsgvocNotImplementedError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.core.exceptions.EsgvocValueError"><code class="docutils literal notranslate"><span class="pre">EsgvocValueError</span></code></a></li>
@@ -408,7 +409,7 @@
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="esgvoc.api.search.Item">
 <em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.search.</span></span><span class="sig-name descname"><span class="pre">Item</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/search.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.search.Item" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic Validation v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>An item from the universe or a project (data descriptor, collection or term).</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -486,7 +487,7 @@
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="esgvoc.api.search.MatchingTerm">
 <em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.search.</span></span><span class="sig-name descname"><span class="pre">MatchingTerm</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/search.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.search.MatchingTerm" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic Validation v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>Place holder for a term that matches a value (term validation).</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -605,6 +606,15 @@
 </dd></dl>
 
 <dl class="py exception">
+<dt class="sig sig-object py" id="esgvoc.core.exceptions.EsgvocMissingLinksError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">EsgvocMissingLinksError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">missing_links</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/core/exceptions.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.core.exceptions.EsgvocMissingLinksError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#esgvoc.core.exceptions.EsgvocException" title="esgvoc.core.exceptions.EsgvocException"><code class="xref py py-class docutils literal notranslate"><span class="pre">EsgvocException</span></code></a></p>
+<p>Error for unresolved &#64;id references during database population.</p>
+<p>Can be raised via MissingLinksTracker.check_and_raise() when one or more
+&#64;id references could not be resolved to actual terms.</p>
+</dd></dl>
+
+<dl class="py exception">
 <dt class="sig sig-object py" id="esgvoc.core.exceptions.EsgvocNotFoundError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">EsgvocNotFoundError</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/core/exceptions.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.core.exceptions.EsgvocNotFoundError" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#esgvoc.core.exceptions.EsgvocException" title="esgvoc.core.exceptions.EsgvocException"><code class="xref py py-class docutils literal notranslate"><span class="pre">EsgvocException</span></code></a></p>
@@ -692,6 +702,7 @@
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.core.exceptions.EsgvocDbError"><code class="docutils literal notranslate"><span class="pre">EsgvocDbError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.core.exceptions.EsgvocException"><code class="docutils literal notranslate"><span class="pre">EsgvocException</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.core.exceptions.EsgvocMissingLinksError"><code class="docutils literal notranslate"><span class="pre">EsgvocMissingLinksError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.core.exceptions.EsgvocNotFoundError"><code class="docutils literal notranslate"><span class="pre">EsgvocNotFoundError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.core.exceptions.EsgvocNotImplementedError"><code class="docutils literal notranslate"><span class="pre">EsgvocNotImplementedError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.core.exceptions.EsgvocValueError"><code class="docutils literal notranslate"><span class="pre">EsgvocValueError</span></code></a></li>
