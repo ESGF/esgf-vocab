@@ -1,10 +1,11 @@
 import os
+from pathlib import Path
 from esgvoc.core import service
 import esgvoc.api as ev
 
 
 def _ensure_default_dev_config_exists():
-    """Ensure the 'default_dev' config exists for development testing."""
+    """Ensure the 'default_dev' config exists for development testing and matches expected values."""
     default_dev_config = {
         "projects": [
             {
@@ -33,10 +34,16 @@ def _ensure_default_dev_config_exists():
         },
     }
 
-    # Check if default_dev config exists
     existing_configs = service.config_manager.list_configs()
     if "default_dev" not in existing_configs:
         service.config_manager.add_config("default_dev", default_dev_config)
+    else:
+        # Verify existing config matches expected values by reading the raw TOML file
+        config_path = existing_configs["default_dev"]
+        existing_config = service.config_manager._load_toml(Path(config_path))
+        if existing_config != default_dev_config:
+            service.config_manager.remove_config("default_dev")
+            service.config_manager.add_config("default_dev", default_dev_config)
 
 
 def _ensure_all_dev_config_exists():
@@ -137,6 +144,7 @@ def test_install():
     # Verify the expected projects are present
     projects = ev.get_all_projects()
     # default_dev and default have 2 projects, "all" has 7
+    print(projects)
     if test_config in ["default_dev", "default"]:
         assert len(projects) == 2
     assert "cmip6" in projects
@@ -157,3 +165,4 @@ def test_install():
         # (The session fixture will restore the original config at the very end)
         service.config_manager.switch_config(test_config)
         current_state = service.get_state()
+

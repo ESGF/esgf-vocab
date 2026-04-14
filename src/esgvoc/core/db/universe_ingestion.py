@@ -1,6 +1,7 @@
 import logging
 import traceback
 from pathlib import Path
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import text
 from sqlmodel import Session, select
@@ -15,6 +16,9 @@ from esgvoc.core.db.models.universe import UDataDescriptor, Universe, UTerm, uni
 from esgvoc.core.exceptions import EsgvocDbError
 from esgvoc.core.service.data_merger import DataMerger
 
+if TYPE_CHECKING:
+    from esgvoc.core.service.missing_links import MissingLinksTracker
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -27,7 +31,11 @@ def infer_term_kind(json_specs: dict) -> TermKind:
         return TermKind.PLAIN
 
 
-def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -> None:
+def ingest_universe(
+    universe_repo_dir_path: Path,
+    universe_db_file_path: Path,
+    missing_links_tracker: Optional["MissingLinksTracker"] = None,
+) -> None:
     try:
         connection = db.DBConnection(universe_db_file_path)
     except Exception as e:
@@ -40,7 +48,7 @@ def ingest_universe(universe_repo_dir_path: Path, universe_db_file_path: Path) -
             data_descriptor_dir_path.is_dir() and (data_descriptor_dir_path / "000_context.jsonld").exists()
         ):  # TODO may be put that in setting
             try:
-                ingest_data_descriptor(data_descriptor_dir_path, connection)
+                ingest_data_descriptor(data_descriptor_dir_path, connection, missing_links_tracker)
             except Exception as e:
                 msg = f"unexpected error while processing data descriptor {data_descriptor_dir_path}"
                 _LOGGER.fatal(msg)
@@ -80,7 +88,13 @@ def ingest_metadata_universe(connection, git_hash):
         session.commit()
 
 
-def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnection) -> None:
+def ingest_data_descriptor(
+    data_descriptor_path: Path,
+    connection: db.DBConnection,
+    missing_links_tracker: Optional["MissingLinksTracker"] = None,
+) -> None:
+    from esgvoc.core.service.resolver_config import ResolverConfig
+
     data_descriptor_id = data_descriptor_path.name
     context_file_path = data_descriptor_path.joinpath(esgvoc.core.constants.CONTEXT_FILENAME)
     try:
@@ -105,10 +119,17 @@ def ingest_data_descriptor(data_descriptor_path: Path, connection: db.DBConnecti
                         "https://esgvoc.ipsl.fr/resource/universe": service.current_state.universe.local_path
                     }
 
+                    # Create config with tracker if available
+                    config = ResolverConfig(
+                        missing_links_tracker=missing_links_tracker,
+                        ingestion_context="universe",
+                    )
+
                     merger = DataMerger(
                         data=JsonLdResource(uri=str(term_file_path)),
                         locally_available=locally_available,
                         allowed_base_uris={"https://esgvoc.ipsl.fr/resource/universe"},
+                        config=config,
                     )
                     merged_data = merger.merge_linked_json()[-1]
                     # Resolve all nested @id references to full objects
