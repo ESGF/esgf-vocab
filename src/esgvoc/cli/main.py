@@ -10,10 +10,14 @@ from esgvoc.cli.find import app as find_app
 from esgvoc.cli.get import app as get_app
 from esgvoc.cli.install import app as install_app
 from esgvoc.cli.offline import app as offline_app
+from esgvoc.cli.remove import app as remove_app
 from esgvoc.cli.schema import app as schema_app
 from esgvoc.cli.status import app as status_app
 from esgvoc.cli.test_cv import app as test_cv_app
+from esgvoc.cli.update import app as update_app
+from esgvoc.cli.use import app as use_app
 from esgvoc.cli.valid import app as valid_app
+from esgvoc.cli.versions import app as versions_app
 from esgvoc.core.service.configuration.setting import ServiceSettings
 
 app = typer.Typer()
@@ -32,6 +36,10 @@ app.add_typer(test_cv_app, name="test")
 app.add_typer(find_app)
 app.add_typer(schema_app)
 app.add_typer(admin_app, name="admin")
+app.add_typer(use_app)
+app.add_typer(versions_app)
+app.add_typer(remove_app)
+app.add_typer(update_app)
 
 # maybe remove during a future refactor
 
