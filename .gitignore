@@ -33,3 +33,6 @@ codemcp.toml
 
 # esgvoc local dev config (ESGVOC_HOME override)
 .esgvoc_config_vers/
+
+# Integration test data: cloned repos + pre-built DBs (populated on first run, reused after)
+tests/integration/data_test/

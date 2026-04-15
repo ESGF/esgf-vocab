@@ -3,6 +3,32 @@ from pathlib import Path
 import pytest
 import esgvoc.core.service as service
 
+# ---------------------------------------------------------------------------
+# Integration test data options
+# (options live here because pytest_addoption must be in the root conftest)
+# ---------------------------------------------------------------------------
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    group = parser.getgroup("esgvoc integration", "esgvoc integration test data options")
+    group.addoption(
+        "--reclone-test-repos",
+        action="store_true",
+        default=False,
+        help=(
+            "Delete and re-clone CV repos used by integration tests "
+            "(tests/integration/data_test/repos/). Use after upstream branch changes."
+        ),
+    )
+    group.addoption(
+        "--rebuild-test-dbs",
+        action="store_true",
+        default=False,
+        help=(
+            "Delete and rebuild pre-built SQLite DBs used by integration tests "
+            "(tests/integration/data_test/dbs/). Use after upstream CV data changes."
+        ),
+    )
+
 _INSTALL_TEST_FILE_PATH = Path('tests/test_install.py')
 _CONFIG_TEST_FILE_PATH = Path('tests/test_config.py')
 
