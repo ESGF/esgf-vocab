@@ -198,6 +198,68 @@ def real_dbs(request: pytest.FixtureRequest, cloned_repos):
     }
 
 
+@pytest.fixture(scope="session")
+def universe_db(request: pytest.FixtureRequest, cloned_repos):
+    """
+    Ensure a standalone universe SQLite database is available in ``data_test/dbs/``.
+
+    Built from the same cloned universe repo used by ``real_dbs``. Used by
+    dev_tier API integration tests that need both a project DB and a universe DB.
+
+    Behaviour:
+    - ``--rebuild-test-dbs``: wipe and rebuild even if already present.
+    - Otherwise: reuse existing DB if present; build only when missing.
+
+    Returns: Path to universe.db
+    """
+    import subprocess
+    from esgvoc.admin.builder import DBBuilder
+
+    force = request.config.getoption("--rebuild-test-dbs")
+
+    _DBS_DIR.mkdir(parents=True, exist_ok=True)
+    db_path = _DBS_DIR / "universe.db"
+
+    if force and db_path.exists():
+        print(f"\n  --rebuild-test-dbs: removing {db_path}", file=sys.stderr)
+        db_path.unlink()
+
+    if db_path.exists():
+        print(f"\n  Reusing cached universe DB: {db_path}", file=sys.stderr)
+    else:
+        print(f"\n  Building {db_path} ...", file=sys.stderr)
+        universe_path = cloned_repos["universe"]
+        sha_result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            capture_output=True, text=True, cwd=str(universe_path),
+        )
+        sha = sha_result.stdout.strip() if sha_result.returncode == 0 else "unknown"
+
+        import esgvoc
+        from datetime import datetime, timezone
+
+        builder = DBBuilder(verbose=True)
+        builder._build_universe_db(universe_path, db_path, sha)
+
+        # Embed _esgvoc_metadata so esgvoc admin validate can inspect this DB.
+        # (_build_universe_db only creates the universes table; build_universe
+        # also calls _embed_metadata — we replicate that here.)
+        builder._embed_metadata(db_path, {
+            "project_id": "universe",
+            "cv_version": "n/a",
+            "universe_version": "standalone",
+            "commit_sha": sha,
+            "universe_commit_sha": sha,
+            "build_date": datetime.now(timezone.utc).isoformat(),
+            "esgvoc_version": getattr(esgvoc, "__version__", "unknown"),
+            "esgvoc_min_version": "",
+            "esgvoc_max_version": "",
+        })
+        print(f"  Done: {db_path.stat().st_size / 1_048_576:.1f} MB", file=sys.stderr)
+
+    return db_path
+
+
 @pytest.fixture(scope="function")
 def default_config_test():
     """

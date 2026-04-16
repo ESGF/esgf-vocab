@@ -425,16 +425,18 @@ class DBBuilder:
         project_sha: Optional[str],
     ) -> None:
         from esgvoc.core.db.models.project import project_create_db
-        from esgvoc.core.db.connection import DBConnection
-        from esgvoc.core.db.project_ingestion import ingest_metadata_project, ingest_project
+        from esgvoc.core.db.project_ingestion import ingest_project
 
         if project_db.exists():
             project_db.unlink()
         project_db.parent.mkdir(parents=True, exist_ok=True)
 
         project_create_db(project_db)
-        conn = DBConnection(db_file_path=project_db)
-        ingest_metadata_project(conn, project_sha or "unknown")
+        # NOTE: do NOT call ingest_metadata_project here.  That function creates
+        # a placeholder Project row (id = file stem, no collections) at pk=1.
+        # ingest_project already creates the real Project row (id = actual project
+        # ID from esgvoc_project.yaml, with all collections) at pk=1 when there
+        # is no prior row — which is what the API expects (SQLITE_FIRST_PK = 1).
 
         tracker = MissingLinksTracker() if self.fail_on_missing_links else None
         with _admin_context(
