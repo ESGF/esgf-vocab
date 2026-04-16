@@ -33,6 +33,44 @@ codemcp.toml
 
 # esgvoc local dev config (ESGVOC_HOME override)
 .esgvoc_config_vers/
+.esgvoc_share_vers/
 
 # Integration test data: cloned repos + pre-built DBs (populated on first run, reused after)
 tests/integration/data_test/
+
+# Python version pin
+.python-version
+
+# Dev/scratch docs and notes
+EMD_conformance.md
+TODO_DOC.md
+WORKFLOW.md
+config_system.md
+data_spec_version_plan.md
+plan_problems.md
+versionning_plan.md
+versionning_plan2.md
+versionnning_plan_proposition.md
+versionnning_plan_proposition_go.md
+
+# Dev/scratch scripts and data
+explore_api.py
+export_cmip7_cvs.py
+sb_input4mips.py
+scripts/
+cmip7_CVs.json
+cmip7_schema_issue
+cmor_test
+link_schema.json
+link_schema_cmip6.json
+links
+log_install
+stac_cmip7_test.json
+temp/
+temp_file/
+allstacSchema/
+ZZZ_Apydantise
+
+# Built DB artifacts
+*.db
+
