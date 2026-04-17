@@ -34,9 +34,18 @@ def isolated_home(tmp_path, monkeypatch):
     Route all UserState / EsgvocHome operations to a private temp directory.
     ESGVOC_OFFLINE is cleared so only tests that explicitly need offline mode
     set it themselves.
+
+    The dev-tier service state is also cleared so that projects registered in
+    the developer's real config do not bleed into user-tier tests.
     """
     monkeypatch.setenv("ESGVOC_HOME", str(tmp_path))
     monkeypatch.delenv("ESGVOC_OFFLINE", raising=False)
+
+    # Clear dev-tier project registry for isolation
+    import esgvoc.core.service as svc
+    if svc.current_state is not None:
+        monkeypatch.setattr(svc.current_state, "projects", {})
+
     yield tmp_path
 
 

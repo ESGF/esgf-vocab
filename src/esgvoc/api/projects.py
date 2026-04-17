@@ -34,17 +34,46 @@ _VALID_TERM_IN_COLLECTION_CACHE: dict[str, list[MatchingTerm]] = dict()
 _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE: dict[str, list[UniverseTermError | ProjectTermError]] = dict()
 
 
-def _get_project_connection(project_id: str) -> DBConnection | None:
-    if project_id in service.current_state.projects:
-        return service.current_state.projects[project_id].db_connection
-    else:
+def _resolve_project_connection(project_id: str, version: str | None = None) -> DBConnection | None:
+    """
+    Resolve which DB connection to use for *project_id*.
+
+    Resolution order:
+    1. Explicit *version* → open that specific User Tier DB file.
+    2. Active Dev Tier config → use current state's connection.
+    3. User Tier active version → open that DB file.
+    4. None (no database found for this project).
+    """
+    if version is not None:
+        from esgvoc.core.service.user_state import UserState
+        db_path = UserState.db_path(project_id, version)
+        if db_path.exists():
+            return DBConnection(db_path)
         return None
 
+    # Dev Tier (current config system) takes priority over User Tier
+    if project_id in service.current_state.projects:
+        return service.current_state.projects[project_id].db_connection
 
-def _get_project_session_with_exception(project_id: str) -> Session:
-    if connection := _get_project_connection(project_id):
-        project_session = connection.create_session()
-        return project_session
+    # Fall back to User Tier active version
+    from esgvoc.core.service.user_state import UserState
+    state = UserState.load()
+    active = state.get_active(project_id)
+    if active:
+        db_path = UserState.db_path(project_id, active)
+        if db_path.exists():
+            return DBConnection(db_path)
+
+    return None
+
+
+def _get_project_connection(project_id: str, version: str | None = None) -> DBConnection | None:
+    return _resolve_project_connection(project_id, version)
+
+
+def _get_project_session_with_exception(project_id: str, version: str | None = None) -> Session:
+    if connection := _resolve_project_connection(project_id, version):
+        return connection.create_session()
     else:
         raise EsgvocNotFoundError(f"unable to find project '{project_id}'")
 
@@ -310,7 +339,7 @@ def _valid_value_against_given_term(
     return result
 
 
-def valid_term(value: str, project_id: str, collection_id: str, term_id: str) -> ValidationReport:
+def valid_term(value: str, project_id: str, collection_id: str, term_id: str, version: str | None = None) -> ValidationReport:
     """
     Check if the given value may or may not represent the given term. The functions returns
     a report that contains the possible errors.
@@ -341,7 +370,7 @@ def valid_term(value: str, project_id: str, collection_id: str, term_id: str) ->
     :raises EsgvocNotFoundError: If any of the provided ids is not found
     """
     value = _check_value(value)
-    with get_universe_session() as universe_session, _get_project_session_with_exception(project_id) as project_session:
+    with get_universe_session() as universe_session, _get_project_session_with_exception(project_id, version) as project_session:
         errors = _valid_value_against_given_term(
             value, project_id, collection_id, term_id, universe_session, project_session
         )
@@ -382,7 +411,7 @@ def _valid_term_in_collection(
     return result
 
 
-def valid_term_in_collection(value: str, project_id: str, collection_id: str) -> list[MatchingTerm]:
+def valid_term_in_collection(value: str, project_id: str, collection_id: str, version: str | None = None) -> list[MatchingTerm]:
     """
     Check if the given value may or may not represent a term in the given collection. The function
     returns the terms that the value matches.
@@ -410,7 +439,7 @@ def valid_term_in_collection(value: str, project_id: str, collection_id: str) ->
     :rtype: list[MatchingTerm]
     :raises EsgvocNotFoundError: If any of the provided ids is not found
     """
-    with get_universe_session() as universe_session, _get_project_session_with_exception(project_id) as project_session:
+    with get_universe_session() as universe_session, _get_project_session_with_exception(project_id, version) as project_session:
         return _valid_term_in_collection(value, project_id, collection_id, universe_session, project_session)
 
 
@@ -424,7 +453,7 @@ def _valid_term_in_project(
     return result
 
 
-def valid_term_in_project(value: str, project_id: str) -> list[MatchingTerm]:
+def valid_term_in_project(value: str, project_id: str, version: str | None = None) -> list[MatchingTerm]:
     """
     Check if the given value may or may not represent a term in the given project. The function
     returns the terms that the value matches.
@@ -449,7 +478,7 @@ def valid_term_in_project(value: str, project_id: str) -> list[MatchingTerm]:
     :rtype: list[MatchingTerm]
     :raises EsgvocNotFoundError: If the `project_id` is not found
     """
-    with get_universe_session() as universe_session, _get_project_session_with_exception(project_id) as project_session:
+    with get_universe_session() as universe_session, _get_project_session_with_exception(project_id, version) as project_session:
         return _valid_term_in_project(value, project_id, universe_session, project_session)
 
 
@@ -482,7 +511,7 @@ def valid_term_in_all_projects(value: str) -> list[MatchingTerm]:
 
 
 def get_all_terms_in_collection(
-    project_id: str, collection_id: str, selected_term_fields: Iterable[str] | None = None
+    project_id: str, collection_id: str, selected_term_fields: Iterable[str] | None = None, version: str | None = None
 ) -> list[DataDescriptor | DataDescriptorSubSet]:
     """
     Gets all terms of the given collection of a project.
@@ -505,7 +534,7 @@ def get_all_terms_in_collection(
     :rtype: list[DataDescriptor | DataDescriptorSubSet]
     """
     result = list()
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             collection = _get_collection_in_project(collection_id, session)
             if collection:
@@ -567,7 +596,7 @@ def _get_all_collections_in_project(session: Session) -> list[PCollection]:
         raise e
 
 
-def get_all_collections_in_project(project_id: str) -> list[str]:
+def get_all_collections_in_project(project_id: str, version: str | None = None) -> list[str]:
     """
     Gets all collections of the given project.
     This function performs an exact match on the `project_id` and
@@ -580,7 +609,7 @@ def get_all_collections_in_project(project_id: str) -> list[str]:
     :rtype: list[str]
     """
     result = list()
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         try:
             with connection.create_session() as session:
                 collections = _get_all_collections_in_project(session)
@@ -612,7 +641,7 @@ def _get_all_terms_in_collection(
 
 
 def get_all_terms_in_project(
-    project_id: str, selected_term_fields: Iterable[str] | None = None
+    project_id: str, selected_term_fields: Iterable[str] | None = None, version: str | None = None
 ) -> list[DataDescriptor | DataDescriptorSubSet]:
     """
     Gets all terms of the given project.
@@ -633,7 +662,7 @@ def get_all_terms_in_project(
     :rtype: list[DataDescriptor | DataDescriptorSubSet]
     """
     result = list()
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             collections = _get_all_collections_in_project(session)
             for collection in collections:
@@ -683,7 +712,7 @@ def _get_term_in_project(term_id: str, session: Session) -> PTerm | None:
 
 
 def get_term_in_project(
-    project_id: str, term_id: str, selected_term_fields: Iterable[str] | None = None
+    project_id: str, term_id: str, selected_term_fields: Iterable[str] | None = None, version: str | None = None
 ) -> DataDescriptor | DataDescriptorSubSet | None:
     """
     Returns the first occurrence of the terms, in the given project, whose id corresponds exactly to
@@ -707,7 +736,7 @@ def get_term_in_project(
     :rtype: DataDescriptor | DataDescriptorSubSet | None
     """
     result: DataDescriptor | DataDescriptorSubSet | None = None
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             term_found = _get_term_in_project(term_id, session)
             if term_found:
@@ -741,6 +770,7 @@ def get_terms_in_collection_by_key_value(
     key: str,
     value: str,
     selected_term_fields: Iterable[str] | None = None,
+    version: str | None = None,
 ) -> list[DataDescriptor | DataDescriptorSubSet]:
     """
     Returns the terms, in the given project and collection, whose specs field `key` matches
@@ -768,7 +798,7 @@ def get_terms_in_collection_by_key_value(
     :rtype: list[DataDescriptor | DataDescriptorSubSet]
     """
     result: list[DataDescriptor | DataDescriptorSubSet] = []
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             terms_found = _get_terms_by_key_value_in_collection(key, value, collection_id, session)
             instantiate_pydantic_terms(terms_found, result, selected_term_fields)
@@ -780,6 +810,7 @@ def get_terms_in_project_by_key_value(
     key: str,
     value: str,
     selected_term_fields: Iterable[str] | None = None,
+    version: str | None = None,
 ) -> list[DataDescriptor | DataDescriptorSubSet]:
     """
     Returns all terms, in the given project, whose specs field `key` matches exactly the given `value`.
@@ -804,7 +835,7 @@ def get_terms_in_project_by_key_value(
     :rtype: list[DataDescriptor | DataDescriptorSubSet]
     """
     result: list[DataDescriptor | DataDescriptorSubSet] = []
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             terms_found = _get_terms_by_key_value_in_project(key, value, session)
             instantiate_pydantic_terms(terms_found, result, selected_term_fields)
@@ -845,7 +876,7 @@ def get_terms_in_all_projects_by_key_value(
 
 
 def get_term_in_collection(
-    project_id: str, collection_id: str, term_id: str, selected_term_fields: Iterable[str] | None = None
+    project_id: str, collection_id: str, term_id: str, selected_term_fields: Iterable[str] | None = None, version: str | None = None
 ) -> DataDescriptor | DataDescriptorSubSet | None:
     """
     Returns the term, in the given project and collection,
@@ -870,7 +901,7 @@ def get_term_in_collection(
     :rtype: DataDescriptor | DataDescriptorSubSet | None
     """
     result: DataDescriptor | DataDescriptorSubSet | None = None
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             term_found = _get_term_in_collection(collection_id, term_id, session)
             if term_found:
@@ -885,7 +916,7 @@ def _get_collection_in_project(collection_id: str, session: Session) -> PCollect
     return result
 
 
-def get_collection_in_project(project_id: str, collection_id: str) -> tuple[str, dict] | None:
+def get_collection_in_project(project_id: str, collection_id: str, version: str | None = None) -> tuple[str, dict] | None:
     """
     Returns the collection, in the given project, whose id corresponds exactly to
     the given collection id.
@@ -902,7 +933,7 @@ def get_collection_in_project(project_id: str, collection_id: str) -> tuple[str,
     :rtype: tuple[str, dict] | None
     """
     result: tuple[str, dict] | None = None
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             collection_found = _get_collection_in_project(collection_id, session)
             if collection_found:
@@ -910,7 +941,7 @@ def get_collection_in_project(project_id: str, collection_id: str) -> tuple[str,
     return result
 
 
-def get_project(project_id: str) -> ProjectSpecs | None:
+def get_project(project_id: str, version: str | None = None) -> ProjectSpecs | None:
     """
     Get a project and returns its specifications.
     This function performs an exact match on the `project_id` and
@@ -923,15 +954,14 @@ def get_project(project_id: str) -> ProjectSpecs | None:
     :rtype: ProjectSpecs | None
     """
     result: ProjectSpecs | None = None
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             project = session.get(Project, constants.SQLITE_FIRST_PK)
             try:
                 # Project can't be missing if session exists.
                 result = ProjectSpecs(**project.specs, version=project.git_hash)  # type: ignore
-            except Exception as e:
-                msg = f"unable to read specs in project '{project_id}'"
-                raise EsgvocDbError(msg) from e
+            except Exception:
+                result = None
     return result
 
 
@@ -941,7 +971,7 @@ def _get_collection_from_data_descriptor_in_project(data_descriptor_id: str, ses
     return results
 
 
-def get_collection_from_data_descriptor_in_project(project_id: str, data_descriptor_id: str) -> list[tuple[str, dict]]:
+def get_collection_from_data_descriptor_in_project(project_id: str, data_descriptor_id: str, version: str | None = None) -> list[tuple[str, dict]]:
     """
     Returns the collections, in the given project, that correspond to the given data descriptor
     in the universe.
@@ -958,7 +988,7 @@ def get_collection_from_data_descriptor_in_project(project_id: str, data_descrip
     :rtype: list[tuple[str, dict]]
     """
     result: list[tuple[str, dict]] = []
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             collections_found = _get_collection_from_data_descriptor_in_project(data_descriptor_id, session)
             result = [(collection.id, collection.context) for collection in collections_found]
@@ -999,7 +1029,7 @@ def _get_data_descriptor_from_collection_in_project(collection_id: str, session:
     return result
 
 
-def get_data_descriptor_from_collection_in_project(project_id: str, collection_id: str) -> str | None:
+def get_data_descriptor_from_collection_in_project(project_id: str, collection_id: str, version: str | None = None) -> str | None:
     """
     Returns the datadescriptor name, in project, that is pointed by the given collection in project.
     This function performs an exact match on `collection_id`.
@@ -1015,7 +1045,7 @@ def get_data_descriptor_from_collection_in_project(project_id: str, collection_i
     :rtype: str or None
     """
     result = None
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             result = _get_data_descriptor_from_collection_in_project(collection_id, session)
     return result
@@ -1115,7 +1145,7 @@ def _find_collections_in_project(
 
 
 def find_collections_in_project(
-    expression: str, project_id: str, only_id: bool = False, limit: int | None = None, offset: int | None = None
+    expression: str, project_id: str, only_id: bool = False, limit: int | None = None, offset: int | None = None, version: str | None = None
 ) -> list[tuple[str, dict]]:
     """
     Find collections in the given project based on a full text search defined by the given `expression`.
@@ -1156,7 +1186,7 @@ def find_collections_in_project(
     :raises EsgvocValueError: If the `expression` cannot be interpreted.
     """
     result: list[tuple[str, dict]] = list()
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             collections_found = _find_collections_in_project(expression, session, only_id, limit, offset)
             for collection in collections_found:
@@ -1196,6 +1226,7 @@ def find_terms_in_collection(
     limit: int | None = None,
     offset: int | None = None,
     selected_term_fields: Iterable[str] | None = None,
+    version: str | None = None,
 ) -> list[DataDescriptor]:
     """
     Find terms in the given project and collection based on a full text search defined by the given
@@ -1241,7 +1272,7 @@ def find_terms_in_collection(
     :raises EsgvocValueError: If the `expression` cannot be interpreted.
     """
     result: list[DataDescriptor] = list()
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             pterms_found = _find_terms_in_collection(expression, collection_id, session, only_id, limit, offset)
             instantiate_pydantic_terms(pterms_found, result, selected_term_fields)
@@ -1255,6 +1286,7 @@ def find_terms_in_project(
     limit: int | None = None,
     offset: int | None = None,
     selected_term_fields: Iterable[str] | None = None,
+    version: str | None = None,
 ) -> list[DataDescriptor]:
     """
     Find terms in the given project based on a full text search defined by the given `expression`.
@@ -1297,7 +1329,7 @@ def find_terms_in_project(
     :raises EsgvocValueError: If the `expression` cannot be interpreted.
     """
     result: list[DataDescriptor] = list()
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             pterms_found = _find_terms_in_project(expression, session, only_id, limit, offset)
             instantiate_pydantic_terms(pterms_found, result, selected_term_fields)
@@ -1356,7 +1388,7 @@ def find_terms_in_all_projects(
 
 
 def find_items_in_project(
-    expression: str, project_id: str, only_id: bool = False, limit: int | None = None, offset: int | None = None
+    expression: str, project_id: str, only_id: bool = False, limit: int | None = None, offset: int | None = None, version: str | None = None
 ) -> list[Item]:
     """
     Find items, at the moment terms and collections, in the given project based on a full-text
@@ -1397,7 +1429,7 @@ def find_items_in_project(
     """
     # TODO: execute union query when it will be possible to compute parent of terms and collections.
     result = list()
-    if connection := _get_project_connection(project_id):
+    if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             processed_expression = process_expression(expression)
             if only_id:
@@ -1421,3 +1453,55 @@ def find_items_in_project(
                 session, processed_expression, collection_statement, term_statement, limit, offset
             )
     return result
+
+
+def get_active_database_info(project_id: str) -> dict | None:
+    """
+    Return information about which database is currently active for *project_id*.
+
+    Resolution order (same as the API):
+    1. Active Dev Tier config — if the project is known to the current config.
+    2. User Tier active version — if a version is active in state.json.
+
+    Returns a dict with keys:
+        ``tier``     — ``'dev'`` or ``'user'``
+        ``version``  — version tag (user tier) or config name (dev tier)
+        ``path``     — absolute path to the SQLite DB file
+
+    Returns ``None`` if no database is configured for this project.
+
+    Example::
+
+        import esgvoc.api as ev
+        info = ev.get_active_database_info('cmip6')
+        # {'tier': 'user', 'version': 'v1.0.0', 'path': '/home/.../cmip6-v1.0.0.db'}
+    """
+    # Dev Tier: project known to current config system
+    if project_id in service.current_state.projects:
+        conn = service.current_state.projects[project_id].db_connection
+        if conn:
+            config_name = (
+                service.config_manager.get_active_config_name()
+                if service.config_manager is not None
+                else "unknown"
+            )
+            return {
+                "tier": "dev",
+                "version": config_name,
+                "path": str(conn.file_path),
+            }
+
+    # User Tier: active version from state.json
+    from esgvoc.core.service.user_state import UserState
+    state = UserState.load()
+    active = state.get_active(project_id)
+    if active:
+        db_path = UserState.db_path(project_id, active)
+        if db_path.exists():
+            return {
+                "tier": "user",
+                "version": active,
+                "path": str(db_path),
+            }
+
+    return None
