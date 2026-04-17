@@ -324,22 +324,40 @@ def universe_db(request: pytest.FixtureRequest, cloned_repos):
 def default_config_test():
     """
     Store current config, switch to default for testing, then restore original config.
-    This follows the same pattern as existing tests in test_config.py.
+    Each test gets a clean default config (programmatic defaults) to avoid inter-test pollution.
     """
+    import toml
+    from esgvoc.core.service.configuration.setting import ServiceSettings
+
     assert service.config_manager is not None
 
-    # Store the original active config name
+    # Store the original active config name and its file content
     before_test_active = service.config_manager.get_active_config_name()
+    active_config_path = service.config_manager._get_active_config_path()
+    active_config_snapshot = toml.loads(active_config_path.read_text()) if active_config_path.exists() else None
 
     # Initialize registry and switch to default
     service.config_manager._init_registry()
     service.config_manager.switch_config("default")
 
+    # Reset the default config to programmatic defaults (prevents pollution from prior runs)
+    default_config_path = service.config_manager.default_config_path
+    clean_defaults = ServiceSettings._get_default_settings()
+    with open(default_config_path, "w") as f:
+        toml.dump(clean_defaults, f)
+
     yield service.config_manager
 
-    # Restore the original config
+    # Restore the default config to clean defaults (prevent test pollution for next tests)
+    with open(default_config_path, "w") as f:
+        toml.dump(clean_defaults, f)
+
+    # Restore the original active config
+    if before_test_active != "default" and active_config_snapshot is not None:
+        with open(active_config_path, "w") as f:
+            toml.dump(active_config_snapshot, f)
     service.config_manager.switch_config(before_test_active)
-    current_state = service.get_state()
+    service.get_state()
 
 
 @pytest.fixture(scope="function")

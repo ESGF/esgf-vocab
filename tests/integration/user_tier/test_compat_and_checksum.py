@@ -315,7 +315,7 @@ class TestChecksumError:
 
         with patch.object(fetcher._session, "get", return_value=fake_response):
             with pytest.raises(EsgvocChecksumError) as exc_info:
-                fetcher._download_atomic(artifact, target)
+                fetcher._download_atomic(artifact, target, show_progress=False)
 
         assert good_checksum in str(exc_info.value), (
             "Expected checksum should appear in error message"

@@ -96,10 +96,9 @@ class DBFetcher:
             If True, include dev-latest and other pre-release tags.
         """
         artifacts = self._fetch_releases(project_id)
-        versions = [a.version for a in artifacts]
         if not include_prerelease:
-            versions = [v for v in versions if not _is_prerelease(v)]
-        return versions
+            artifacts = [a for a in artifacts if not a.is_prerelease]
+        return [a.version for a in artifacts]
 
     def get_artifact(self, project_id: str, version: str = "latest") -> DBArtifact:
         """
