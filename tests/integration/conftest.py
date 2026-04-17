@@ -48,7 +48,7 @@ _DBS_DIR = _TEST_DATA_DIR / "dbs"
 _UNIVERSE_REPO = "https://github.com/WCRP-CMIP/WCRP-universe"
 _UNIVERSE_BRANCH = "esgvoc"
 _TEST_PROJECT_REPO = "https://github.com/WCRP-CMIP/CMIP6_CVs"
-_TEST_PROJECT_BRANCH = "esgvoc"
+_TEST_PROJECT_BRANCH = "esgvoc_dev"
 _TEST_PROJECT_ID = "cmip6"
 
 # Simulated release versions (same git HEAD, different manifest metadata)

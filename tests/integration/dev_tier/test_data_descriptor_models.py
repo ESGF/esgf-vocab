@@ -115,7 +115,12 @@ class TestInstitutionFields:
     def _get_first_institution(self, real_dbs, universe_db):
         with _inject(real_dbs["v1_path"], universe_db):
             terms = ev.get_all_terms_in_collection(_PROJECT_ID, _COLLECTION_INSTITUTION)
-        return next((t for t in terms), None)
+        for t in terms:
+            if hasattr(t, "ror"):
+                return t  # flat Institution
+            if hasattr(t, "members") and t.members:
+                return t.members[0]  # Organisation → first member Institution
+        return next(iter(terms), None)
 
     def test_institution_has_id(self, real_dbs, universe_db):
         term = self._get_first_institution(real_dbs, universe_db)
@@ -162,11 +167,22 @@ class TestInstitutionFields:
 class TestOptionalFieldGracefulAccess:
     """DT-136: Optional fields in DataDescriptors don't raise when absent."""
 
-    def test_ror_access_does_not_raise(self, real_dbs, universe_db):
-        """Accessing ror never raises — it's None or a value."""
+    def _flat_institutions(self, real_dbs, universe_db):
+        """Return flat Institution objects, unwrapping Organisation.members if needed."""
         with _inject(real_dbs["v1_path"], universe_db):
             terms = ev.get_all_terms_in_collection(_PROJECT_ID, _COLLECTION_INSTITUTION)
-        for term in terms[:5]:  # Check first 5
+        result = []
+        for t in terms:
+            if hasattr(t, "ror"):
+                result.append(t)
+            elif hasattr(t, "members"):
+                result.extend(t.members)
+        return result
+
+    def test_ror_access_does_not_raise(self, real_dbs, universe_db):
+        """Accessing ror never raises — it's None or a value."""
+        institutions = self._flat_institutions(real_dbs, universe_db)
+        for term in institutions[:5]:
             try:
                 _ = term.ror
             except AttributeError:
@@ -174,11 +190,9 @@ class TestOptionalFieldGracefulAccess:
 
     def test_none_ror_is_handled(self, real_dbs, universe_db):
         """Terms with ror=None are valid DataDescriptor instances."""
-        with _inject(real_dbs["v1_path"], universe_db):
-            terms = ev.get_all_terms_in_collection(_PROJECT_ID, _COLLECTION_INSTITUTION)
-        none_ror = [t for t in terms if t.ror is None]
-        str_ror = [t for t in terms if t.ror is not None]
-        # At least some handling is correct — both groups valid
+        institutions = self._flat_institutions(real_dbs, universe_db)
+        none_ror = [t for t in institutions if t.ror is None]
+        str_ror = [t for t in institutions if t.ror is not None]
         for term in none_ror[:3]:
             assert term.id
         for term in str_ror[:3]:

@@ -287,7 +287,7 @@ class TestFindTermsInAllProjects:
     def test_find_in_single_project_returns_results(self, real_dbs, universe_db):
         """find_terms_in_project (single-project variant) also works."""
         with _inject_one_project(real_dbs["v1_path"], universe_db):
-            terms = ev.find_terms_in_project(_PROJECT_A, _KNOWN_TERM)
+            terms = ev.find_terms_in_project(_KNOWN_TERM, _PROJECT_A)
         assert len(terms) > 0
 
     def test_find_in_unknown_project_returns_empty(self, real_dbs, universe_db):

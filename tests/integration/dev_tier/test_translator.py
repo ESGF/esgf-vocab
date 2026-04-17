@@ -333,7 +333,7 @@ class TestTranslateCollection:
     def test_yields_results_for_each_term(self, real_dbs, universe_db):
         terms = {
             _KNOWN_TERM: {"drs_name": "AerChemMIP"},
-            "aerchemmip": {"drs_name": "AerChemMIP"},
+            "highmip": {"drs_name": "HighResMIP"},
         }
         with _inject(real_dbs["v1_path"], universe_db):
             results = list(translate_collection(_PROJECT_ID, _KNOWN_COLLECTION, terms))
@@ -363,8 +363,8 @@ class TestGetPydanticModelForCollection:
         with _inject(real_dbs["v1_path"], universe_db):
             cls = get_pydantic_model_for_collection(_PROJECT_ID, _KNOWN_COLLECTION)
         # May be None if the collection has no data_descriptor, but not an error
-        # For activity_id, typically maps to Activity
-        assert cls is None or isinstance(cls, type)
+        # For activity_id, may return a discriminated union type (Annotated[Union[...]])
+        assert cls is None or callable(cls)
 
     def test_return_is_a_class_or_none(self, real_dbs, universe_db):
         with _inject(real_dbs["v1_path"], universe_db):

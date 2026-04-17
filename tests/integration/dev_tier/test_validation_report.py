@@ -289,19 +289,21 @@ class TestValidTermInCollectionNoMatch:
             )
         assert matches == []
 
-    def test_unknown_collection_returns_empty(self, real_dbs, universe_db):
+    def test_unknown_collection_raises(self, real_dbs, universe_db):
+        from esgvoc.core.exceptions import EsgvocNotFoundError
         with _inject(real_dbs["v1_path"], universe_db):
-            matches = ev.valid_term_in_collection(
-                _KNOWN_DRS_VALUE, _PROJECT_ID, _UNKNOWN_COLLECTION
-            )
-        assert matches == []
+            with pytest.raises(EsgvocNotFoundError):
+                ev.valid_term_in_collection(
+                    _KNOWN_DRS_VALUE, _PROJECT_ID, _UNKNOWN_COLLECTION
+                )
 
-    def test_unknown_project_returns_empty(self, real_dbs, universe_db):
+    def test_unknown_project_raises(self, real_dbs, universe_db):
+        from esgvoc.core.exceptions import EsgvocNotFoundError
         with _inject(real_dbs["v1_path"], universe_db):
-            matches = ev.valid_term_in_collection(
-                _KNOWN_DRS_VALUE, _UNKNOWN_PROJECT, _KNOWN_COLLECTION
-            )
-        assert matches == []
+            with pytest.raises(EsgvocNotFoundError):
+                ev.valid_term_in_collection(
+                    _KNOWN_DRS_VALUE, _UNKNOWN_PROJECT, _KNOWN_COLLECTION
+                )
 
 
 # ---------------------------------------------------------------------------

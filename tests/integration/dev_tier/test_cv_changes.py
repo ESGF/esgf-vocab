@@ -201,7 +201,7 @@ class TestCollectionListConsistency:
     def _get_collection_ids(self, db_path: Path, universe_db: Path) -> set[str]:
         with _inject(db_path, universe_db):
             collections = ev.get_all_collections_in_project(_PROJECT_ID)
-        return {c.id for c in collections}
+        return set(collections)
 
     def test_collection_ids_match(self, real_dbs, universe_db):
         v1_ids = self._get_collection_ids(real_dbs["v1_path"], universe_db)

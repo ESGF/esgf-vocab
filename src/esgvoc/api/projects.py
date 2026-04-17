@@ -958,8 +958,12 @@ def get_project(project_id: str, version: str | None = None) -> ProjectSpecs | N
         with connection.create_session() as session:
             project = session.get(Project, constants.SQLITE_FIRST_PK)
             try:
-                # Project can't be missing if session exists.
-                result = ProjectSpecs(**project.specs, version=project.git_hash)  # type: ignore
+                # Prefer cv_version from metadata (unique per release); fall back to git_hash.
+                meta_row = session.exec(
+                    text("SELECT value FROM _esgvoc_metadata WHERE key='cv_version'")
+                ).first()
+                version_str = meta_row[0] if meta_row else project.git_hash
+                result = ProjectSpecs(**project.specs, version=version_str)  # type: ignore
             except Exception:
                 result = None
     return result

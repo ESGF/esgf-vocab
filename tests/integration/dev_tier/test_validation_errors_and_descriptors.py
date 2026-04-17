@@ -447,11 +447,11 @@ class TestDataDescriptorIdInUniverse:
             collections = ev.get_all_collections_in_project(_PROJECT_ID)
             for coll in collections:
                 dd_id = ev.get_data_descriptor_from_collection_in_project(
-                    _PROJECT_ID, coll.id
+                    _PROJECT_ID, coll
                 )
                 if dd_id is not None:
                     dd = ev.get_data_descriptor_in_universe(dd_id)
                     assert dd is not None or True, (
                         # Some DD ids may be project-specific and not in universe — skip gracefully
-                        f"data_descriptor_id '{dd_id}' for collection '{coll.id}' not in universe"
+                        f"data_descriptor_id '{dd_id}' for collection '{coll}' not in universe"
                     )
