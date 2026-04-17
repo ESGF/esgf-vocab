@@ -376,3 +376,126 @@ def diff(
         count_table.add_row(t, str(a), str(b), delta_str, style=style)
 
     console.print(count_table)
+
+
+# ---------------------------------------------------------------------------
+# publish
+# ---------------------------------------------------------------------------
+
+@app.command()
+def publish(
+    db_path: Path = typer.Argument(..., help="Path to the .db file to publish."),
+    repo: str = typer.Option(
+        ..., "--repo", "-r",
+        help="GitHub repository in owner/repo format (e.g. WCRP-CMIP/CMIP7-CVs).",
+    ),
+    tag: Optional[str] = typer.Option(
+        None, "--tag", "-t",
+        help=(
+            "Release tag (e.g. 'v2.1.0'). "
+            "Inferred from the DB metadata cv_version field when omitted."
+        ),
+    ),
+    prerelease: bool = typer.Option(
+        False, "--prerelease",
+        help="Mark the release as a pre-release (e.g. for dev-latest builds).",
+    ),
+    draft: bool = typer.Option(
+        False, "--draft",
+        help="Create as a draft release (not publicly visible until published).",
+    ),
+    update_if_exists: bool = typer.Option(
+        True, "--update-if-exists/--no-update",
+        help=(
+            "Replace the .db asset when a release with the same tag already exists. "
+            "Use --no-update to abort instead."
+        ),
+    ),
+    release_notes: str = typer.Option(
+        "", "--notes",
+        help="Extra release notes appended to the auto-generated release body.",
+    ),
+    github_token: Optional[str] = typer.Option(
+        None, "--github-token",
+        help="GitHub personal access token (overrides GITHUB_TOKEN env var).",
+        envvar="GITHUB_TOKEN",
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run",
+        help="Show what would be published without making any GitHub API calls.",
+    ),
+):
+    """
+    Publish a pre-built database file to a GitHub Release.
+
+    \b
+    Versioned release:
+      esgvoc admin publish cmip7.db --repo WCRP-CMIP/CMIP7-CVs --tag v2.1.0
+
+    \b
+    Rolling dev release (overwrites dev-latest asset):
+      esgvoc admin publish cmip7.db --repo WCRP-CMIP/CMIP7-CVs --tag dev-latest --prerelease
+
+    \b
+    Dry-run (show payload, no API calls):
+      esgvoc admin publish cmip7.db --repo WCRP-CMIP/CMIP7-CVs --tag v2.1.0 --dry-run
+
+    \b
+    Requires GITHUB_TOKEN with 'repo' scope (or --github-token).
+    """
+    from esgvoc.admin.publisher import (
+        DBPublisher,
+        PublishAuthError,
+        PublishConflictError,
+        PublishError,
+        _read_db_metadata,
+    )
+
+    if not db_path.exists():
+        console.print(f"[red]DB file not found:[/red] {db_path}")
+        raise typer.Exit(1)
+
+    # Infer tag from DB metadata when not provided
+    resolved_tag = tag
+    if resolved_tag is None:
+        meta = _read_db_metadata(db_path)
+        cv_version = meta.get("cv_version", "")
+        if not cv_version or cv_version in ("n/a", "unknown", "dev"):
+            console.print(
+                "[red]Cannot infer tag:[/red] cv_version in DB metadata is "
+                f"'{cv_version}'. Provide --tag explicitly."
+            )
+            raise typer.Exit(1)
+        resolved_tag = cv_version if cv_version.startswith("v") else f"v{cv_version}"
+        console.print(f"[dim]Tag inferred from DB metadata: {resolved_tag}[/dim]")
+
+    if dry_run:
+        console.print(f"[yellow][DRY RUN][/yellow] Would publish [cyan]{db_path.name}[/cyan] "
+                      f"to [cyan]{repo}[/cyan] as release [cyan]{resolved_tag}[/cyan]")
+
+    try:
+        publisher = DBPublisher(github_token=github_token)
+        result = publisher.publish(
+            db_path=db_path,
+            repo=repo,
+            tag=resolved_tag,
+            prerelease=prerelease,
+            draft=draft,
+            release_notes=release_notes,
+            update_if_exists=update_if_exists,
+            dry_run=dry_run,
+        )
+        console.print(f"\n[green]{result.summary()}[/green]")
+
+    except PublishAuthError as e:
+        console.print(f"[red]Authentication error:[/red] {e}")
+        raise typer.Exit(4)
+    except PublishConflictError as e:
+        console.print(f"[red]Conflict:[/red] {e}")
+        raise typer.Exit(4)
+    except PublishError as e:
+        console.print(f"[red]Publish failed:[/red] {e}")
+        raise typer.Exit(4)
+    except Exception as e:
+        console.print(f"[red]Unexpected error:[/red] {e}")
+        raise typer.Exit(1)
