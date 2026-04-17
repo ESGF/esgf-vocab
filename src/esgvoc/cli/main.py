@@ -6,6 +6,7 @@ from esgvoc.admin.cli import app as admin_app
 from esgvoc.cli.clean import app as clean_app
 from esgvoc.cli.config import app as config_app
 from esgvoc.cli.drs import app as drs_app
+from esgvoc.cli.export_import import app as export_import_app
 from esgvoc.cli.find import app as find_app
 from esgvoc.cli.get import app as get_app
 from esgvoc.cli.install import app as install_app
@@ -24,6 +25,7 @@ app = typer.Typer()
 console = Console()
 
 # Register the subcommands
+app.add_typer(export_import_app)
 app.add_typer(get_app)
 app.add_typer(status_app)
 app.add_typer(valid_app)

@@ -55,6 +55,10 @@ _TEST_PROJECT_ID = "cmip6"
 _V1 = "v1.0.0"
 _V2 = "v2.0.0"
 
+# Tags created on the test repo to simulate real versioned releases
+_TAG_V1 = "v1.0.0"
+_TAG_V2 = "v2.0.0"
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -122,6 +126,62 @@ def cloned_repos(request: pytest.FixtureRequest):
         "universe": universe_path,
         _TEST_PROJECT_ID: project_path,
     }
+
+
+@pytest.fixture(scope="session")
+def tagged_repos(cloned_repos):
+    """
+    Create git tags on the cloned CV project repo to simulate versioned releases.
+
+    Tags created on CMIP6_CVs:
+      v1.0.0 — at the current HEAD (first "release")
+      v2.0.0 — at a new commit with a trivial change (second "release")
+
+    These tags let tests simulate the real workflow where CV maintainers push a
+    git tag to trigger a DB build.  Because the repos are shallow-cloned from a
+    fixed branch we manage the tags ourselves (the upstream repo has none yet).
+
+    Re-entrant: if the tags / marker commit already exist from a previous run the
+    fixture recreates them idempotently (force-overwrites tags, skips commit if
+    the marker file is already present).
+
+    Returns: same dict as cloned_repos plus ``{"tags": {"v1.0.0": sha, "v2.0.0": sha}}``
+    """
+    project_path = cloned_repos[_TEST_PROJECT_ID]
+
+    def _git(*args, check=False):
+        r = subprocess.run(
+            ["git", *args],
+            capture_output=True, text=True, cwd=str(project_path),
+        )
+        if check and r.returncode != 0:
+            print(f"  git {' '.join(args)} failed: {r.stderr}", file=sys.stderr)
+        return r
+
+    # Configure a local git identity so commits can be made without user-level config.
+    _git("config", "user.email", "test@esgvoc.test")
+    _git("config", "user.name", "esgvoc-test")
+
+    # Tag the current HEAD as v1.0.0 (force-overwrite if already exists)
+    sha1 = _git("rev-parse", "HEAD").stdout.strip()
+    _git("tag", "-f", _TAG_V1, sha1)
+    print(f"\n  Tagged {_TEST_PROJECT_ID} HEAD ({sha1[:8]}) as {_TAG_V1}", file=sys.stderr)
+
+    # Create a new commit for v2.0.0 only when the marker file is not yet present
+    # (idempotent across multiple pytest runs without --reclone-test-repos).
+    marker = project_path / ".esgvoc_test_v2_marker"
+    if not marker.exists():
+        marker.write_text("esgvoc test marker — simulates a CV change between v1 and v2\n")
+        _git("add", ".esgvoc_test_v2_marker")
+        _git("commit", "-m", "chore: esgvoc test marker for v2.0.0 simulation", check=True)
+
+    sha2 = _git("rev-parse", "HEAD").stdout.strip()
+    _git("tag", "-f", _TAG_V2, sha2)
+    print(f"\n  Tagged {_TEST_PROJECT_ID} HEAD ({sha2[:8]}) as {_TAG_V2}", file=sys.stderr)
+
+    result = dict(cloned_repos)
+    result["tags"] = {_TAG_V1: sha1, _TAG_V2: sha2}
+    return result
 
 
 @pytest.fixture(scope="session")
