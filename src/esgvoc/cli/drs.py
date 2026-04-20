@@ -2,6 +2,7 @@ import shlex
 import sys
 from typing import List, Optional
 
+import click
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -33,7 +34,18 @@ def display(table):
     """
     console = Console(record=True, width=200)
     console.print(table)
+    
 
+def _exit_if_cli(status):
+    """
+    exit, but only if running under CLI
+
+    :param status: the exit value
+    """
+    ctx = click.get_current_context(silent=True)
+    if ctx is not None:
+        raise typer.Exit(status)
+    
 
 @app.command()
 def drsvalid(
@@ -154,8 +166,13 @@ def drsvalid(
         for report in reports:
             console.print(str(report))
 
-    return reports
+    # Exit with suitable status if running under CLI.
+    # Reports each have a __bool__ method that returns True if validation passes.
+    _exit_if_cli(0 if all(reports) else 1)
 
+    # reached if calling from python
+    return reports
+    
 
 @app.command()
 def drsgen(
@@ -263,6 +280,8 @@ def drsgen(
         for report in generated_reports:
             console.print(str(report))
 
+    # see comments on similar code at end of function 'drsvalid' above.
+    _exit_if_cli(0 if all(generated_reports) else 1)
     return generated_reports
 
 
