@@ -1,5 +1,5 @@
 """
-Tests for User Tier CLI commands: install, use, list, remove, update.
+Tests for User Tier CLI commands: use, list, remove, update.
 
 Network operations (GitHub Releases API) are fully mocked.
 All tests use a fresh ESGVOC_HOME via tmp_path so they don't touch the real
@@ -7,7 +7,7 @@ user home directory.
 
 Note on Typer test invocation:
   Apps with a single command don't need the command name as the first arg.
-  e.g. runner.invoke(install_app, ["cmip7"])  — NOT ["install", "cmip7"]
+  e.g. runner.invoke(use_app, ["cmip7@latest"])
 
 Note on mock patch paths:
   CLI functions use lazy imports (inside the function body), so DBFetcher must be
@@ -23,7 +23,6 @@ from unittest.mock import patch
 import pytest
 from typer.testing import CliRunner
 
-from esgvoc.cli.install import app as install_app
 from esgvoc.cli.use import app as use_app
 from esgvoc.cli.versions import app as versions_app
 from esgvoc.cli.remove import app as remove_app
@@ -40,6 +39,7 @@ runner = CliRunner()
 def isolated_home(tmp_path, monkeypatch):
     """Route all UserState and EsgvocHome operations to a temp directory."""
     monkeypatch.setenv("ESGVOC_HOME", str(tmp_path))
+    monkeypatch.delenv("ESGVOC_DB_DIR", raising=False)
     yield tmp_path
 
 
@@ -56,30 +56,31 @@ def _make_fake_artifact(project_id="cmip7", version="v2.1.0", size=1_048_576):
 
 
 def _install_fake_db(tmp_path, project_id="cmip7", version="v2.1.0") -> Path:
-    """Write a fake DB file and register it in state.json."""
+    """Write a fake DB file and set the active pointer."""
     from esgvoc.core.service.user_state import UserState
 
     state = UserState.load()
     db = UserState.db_path(project_id, version)
     db.parent.mkdir(parents=True, exist_ok=True)
     db.write_bytes(b"fake-db-content")
-    state.add_installed(project_id, version)
     state.set_active(project_id, version)
     state.save()
     return db
 
 
 # ---------------------------------------------------------------------------
-# install
+# use — download from registry
 # ---------------------------------------------------------------------------
 
-class TestInstallUserTier:
-    def test_install_unknown_project(self):
-        result = runner.invoke(install_app, ["not-a-real-project"])
+class TestUseDownload:
+    """Tests for `esgvoc use` when DB must be downloaded from registry."""
+
+    def test_use_unknown_project_fails(self):
+        result = runner.invoke(use_app, ["not-a-real-project@latest"])
         assert result.exit_code != 0
         assert "Unknown project" in result.output
 
-    def test_install_downloads_and_activates(self):
+    def test_use_downloads_and_activates(self):
         artifact = _make_fake_artifact()
 
         def fake_download(art, target, show_progress=True):
@@ -91,47 +92,27 @@ class TestInstallUserTier:
             instance.get_artifact.return_value = artifact
             instance.download_db.side_effect = fake_download
 
-            result = runner.invoke(install_app, ["cmip7"])
+            result = runner.invoke(use_app, ["cmip7@latest"])
 
         assert result.exit_code == 0, result.output
-        assert "Installed and activated" in result.output
         assert "cmip7" in result.output
         assert "v2.1.0" in result.output
 
-    def test_install_no_activate_flag(self):
-        artifact = _make_fake_artifact()
-
-        def fake_download(art, target, show_progress=True):
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(b"fake-db")
-
-        with patch("esgvoc.core.db_fetcher.DBFetcher") as MockFetcher:
-            instance = MockFetcher.return_value
-            instance.get_artifact.return_value = artifact
-            instance.download_db.side_effect = fake_download
-
-            result = runner.invoke(install_app, ["cmip7", "--no-activate"])
-
-        assert result.exit_code == 0, result.output
-        assert "not activated" in result.output
-
         from esgvoc.core.service.user_state import UserState
-        state = UserState.load()
-        assert state.get_active("cmip7") is None
-        assert "v2.1.0" in state.get_installed("cmip7")
+        assert UserState.load().get_active("cmip7") == "v2.1.0"
 
-    def test_install_version_not_found(self):
+    def test_use_version_not_found(self):
         from esgvoc.core.db_fetcher import EsgvocVersionNotFoundError
 
         with patch("esgvoc.core.db_fetcher.DBFetcher") as MockFetcher:
             instance = MockFetcher.return_value
             instance.get_artifact.side_effect = EsgvocVersionNotFoundError("not found")
 
-            result = runner.invoke(install_app, ["cmip7@v99.0.0"])
+            result = runner.invoke(use_app, ["cmip7@v99.0.0"])
 
         assert result.exit_code == 3
 
-    def test_install_with_version_spec(self):
+    def test_use_specific_version(self):
         artifact = _make_fake_artifact(version="v2.0.0")
 
         def fake_download(art, target, show_progress=True):
@@ -143,40 +124,29 @@ class TestInstallUserTier:
             instance.get_artifact.return_value = artifact
             instance.download_db.side_effect = fake_download
 
-            result = runner.invoke(install_app, ["cmip7@v2.0.0"])
+            result = runner.invoke(use_app, ["cmip7@v2.0.0"])
 
         assert result.exit_code == 0, result.output
         instance.get_artifact.assert_called_once_with("cmip7", version="v2.0.0")
 
-    def test_install_skips_download_if_checksum_matches(self, tmp_path):
-        content = b"already-downloaded"
-        sha = hashlib.sha256(content).hexdigest()
-
-        from esgvoc.core.db_artifact import DBArtifact
-        artifact = DBArtifact(
-            project_id="cmip7", version="v2.1.0",
-            download_url="https://example.com/cmip7-v2.1.0.db",
-            checksum_sha256=sha, size_bytes=len(content),
-        )
-
+    def test_use_skips_download_if_file_exists(self, tmp_path):
+        # When the DB file already exists on disk, `use` goes straight to
+        # activation (Case 3) — no network call at all.
         from esgvoc.core.service.user_state import UserState
         target = UserState.db_path("cmip7", "v2.1.0")
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(content)
+        target.write_bytes(b"already-downloaded")
 
         with patch("esgvoc.core.db_fetcher.DBFetcher") as MockFetcher:
-            instance = MockFetcher.return_value
-            instance.get_artifact.return_value = artifact
-
-            result = runner.invoke(install_app, ["cmip7"])
+            result = runner.invoke(use_app, ["cmip7@v2.1.0"])
 
         assert result.exit_code == 0, result.output
-        instance.download_db.assert_not_called()
-        assert "already on disk" in result.output
+        MockFetcher.return_value.download_db.assert_not_called()
+        assert UserState.load().get_active("cmip7") == "v2.1.0"
 
 
 # ---------------------------------------------------------------------------
-# use
+# use — local / already-installed
 # ---------------------------------------------------------------------------
 
 class TestUseCommand:
@@ -200,10 +170,9 @@ class TestUseCommand:
         from esgvoc.core.service.user_state import UserState
         assert UserState.load().get_active("cmip7") == "v2.1.0"
 
-    def test_use_not_installed_fails(self, tmp_path):
-        _install_fake_db(tmp_path, "cmip7", "v2.1.0")
-
-        result = runner.invoke(use_app, ["cmip7@v9.9.9"])
+    def test_use_local_name_not_installed_fails(self):
+        # Local (non-registry) name that doesn't exist on disk
+        result = runner.invoke(use_app, ["cmip7@my-local-build"])
         assert result.exit_code != 0
         assert "not installed" in result.output
 
@@ -211,19 +180,6 @@ class TestUseCommand:
         result = runner.invoke(use_app, ["cmip7"])
         assert result.exit_code != 0
         assert "No versions installed" in result.output
-
-    def test_use_missing_db_file_fails(self):
-        from esgvoc.core.service.user_state import UserState
-
-        state = UserState.load()
-        state.add_installed("cmip7", "v2.1.0")
-        state.set_active("cmip7", "v2.1.0")
-        state.save()
-        # File NOT created on disk
-
-        result = runner.invoke(use_app, ["cmip7@v2.1.0"])
-        assert result.exit_code != 0
-        assert "missing" in result.output
 
 
 # ---------------------------------------------------------------------------

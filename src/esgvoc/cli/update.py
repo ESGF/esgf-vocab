@@ -70,7 +70,7 @@ def update(
             continue
 
         # Download
-        target = UserState.db_path(pid, latest)
+        target = UserState.db_path(pid, artifact.version)
         if not target.exists():
             console.print(f"Downloading {pid}@{latest}…")
             try:
@@ -81,12 +81,13 @@ def update(
         else:
             console.print(f"[dim]{pid}@{latest} already on disk[/dim]")
 
-        state.add_installed(pid, latest)
+        state.add_installed(pid, artifact.version)
         if not no_activate:
-            state.set_active(pid, latest)
-            console.print(f"[green]{pid}:[/green] {active or 'none'} → {latest} (active)")
+            state.set_active(pid, artifact.version, source="registry",
+                             checksum=artifact.checksum_sha256)
+            console.print(f"[green]{pid}:[/green] {active or 'none'} → {artifact.version} (active)")
         else:
-            console.print(f"[green]{pid}:[/green] {latest} installed (not activated)")
+            console.print(f"[green]{pid}:[/green] {artifact.version} installed (not activated)")
 
         any_updated = True
 

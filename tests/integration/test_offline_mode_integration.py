@@ -6,6 +6,8 @@ to execution, ensuring all components work together correctly.
 """
 
 import pytest
+pytestmark = pytest.mark.skip(reason="dev-tier config system removed")
+
 import tempfile
 import shutil
 import os

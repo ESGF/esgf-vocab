@@ -40,15 +40,15 @@ class TestDBArtifactBasic:
 class TestDBArtifactFilename:
     def test_stable_filename(self):
         a = DBArtifact(project_id="cmip7", version="v2.1.0", download_url="x")
-        assert a.db_filename() == "cmip7-v2.1.0.db"
+        assert a.db_filename() == "v2.1.0.db"
 
     def test_dev_filename(self):
         a = DBArtifact(project_id="cmip7", version="dev-latest", download_url="x", is_prerelease=True)
-        assert a.db_filename() == "cmip7-dev-latest.db"
+        assert a.db_filename() == "dev-latest.db"
 
     def test_other_project(self):
         a = DBArtifact(project_id="cmip6", version="v6.5.0", download_url="x")
-        assert a.db_filename() == "cmip6-v6.5.0.db"
+        assert a.db_filename() == "v6.5.0.db"
 
 
 class TestDBArtifactDevBuild:

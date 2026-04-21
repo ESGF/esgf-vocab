@@ -1,17 +1,34 @@
 """
-DBFetcher: downloads pre-built versioned database artifacts from GitHub Releases.
+DBFetcher: downloads pre-built versioned database artifacts.
 
-Responsibilities:
-- List available versions for a project (via GitHub Releases API)
-- Resolve "latest" to a concrete version
-- Download a specific version with progress reporting
-- Verify SHA-256 checksum
-- Atomic write (temp file → final location)
-- Cache the GitHub Releases listing to avoid repeated API calls
+Version discovery uses a single raw HTTP GET per project:
+  GET {REGISTRY_BASE_URL}/{project_id}.json
+
+The index file lives on the main branch of the `esgvoc_dbs` repository and
+is served via raw GitHub content — no API quota consumed, no authentication,
+no pagination required.
+
+Per-project index file format:
+  {
+    "project_id": "cmip7",
+    "releases": [
+      {
+        "version": "v1.2.7",
+        "tag": "cmip7.v1.2.7",
+        "checksum_sha256": "abc123...",
+        "url": "https://github.com/.../releases/download/.../cmip7.v1.2.7.db",
+        "size_bytes": 80000000,
+        "is_prerelease": false,
+        "published_at": "2026-04-17T10:00:00Z"
+      }
+    ]
+  }
 
 Environment variables honoured:
-    GITHUB_TOKEN   - GitHub personal access token (increases rate limit)
-    ESGVOC_OFFLINE - If set to 'true', all network operations raise OfflineError
+    ESGVOC_REGISTRY_BASE_URL  Override the registry base URL (for testing / forks)
+    GITHUB_TOKEN              Optional — no longer needed for version discovery,
+                              but still used to authenticate downloads if needed
+    ESGVOC_OFFLINE            If 'true', all network operations raise OfflineError
 """
 
 from __future__ import annotations
@@ -20,25 +37,24 @@ import hashlib
 import json
 import logging
 import os
+import re
 import shutil
 import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
-import re
-
 import requests
 
 from esgvoc.core.db_artifact import DBArtifact
-from esgvoc.core.project_registry import ProjectInfo, get_project, known_project_ids
+from esgvoc.core.github_registry import ProjectInfo, get_project, known_project_ids
 
 logger = logging.getLogger(__name__)
 
-# How long to cache the GitHub Releases listing before re-fetching
+# How long to cache the project index before re-fetching
 _CACHE_TTL_HOURS = 1
 _DB_ASSET_SUFFIX = ".db"
-_GITHUB_API_TIMEOUT = 10  # seconds
+_FETCH_TIMEOUT = 10   # seconds — small JSON file
 _DOWNLOAD_TIMEOUT = 300   # seconds (5 min for large files)
 _MAX_RETRIES = 3
 
@@ -64,12 +80,12 @@ class EsgvocChecksumError(RuntimeError):
 
 class DBFetcher:
     """
-    Fetches pre-built database artifacts from GitHub Releases.
+    Fetches pre-built database artifacts from the esgvoc_dbs registry.
 
     Parameters
     ----------
     cache_dir:
-        Directory for caching the GitHub Releases listing.
+        Directory for caching the per-project JSON index files.
     offline:
         If True, all network operations raise EsgvocOfflineError.
     """
@@ -212,15 +228,14 @@ class DBFetcher:
         token = os.environ.get("GITHUB_TOKEN")
         if token:
             session.headers["Authorization"] = f"Bearer {token}"
-        session.headers["Accept"] = "application/vnd.github+json"
-        session.headers["X-GitHub-Api-Version"] = "2022-11-28"
+        session.headers["Accept"] = "application/json"
         return session
 
     def _cache_path(self, project_id: str) -> Path:
-        return self.cache_dir / f"releases_{project_id}.json"
+        return self.cache_dir / f"registry_{project_id}.json"
 
     def _fetch_releases(self, project_id: str) -> list[DBArtifact]:
-        """Fetch (with cache) the GitHub Releases for a project."""
+        """Fetch (with cache) the release index for a project."""
         info = get_project(project_id)
         if info is None:
             raise EsgvocVersionNotFoundError(
@@ -233,8 +248,8 @@ class DBFetcher:
         if cached is not None:
             return cached
 
-        self._check_online(f"fetch releases for '{project_id}'")
-        artifacts = self._github_list_releases(info)
+        self._check_online(f"fetch index for '{project_id}'")
+        artifacts = self._fetch_raw_index(info)
         self._save_cache(cache_file, artifacts)
         return artifacts
 
@@ -259,54 +274,57 @@ class DBFetcher:
         }
         cache_file.write_text(json.dumps(data, indent=2))
 
-    def _github_list_releases(self, info: ProjectInfo) -> list[DBArtifact]:
-        """Call GitHub Releases API and parse into DBArtifact list."""
-        url = f"{info.api_base}/releases"
+    def _fetch_raw_index(self, info: ProjectInfo) -> list[DBArtifact]:
+        """Fetch the per-project JSON index from the registry raw content URL."""
+        url = info.raw_index_url
+        logger.debug(f"Fetching registry index: {url}")
         try:
-            resp = self._session.get(url, timeout=_GITHUB_API_TIMEOUT)
+            resp = self._session.get(url, timeout=_FETCH_TIMEOUT)
+            if resp.status_code == 404:
+                raise EsgvocVersionNotFoundError(
+                    f"No registry index found for '{info.project_id}' at {url}.\n"
+                    f"The project may not have any published releases yet."
+                )
             resp.raise_for_status()
         except requests.exceptions.ConnectionError as e:
-            raise EsgvocNetworkError(f"Cannot reach GitHub API: {e}") from e
+            raise EsgvocNetworkError(f"Cannot reach registry at {url}: {e}") from e
         except requests.exceptions.HTTPError as e:
-            if e.response is not None and e.response.status_code == 403:
-                reset = e.response.headers.get("X-RateLimit-Reset", "unknown")
-                raise EsgvocNetworkError(
-                    f"GitHub API rate limit exceeded (resets at {reset}). "
-                    f"Set GITHUB_TOKEN to increase the limit."
-                ) from e
-            raise EsgvocNetworkError(f"GitHub API error: {e}") from e
+            raise EsgvocNetworkError(f"Registry fetch error: {e}") from e
 
-        releases = resp.json()
+        try:
+            index = resp.json()
+        except Exception as e:
+            raise EsgvocNetworkError(f"Invalid JSON in registry index for '{info.project_id}': {e}") from e
+
         artifacts: list[DBArtifact] = []
-
-        for release in releases:
-            version = release.get("tag_name", "")
-            is_prerelease = release.get("prerelease", False)
-            published_at_str = release.get("published_at")
-            published_at = None
-            if published_at_str:
-                try:
-                    published_at = datetime.fromisoformat(published_at_str.replace("Z", "+00:00"))
-                except ValueError:
-                    pass
-
-            for asset in release.get("assets", []):
-                name: str = asset.get("name", "")
-                if not name.endswith(_DB_ASSET_SUFFIX):
-                    continue
-                # Expect filename like "cmip7.db"
+        for release in index.get("releases", []):
+            version = release.get("version", "")
+            if not version:
+                continue
+            try:
+                published_at = None
+                if release.get("published_at"):
+                    published_at = datetime.fromisoformat(
+                        release["published_at"].replace("Z", "+00:00")
+                    )
                 artifacts.append(DBArtifact(
                     project_id=info.project_id,
                     version=version,
-                    download_url=asset["browser_download_url"],
-                    size_bytes=asset.get("size"),
+                    download_url=release["url"],
+                    size_bytes=release.get("size_bytes"),
+                    checksum_sha256=release.get("checksum_sha256"),
                     published_at=published_at,
-                    is_prerelease=is_prerelease,
+                    is_prerelease=release.get("is_prerelease", False),
+                    universe_version=release.get("universe_version"),
+                    esgvoc_min_version=release.get("esgvoc_min_version"),
+                    esgvoc_max_version=release.get("esgvoc_max_version"),
                 ))
+            except Exception as e:
+                logger.warning(f"Skipping malformed release entry for '{info.project_id}': {e}")
 
         # Sort: stable releases newest first, then pre-releases
         def sort_key(a: DBArtifact):
-            v = _parse_version(a.version) or (0, 0, 0)
+            v = _parse_version(a.version) or (0, 0, 0, 0)
             return (0 if not a.is_prerelease else 1, v)
 
         artifacts.sort(key=sort_key, reverse=True)

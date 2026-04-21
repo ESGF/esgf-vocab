@@ -151,6 +151,7 @@ class DBBuilder:
 
         if validate:
             from esgvoc.admin.validator import DBValidator
+
             DBValidator().validate(output_path, full=True)
 
         return result
@@ -204,6 +205,7 @@ class DBBuilder:
 
         if validate:
             from esgvoc.admin.validator import DBValidator
+
             DBValidator().validate(output_path, full=True)
 
         return result
@@ -254,6 +256,7 @@ class DBBuilder:
 
         if validate:
             from esgvoc.admin.validator import DBValidator
+
             DBValidator().validate(output_path, full=True)
 
         return result
@@ -393,13 +396,12 @@ class DBBuilder:
             size_bytes=output_path.stat().st_size,
         )
 
-    def _build_universe_db(
-        self, universe_path: Path, universe_db: Path, universe_sha: Optional[str]
-    ) -> None:
+    def _build_universe_db(self, universe_path: Path, universe_db: Path, universe_sha: Optional[str]) -> None:
         from esgvoc.core.db.models.universe import universe_create_db
         from esgvoc.core.db.connection import DBConnection
         from esgvoc.core.db.universe_ingestion import ingest_metadata_universe, ingest_universe
 
+        print(self)
         if universe_db.exists():
             universe_db.unlink()
         universe_db.parent.mkdir(parents=True, exist_ok=True)
@@ -459,10 +461,7 @@ class DBBuilder:
         import sqlite3
 
         with sqlite3.connect(str(db_path)) as conn:
-            conn.execute(
-                "CREATE TABLE IF NOT EXISTS _esgvoc_metadata "
-                "(key TEXT PRIMARY KEY NOT NULL, value TEXT)"
-            )
+            conn.execute("CREATE TABLE IF NOT EXISTS _esgvoc_metadata (key TEXT PRIMARY KEY NOT NULL, value TEXT)")
             conn.executemany(
                 "INSERT OR REPLACE INTO _esgvoc_metadata (key, value) VALUES (?, ?)",
                 list(metadata.items()),
@@ -485,9 +484,7 @@ class DBBuilder:
                 capture_output=not self.verbose,
             )
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(
-                f"Failed to clone {url} @ {ref}: {e.stderr.decode() if e.stderr else e}"
-            ) from e
+            raise RuntimeError(f"Failed to clone {url} @ {ref}: {e.stderr.decode() if e.stderr else e}") from e
 
     @staticmethod
     def _git_sha(repo_path: Path) -> Optional[str]:
@@ -527,6 +524,7 @@ class DBBuilder:
 # Service-state injection context manager
 # ------------------------------------------------------------------
 
+#
 @contextmanager
 def _admin_context(
     universe_local_path: str,
@@ -557,6 +555,7 @@ def _admin_context(
 # ------------------------------------------------------------------
 # Module-level helpers
 # ------------------------------------------------------------------
+
 
 def _sha256(path: Path) -> str:
     h = hashlib.sha256()

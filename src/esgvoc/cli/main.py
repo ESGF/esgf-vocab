@@ -19,8 +19,6 @@ from esgvoc.cli.update import app as update_app
 from esgvoc.cli.use import app as use_app
 from esgvoc.cli.valid import app as valid_app
 from esgvoc.cli.versions import app as versions_app
-from esgvoc.core.service.configuration.setting import ServiceSettings
-
 app = typer.Typer()
 console = Console()
 
@@ -42,26 +40,6 @@ app.add_typer(use_app)
 app.add_typer(versions_app)
 app.add_typer(remove_app)
 app.add_typer(update_app)
-
-# maybe remove during a future refactor
-
-
-@app.command()
-def list_projects():
-    """List all available projects with their default configurations."""
-    default_configs = ServiceSettings._get_default_project_configs()
-
-    table = Table(title="Available Projects")
-    table.add_column("Project Name", style="cyan")
-    table.add_column("Repository", style="green")
-    table.add_column("Default Branch", style="yellow")
-    table.add_column("Local Path", style="blue")
-
-    for project_name, config in default_configs.items():
-        table.add_row(project_name, config["github_repo"], config["branch"], config["local_path"])
-
-    console.print(table)
-    console.print(f"\n[blue]Total: {len(default_configs)} projects available[/blue]")
 
 
 @app.command()
@@ -115,8 +93,8 @@ def version(
             console.print("  pip install --upgrade esgvoc")
             console.print("  uv pip install --upgrade esgvoc")
             console.print("  conda update esgvoc")
-            console.print("\n[yellow]After updating, reinstall vocabularies with:[/yellow]")
-            console.print("  esgvoc install")
+            console.print("\n[yellow]After updating, re-activate vocabularies if needed:[/yellow]")
+            console.print("  esgvoc use <project>@latest")
 
 
 def main():

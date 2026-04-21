@@ -38,7 +38,7 @@ def list_versions(
     projects = [project_id] if project_id else state.all_project_ids()
 
     if not projects:
-        console.print("[dim]No projects installed. Run: esgvoc install <project>[/dim]")
+        console.print("[dim]No projects installed. Run: esgvoc use <project>@latest[/dim]")
         raise typer.Exit(0)
 
     for pid in projects:

@@ -1,4 +1,21 @@
-"""Tests for DBFetcher — version parsing, sorting, compatibility, download."""
+"""Tests for DBFetcher — version parsing, sorting, compatibility, download.
+
+The registry index format (per-project JSON on raw.githubusercontent.com):
+  {
+    "project_id": "cmip7",
+    "releases": [
+      {
+        "version": "v2.1.0",
+        "tag": "cmip7.v2.1.0",
+        "checksum_sha256": "abc...",
+        "url": "https://...",
+        "size_bytes": 1024,
+        "is_prerelease": false,
+        "published_at": "2024-03-25T15:30:00Z"
+      }
+    ]
+  }
+"""
 
 import hashlib
 import json
@@ -24,6 +41,7 @@ from esgvoc.core.db_fetcher import (
 # ---------------------------------------------------------------------------
 # _parse_version
 # ---------------------------------------------------------------------------
+
 
 class TestParseVersion:
     def test_stable_with_v(self):
@@ -57,6 +75,7 @@ class TestParseVersion:
 # _is_prerelease
 # ---------------------------------------------------------------------------
 
+
 class TestIsPrerelease:
     def test_dev_latest(self):
         assert _is_prerelease("dev-latest") is True
@@ -77,6 +96,7 @@ class TestIsPrerelease:
 # ---------------------------------------------------------------------------
 # DBFetcher — offline mode
 # ---------------------------------------------------------------------------
+
 
 class TestDBFetcherOffline:
     def test_offline_env_var(self, tmp_path, monkeypatch):
@@ -104,6 +124,7 @@ class TestDBFetcherOffline:
 # DBFetcher — unknown project
 # ---------------------------------------------------------------------------
 
+
 class TestDBFetcherUnknownProject:
     def test_unknown_project_raises(self, tmp_path):
         fetcher = DBFetcher(cache_dir=tmp_path)
@@ -112,152 +133,198 @@ class TestDBFetcherUnknownProject:
 
 
 # ---------------------------------------------------------------------------
-# DBFetcher — GitHub API interaction (mocked)
+# Helpers for building mock registry index responses
 # ---------------------------------------------------------------------------
 
-def _make_release(tag: str, asset_name: str, prerelease: bool = False) -> dict:
+
+def _make_index(project_id: str, releases: list[dict]) -> dict:
+    """Build a registry index dict as returned by the raw GitHub content URL."""
+    return {"project_id": project_id, "releases": releases}
+
+
+def _make_release(
+    version: str,
+    url: str = None,
+    checksum: str = None,
+    size_bytes: int = 1024,
+    is_prerelease: bool = False,
+    published_at: str = "2024-03-25T15:30:00Z",
+) -> dict:
     return {
-        "tag_name": tag,
-        "prerelease": prerelease,
-        "published_at": "2024-03-25T15:30:00Z",
-        "assets": [
-            {
-                "name": asset_name,
-                "browser_download_url": f"https://example.com/{asset_name}",
-                "size": 1024,
-            }
-        ],
+        "version": version,
+        "tag": f"cmip7.{version}",
+        "url": url or f"https://example.com/cmip7.{version}.db",
+        "checksum_sha256": checksum,
+        "size_bytes": size_bytes,
+        "is_prerelease": is_prerelease,
+        "published_at": published_at,
     }
 
 
-def _mock_response(releases: list) -> MagicMock:
+def _mock_response(index: dict) -> MagicMock:
     resp = MagicMock()
-    resp.json.return_value = releases
+    resp.json.return_value = index
     resp.raise_for_status = MagicMock()
+    resp.status_code = 200
     return resp
+
+
+# ---------------------------------------------------------------------------
+# DBFetcher — raw index interaction (mocked)
+# ---------------------------------------------------------------------------
 
 
 class TestDBFetcherListVersions:
     def test_list_stable_versions(self, tmp_path):
-        releases = [
-            _make_release("v2.1.0", "cmip7.db"),
-            _make_release("v2.0.0", "cmip7.db"),
-            _make_release("dev-latest", "cmip7.db", prerelease=True),
-        ]
+        index = _make_index(
+            "cmip7",
+            [
+                _make_release("v2.1.0"),
+                _make_release("v2.0.0"),
+                _make_release("dev-latest", is_prerelease=True),
+            ],
+        )
         fetcher = DBFetcher(cache_dir=tmp_path)
-        with patch.object(fetcher._session, "get", return_value=_mock_response(releases)):
+        with patch.object(fetcher._session, "get", return_value=_mock_response(index)):
             versions = fetcher.list_versions("cmip7")
         assert "v2.1.0" in versions
         assert "v2.0.0" in versions
         assert "dev-latest" not in versions  # prerelease excluded by default
 
     def test_list_includes_prerelease_when_asked(self, tmp_path):
-        releases = [
-            _make_release("v2.1.0", "cmip7.db"),
-            _make_release("dev-latest", "cmip7.db", prerelease=True),
-        ]
+        index = _make_index(
+            "cmip7",
+            [
+                _make_release("v2.1.0"),
+                _make_release("dev-latest", is_prerelease=True),
+            ],
+        )
         fetcher = DBFetcher(cache_dir=tmp_path)
-        with patch.object(fetcher._session, "get", return_value=_mock_response(releases)):
+        with patch.object(fetcher._session, "get", return_value=_mock_response(index)):
             versions = fetcher.list_versions("cmip7", include_prerelease=True)
         assert "dev-latest" in versions
 
     def test_versions_sorted_newest_first(self, tmp_path):
-        releases = [
-            _make_release("v2.0.0", "cmip7.db"),
-            _make_release("v2.1.0", "cmip7.db"),
-            _make_release("v1.9.0", "cmip7.db"),
-        ]
+        index = _make_index(
+            "cmip7",
+            [
+                _make_release("v2.0.0"),
+                _make_release("v2.1.0"),
+                _make_release("v1.9.0"),
+            ],
+        )
         fetcher = DBFetcher(cache_dir=tmp_path)
-        with patch.object(fetcher._session, "get", return_value=_mock_response(releases)):
+        with patch.object(fetcher._session, "get", return_value=_mock_response(index)):
             versions = fetcher.list_versions("cmip7")
         assert versions[0] == "v2.1.0"
         assert versions[-1] == "v1.9.0"
 
-    def test_non_db_assets_ignored(self, tmp_path):
-        releases = [
-            {
-                "tag_name": "v2.1.0",
-                "prerelease": False,
-                "published_at": "2024-03-25T15:30:00Z",
-                "assets": [
-                    {"name": "cmip7.db", "browser_download_url": "x", "size": 100},
-                    {"name": "README.md", "browser_download_url": "y", "size": 50},
-                ],
-            }
-        ]
+    def test_checksum_populated_from_index(self, tmp_path):
+        """The new model always populates checksum_sha256 from the index."""
+        index = _make_index(
+            "cmip7",
+            [
+                _make_release("v2.1.0", checksum="abc123def456" + "0" * 52),
+            ],
+        )
         fetcher = DBFetcher(cache_dir=tmp_path)
-        with patch.object(fetcher._session, "get", return_value=_mock_response(releases)):
-            versions = fetcher.list_versions("cmip7")
-        assert versions == ["v2.1.0"]
+        with patch.object(fetcher._session, "get", return_value=_mock_response(index)):
+            artifact = fetcher.get_artifact("cmip7", "v2.1.0")
+        assert artifact.checksum_sha256 == "abc123def456" + "0" * 52
 
 
 class TestDBFetcherGetArtifact:
     def test_get_specific_version(self, tmp_path):
-        releases = [
-            _make_release("v2.1.0", "cmip7.db"),
-            _make_release("v2.0.0", "cmip7.db"),
-        ]
+        index = _make_index(
+            "cmip7",
+            [
+                _make_release("v2.1.0"),
+                _make_release("v2.0.0"),
+            ],
+        )
         fetcher = DBFetcher(cache_dir=tmp_path)
-        with patch.object(fetcher._session, "get", return_value=_mock_response(releases)):
+        with patch.object(fetcher._session, "get", return_value=_mock_response(index)):
             artifact = fetcher.get_artifact("cmip7", "v2.0.0")
         assert artifact.version == "v2.0.0"
 
     def test_get_latest_returns_newest_stable(self, tmp_path):
-        releases = [
-            _make_release("v2.0.0", "cmip7.db"),
-            _make_release("v2.1.0", "cmip7.db"),
-            _make_release("dev-latest", "cmip7.db", prerelease=True),
-        ]
+        index = _make_index(
+            "cmip7",
+            [
+                _make_release("v2.0.0"),
+                _make_release("v2.1.0"),
+                _make_release("dev-latest", is_prerelease=True),
+            ],
+        )
         fetcher = DBFetcher(cache_dir=tmp_path)
-        with patch.object(fetcher._session, "get", return_value=_mock_response(releases)):
+        with patch.object(fetcher._session, "get", return_value=_mock_response(index)):
             artifact = fetcher.get_artifact("cmip7", "latest")
         assert artifact.version == "v2.1.0"
 
     def test_version_not_found(self, tmp_path):
-        releases = [_make_release("v2.1.0", "cmip7.db")]
+        index = _make_index("cmip7", [_make_release("v2.1.0")])
         fetcher = DBFetcher(cache_dir=tmp_path)
-        with patch.object(fetcher._session, "get", return_value=_mock_response(releases)):
+        with patch.object(fetcher._session, "get", return_value=_mock_response(index)):
             with pytest.raises(EsgvocVersionNotFoundError):
                 fetcher.get_artifact("cmip7", "v99.0.0")
 
     def test_no_stable_releases(self, tmp_path):
-        releases = [_make_release("dev-latest", "cmip7.db", prerelease=True)]
+        index = _make_index("cmip7", [_make_release("dev-latest", is_prerelease=True)])
         fetcher = DBFetcher(cache_dir=tmp_path)
-        with patch.object(fetcher._session, "get", return_value=_mock_response(releases)):
+        with patch.object(fetcher._session, "get", return_value=_mock_response(index)):
             with pytest.raises(EsgvocVersionNotFoundError, match="No stable"):
                 fetcher.get_artifact("cmip7", "latest")
+
+    def test_404_raises_version_not_found(self, tmp_path):
+        """HTTP 404 from the registry index means the project has no releases yet."""
+        resp = MagicMock()
+        resp.status_code = 404
+        resp.raise_for_status = MagicMock()
+        fetcher = DBFetcher(cache_dir=tmp_path)
+        with patch.object(fetcher._session, "get", return_value=resp):
+            with pytest.raises(EsgvocVersionNotFoundError):
+                fetcher.list_versions("cmip7")
 
 
 # ---------------------------------------------------------------------------
 # DBFetcher — cache
 # ---------------------------------------------------------------------------
 
+
 class TestDBFetcherCache:
-    def test_cache_is_used_on_second_call(self, tmp_path):
-        releases = [_make_release("v2.1.0", "cmip7.db")]
+    def test_cache_file_named_with_registry_prefix(self, tmp_path):
+        """Cache file should be registry_{project_id}.json (not releases_{project_id})."""
         fetcher = DBFetcher(cache_dir=tmp_path)
-        with patch.object(fetcher._session, "get", return_value=_mock_response(releases)) as mock_get:
+        cache_path = fetcher._cache_path("cmip7")
+        assert cache_path.name == "registry_cmip7.json"
+
+    def test_cache_is_used_on_second_call(self, tmp_path):
+        index = _make_index("cmip7", [_make_release("v2.1.0")])
+        fetcher = DBFetcher(cache_dir=tmp_path)
+        with patch.object(fetcher._session, "get", return_value=_mock_response(index)) as mock_get:
             fetcher.list_versions("cmip7")
             fetcher.list_versions("cmip7")  # second call
-            assert mock_get.call_count == 1  # API called only once
+            assert mock_get.call_count == 1  # network called only once
 
     def test_stale_cache_is_refreshed(self, tmp_path):
         from datetime import timedelta
 
-        releases = [_make_release("v2.1.0", "cmip7.db")]
+        index = _make_index("cmip7", [_make_release("v2.1.0")])
         fetcher = DBFetcher(cache_dir=tmp_path)
 
         # Write a stale cache entry
-        stale_time = (
-            datetime.now(timezone.utc) - timedelta(hours=2)
-        ).isoformat()
-        cache_file = tmp_path / "releases_cmip7.json"
-        cache_file.write_text(json.dumps({
-            "fetched_at": stale_time,
-            "artifacts": [],
-        }))
+        stale_time = (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat()
+        cache_file = fetcher._cache_path("cmip7")
+        cache_file.write_text(
+            json.dumps(
+                {
+                    "fetched_at": stale_time,
+                    "artifacts": [],
+                }
+            )
+        )
 
-        with patch.object(fetcher._session, "get", return_value=_mock_response(releases)) as mock_get:
+        with patch.object(fetcher._session, "get", return_value=_mock_response(index)) as mock_get:
             fetcher.list_versions("cmip7")
             assert mock_get.call_count == 1  # stale → re-fetched
 
@@ -265,6 +332,7 @@ class TestDBFetcherCache:
 # ---------------------------------------------------------------------------
 # DBFetcher — download
 # ---------------------------------------------------------------------------
+
 
 def _sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
@@ -275,7 +343,7 @@ class TestDBFetcherDownload:
         return DBArtifact(
             project_id="cmip7",
             version="v2.1.0",
-            download_url="https://example.com/cmip7.db",
+            download_url="https://example.com/cmip7.v2.1.0.db",
             checksum_sha256=checksum,
         )
 
@@ -290,7 +358,7 @@ class TestDBFetcherDownload:
         data = b"fake db content"
         artifact = self._make_artifact()
         fetcher = DBFetcher(cache_dir=tmp_path)
-        target = tmp_path / "cmip7-v2.1.0.db"
+        target = tmp_path / "v2.1.0.db"
 
         with patch.object(fetcher._session, "get", return_value=self._mock_download(data)):
             result = fetcher.download_db(artifact, target, show_progress=False)
@@ -303,7 +371,7 @@ class TestDBFetcherDownload:
         checksum = _sha256_bytes(data)
         artifact = self._make_artifact(checksum=checksum)
         fetcher = DBFetcher(cache_dir=tmp_path)
-        target = tmp_path / "cmip7-v2.1.0.db"
+        target = tmp_path / "v2.1.0.db"
 
         with patch.object(fetcher._session, "get", return_value=self._mock_download(data)):
             fetcher.download_db(artifact, target, show_progress=False)
@@ -314,7 +382,7 @@ class TestDBFetcherDownload:
         data = b"fake db content"
         artifact = self._make_artifact(checksum="wrong" * 16)
         fetcher = DBFetcher(cache_dir=tmp_path)
-        target = tmp_path / "cmip7-v2.1.0.db"
+        target = tmp_path / "v2.1.0.db"
 
         with patch.object(fetcher._session, "get", return_value=self._mock_download(data)):
             with pytest.raises(EsgvocChecksumError):
@@ -327,7 +395,7 @@ class TestDBFetcherDownload:
         checksum = _sha256_bytes(data)
         artifact = self._make_artifact(checksum=checksum)
         fetcher = DBFetcher(cache_dir=tmp_path)
-        target = tmp_path / "cmip7-v2.1.0.db"
+        target = tmp_path / "v2.1.0.db"
         target.write_bytes(data)
 
         with patch.object(fetcher._session, "get") as mock_get:
@@ -338,6 +406,7 @@ class TestDBFetcherDownload:
 # ---------------------------------------------------------------------------
 # DBFetcher — compatibility check
 # ---------------------------------------------------------------------------
+
 
 class TestDBFetcherCompatibility:
     def _artifact(self, min_v=None, max_v=None) -> DBArtifact:
@@ -374,3 +443,30 @@ class TestDBFetcherCompatibility:
             ok, msg = fetcher.check_compatibility(self._artifact(max_v="3.0.0"))
         assert ok is False
         assert "Some features may not work" in msg
+
+
+# ---------------------------------------------------------------------------
+# DBFetcher — raw index URL
+# ---------------------------------------------------------------------------
+
+
+class TestDBFetcherRegistryURL:
+    def test_fetches_from_raw_registry_url(self, tmp_path, monkeypatch):
+        """Fetcher calls raw.githubusercontent.com/{project_id}.json, not the Releases API."""
+        monkeypatch.setenv(
+            "ESGVOC_REGISTRY_BASE_URL", "https://raw.githubusercontent.com/test-org/test_esgvoc_dbs/main"
+        )
+        from esgvoc.core.github_registry import get_project
+
+        info = get_project("cmip7")
+        assert info is not None
+        assert "test_esgvoc_dbs" in info.raw_index_url
+        assert info.raw_index_url.endswith("/cmip7.json")
+
+    def test_env_var_override_used_at_call_time(self, tmp_path, monkeypatch):
+        """ESGVOC_REGISTRY_BASE_URL is read at call time, not at import time."""
+        monkeypatch.setenv("ESGVOC_REGISTRY_BASE_URL", "https://raw.githubusercontent.com/my-fork/esgvoc_dbs/main")
+        from esgvoc.core.github_registry import get_project
+
+        info = get_project("cmip7")
+        assert "my-fork" in info.raw_index_url

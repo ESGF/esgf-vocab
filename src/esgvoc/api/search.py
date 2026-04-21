@@ -9,7 +9,6 @@ from sqlalchemy.sql.expression import Select
 from sqlalchemy.sql.selectable import ExecutableReturnsRows
 from sqlmodel import Column, Field, Session, col
 
-import esgvoc.core.service as service
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.pydantic_handler import instantiate_pydantic_term
 from esgvoc.core.db.models.project import PCollectionFTS5, PTerm, PTermFTS5
@@ -38,11 +37,19 @@ class Item(BaseModel):
 
 
 def get_universe_session() -> Session:
-    UNIVERSE_DB_CONNECTION = service.current_state.universe.db_connection
-    if UNIVERSE_DB_CONNECTION:
-        return UNIVERSE_DB_CONNECTION.create_session()
-    else:
-        raise EsgvocDbError("universe connection is not initialized")
+    from esgvoc.core.service.user_state import UserState
+    from esgvoc.core.db.connection import DBConnection
+
+    state = UserState.load()
+    active = state.get_active("universe")
+    if active:
+        db_path = UserState.db_path("universe", active)
+        if db_path.exists():
+            return DBConnection(db_path).create_session()
+    raise EsgvocDbError(
+        "Universe database is not installed or active.\n"
+        "Run: esgvoc use universe@latest"
+    )
 
 
 def instantiate_pydantic_terms(

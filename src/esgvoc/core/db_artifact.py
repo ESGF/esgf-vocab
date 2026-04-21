@@ -55,5 +55,5 @@ class DBArtifact(BaseModel):
         return self.version == "dev-latest" or self.is_prerelease
 
     def db_filename(self) -> str:
-        """Canonical filename for this artifact on disk."""
-        return f"{self.project_id}-{self.version}.db"
+        """Canonical filename for this artifact on disk (inside the project subdir)."""
+        return f"{self.version}.db"

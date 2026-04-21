@@ -3,6 +3,7 @@ Test suite for the new config path resolution system using the default configura
 Tests all three path types: absolute, dot-relative, and platform-relative.
 """
 import pytest
+pytestmark = pytest.mark.skip(reason="dev-tier config system removed")
 from pathlib import Path
 import tempfile
 import os

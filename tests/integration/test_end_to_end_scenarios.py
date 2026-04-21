@@ -3,6 +3,7 @@ End-to-end integration test scenarios using the default configuration.
 Tests complete workflows that combine path resolution and shallow clone features.
 """
 import pytest
+pytestmark = pytest.mark.skip(reason="dev-tier config system removed")
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 import tempfile

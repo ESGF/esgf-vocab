@@ -82,6 +82,7 @@ def get_state():
     return current_state
 
 
-# Singleton Access Function
-config_manager = get_config_manager()
-current_state = get_state()
+# Singletons are NOT initialized at import time.
+# Call get_config_manager() / get_state() explicitly when the dev-tier config
+# system is required (admin build context, legacy commands).
+# Normal user-tier code reads from UserState (per-project pointer files) instead.

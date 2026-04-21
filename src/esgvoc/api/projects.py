@@ -7,7 +7,6 @@ from sqlmodel import Session, and_, col, select
 
 import esgvoc.api.universe as universe
 import esgvoc.core.constants as constants
-import esgvoc.core.service as service
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
 from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.api.pydantic_handler import instantiate_pydantic_term
@@ -39,24 +38,18 @@ def _resolve_project_connection(project_id: str, version: str | None = None) -> 
     Resolve which DB connection to use for *project_id*.
 
     Resolution order:
-    1. Explicit *version* → open that specific User Tier DB file.
-    2. Active Dev Tier config → use current state's connection.
-    3. User Tier active version → open that DB file.
-    4. None (no database found for this project).
+    1. Explicit *version* → open that specific DB file.
+    2. Active version from pointer file → open that DB file.
+    3. None (no database found for this project).
     """
+    from esgvoc.core.service.user_state import UserState
+
     if version is not None:
-        from esgvoc.core.service.user_state import UserState
         db_path = UserState.db_path(project_id, version)
         if db_path.exists():
             return DBConnection(db_path)
         return None
 
-    # Dev Tier (current config system) takes priority over User Tier
-    if project_id in service.current_state.projects:
-        return service.current_state.projects[project_id].db_connection
-
-    # Fall back to User Tier active version
-    from esgvoc.core.service.user_state import UserState
     state = UserState.load()
     active = state.get_active(project_id)
     if active:
@@ -695,12 +688,14 @@ def get_all_terms_in_all_projects(
 
 def get_all_projects() -> list[str]:
     """
-    Gets all projects.
+    Gets all installed projects (those with an active database).
 
-    :returns: A list of project ids.
+    :returns: A list of project ids (excludes 'universe').
     :rtype: list[str]
     """
-    return list(service.current_state.projects.keys())
+    from esgvoc.core.service.user_state import UserState
+
+    return [pid for pid in UserState.load().all_project_ids() if pid != "universe"]
 
 
 def _get_term_in_project(term_id: str, session: Session) -> PTerm | None:
@@ -1463,48 +1458,29 @@ def get_active_database_info(project_id: str) -> dict | None:
     """
     Return information about which database is currently active for *project_id*.
 
-    Resolution order (same as the API):
-    1. Active Dev Tier config — if the project is known to the current config.
-    2. User Tier active version — if a version is active in state.json.
-
     Returns a dict with keys:
-        ``tier``     — ``'dev'`` or ``'user'``
-        ``version``  — version tag (user tier) or config name (dev tier)
+        ``version``  — active version name (e.g. 'v2.1.0', 'my-experiment')
+        ``source``   — ``'registry'`` or ``'local'``
         ``path``     — absolute path to the SQLite DB file
 
-    Returns ``None`` if no database is configured for this project.
+    Returns ``None`` if no database is active for this project.
 
     Example::
 
         import esgvoc.api as ev
         info = ev.get_active_database_info('cmip6')
-        # {'tier': 'user', 'version': 'v1.0.0', 'path': '/home/.../cmip6-v1.0.0.db'}
+        # {'version': 'v1.0.0', 'source': 'registry', 'path': '/home/.../cmip6/v1.0.0.db'}
     """
-    # Dev Tier: project known to current config system
-    if project_id in service.current_state.projects:
-        conn = service.current_state.projects[project_id].db_connection
-        if conn:
-            config_name = (
-                service.config_manager.get_active_config_name()
-                if service.config_manager is not None
-                else "unknown"
-            )
-            return {
-                "tier": "dev",
-                "version": config_name,
-                "path": str(conn.file_path),
-            }
-
-    # User Tier: active version from state.json
     from esgvoc.core.service.user_state import UserState
+
     state = UserState.load()
     active = state.get_active(project_id)
     if active:
         db_path = UserState.db_path(project_id, active)
         if db_path.exists():
             return {
-                "tier": "user",
                 "version": active,
+                "source": state.get_active_source(project_id) or "unknown",
                 "path": str(db_path),
             }
 

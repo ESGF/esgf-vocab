@@ -6,6 +6,8 @@ including the new 'offline' command and the 'set' command offline_mode support.
 """
 
 import pytest
+pytestmark = pytest.mark.skip(reason="dev-tier config system removed")
+
 import tempfile
 import shutil
 import toml

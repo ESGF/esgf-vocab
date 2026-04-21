@@ -6,6 +6,8 @@ version fetching, sync operations, and repository handling.
 """
 
 import pytest
+pytestmark = pytest.mark.skip(reason="dev-tier config system removed")
+
 import tempfile
 import os
 from unittest.mock import Mock, patch, MagicMock

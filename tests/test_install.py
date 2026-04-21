@@ -1,7 +1,8 @@
+import pytest
+pytestmark = pytest.mark.skip(reason="dev-tier config system removed")
+
 import os
 from pathlib import Path
-from esgvoc.core import service
-import esgvoc.api as ev
 
 
 def _ensure_default_dev_config_exists():

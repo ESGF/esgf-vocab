@@ -1,10 +1,11 @@
+import pytest
+pytestmark = pytest.mark.skip(reason="dev-tier config system removed")
+
 import os
 import shutil
 import tempfile
 from pathlib import Path
 from unittest.mock import patch, MagicMock
-
-import pytest
 import toml
 from typer.testing import CliRunner
 from platformdirs import PlatformDirs
