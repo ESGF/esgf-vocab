@@ -266,6 +266,9 @@ class DBBuilder:
         universe_repo: str,
         universe_ref: str,
         output_path: Path,
+        universe_version: Optional[str] = None,
+        esgvoc_min_version: Optional[str] = None,
+        esgvoc_max_version: Optional[str] = None,
     ) -> BuildResult:
         """Build a standalone universe-only database."""
         with self._temp_workspace() as tmp:
@@ -281,16 +284,17 @@ class DBBuilder:
             output_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(str(universe_db), str(output_path))
 
+            cv_ver = universe_version or "standalone"
             metadata = {
                 "project_id": "universe",
-                "cv_version": "n/a",
-                "universe_version": "standalone",
+                "cv_version": cv_ver,
+                "universe_version": cv_ver,
                 "commit_sha": universe_sha or "unknown",
                 "universe_commit_sha": universe_sha or "unknown",
                 "build_date": datetime.now(timezone.utc).isoformat(),
                 "esgvoc_version": getattr(esgvoc, "__version__", "unknown"),
-                "esgvoc_min_version": "",
-                "esgvoc_max_version": "",
+                "esgvoc_min_version": esgvoc_min_version or "",
+                "esgvoc_max_version": esgvoc_max_version or "",
             }
             self._embed_metadata(output_path, metadata)
             checksum = _sha256(output_path)
@@ -299,8 +303,8 @@ class DBBuilder:
             return BuildResult(
                 output_path=output_path,
                 project_id="universe",
-                cv_version="n/a",
-                universe_version="standalone",
+                cv_version=cv_ver,
+                universe_version=cv_ver,
                 commit_sha=universe_sha,
                 universe_commit_sha=universe_sha,
                 build_date=datetime.now(timezone.utc),

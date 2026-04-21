@@ -201,6 +201,18 @@ def build_universe(
         ..., "--output", "-o",
         help="Output .db file path.",
     ),
+    universe_version: Optional[str] = typer.Option(
+        None, "--universe-version",
+        help="Version tag to embed in metadata (e.g. 'v1.2.0', 'dev-latest').",
+    ),
+    esgvoc_min_version: Optional[str] = typer.Option(
+        None, "--esgvoc-min-version",
+        help="Minimum esgvoc version required to use this DB.",
+    ),
+    esgvoc_max_version: Optional[str] = typer.Option(
+        None, "--esgvoc-max-version",
+        help="Maximum esgvoc version compatible with this DB.",
+    ),
 ):
     """Build a standalone universe-only database."""
     from esgvoc.admin.builder import DBBuilder
@@ -211,6 +223,9 @@ def build_universe(
             universe_repo=universe_repo,
             universe_ref=universe_ref,
             output_path=output,
+            universe_version=universe_version,
+            esgvoc_min_version=esgvoc_min_version,
+            esgvoc_max_version=esgvoc_max_version,
         )
         console.print(f"\n[green]{result.summary()}[/green]")
     except Exception as e:
