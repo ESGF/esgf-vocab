@@ -79,13 +79,15 @@ path = "src/esgvoc/__init__.py"
 log_cli = true
 log_cli_level = "ERROR"
 log_cli_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-norecursedirs = ["tests/integration/data_test", ".esgvoc_share_vers"]
+norecursedirs = ["tests/integration/data_test", "tests_to_migrate", ".esgvoc_share_vers"]
 markers = [
     "integration: marks tests as integration tests",
-    "slow: marks tests as slow running",
+    "slow: marks tests as time-expensive (DB builds, large ingestion); skipped by default",
+    "needs_network: marks tests that always require live network (registry HTTP, git clone)",
+    "needs_db: marks tests that need project DB files; downloads on first run, offline after that",
     "cvtest: marks tests for CV repositories (slow, not run by default)",
 ]
-addopts = "-m 'not cvtest'"
+addopts = "-m 'not slow and not cvtest'"
 
 [tool.mypy]
 exclude = ['^tmp.*\.py']

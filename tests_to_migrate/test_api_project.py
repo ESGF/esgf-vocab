@@ -1,10 +1,12 @@
 import esgvoc.api.projects as projects
 from esgvoc.api.search import ItemKind
-from tests.api_inputs import (
+from tests_to_migrate.api_inputs import (
     DEFAULT_COLLECTION,  # noqa: F401
     DEFAULT_PROJECT,
+    GET_PARAMETERS,
     LEN_COLLECTIONS,
     LEN_PROJECTS,
+    Parameter,
     ValidationExpression,
     check_id,
     check_validation,
@@ -14,6 +16,7 @@ from tests.api_inputs import (
     get_param,
     val_query,
 )
+import pytest
 
 
 def test_get_all_projects() -> None:
@@ -24,6 +27,12 @@ def test_get_all_projects() -> None:
 def test_get_project(get_param) -> None:
     project = projects.get_project(get_param.project_id)
     check_id(project, get_param.project_id)
+
+
+@pytest.mark.parametrize("param", GET_PARAMETERS)
+def test_get_project2(param: Parameter) -> None:
+    project = projects.get_project(param.project_id)
+    check_id(project, param.project_id)
 
 
 def test_get_all_terms_in_project(get_param) -> None:
@@ -266,9 +275,7 @@ def test_get_data_descriptor_from_collection_in_project(get_param) -> None:
     else:
         expected_dd_id = get_param.data_descriptor_id
 
-    assert data_descriptor == expected_dd_id, (
-        f"Expected data descriptor '{expected_dd_id}', got '{data_descriptor}'"
-    )
+    assert data_descriptor == expected_dd_id, f"Expected data descriptor '{expected_dd_id}', got '{data_descriptor}'"
 
 
 def test_get_data_descriptor_from_collection_cmip6_institution(use_all_dev_config) -> None:
@@ -302,9 +309,7 @@ def test_get_data_descriptor_from_collection_invalid_project() -> None:
 def test_get_terms_in_collection_by_key_value_plain_term() -> None:
     """Test that get_terms_in_collection_by_key_value returns correct terms for plain terms."""
     # Test with a known plain term: institution_id/IPSL
-    terms_found = projects.get_terms_in_collection_by_key_value(
-        "cmip6plus", "institution_id", "drs_name", "IPSL"
-    )
+    terms_found = projects.get_terms_in_collection_by_key_value("cmip6plus", "institution_id", "drs_name", "IPSL")
     assert isinstance(terms_found, list)
     assert len(terms_found) == 1
     check_id(terms_found, "ipsl")
@@ -313,9 +318,7 @@ def test_get_terms_in_collection_by_key_value_plain_term() -> None:
 def test_get_terms_in_collection_by_key_value_composite_term() -> None:
     """Test that get_terms_in_collection_by_key_value works for composite terms."""
     # Test with separator key for composite terms (member_id uses "-")
-    terms_found = projects.get_terms_in_collection_by_key_value(
-        "cmip6", "member_id", "separator", "-"
-    )
+    terms_found = projects.get_terms_in_collection_by_key_value("cmip6", "member_id", "separator", "-")
     assert isinstance(terms_found, list)
     assert len(terms_found) >= 1
 
@@ -323,9 +326,7 @@ def test_get_terms_in_collection_by_key_value_composite_term() -> None:
 def test_get_terms_in_project_by_key_value_plain_term() -> None:
     """Test that get_terms_in_project_by_key_value returns correct terms for plain terms."""
     # Test with a known plain term: IPSL
-    terms_found = projects.get_terms_in_project_by_key_value(
-        "cmip6plus", "drs_name", "IPSL"
-    )
+    terms_found = projects.get_terms_in_project_by_key_value("cmip6plus", "drs_name", "IPSL")
     assert isinstance(terms_found, list)
     assert len(terms_found) >= 1
     check_id(terms_found, "ipsl")
@@ -334,9 +335,7 @@ def test_get_terms_in_project_by_key_value_plain_term() -> None:
 def test_get_terms_in_project_by_key_value_composite_term() -> None:
     """Test that get_terms_in_project_by_key_value works for composite terms."""
     # Test with separator key - should find multiple composite terms
-    terms_found = projects.get_terms_in_project_by_key_value(
-        "cmip6", "separator", "-"
-    )
+    terms_found = projects.get_terms_in_project_by_key_value("cmip6", "separator", "-")
     assert isinstance(terms_found, list)
     assert len(terms_found) >= 1
 
@@ -378,9 +377,7 @@ def test_get_terms_in_collection_by_key_value_not_found() -> None:
 
 def test_get_terms_in_project_by_key_value_not_found() -> None:
     """Test that get_terms_in_project_by_key_value returns empty list for non-existent value."""
-    terms_found = projects.get_terms_in_project_by_key_value(
-        "cmip6plus", "drs_name", "NON_EXISTENT_VALUE_12345"
-    )
+    terms_found = projects.get_terms_in_project_by_key_value("cmip6plus", "drs_name", "NON_EXISTENT_VALUE_12345")
     assert terms_found == []
 
 

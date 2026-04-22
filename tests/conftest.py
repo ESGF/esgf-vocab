@@ -1,95 +1,59 @@
-import ast
-from pathlib import Path
+"""
+Root-level pytest configuration.
+
+Markers
+-------
+needs_db        Test requires project DB files to be installed.
+                On first run (DBs absent) the `installed_dbs` session fixture
+                downloads them automatically — network required that one time.
+                On subsequent runs (DBs already present via ESGVOC_HOME) the
+                test runs fully offline.
+                Skip entirely with: pytest -m "not needs_db"
+
+needs_network   Test always hits the wire: live HTTP assertions, real registry
+                fetches, git clones from GitHub.  Cannot be satisfied by cached
+                data.
+                Skip with: pytest -m "not needs_network"
+
+slow            Test is time-expensive regardless of network (full DB builds,
+                large ingestion pipelines). Typically >10 s.
+                Skipped by default via addopts in pyproject.toml.
+                Run with: pytest -m slow
+
+needs_db vs needs_network
+    Use `needs_db`      when the test only needs the DB file present.
+    Use `needs_network` when the test must contact a live server every run
+                        (e.g. verifying the registry index, testing HTTP errors).
+    Use both together   when a test both needs a DB *and* must verify live data.
+"""
+import os
+
 import pytest
 
-# ---------------------------------------------------------------------------
-# Integration test data options
-# (options live here because pytest_addoption must be in the root conftest)
-# ---------------------------------------------------------------------------
 
-def pytest_addoption(parser: pytest.Parser) -> None:
-    group = parser.getgroup("esgvoc integration", "esgvoc integration test data options")
-    group.addoption(
-        "--reclone-test-repos",
-        action="store_true",
-        default=False,
-        help=(
-            "Delete and re-clone CV repos used by integration tests "
-            "(tests/integration/data_test/repos/). Use after upstream branch changes."
-        ),
+def pytest_configure(config):
+    # Markers are declared in pyproject.toml too; this safety-net registration
+    # ensures they work when pytest is run outside the project root.
+    config.addinivalue_line(
+        "markers",
+        "needs_db: test requires installed project DBs "
+        "(downloads on first run; offline on subsequent runs)",
     )
-    group.addoption(
-        "--rebuild-test-dbs",
-        action="store_true",
-        default=False,
-        help=(
-            "Delete and rebuild pre-built SQLite DBs used by integration tests "
-            "(tests/integration/data_test/dbs/). Use after upstream CV data changes."
-        ),
+    config.addinivalue_line("markers", "needs_network: test requires live network access every run")
+    config.addinivalue_line(
+        "markers",
+        "slow: test is time-expensive (DB builds, large ingestion); skipped by default",
     )
 
-_INSTALL_TEST_FILE_PATH = Path('tests/test_install.py')
-_CONFIG_TEST_FILE_PATH = Path('tests/test_config.py')
 
+# ---------------------------------------------------------------------------
+# Session-scoped registry URL (shared by all suites)
+# ---------------------------------------------------------------------------
 
-# Respect definition order.
-def _get_test_functions(module_path: Path) -> list[str]:
-    if not module_path.exists():
-        return []
-    with open(module_path) as file:
-        file_content = file.read()
-        result = [func.name for func in ast.parse(file_content).body \
-                  if isinstance(func, ast.FunctionDef) and 'test_' in func.name ]
-    return result
-
-
-def pytest_collection_modifyitems(session, config, items) -> None:
-    # Install tests must be the first tests so as to install dbs for the other tests.
-    # Config tests must be the last, as they erase configuration files.
-    install_test_items = list()
-    install_test_func_names = _get_test_functions(_INSTALL_TEST_FILE_PATH)
-    config_test_items = list()
-    config_test_func_names = _get_test_functions(_CONFIG_TEST_FILE_PATH)
-    for item in items:
-        for test_name in install_test_func_names:
-            if item.name.startswith(test_name):
-                install_test_items.append(item)
-        for test_name in config_test_func_names:
-            if item.name.startswith(test_name):
-                config_test_items.append(item)
-    for item in install_test_items + config_test_items:
-        items.remove(item)
-    # Insert install tests first.
-    for index in range(len(install_test_items)-1, -1, -1):
-        items.insert(0, install_test_items[index])
-    # Append config tests at the end.
-    items.extend(config_test_items)
-
-
-# ========== Configuration Management for Tests ==========
-# The dev-tier config system (ConfigManager / ServiceSettings) has been removed.
-# These fixtures are kept as no-ops for backward compat with test files that
-# haven't been updated yet.
-
-@pytest.fixture(scope="session", autouse=True)
-def save_and_restore_user_config():
-    yield
-
-
-def switch_to_config(config_name: str):
-    pass
-
-
-@pytest.fixture
-def use_default_dev_config():
-    yield
-
-
-@pytest.fixture
-def use_default_config():
-    yield
-
-
-@pytest.fixture
-def use_all_dev_config():
-    yield
+@pytest.fixture(scope="session")
+def test_registry_url() -> str:
+    """Registry base URL used for DB downloads during tests."""
+    return os.environ.get(
+        "ESGVOC_REGISTRY_BASE_URL",
+        "https://raw.githubusercontent.com/ltroussellier/test_esgvoc_dbs/main",
+    )
