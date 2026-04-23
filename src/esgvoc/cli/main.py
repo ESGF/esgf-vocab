@@ -13,10 +13,12 @@ from esgvoc.cli.offline import app as offline_app
 from esgvoc.cli.remove import app as remove_app
 from esgvoc.cli.schema import app as schema_app
 from esgvoc.cli.status import app as status_app
+from esgvoc.cli.test_cv import app as test_cv_app
 from esgvoc.cli.update import app as update_app
 from esgvoc.cli.use import app as use_app
 from esgvoc.cli.valid import app as valid_app
 from esgvoc.cli.versions import app as versions_app
+
 app = typer.Typer()
 console = Console()
 
@@ -36,6 +38,7 @@ app.add_typer(use_app)
 app.add_typer(versions_app)
 app.add_typer(remove_app)
 app.add_typer(update_app)
+app.add_typer(test_cv_app)
 
 
 @app.command()
