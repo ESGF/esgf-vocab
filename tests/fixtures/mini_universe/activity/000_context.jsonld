@@ -1,0 +1,10 @@
+{
+    "@context": {
+        "@base": "https://example.com/universe/activity/",
+        "@vocab": "http://schema.org/",
+        "id": "@id",
+        "type": "@type",
+        "description": {"@id": "https://schema.org/description"},
+        "drs_name": {"@id": "https://example.com/acronym"}
+    }
+}

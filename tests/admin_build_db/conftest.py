@@ -1,28 +1,39 @@
 """
 Fixtures for admin_build_db tests.
 
-Repo discovery
---------------
-Build tests need locally checked-out copies of the CV repositories.
-The root directory that contains them is resolved as follows:
+Tests marked ``needs_real_repos`` require locally cloned CV repositories.
+They are excluded from the default test run.
 
-  1. ESGVOC_REPOS_DIR env var (absolute path)         — explicit override
-  2. Parent directory of the project root              — default: the folder
-     that contains esgf-vocab/ alongside WCRP-universe/, CMIP6_CVs/, etc.
+How to run them
+---------------
+1.  Make sure the repos are cloned somewhere on disk (e.g. alongside this
+    project):
 
-Set ESGVOC_REPOS_DIR if your repos live somewhere else:
+        git clone https://github.com/WCRP-CMIP/WCRP-universe
+        git clone https://github.com/WCRP-CMIP/CMIP6_CVs
+        git clone https://github.com/WCRP-CMIP/CMIP7_CVs
 
-  bash / zsh:
-    export ESGVOC_REPOS_DIR=/path/to/your/repos
+2.  Point ESGVOC_REPOS_DIR at the directory that *contains* them
+    (defaults to the parent folder of the esgf-vocab checkout, so if
+    your repos sit alongside esgf-vocab/ you don't need to set it):
 
-  fish:
-    set -x ESGVOC_REPOS_DIR /path/to/your/repos
+        export ESGVOC_REPOS_DIR=/path/to/your/repos   # bash / zsh
+        set -x ESGVOC_REPOS_DIR /path/to/your/repos   # fish
 
-Expected layout inside the repos directory:
-    <repos_dir>/
-    ├── WCRP-universe/
-    ├── CMIP6_CVs/
-    └── ...
+    Expected layout:
+        <ESGVOC_REPOS_DIR>/
+        ├── WCRP-universe/
+        ├── CMIP6_CVs/
+        └── CMIP7_CVs/          (or whatever project repos you need)
+
+3.  Run with the marker:
+
+        uv run pytest -m needs_real_repos tests/admin_build_db/
+
+    These tests are also marked ``slow`` (~15 s each), so the following
+    runs both:
+
+        uv run pytest -m "needs_real_repos or slow" tests/admin_build_db/
 """
 from __future__ import annotations
 
@@ -62,16 +73,39 @@ def cmip6_cvs_repo_path(repos_dir) -> Path:
 
 
 @pytest.fixture(scope="session")
+def cmip7_cvs_repo_path(repos_dir) -> Path:
+    return repos_dir / "CMIP7_CVs"
+
+
+@pytest.fixture(scope="session")
 def local_repos_available(universe_repo_path, cmip6_cvs_repo_path) -> bool:
-    """True if both expected repo directories exist."""
+    """True if both WCRP-universe and CMIP6_CVs directories exist."""
     return universe_repo_path.exists() and cmip6_cvs_repo_path.exists()
+
+
+@pytest.fixture(scope="session")
+def local_repos_cmip7_available(universe_repo_path, cmip7_cvs_repo_path) -> bool:
+    """True if both WCRP-universe and CMIP7_CVs directories exist."""
+    return universe_repo_path.exists() and cmip7_cvs_repo_path.exists()
 
 
 @pytest.fixture
 def skip_if_no_local_repos(local_repos_available, repos_dir):
+    """Skip the test if WCRP-universe or CMIP6_CVs are not found."""
     if not local_repos_available:
         pytest.skip(
-            f"Local CV repos not found in {repos_dir}. "
-            f"Clone WCRP-universe and CMIP6_CVs there, "
-            f"or set ESGVOC_REPOS_DIR to point to the directory that contains them."
+            f"Local CV repos not found in {repos_dir}.\n"
+            "Clone WCRP-universe and CMIP6_CVs there, or set ESGVOC_REPOS_DIR.\n"
+            "See tests/admin_build_db/conftest.py for full instructions."
+        )
+
+
+@pytest.fixture
+def skip_if_no_cmip7_repos(local_repos_cmip7_available, repos_dir):
+    """Skip the test if WCRP-universe or CMIP7_CVs are not found."""
+    if not local_repos_cmip7_available:
+        pytest.skip(
+            f"Local CV repos not found in {repos_dir}.\n"
+            "Clone WCRP-universe and CMIP7_CVs there, or set ESGVOC_REPOS_DIR.\n"
+            "See tests/admin_build_db/conftest.py for full instructions."
         )

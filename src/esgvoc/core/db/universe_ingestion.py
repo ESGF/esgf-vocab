@@ -8,7 +8,6 @@ from sqlmodel import Session, select
 
 import esgvoc.core.constants
 import esgvoc.core.db.connection as db
-import esgvoc.core.service as service
 from esgvoc.core.data_handler import JsonLdResource
 from esgvoc.core.db.connection import read_json_file
 from esgvoc.core.db.models.mixins import TermKind
@@ -48,7 +47,7 @@ def ingest_universe(
             data_descriptor_dir_path.is_dir() and (data_descriptor_dir_path / "000_context.jsonld").exists()
         ):  # TODO may be put that in setting
             try:
-                ingest_data_descriptor(data_descriptor_dir_path, connection, missing_links_tracker)
+                ingest_data_descriptor(data_descriptor_dir_path, connection, str(universe_repo_dir_path), missing_links_tracker)
             except Exception as e:
                 msg = f"unexpected error while processing data descriptor {data_descriptor_dir_path}"
                 _LOGGER.fatal(msg)
@@ -91,6 +90,7 @@ def ingest_metadata_universe(connection, git_hash):
 def ingest_data_descriptor(
     data_descriptor_path: Path,
     connection: db.DBConnection,
+    universe_local_path: str,
     missing_links_tracker: Optional["MissingLinksTracker"] = None,
 ) -> None:
     from esgvoc.core.service.resolver_config import ResolverConfig
@@ -116,7 +116,7 @@ def ingest_data_descriptor(
             if term_file_path.is_file() and term_file_path.suffix == ".json":
                 try:
                     locally_available = {
-                        "https://esgvoc.ipsl.fr/resource/universe": service.current_state.universe.local_path
+                        "https://esgvoc.ipsl.fr/resource/universe": universe_local_path
                     }
 
                     # Create config with tracker if available
@@ -136,7 +136,7 @@ def ingest_data_descriptor(
                     # Use resolve_merged_ids to properly handle merged data with correct context
                     json_specs = merger.resolve_merged_ids(
                         merged_data,
-                        context_base_path=service.current_state.universe.local_path
+                        context_base_path=universe_local_path
                     )
 
                     term_kind = infer_term_kind(json_specs)

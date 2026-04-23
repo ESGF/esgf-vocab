@@ -12,12 +12,6 @@ The build pipeline:
   4. Embed build metadata in _esgvoc_metadata table
   5. Compute SHA-256 checksum of the final file
   6. Return BuildResult
-
-Service-state injection:
-  The existing ingestion code reads `service.current_state.universe.local_path`
-  to resolve JSON-LD @id references. The `_admin_context` context manager
-  temporarily overrides the global service state so ingestion can run outside
-  of a full esgvoc installation.
 """
 
 from __future__ import annotations
@@ -31,7 +25,6 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Optional
 
 import esgvoc
@@ -415,8 +408,7 @@ class DBBuilder:
         ingest_metadata_universe(conn, universe_sha or "unknown")
 
         tracker = MissingLinksTracker() if self.fail_on_missing_links else None
-        with _admin_context(universe_local_path=str(universe_path)):
-            ingest_universe(universe_path, universe_db, tracker)
+        ingest_universe(universe_path, universe_db, tracker)
 
         if tracker and tracker.has_missing_links():
             tracker.print_summary()
@@ -445,11 +437,7 @@ class DBBuilder:
         # is no prior row — which is what the API expects (SQLITE_FIRST_PK = 1).
 
         tracker = MissingLinksTracker() if self.fail_on_missing_links else None
-        with _admin_context(
-            universe_local_path=str(universe_path),
-            universe_db_path=str(universe_db),
-        ):
-            ingest_project(project_path, project_db, project_sha or "unknown", tracker)
+        ingest_project(project_path, project_db, project_sha or "unknown", str(universe_path), tracker)
 
         if tracker and tracker.has_missing_links():
             tracker.print_summary()
@@ -464,13 +452,16 @@ class DBBuilder:
         """Write key-value build metadata into _esgvoc_metadata table."""
         import sqlite3
 
-        with sqlite3.connect(str(db_path)) as conn:
+        conn = sqlite3.connect(str(db_path))
+        try:
             conn.execute("CREATE TABLE IF NOT EXISTS _esgvoc_metadata (key TEXT PRIMARY KEY NOT NULL, value TEXT)")
             conn.executemany(
                 "INSERT OR REPLACE INTO _esgvoc_metadata (key, value) VALUES (?, ?)",
                 list(metadata.items()),
             )
             conn.commit()
+        finally:
+            conn.close()
 
     # ------------------------------------------------------------------
     # Git helpers
@@ -527,34 +518,6 @@ class DBBuilder:
 # ------------------------------------------------------------------
 # Service-state injection context manager
 # ------------------------------------------------------------------
-
-#
-@contextmanager
-def _admin_context(
-    universe_local_path: str,
-    universe_db_path: Optional[str] = None,
-):
-    """
-    Temporarily override service.current_state so ingestion functions
-    can access universe.local_path without a full esgvoc installation.
-
-    This is necessary because universe_ingestion.py and project_ingestion.py
-    read `service.current_state.universe.local_path` to resolve JSON-LD @id
-    references during ingestion.
-    """
-    import esgvoc.core.service as svc
-
-    original = svc.current_state
-
-    fake_universe = SimpleNamespace(local_path=universe_local_path)
-    fake_state = SimpleNamespace(universe=fake_universe)
-
-    svc.current_state = fake_state
-    try:
-        yield
-    finally:
-        svc.current_state = original
-
 
 # ------------------------------------------------------------------
 # Module-level helpers
