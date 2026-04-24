@@ -13,7 +13,6 @@ Example esgvoc_manifest.yaml:
     universe_version: "1.2.0"
     esgvoc:
       min_version: "1.5.0"
-      max_version: null
     release_notes: |
       - Added new institution: EXAMPLE-ORG
 """
@@ -36,7 +35,6 @@ class ProjectMeta(BaseModel):
 
 class EsgvocCompat(BaseModel):
     min_version: Optional[str] = None
-    max_version: Optional[str] = None
 
 
 class Manifest(BaseModel):

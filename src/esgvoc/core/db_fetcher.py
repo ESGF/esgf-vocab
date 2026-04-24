@@ -203,14 +203,6 @@ class DBFetcher:
                     f"Run: pip install --upgrade esgvoc"
                 )
 
-        if artifact.esgvoc_max_version:
-            max_v = _parse_version(artifact.esgvoc_max_version)
-            if max_v is not None and installed >= max_v:
-                return False, (
-                    f"Warning: {artifact.project_id}@{artifact.version} was built for esgvoc < {artifact.esgvoc_max_version}.\n"
-                    f"You have esgvoc {installed_str}. Some features may not work correctly."
-                )
-
         return True, ""
 
     # ------------------------------------------------------------------
@@ -317,7 +309,6 @@ class DBFetcher:
                     is_prerelease=release.get("is_prerelease", False),
                     universe_version=release.get("universe_version"),
                     esgvoc_min_version=release.get("esgvoc_min_version"),
-                    esgvoc_max_version=release.get("esgvoc_max_version"),
                 ))
             except Exception as e:
                 logger.warning(f"Skipping malformed release entry for '{info.project_id}': {e}")

@@ -27,9 +27,6 @@ class DBArtifact(BaseModel):
     esgvoc_min_version: Optional[str] = None
     """Minimum esgvoc version required to use this DB."""
 
-    esgvoc_max_version: Optional[str] = None
-    """Maximum esgvoc version compatible with this DB (None = no upper bound)."""
-
     published_at: Optional[datetime] = None
     """When this release was published on GitHub."""
 

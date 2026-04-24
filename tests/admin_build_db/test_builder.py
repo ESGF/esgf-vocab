@@ -599,7 +599,6 @@ class TestRunBuildManifestOverrides:
                     "cv_version": "9.9",
                     "universe_version": "8.8",
                     "esgvoc_min_version": "0.5",
-                    "esgvoc_max_version": "1.5",
                 },
             )
         assert result.project_id == "myproject"
@@ -612,7 +611,6 @@ class TestRunBuildManifestOverrides:
         assert rows["cv_version"] == "9.9"
         assert rows["universe_version"] == "8.8"
         assert rows["esgvoc_min_version"] == "0.5"
-        assert rows["esgvoc_max_version"] == "1.5"
 
     def test_partial_overrides_only_change_specified_fields(self, tmp_path):
         builder = self._make_mocked_builder(tmp_path)

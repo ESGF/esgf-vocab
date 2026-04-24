@@ -77,11 +77,7 @@ def build(
     ),
     esgvoc_min_version: Optional[str] = typer.Option(
         None, "--esgvoc-min-version",
-        help="Override esgvoc compatibility min_version.",
-    ),
-    esgvoc_max_version: Optional[str] = typer.Option(
-        None, "--esgvoc-max-version",
-        help="Override esgvoc compatibility max_version.",
+        help="Override esgvoc compatibility min_version (default: current esgvoc version).",
     ),
     validate: bool = typer.Option(
         False, "--validate",
@@ -121,8 +117,6 @@ def build(
         manifest_overrides["universe_version"] = universe_version
     if esgvoc_min_version:
         manifest_overrides["esgvoc_min_version"] = esgvoc_min_version
-    if esgvoc_max_version:
-        manifest_overrides["esgvoc_max_version"] = esgvoc_max_version
 
     try:
         if project_path is not None and universe_path is not None:
@@ -207,11 +201,7 @@ def build_universe(
     ),
     esgvoc_min_version: Optional[str] = typer.Option(
         None, "--esgvoc-min-version",
-        help="Minimum esgvoc version required to use this DB.",
-    ),
-    esgvoc_max_version: Optional[str] = typer.Option(
-        None, "--esgvoc-max-version",
-        help="Maximum esgvoc version compatible with this DB.",
+        help="Override esgvoc compatibility min_version (default: current esgvoc version).",
     ),
 ):
     """Build a standalone universe-only database."""
@@ -225,7 +215,6 @@ def build_universe(
             output_path=output,
             universe_version=universe_version,
             esgvoc_min_version=esgvoc_min_version,
-            esgvoc_max_version=esgvoc_max_version,
         )
         console.print(f"\n[green]{result.summary()}[/green]")
     except Exception as e:

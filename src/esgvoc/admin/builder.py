@@ -115,7 +115,7 @@ class DBBuilder:
             Where to write the final .db file.
         manifest_overrides:
             Dict of manifest field overrides (project_id, cv_version,
-            universe_version, esgvoc_min_version, esgvoc_max_version).
+            universe_version, esgvoc_min_version).
             These take precedence over esgvoc_manifest.yaml if present.
         validate:
             If True, run DBValidator.validate() on the result.
@@ -261,7 +261,6 @@ class DBBuilder:
         output_path: Path,
         universe_version: Optional[str] = None,
         esgvoc_min_version: Optional[str] = None,
-        esgvoc_max_version: Optional[str] = None,
     ) -> BuildResult:
         """Build a standalone universe-only database."""
         with self._temp_workspace() as tmp:
@@ -277,6 +276,7 @@ class DBBuilder:
             output_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(str(universe_db), str(output_path))
 
+            esgvoc_version = getattr(esgvoc, "__version__", "unknown")
             cv_ver = universe_version or "standalone"
             metadata = {
                 "project_id": "universe",
@@ -285,9 +285,8 @@ class DBBuilder:
                 "commit_sha": universe_sha or "unknown",
                 "universe_commit_sha": universe_sha or "unknown",
                 "build_date": datetime.now(timezone.utc).isoformat(),
-                "esgvoc_version": getattr(esgvoc, "__version__", "unknown"),
-                "esgvoc_min_version": esgvoc_min_version or "",
-                "esgvoc_max_version": esgvoc_max_version or "",
+                "esgvoc_version": esgvoc_version,
+                "esgvoc_min_version": esgvoc_min_version or esgvoc_version,
             }
             self._embed_metadata(output_path, metadata)
             checksum = _sha256(output_path)
@@ -335,8 +334,6 @@ class DBBuilder:
                 manifest.universe_version = manifest_overrides["universe_version"]
             if "esgvoc_min_version" in manifest_overrides:
                 manifest.esgvoc.min_version = manifest_overrides["esgvoc_min_version"]
-            if "esgvoc_max_version" in manifest_overrides:
-                manifest.esgvoc.max_version = manifest_overrides["esgvoc_max_version"]
         self._log(f"Project: {manifest.project.id} cv_version={manifest.cv_version}")
 
         universe_db = tmp / "universe.db"
@@ -371,8 +368,7 @@ class DBBuilder:
             "universe_commit_sha": universe_sha or "unknown",
             "build_date": build_date.isoformat(),
             "esgvoc_version": esgvoc_version,
-            "esgvoc_min_version": manifest.esgvoc.min_version or "",
-            "esgvoc_max_version": manifest.esgvoc.max_version or "",
+            "esgvoc_min_version": manifest.esgvoc.min_version or esgvoc_version,
         }
         self._embed_metadata(output_path, metadata)
 

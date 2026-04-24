@@ -24,7 +24,6 @@ class TestDBArtifactBasics:
             version="v1.0.0",
             universe_version="v1.0.0",
             esgvoc_min_version="0.5.0",
-            esgvoc_max_version="2.0.0",
             published_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
             size_bytes=1024 * 1024,
             checksum_sha256="abc123def456",
