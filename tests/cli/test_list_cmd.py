@@ -10,7 +10,7 @@ from .conftest import runner
 
 class TestListCommand:
     def test_list_no_projects(self):
-        result = runner.invoke(list_app, [])
+        result = runner.invoke(list_app, ["list"])
         assert result.exit_code == 0
         assert "No projects installed" in result.output
 
@@ -20,7 +20,7 @@ class TestListCommand:
         state = UserState.load()
         state.set_active("universe", "v1.0.0")
 
-        result = runner.invoke(list_app, ["universe"])
+        result = runner.invoke(list_app, ["list", "universe"])
         assert result.exit_code == 0
         assert "v1.0.0" in result.output
 
@@ -31,7 +31,7 @@ class TestListCommand:
         state = UserState.load()
         state.set_active("cmip7", "v2.0.0")
 
-        result = runner.invoke(list_app, ["cmip7"])
+        result = runner.invoke(list_app, ["list", "cmip7"])
         assert result.exit_code == 0
         assert "active" in result.output.lower()
 
@@ -45,7 +45,7 @@ class TestListCommand:
         mock_fetcher.list_versions.return_value = ["v2.0.0", "v1.0.0"]
 
         with patch("esgvoc.core.db_fetcher.DBFetcher", return_value=mock_fetcher):
-            result = runner.invoke(list_app, ["universe", "--available"])
+            result = runner.invoke(list_app, ["list", "universe", "--available"])
 
         assert result.exit_code == 0
         assert "v2.0.0" in result.output
@@ -56,7 +56,7 @@ class TestListCommand:
             make_db(UserState.db_path(pid, "v1.0.0"), pid)
             UserState.load().set_active(pid, "v1.0.0")
 
-        result = runner.invoke(list_app, [])
+        result = runner.invoke(list_app, ["list"])
         assert result.exit_code == 0
         assert "universe" in result.output
         assert "cmip7" in result.output
