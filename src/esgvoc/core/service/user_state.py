@@ -39,6 +39,7 @@ Environment variables honoured:
 from __future__ import annotations
 
 import json
+import logging
 import os
 import shutil
 import tempfile
@@ -46,6 +47,8 @@ from pathlib import Path
 from typing import Optional
 
 from esgvoc.core.service.configuration.home import EsgvocHome
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def _dbs_dir() -> Path:
@@ -143,7 +146,8 @@ class UserState:
         try:
             data = json.loads(pointer.read_text())
             return data.get("active")
-        except Exception:
+        except Exception as e:
+            _LOGGER.warning("Corrupt pointer file %s: %s", pointer, e)
             return None
 
     def get_active_source(self, project_id: str) -> Optional[str]:
@@ -154,7 +158,8 @@ class UserState:
         try:
             data = json.loads(pointer.read_text())
             return data.get("source")
-        except Exception:
+        except Exception as e:
+            _LOGGER.warning("Corrupt pointer file %s: %s", pointer, e)
             return None
 
     def get_active_checksum(self, project_id: str) -> Optional[str]:
@@ -165,7 +170,8 @@ class UserState:
         try:
             data = json.loads(pointer.read_text())
             return data.get("checksum")
-        except Exception:
+        except Exception as e:
+            _LOGGER.warning("Corrupt pointer file %s: %s", pointer, e)
             return None
 
     def set_active(

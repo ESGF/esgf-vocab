@@ -15,6 +15,7 @@ Environment variables honoured:
 from __future__ import annotations
 
 import hashlib
+import logging
 import os
 import sqlite3
 from dataclasses import dataclass
@@ -22,6 +23,8 @@ from pathlib import Path
 from typing import Optional
 
 import requests
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class PublishError(RuntimeError):
@@ -361,7 +364,8 @@ def _read_db_metadata(db_path: Path) -> dict[str, str]:
         rows = conn.execute("SELECT key, value FROM _esgvoc_metadata").fetchall()
         conn.close()
         return dict(rows)
-    except Exception:
+    except Exception as e:
+        _LOGGER.debug("Could not read metadata from %s: %s", db_path, e)
         return {}
 
 

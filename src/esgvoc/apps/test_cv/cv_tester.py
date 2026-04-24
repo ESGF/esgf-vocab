@@ -15,6 +15,7 @@ This application allows testing of project CVs and Universe CVs with support for
 """
 
 import json
+import logging
 import os
 import shutil
 import sys
@@ -24,6 +25,8 @@ from typing import List
 
 from pydantic import ValidationError
 from rich.console import Console
+
+_LOGGER = logging.getLogger(__name__)
 
 import esgvoc.core.service as service
 from esgvoc.core.service.configuration.setting import (
@@ -772,7 +775,8 @@ class CVTester:
                             for line in formatted_json.split("\n"):
                                 console.print(f"    {line}")
                             break
-                    except Exception:
+                    except Exception as e:
+                        _LOGGER.debug("Could not inspect term file %s: %s", json_file, e)
                         continue
                 else:
                     console.print(f"  [dim]No file found containing term ID '{term_id}'[/dim]")
@@ -942,8 +946,8 @@ class CVTester:
                                         console.print(
                                             f"    [dim]• Case mismatch found: {casing_matches[0]} vs {term_id}.json[/dim]"
                                         )
-                        except Exception:
-                            pass
+                        except Exception as e:
+                            _LOGGER.debug("Could not check casing for %s: %s", term_id, e)
             else:
                 console.print(f"  [yellow]⚠️  Universe path not available[/yellow]")
         except Exception as e:
@@ -1075,7 +1079,8 @@ class CVTester:
                         filename_id_mismatches.append(
                             {"file": term_file.name, "expected_id": expected_id, "actual_id": actual_id}
                         )
-                except Exception:
+                except Exception as e:
+                    _LOGGER.debug("Could not inspect term file %s: %s", term_file, e)
                     continue
 
             if filename_id_mismatches:

@@ -11,6 +11,7 @@ Commands:
 
 from __future__ import annotations
 
+import logging
 import re
 import shutil
 import sqlite3
@@ -28,6 +29,7 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 console = Console()
+_LOGGER = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -308,14 +310,16 @@ def diff(
                     "SELECT key, value FROM _esgvoc_metadata"
                 ).fetchall()
                 return dict(rows)
-        except Exception:
+        except Exception as e:
+            _LOGGER.debug("Could not read metadata from %s: %s", path, e)
             return {}
 
     def count_rows(path: Path, table: str) -> int:
         try:
             with sqlite3.connect(f"file:{path}?mode=ro", uri=True) as conn:
                 return conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
-        except Exception:
+        except Exception as e:
+            _LOGGER.debug("Could not count rows in %s.%s: %s", path, table, e)
             return -1
 
     if not baseline.exists():

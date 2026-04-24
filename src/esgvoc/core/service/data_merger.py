@@ -634,8 +634,8 @@ class DataMerger:
                 try:
                     with open(fallback_context_file, "r", encoding="utf-8") as f:
                         merged_context = json.load(f)
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.warning("Failed to load fallback context %s: %s", fallback_context_file, e)
 
         # Overlay primary context (project - may have project-specific overrides)
         if primary_context_dir.exists():
@@ -646,8 +646,8 @@ class DataMerger:
                         primary_context = json.load(f)
                         # Deep merge: project overrides universe for matching keys
                         merged_context = self._deep_merge_contexts(merged_context, primary_context)
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.warning("Failed to load primary context %s: %s", primary_context_file, e)
 
         # Determine which directory to use for temp file
         # Prefer primary if it exists, otherwise fallback

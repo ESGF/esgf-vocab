@@ -140,7 +140,8 @@ class VersionChecker:
         except ImportError:
             # Fallback: simple string comparison for semver
             return self._simple_version_compare(latest_version)
-        except Exception:
+        except Exception as e:
+            logger.debug("Version comparison failed for %s: %s", latest_version, e)
             return False
 
     def _simple_version_compare(self, latest_version: str) -> bool:

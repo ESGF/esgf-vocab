@@ -17,6 +17,7 @@ The build pipeline:
 from __future__ import annotations
 
 import hashlib
+import logging
 import os
 import shutil
 import subprocess
@@ -28,6 +29,8 @@ from pathlib import Path
 from typing import Optional
 
 import esgvoc
+
+_LOGGER = logging.getLogger(__name__)
 from esgvoc.admin.manifest import Manifest
 from esgvoc.core.service.missing_links import MissingLinksTracker
 
@@ -489,7 +492,8 @@ class DBBuilder:
                 check=True,
             )
             return result.stdout.strip()
-        except Exception:
+        except Exception as e:
+            _LOGGER.debug("Could not resolve git HEAD for %s: %s", repo_path, e)
             return None
 
     # ------------------------------------------------------------------

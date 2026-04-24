@@ -7,7 +7,7 @@ from rich.console import Console
 from rich.json import JSON
 from rich.table import Table
 
-from esgvoc.cli.syntax_util import validate_key_format
+from esgvoc.cli.syntax_util import handle_unknown, validate_key_format
 from esgvoc.api.projects import (
     find_collections_in_project,
     find_items_in_project,
@@ -60,9 +60,6 @@ def handle_project(expression: str, project_id: str, collection_id: str | None, 
             return res
         # dict[str, dict]:
 
-
-def handle_unknown(x: str | None, y: str | None, z: str | None):
-    print(f"Something wrong in X,Y or Z : X={x}, Y={y}, Z={z}")
 
 
 def display(data: Any):

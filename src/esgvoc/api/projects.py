@@ -1,4 +1,5 @@
 import itertools
+import logging
 import re
 from typing import Iterable, Sequence, cast
 
@@ -11,6 +12,8 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDesc
 from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.api.pydantic_handler import instantiate_pydantic_term
 from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
+_LOGGER = logging.getLogger(__name__)
+
 from esgvoc.api.search import (
     Item,
     MatchingTerm,
@@ -959,7 +962,8 @@ def get_project(project_id: str, version: str | None = None) -> ProjectSpecs | N
                 ).first()
                 version_str = meta_row[0] if meta_row else project.git_hash
                 result = ProjectSpecs(**project.specs, version=version_str)  # type: ignore
-            except Exception:
+            except Exception as e:
+                _LOGGER.debug("Could not build ProjectSpecs for %s: %s", project, e)
                 result = None
     return result
 
@@ -1023,7 +1027,8 @@ def _get_data_descriptor_from_collection_in_project(collection_id: str, session:
     statement = select(PCollection.data_descriptor_id).where(PCollection.id == collection_id)
     try:
         result = session.exec(statement).one()
-    except Exception:
+    except Exception as e:
+        _LOGGER.debug("Could not resolve data_descriptor for collection %s: %s", collection_id, e)
         result = None
     return result
 
