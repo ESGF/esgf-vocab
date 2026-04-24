@@ -42,16 +42,7 @@ tests/integration/data_test/
 .python-version
 
 # Dev/scratch docs and notes
-EMD_conformance.md
-TODO_DOC.md
-WORKFLOW.md
-config_system.md
-data_spec_version_plan.md
-plan_problems.md
-versionning_plan.md
-versionning_plan2.md
-versionnning_plan_proposition.md
-versionnning_plan_proposition_go.md
+md_dir/
 
 # Dev/scratch scripts and data
 explore_api.py

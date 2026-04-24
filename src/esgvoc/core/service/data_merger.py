@@ -1,4 +1,5 @@
 import logging
+import warnings
 from typing import Dict, List, Set
 
 from esgvoc.core.data_handler import JsonLdResource
@@ -726,8 +727,6 @@ class DataMerger:
 
 
 if __name__ == "__main__":
-    import warnings
-
     warnings.simplefilter("ignore")
 
     # test from institution_id ipsl exapnd and merge with institution ipsl

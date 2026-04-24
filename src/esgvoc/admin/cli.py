@@ -12,6 +12,7 @@ Commands:
 from __future__ import annotations
 
 import re
+import shutil
 import sqlite3
 import sys
 from pathlib import Path
@@ -426,8 +427,6 @@ def admin_install(
     After installing, activate with:
       esgvoc use cmip7@my-experiment
     """
-    import shutil as _shutil
-
     if not db_path.exists():
         console.print(f"[red]DB file not found:[/red] {db_path}")
         raise typer.Exit(1)
@@ -444,7 +443,7 @@ def admin_install(
     target = UserState.db_path(project_id, name)
     target.parent.mkdir(parents=True, exist_ok=True)
 
-    _shutil.copy2(str(db_path), str(target))
+    shutil.copy2(str(db_path), str(target))
     console.print(
         f"[green]Installed:[/green] {project_id}@{name}\n"
         f"  Source: {db_path}\n"

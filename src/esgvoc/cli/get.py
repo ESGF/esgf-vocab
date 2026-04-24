@@ -1,5 +1,4 @@
 import logging
-import re
 from typing import Any, List, Optional
 
 import typer
@@ -8,6 +7,7 @@ from rich.console import Console
 from rich.json import JSON
 from rich.table import Table
 
+from esgvoc.cli.syntax_util import validate_key_format
 from esgvoc.api.projects import (
     get_all_collections_in_project,
     get_all_projects,
@@ -27,14 +27,6 @@ console = Console()
 
 _LOGGER = logging.getLogger(__name__)
 
-
-def validate_key_format(key: str):
-    """
-    Validate if the key matches the XXXX:YYYY:ZZZZ format.
-    """
-    if not re.match(r"^[a-zA-Z0-9\/_-]*:[a-zA-Z0-9\/_-]*:[a-zA-Z0-9\/_.-]*$", key):
-        raise typer.BadParameter(f"Invalid key format: {key}. Must be XXXX:YYYY:ZZZZ.")
-    return key.split(":")
 
 
 def handle_universe(data_descriptor_id: str | None, term_id: str | None, options=None):

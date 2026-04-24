@@ -1,4 +1,5 @@
 import logging
+import os
 import traceback
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
@@ -185,8 +186,6 @@ def get_universe_term(data_descriptor_id: str, term_id: str, universe_db_session
 
 
 if __name__ == "__main__":
-    import os
-
     root_dir = Path(str(os.getcwd())).parent.parent
     print(root_dir)
     universe_create_db(root_dir / Path(".cache/dbs/universe.sqlite"))

@@ -7,6 +7,7 @@ on PyPI and notify users when updates are available.
 
 import json
 import logging
+import os
 import sys
 import threading
 import warnings
@@ -47,8 +48,6 @@ class VersionChecker:
         reminder_interval_hours: int = 72,
         enabled: bool = True,
     ):
-        import os
-
         from esgvoc import __version__
 
         self.cache_dir = cache_dir

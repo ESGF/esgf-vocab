@@ -16,7 +16,9 @@ This application allows testing of project CVs and Universe CVs with support for
 
 import json
 import os
+import shutil
 import sys
+import traceback
 from pathlib import Path
 from typing import List
 
@@ -149,7 +151,6 @@ class CVTester:
             }
 
             # Clean up old test_cv_temp data directories (repos and dbs) to ensure fresh start
-            import shutil
             test_data_dir = self.config_manager.data_dir / self.test_config_name
             if test_data_dir.exists():
                 console.print(f"[yellow]Cleaning up old test data directories...[/yellow]")
@@ -206,8 +207,6 @@ class CVTester:
 
         except Exception as e:
             console.print(f"[red]❌ Configuration failed: {e}[/red]")
-            import traceback
-
             console.print(traceback.format_exc())
             return False
 
@@ -252,8 +251,6 @@ class CVTester:
             return True
         except Exception as e:
             console.print(f"[red]❌ CV synchronization failed: {e}[/red]")
-            import traceback
-
             console.print(traceback.format_exc())
             return False
 
@@ -1499,7 +1496,6 @@ class CVTester:
                 service.current_state = service.get_state()
 
                 # Clean up test_cv_temp data directories (repos and dbs)
-                import shutil
                 test_data_dir = self.config_manager.data_dir / self.test_config_name
                 if test_data_dir.exists():
                     console.print(f"[blue]Cleaning up test data directories...[/blue]")

@@ -5,6 +5,7 @@ This creates the nested JSON structure organized by CF Standard Name and Variabl
 """
 
 import json
+import traceback
 from vr_app import VRApp
 
 
@@ -65,7 +66,5 @@ if __name__ == "__main__":
         build_variable_registry()
     except Exception as e:
         print(f"Error building variable registry: {e}")
-        import traceback
-
         traceback.print_exc()
 
