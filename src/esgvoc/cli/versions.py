@@ -1,7 +1,8 @@
 """
-esgvoc list [project]
+esgvoc list / list-remote commands.
 
-List installed (and optionally available) versions for User Tier projects.
+- list          : installed versions (optionally with remote)
+- list-remote   : full registry metadata for available versions
 """
 
 from __future__ import annotations
@@ -14,6 +15,11 @@ from rich.table import Table
 
 app = typer.Typer()
 console = Console()
+
+_KNOWN_PROJECTS = [
+    "universe", "cmip7", "cmip6", "cmip6plus",
+    "input4mips", "obs4ref", "cordex-cmip6", "cordex-cmip5", "emd",
+]
 
 
 @app.command(name="list")
@@ -68,4 +74,78 @@ def list_versions(
             except Exception as e:
                 console.print(f"[yellow]Could not fetch remote versions: {e}[/yellow]")
 
+        console.print(table)
+
+
+@app.command(name="list-remote")
+def list_remote(
+    project_id: Optional[str] = typer.Argument(
+        None,
+        help="Project to inspect (e.g. 'cmip7'). If omitted, lists all known projects.",
+    ),
+    prerelease: bool = typer.Option(
+        False, "--pre", help="Include pre-release / dev-latest versions.",
+    ),
+):
+    """Show all versions available in the registry with full metadata."""
+    import esgvoc
+    from esgvoc.core.db_fetcher import DBFetcher, EsgvocNetworkError, EsgvocVersionNotFoundError
+    from esgvoc.core.service.configuration.home import EsgvocHome
+    from esgvoc.core.service.user_state import UserState
+
+    fetcher = DBFetcher(cache_dir=EsgvocHome.resolve().user_cache_dir)
+    state = UserState.load()
+    installed_esgvoc = getattr(esgvoc, "__version__", None)
+
+    projects = [project_id] if project_id else _KNOWN_PROJECTS
+
+    for pid in projects:
+        try:
+            artifacts = fetcher._fetch_releases(pid)
+        except EsgvocVersionNotFoundError:
+            console.print(f"[dim]{pid}: no registry index found[/dim]")
+            continue
+        except EsgvocNetworkError as e:
+            console.print(f"[red]{pid}: network error — {e}[/red]")
+            continue
+
+        if not prerelease:
+            artifacts = [a for a in artifacts if not a.is_prerelease]
+
+        if not artifacts:
+            console.print(f"[dim]{pid}: no releases found[/dim]")
+            continue
+
+        installed = set(state.get_installed(pid))
+        active = state.get_active(pid)
+
+        table = Table(title=f"[cyan]{pid}[/cyan]", show_header=True, header_style="bold")
+        table.add_column("Version")
+        table.add_column("Published", style="dim")
+        table.add_column("Size")
+        table.add_column("Universe")
+        table.add_column("Min esgvoc")
+        table.add_column("Compat")
+        table.add_column("Local")
+
+        for a in artifacts:
+            published = a.published_at.strftime("%Y-%m-%d") if a.published_at else "—"
+            size = f"{a.size_bytes / 1_048_576:.1f} MB" if a.size_bytes else "—"
+            universe = a.universe_version or "—"
+            min_v = a.esgvoc_min_version or "—"
+
+            compat, _ = fetcher.check_compatibility(a)
+            compat_cell = "[green]✓[/green]" if compat else "[red]✗[/red]"
+
+            if a.version == active:
+                local = "[bold green]active[/bold green]"
+            elif a.version in installed:
+                local = "installed"
+            else:
+                local = "[dim]—[/dim]"
+
+            table.add_row(a.version, published, size, universe, min_v, compat_cell, local)
+
+        if installed_esgvoc:
+            console.print(f"[dim]Compatibility checked against installed esgvoc {installed_esgvoc}[/dim]")
         console.print(table)
