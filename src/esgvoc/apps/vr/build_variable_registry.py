@@ -4,8 +4,8 @@ Script to build the variable registry structure from branded variables.
 This creates the nested JSON structure organized by CF Standard Name and Variable Root Name.
 """
 
-import json
 import traceback
+
 from vr_app import VRApp
 
 
@@ -27,7 +27,7 @@ def build_variable_registry():
 
         # Get statistics
         stats = vr_app.get_statistics(all_terms)
-        print(f"\nStatistics:")
+        print("\nStatistics:")
         print(f"  Total terms: {stats['total_terms']}")
         print(f"  Unique CF Standard Names: {stats['unique_cf_standard_names']}")
         print(f"  Unique Variable Root Names: {stats['unique_variable_root_names']}")
@@ -67,4 +67,3 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Error building variable registry: {e}")
         traceback.print_exc()
-

@@ -7,10 +7,8 @@ on PyPI and notify users when updates are available.
 
 import json
 import logging
-import os
 import sys
 import threading
-import warnings
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional, Tuple

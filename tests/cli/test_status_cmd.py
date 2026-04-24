@@ -1,8 +1,9 @@
 """Tests for `esgvoc status` command."""
-import pytest
+
 from esgvoc.cli.status import app as status_app
 from esgvoc.core.service.user_state import UserState
 from tests.user_fetch_db.conftest import make_db
+
 from .conftest import runner
 
 

@@ -1,8 +1,9 @@
 """Tests for `esgvoc remove` command."""
-import pytest
+
 from esgvoc.cli.remove import app as remove_app
 from esgvoc.core.service.user_state import UserState
 from tests.user_fetch_db.conftest import make_db
+
 from .conftest import runner
 
 

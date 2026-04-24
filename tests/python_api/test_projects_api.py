@@ -5,7 +5,7 @@ Marked `needs_db`: network is only required on the very first run to download
 the DBs.  Once installed (ESGVOC_HOME set with the DBs present) tests run offline.
 """
 
-from typing import TYPE_CHECKING
+
 import pytest
 
 pytestmark = pytest.mark.needs_db

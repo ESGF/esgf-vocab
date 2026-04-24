@@ -398,8 +398,8 @@ class TestDrsGeneratorValid:
 
 class TestDrsGeneratorErrors:
     def test_missing_required_term_reported(self, installed_dbs):
-        from esgvoc.apps.drs.report import MissingTerm
         from esgvoc.apps.drs.generator import DrsGenerator
+        from esgvoc.apps.drs.report import MissingTerm
 
         g = DrsGenerator("cmip7")
         partial = {k: v for k, v in _MAPPING.items() if k != "mip_era"}
@@ -409,8 +409,8 @@ class TestDrsGeneratorErrors:
         assert "[MISSING]" in report.generated_drs_expression
 
     def test_invalid_term_reported(self, installed_dbs):
-        from esgvoc.apps.drs.report import InvalidTerm
         from esgvoc.apps.drs.generator import DrsGenerator
+        from esgvoc.apps.drs.report import InvalidTerm
 
         g = DrsGenerator("cmip7")
         bad = dict(_MAPPING)

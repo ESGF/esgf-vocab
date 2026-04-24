@@ -1,9 +1,8 @@
 """Tests for EsgvocHome — root directory resolution and path layout."""
-from pathlib import Path
 
 import pytest
 
-from esgvoc.core.service.configuration.home import EsgvocHome, ENV_VAR
+from esgvoc.core.service.configuration.home import ENV_VAR, EsgvocHome
 
 
 class TestResolution:

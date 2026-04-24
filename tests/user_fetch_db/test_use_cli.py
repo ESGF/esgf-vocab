@@ -5,18 +5,16 @@ Downloads are intercepted by patching DBFetcher — no real network calls.
 """
 from __future__ import annotations
 
-import hashlib
-import shutil
 import sqlite3
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
 from typer.testing import CliRunner
 
 from esgvoc.cli.use import app as use_app
 from esgvoc.core.db_artifact import DBArtifact
 from esgvoc.core.service.user_state import UserState
+
 from .conftest import make_db, sha256
 
 runner = CliRunner()

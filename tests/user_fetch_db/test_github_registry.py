@@ -1,16 +1,14 @@
 """Tests for github_registry — project registry and URL resolution."""
-import os
 
-import pytest
 
 from esgvoc.core.github_registry import (
+    _DEFAULT_REGISTRY_BASE,
     ProjectInfo,
     get_all_projects,
     get_project,
     get_registry_base_url,
     known_project_ids,
     register_project,
-    _DEFAULT_REGISTRY_BASE,
 )
 
 

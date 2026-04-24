@@ -57,8 +57,8 @@ def use(
     ),
 ):
     """Activate a project version, downloading from the registry if needed."""
-    from esgvoc.core.service.user_state import UserState
     from esgvoc.core.service.configuration.home import EsgvocHome
+    from esgvoc.core.service.user_state import UserState
 
     project_id, name = _parse_project_name(spec)
 
@@ -107,10 +107,10 @@ def use(
             artifact = fetcher.get_artifact(project_id, version=requested)
         except EsgvocVersionNotFoundError as e:
             console.print(f"[red]Version not found:[/red] {e}")
-            raise typer.Exit(3)
+            raise typer.Exit(3) from None
         except Exception as e:
             console.print(f"[red]Failed to fetch release info:[/red] {e}")
-            raise typer.Exit(2)
+            raise typer.Exit(2) from None
 
         # Use the resolved concrete version as the name on disk
         # (e.g. "latest" resolves to "v2.1.0")
@@ -132,7 +132,7 @@ def use(
             fetcher.download_db(artifact, target)
         except Exception as e:
             console.print(f"[red]Download failed:[/red] {e}")
-            raise typer.Exit(2)
+            raise typer.Exit(2) from None
 
         _activate(state, project_id, name, "registry", artifact.checksum_sha256)
         return

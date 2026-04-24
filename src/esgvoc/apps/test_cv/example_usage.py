@@ -5,7 +5,7 @@ Example usage of the CV Testing Application
 This script demonstrates how to use the CVTester class programmatically.
 """
 
-from pathlib import Path
+
 from rich.console import Console
 
 from .cv_tester import CVTester
@@ -213,4 +213,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -21,7 +21,6 @@ import pytest
 
 from esgvoc.core.service.user_state import UserState
 
-
 # ---------------------------------------------------------------------------
 # Projects the API test suite requires
 # ---------------------------------------------------------------------------

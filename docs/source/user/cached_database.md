@@ -33,4 +33,3 @@ This information helps users understand whether any part of the system is outdat
 ---
 
 The intended purpose of these databases is to provide an efficient and rapid query system, accessible exclusively through the API or the CLI.
-

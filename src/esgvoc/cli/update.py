@@ -35,8 +35,8 @@ def update(
 ):
     """Update installed project(s) to the latest available version."""
     from esgvoc.core.db_fetcher import DBFetcher, EsgvocVersionNotFoundError
-    from esgvoc.core.service.user_state import UserState
     from esgvoc.core.service.configuration.home import EsgvocHome
+    from esgvoc.core.service.user_state import UserState
 
     home = EsgvocHome.resolve()
     fetcher = DBFetcher(cache_dir=home.user_cache_dir)

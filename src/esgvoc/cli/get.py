@@ -7,7 +7,6 @@ from rich.console import Console
 from rich.json import JSON
 from rich.table import Table
 
-from esgvoc.cli.syntax_util import handle_unknown, validate_key_format
 from esgvoc.api.projects import (
     get_all_collections_in_project,
     get_all_projects,
@@ -21,12 +20,12 @@ from esgvoc.api.universe import (
     get_term_in_data_descriptor,
     get_term_in_universe,
 )
+from esgvoc.cli.syntax_util import handle_unknown, validate_key_format
 
 app = typer.Typer()
 console = Console()
 
 _LOGGER = logging.getLogger(__name__)
-
 
 
 def handle_universe(data_descriptor_id: str | None, term_id: str | None, options=None):
@@ -70,7 +69,6 @@ def handle_project(project_id: str, collection_id: str | None, term_id: str | No
         else:
             return res
         # dict[str, dict]:
-
 
 
 def display(data: Any):

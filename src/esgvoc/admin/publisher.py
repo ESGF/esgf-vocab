@@ -174,7 +174,6 @@ class DBPublisher:
             update_if_exists=update_if_exists,
         )
 
-        release_id = release["id"]
         release_url = release.get("html_url", "")
         upload_url = release.get("upload_url", "").split("{")[0]  # strip template part
 

@@ -15,7 +15,6 @@ from esgvoc.api.project_specs import AttributeProperty
 from esgvoc.api.search import MatchingTerm
 from esgvoc.apps.ga.validator import AttributeResult, GAReport, GAValidator
 
-
 # ---------------------------------------------------------------------------
 # Shared fixtures
 # ---------------------------------------------------------------------------

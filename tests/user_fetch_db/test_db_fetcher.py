@@ -7,10 +7,9 @@ All other tests mock HTTP responses.
 from __future__ import annotations
 
 import hashlib
-import json
 import sqlite3
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -18,13 +17,11 @@ from esgvoc.core.db_artifact import DBArtifact
 from esgvoc.core.db_fetcher import (
     DBFetcher,
     EsgvocChecksumError,
-    EsgvocNetworkError,
     EsgvocOfflineError,
     EsgvocVersionNotFoundError,
     _parse_version,
     _sha256,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers

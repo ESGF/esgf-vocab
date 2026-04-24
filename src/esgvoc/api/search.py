@@ -37,8 +37,8 @@ class Item(BaseModel):
 
 
 def get_universe_session() -> Session:
-    from esgvoc.core.service.user_state import UserState
     from esgvoc.core.db.connection import DBConnection
+    from esgvoc.core.service.user_state import UserState
 
     state = UserState.load()
     active = state.get_active("universe")

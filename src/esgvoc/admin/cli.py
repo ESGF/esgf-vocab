@@ -15,7 +15,6 @@ import logging
 import re
 import shutil
 import sqlite3
-import sys
 from pathlib import Path
 from typing import Optional
 
@@ -177,7 +176,7 @@ def build(
 
     except Exception as e:
         console.print(f"[red]Build failed:[/red] {e}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 # ---------------------------------------------------------------------------
@@ -222,7 +221,7 @@ def build_universe(
         console.print(f"\n[green]{result.summary()}[/green]")
     except Exception as e:
         console.print(f"[red]Build failed:[/red] {e}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 # ---------------------------------------------------------------------------

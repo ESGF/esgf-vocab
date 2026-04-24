@@ -5,8 +5,8 @@ No database or network access required.
 """
 
 import pytest
-from esgvoc.apps.ga.validator import parse_ncdump_global_attributes
 
+from esgvoc.apps.ga.validator import parse_ncdump_global_attributes
 
 _FULL_NCDUMP = """\
 netcdf tas_Amon_CanESM5_historical_r11i1p1f1_gn_185001-201412 {

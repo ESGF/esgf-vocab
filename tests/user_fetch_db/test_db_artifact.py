@@ -1,8 +1,6 @@
 """Tests for DBArtifact — metadata model for versioned database artifacts."""
 from datetime import datetime, timezone
 
-import pytest
-
 from esgvoc.core.db_artifact import DBArtifact
 
 

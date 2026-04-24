@@ -88,7 +88,7 @@ class RepoFetcher:
             data = response.json()
             return [GitHubRepository(**repo) for repo in data]
         except ValidationError as e:
-            raise Exception(f"Data validation error: {e}")
+            raise Exception(f"Data validation error: {e}") from e
 
     def fetch_repository_details(self, owner: str, repo: str) -> GitHubRepository:
         """
@@ -110,7 +110,7 @@ class RepoFetcher:
             data = response.json()
             return GitHubRepository(**data)
         except ValidationError as e:
-            raise Exception(f"Data validation error: {e}")
+            raise Exception(f"Data validation error: {e}") from e
 
     def fetch_branch_details(self, owner: str, repo: str, branch: str) -> GitHubBranch:
         """
@@ -132,7 +132,7 @@ class RepoFetcher:
         try:
             return GitHubBranch(**response.json())
         except ValidationError as e:
-            raise Exception(f"Data validation error: {e}")
+            raise Exception(f"Data validation error: {e}") from e
 
     def list_directory(self, owner, repo, branch="main"):
         """

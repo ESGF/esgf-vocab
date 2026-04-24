@@ -8,13 +8,13 @@ to discover the relationship between:
 - pydantic models (e.g., Source)
 """
 
-from typing import TypeVar, Generic, Type, Any, Iterator, get_origin, Callable
-from pydantic import BaseModel, ValidationError, TypeAdapter
+from typing import Any, Callable, Generic, Iterator, Type, TypeVar, get_origin
+
+from pydantic import BaseModel, TypeAdapter, ValidationError
 
 import esgvoc.api as api
 from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
-
 
 # =============================================================================
 # FIELD TRANSFORMER FUNCTIONS

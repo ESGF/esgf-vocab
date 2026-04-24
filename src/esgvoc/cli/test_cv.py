@@ -132,7 +132,7 @@ def run(
     if project_id_override:
         manifest_overrides["project_id"] = project_id_override
 
-    console.print(f"\n[bold cyan]esgvoc test run[/bold cyan]")
+    console.print("\n[bold cyan]esgvoc test run[/bold cyan]")
     console.print(f"  Project repo   : [cyan]{repo}[/cyan] @ [yellow]{branch}[/yellow]")
     console.print(f"  Universe repo  : [cyan]{universe_repo}[/cyan] @ [yellow]{universe_branch}[/yellow]")
     console.print()
@@ -160,7 +160,7 @@ def run(
     except Exception as exc:
         console.print(f"\n[bold red]BUILD FAILED[/bold red]: {exc}")
         shutil.rmtree(tmp_dir, ignore_errors=True)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
     console.print(f"\n[green]Build OK[/green] → {result.summary()}")
 
@@ -219,7 +219,7 @@ def run(
                 pass
 
             shutil.rmtree(tmp_dir, ignore_errors=True)
-            console.print(f"\n[dim]Temp DB cleaned up.[/dim]")
+            console.print("\n[dim]Temp DB cleaned up.[/dim]")
         else:
             console.print(f"\n[dim]Temp DB kept at: {target}[/dim]")
 

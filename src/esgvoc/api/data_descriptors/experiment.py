@@ -10,9 +10,9 @@ from typing import Union
 from pydantic import BeforeValidator, Field
 from typing_extensions import Annotated
 
-from esgvoc.api.data_descriptors.EMD_models.component_type import ComponentType
 from esgvoc.api.data_descriptors.activity import Activity
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.EMD_models.component_type import ComponentType
 from esgvoc.api.data_descriptors.mip_era import MipEra
 
 # from esgvoc.api.data_descriptors.model_component import ModelComponent

@@ -1,10 +1,8 @@
 """Tests for UserState — per-project pointer-file state management."""
 import json
-from pathlib import Path
-
-import pytest
 
 from esgvoc.core.service.user_state import UserState
+
 from .conftest import make_db
 
 

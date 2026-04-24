@@ -10,7 +10,7 @@ from __future__ import annotations
 import warnings
 from typing import List
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field, field_validator
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 

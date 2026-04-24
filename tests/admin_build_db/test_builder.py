@@ -35,7 +35,6 @@ import pytest
 
 from esgvoc.admin.builder import BuildResult, DBBuilder, _resolve_repo_url, _sha256
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

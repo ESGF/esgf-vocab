@@ -17,7 +17,7 @@ Default Projects Available
 ESGVoc comes with several pre-configured projects that can be easily added:
 
 - **cmip6**: CMIP6 Controlled Vocabularies
-- **cmip6plus**: CMIP6Plus Controlled Vocabularies  
+- **cmip6plus**: CMIP6Plus Controlled Vocabularies
 - **input4mip**: Input4MIPs Controlled Vocabularies
 - **obs4mip**: Obs4MIPs Controlled Vocabularies
 - **cordex-cmip6**: CORDEX-CMIP6 Controlled Vocabularies
@@ -245,7 +245,7 @@ Configuration File Location
 Configuration files are stored in platform-specific directories:
 
 - **Linux**: ``~/.config/esgvoc/``
-- **macOS**: ``~/Library/Application Support/esgvoc/``  
+- **macOS**: ``~/Library/Application Support/esgvoc/``
 - **Windows**: ``%APPDATA%\\esgvoc\\``
 
 The main registry file (``config_registry.toml``) tracks all configurations and which one is active.

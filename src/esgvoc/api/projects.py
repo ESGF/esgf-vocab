@@ -12,8 +12,6 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDesc
 from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.api.pydantic_handler import instantiate_pydantic_term
 from esgvoc.api.report import ProjectTermError, UniverseTermError, ValidationReport
-_LOGGER = logging.getLogger(__name__)
-
 from esgvoc.api.search import (
     Item,
     MatchingTerm,
@@ -30,6 +28,8 @@ from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import PCollection, PCollectionFTS5, Project, PTerm, PTermFTS5
 from esgvoc.core.db.models.universe import UTerm
 from esgvoc.core.exceptions import EsgvocDbError, EsgvocNotFoundError, EsgvocNotImplementedError, EsgvocValueError
+
+_LOGGER = logging.getLogger(__name__)
 
 # [OPTIMIZATION]
 _VALID_TERM_IN_COLLECTION_CACHE: dict[str, list[MatchingTerm]] = dict()

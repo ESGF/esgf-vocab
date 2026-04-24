@@ -67,9 +67,9 @@ def export_cmd(
       esgvoc export --all --output bundle.tar.gz
       esgvoc export cmip6 cmip7 --output cmip7-bundle.tar.gz
     """
-    from esgvoc.core.service.user_state import UserState
-    from esgvoc.core.service.configuration.home import EsgvocHome
     import esgvoc
+    from esgvoc.core.service.configuration.home import EsgvocHome
+    from esgvoc.core.service.user_state import UserState
 
     state = UserState.load()
     home = EsgvocHome.resolve()
@@ -193,8 +193,8 @@ def import_cmd(
     Example:
       esgvoc import /media/usb/bundle.tar.gz
     """
-    from esgvoc.core.service.user_state import UserState
     from esgvoc.core.service.configuration.home import EsgvocHome
+    from esgvoc.core.service.user_state import UserState
 
     bundle = Path(bundle)
     if not bundle.exists():
@@ -212,19 +212,19 @@ def import_cmd(
                 tar.extractall(str(tmp_path))
         except (tarfile.TarError, OSError) as e:
             console.print(f"[red]Failed to extract bundle:[/red] {e}")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from None from None
 
         # Validate manifest
         manifest_file = tmp_path / "manifest.json"
         if not manifest_file.exists():
             console.print("[red]Invalid bundle:[/red] manifest.json not found.")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from None
 
         try:
             manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
         except json.JSONDecodeError as e:
             console.print(f"[red]Invalid bundle manifest:[/red] {e}")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from None
 
         fmt_ver = manifest.get("esgvoc_bundle_version")
         if fmt_ver != _BUNDLE_FORMAT_VERSION:

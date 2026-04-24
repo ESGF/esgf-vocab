@@ -7,7 +7,6 @@ real installation.
 from __future__ import annotations
 
 import hashlib
-import shutil
 import sqlite3
 from pathlib import Path
 

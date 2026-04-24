@@ -1,6 +1,6 @@
 import pytest
 
-from tests.python_api.conftest import installed_dbs, universe_db, cmip7_db  # noqa: F401
+from tests.python_api.conftest import cmip7_db, installed_dbs, universe_db  # noqa: F401
 
 
 @pytest.fixture(scope="session")

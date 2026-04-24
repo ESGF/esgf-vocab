@@ -22,7 +22,6 @@ import os
 from dataclasses import dataclass
 from typing import Optional
 
-
 # ---------------------------------------------------------------------------
 # Registry base URL (overridable via env var for testing / enterprise)
 # ---------------------------------------------------------------------------

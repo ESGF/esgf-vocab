@@ -6,11 +6,10 @@ in the same field, which is necessary when some references can be resolved and o
 """
 
 import pytest
-from pydantic import ValidationError, TypeAdapter
+from pydantic import TypeAdapter, ValidationError
+
 from esgvoc.api.data_descriptors.experiment import Experiment, ExperimentCMIP7, ExperimentLegacy
 from esgvoc.api.data_descriptors.source import Source, SourceCMIP7, SourceLegacy
-from esgvoc.api.data_descriptors.activity import Activity
-from esgvoc.api.data_descriptors.source_type import SourceType
 
 
 def test_experiment_cmip7_with_string_activity():

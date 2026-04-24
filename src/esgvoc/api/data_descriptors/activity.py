@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import HttpUrl, field_validator
 
-from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.pydantic_handler import create_union
 
 if TYPE_CHECKING:

@@ -200,7 +200,6 @@ class TestFindItemsInUniverse:
 
     def test_find_data_descriptor_item(self, installed_dbs):
         import esgvoc.api.universe as universe
-        from esgvoc.api.search import ItemKind
         results = universe.find_items_in_universe("institution")
         assert results is not None
         # Should include either a DATA_DESCRIPTOR item or TERM items

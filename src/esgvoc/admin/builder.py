@@ -18,21 +18,20 @@ from __future__ import annotations
 
 import hashlib
 import logging
-import os
 import shutil
 import subprocess
 import tempfile
 from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
 import esgvoc
-
-_LOGGER = logging.getLogger(__name__)
 from esgvoc.admin.manifest import Manifest
 from esgvoc.core.service.missing_links import MissingLinksTracker
+
+_LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -393,8 +392,8 @@ class DBBuilder:
         )
 
     def _build_universe_db(self, universe_path: Path, universe_db: Path, universe_sha: Optional[str]) -> None:
-        from esgvoc.core.db.models.universe import universe_create_db
         from esgvoc.core.db.connection import DBConnection
+        from esgvoc.core.db.models.universe import universe_create_db
         from esgvoc.core.db.universe_ingestion import ingest_metadata_universe, ingest_universe
 
         print(self)
