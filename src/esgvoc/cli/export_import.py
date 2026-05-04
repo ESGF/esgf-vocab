@@ -40,6 +40,7 @@ _BUNDLE_FORMAT_VERSION = "1"
 # export
 # ---------------------------------------------------------------------------
 
+
 @app.command("export")
 def export_cmd(
     projects: Optional[List[str]] = typer.Argument(
@@ -47,15 +48,19 @@ def export_cmd(
         help="Projects to export (e.g. 'cmip6 cmip7').  Defaults to all installed.",
     ),
     output: Path = typer.Option(
-        ..., "--output", "-o",
+        ...,
+        "--output",
+        "-o",
         help="Output bundle path, e.g. bundle.tar.gz",
     ),
     all_projects: bool = typer.Option(
-        False, "--all",
+        False,
+        "--all",
         help="Export all installed projects (overrides positional arguments).",
     ),
     include_cache: bool = typer.Option(
-        True, "--include-cache/--no-cache",
+        True,
+        "--include-cache/--no-cache",
         help="Include the registry cache file in the bundle.",
     ),
 ):
@@ -91,20 +96,20 @@ def export_cmd(
         for ver in state.get_installed(pid):
             db = UserState.db_path(pid, ver)
             if db.exists():
-                entries.append({
-                    "project_id": pid,
-                    "version": ver,
-                    "active": state.get_active(pid) == ver,
-                    "filename": db.name,
-                    "_path": db,
-                })
+                entries.append(
+                    {
+                        "project_id": pid,
+                        "version": ver,
+                        "active": state.get_active(pid) == ver,
+                        "filename": db.name,
+                        "_path": db,
+                    }
+                )
             else:
                 missing.append(f"{pid}@{ver}")
 
     if missing:
-        console.print(
-            f"[yellow]Warning:[/yellow] DB files missing on disk (skipped): {', '.join(missing)}"
-        )
+        console.print(f"[yellow]Warning:[/yellow] DB files missing on disk (skipped): {', '.join(missing)}")
 
     if not entries:
         console.print("[red]No DB files found to export.[/red]")
@@ -118,10 +123,7 @@ def export_cmd(
         "esgvoc_bundle_version": _BUNDLE_FORMAT_VERSION,
         "esgvoc_version": getattr(esgvoc, "__version__", "unknown"),
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "projects": [
-            {k: v for k, v in e.items() if not k.startswith("_")}
-            for e in entries
-        ],
+        "projects": [{k: v for k, v in e.items() if not k.startswith("_")} for e in entries],
     }
 
     console.print(f"Exporting {len(entries)} database(s)…")
@@ -140,14 +142,10 @@ def export_cmd(
             console.print(f"  + {entry['filename']} ({mb:.1f} MB)")
 
         # Write manifest
-        (tmp_path / "manifest.json").write_text(
-            json.dumps(manifest, indent=2), encoding="utf-8"
-        )
+        (tmp_path / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
         # Write state.json snapshot
-        (tmp_path / "state.json").write_text(
-            json.dumps(state.dump(), indent=2), encoding="utf-8"
-        )
+        (tmp_path / "state.json").write_text(json.dumps(state.dump(), indent=2), encoding="utf-8")
 
         # Optionally include registry cache
         if include_cache:
@@ -167,6 +165,7 @@ def export_cmd(
 # import
 # ---------------------------------------------------------------------------
 
+
 @app.command("import")
 def import_cmd(
     bundle: Path = typer.Argument(
@@ -174,15 +173,18 @@ def import_cmd(
         help="Path to a bundle file produced by 'esgvoc export'.",
     ),
     activate: bool = typer.Option(
-        True, "--activate/--no-activate",
+        True,
+        "--activate/--no-activate",
         help="Set imported versions as active (mirrors the bundle's active_versions).",
     ),
     offline: bool = typer.Option(
-        False, "--offline/--no-offline",
+        False,
+        "--offline/--no-offline",
         help="Persist offline mode after import (useful on air-gapped machines).",
     ),
     force: bool = typer.Option(
-        False, "--force",
+        False,
+        "--force",
         help="Overwrite existing DB files even when they already exist.",
     ),
 ):
@@ -212,7 +214,7 @@ def import_cmd(
                 tar.extractall(str(tmp_path))
         except (tarfile.TarError, OSError) as e:
             console.print(f"[red]Failed to extract bundle:[/red] {e}")
-            raise typer.Exit(1) from None from None
+            raise typer.Exit(1) from None
 
         # Validate manifest
         manifest_file = tmp_path / "manifest.json"
@@ -302,7 +304,4 @@ def import_cmd(
     )
 
     if offline:
-        console.print(
-            "\n[yellow]Tip:[/yellow] To force offline mode for all commands use: "
-            "esgvoc offline enable"
-        )
+        console.print("\n[yellow]Tip:[/yellow] To force offline mode for all commands use: " "esgvoc offline enable")
