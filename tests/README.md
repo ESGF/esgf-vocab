@@ -21,22 +21,10 @@ Tests in that suite are skipped automatically when the repos are not found.
 
 ---
 
-## Registry setup (temporary)
+## Registry
 
-The production registry is not yet live. Point to the test registry before running
-any test that downloads databases.
-
-**bash / zsh**
-```bash
-export ESGVOC_REGISTRY_BASE_URL=https://raw.githubusercontent.com/ltroussellier/test_esgvoc_dbs/main
-```
-
-**fish**
-```fish
-set -x ESGVOC_REGISTRY_BASE_URL https://raw.githubusercontent.com/ltroussellier/test_esgvoc_dbs/main
-```
-
-Once the production registry is in place this variable will no longer be needed.
+The default registry is `https://raw.githubusercontent.com/WCRP-CMIP/esgvoc_registry/main`.
+Override with `ESGVOC_REGISTRY_BASE_URL` if you need to point to a different registry.
 
 ---
 

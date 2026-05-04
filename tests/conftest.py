@@ -55,5 +55,5 @@ def test_registry_url() -> str:
     """Registry base URL used for DB downloads during tests."""
     return os.environ.get(
         "ESGVOC_REGISTRY_BASE_URL",
-        "https://raw.githubusercontent.com/ltroussellier/test_esgvoc_dbs/main",
+        "https://raw.githubusercontent.com/WCRP-CMIP/esgvoc_registry/main",
     )
