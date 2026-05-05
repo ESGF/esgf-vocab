@@ -57,7 +57,6 @@ def use(
     ),
 ):
     """Activate a project version, downloading from the registry if needed."""
-    from esgvoc.core.service.configuration.home import EsgvocHome
     from esgvoc.core.service.user_state import UserState
 
     project_id, name = _parse_project_name(spec)
@@ -95,8 +94,7 @@ def use(
             )
             raise typer.Exit(1)
 
-        home = EsgvocHome.resolve()
-        fetcher = DBFetcher(cache_dir=home.registry_cache_dir)
+        fetcher = DBFetcher()
 
         requested = name
         if prerelease and requested == "latest":

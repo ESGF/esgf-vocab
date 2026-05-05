@@ -65,8 +65,7 @@ def list_versions(
         if available:
             try:
                 from esgvoc.core.db_fetcher import DBFetcher
-                from esgvoc.core.service.configuration.home import EsgvocHome
-                fetcher = DBFetcher(cache_dir=EsgvocHome.resolve().user_cache_dir)
+                fetcher = DBFetcher()
                 remote_versions = fetcher.list_versions(pid, include_prerelease=prerelease)
                 for v in remote_versions:
                     if v not in installed:
@@ -90,10 +89,9 @@ def list_remote(
     """Show all versions available in the registry with full metadata."""
     import esgvoc
     from esgvoc.core.db_fetcher import DBFetcher, EsgvocNetworkError, EsgvocVersionNotFoundError
-    from esgvoc.core.service.configuration.home import EsgvocHome
     from esgvoc.core.service.user_state import UserState
 
-    fetcher = DBFetcher(cache_dir=EsgvocHome.resolve().user_cache_dir)
+    fetcher = DBFetcher()
     state = UserState.load()
     installed_esgvoc = getattr(esgvoc, "__version__", None)
 

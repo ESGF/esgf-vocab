@@ -34,13 +34,12 @@ Environment variables honoured:
 from __future__ import annotations
 
 import hashlib
-import json
 import logging
 import os
 import re
 import shutil
 import tempfile
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -51,8 +50,6 @@ from esgvoc.core.github_registry import ProjectInfo, get_project, known_project_
 
 logger = logging.getLogger(__name__)
 
-# How long to cache the project index before re-fetching
-_CACHE_TTL_HOURS = 1
 _DB_ASSET_SUFFIX = ".db"
 _FETCH_TIMEOUT = 10   # seconds — small JSON file
 _DOWNLOAD_TIMEOUT = 300   # seconds (5 min for large files)
@@ -84,15 +81,11 @@ class DBFetcher:
 
     Parameters
     ----------
-    cache_dir:
-        Directory for caching the per-project JSON index files.
     offline:
         If True, all network operations raise EsgvocOfflineError.
     """
 
-    def __init__(self, cache_dir: Path, offline: bool = False):
-        self.cache_dir = cache_dir
-        self.cache_dir.mkdir(parents=True, exist_ok=True)
+    def __init__(self, offline: bool = False):
         self.offline = offline or os.environ.get("ESGVOC_OFFLINE", "").lower() == "true"
         self._session = self._build_session()
 
@@ -223,11 +216,8 @@ class DBFetcher:
         session.headers["Accept"] = "application/json"
         return session
 
-    def _cache_path(self, project_id: str) -> Path:
-        return self.cache_dir / f"registry_{project_id}.json"
-
     def _fetch_releases(self, project_id: str) -> list[DBArtifact]:
-        """Fetch (with cache) the release index for a project."""
+        """Fetch the release index for a project directly from the registry."""
         info = get_project(project_id)
         if info is None:
             raise EsgvocVersionNotFoundError(
@@ -235,36 +225,8 @@ class DBFetcher:
                 f"Available: {', '.join(known_project_ids())}"
             )
 
-        cache_file = self._cache_path(project_id)
-        cached = self._load_cache(cache_file)
-        if cached is not None:
-            return cached
-
         self._check_online(f"fetch index for '{project_id}'")
-        artifacts = self._fetch_raw_index(info)
-        self._save_cache(cache_file, artifacts)
-        return artifacts
-
-    def _load_cache(self, cache_file: Path) -> Optional[list[DBArtifact]]:
-        """Return cached artifacts if fresh, else None."""
-        if not cache_file.exists():
-            return None
-        try:
-            data = json.loads(cache_file.read_text())
-            fetched_at = datetime.fromisoformat(data["fetched_at"])
-            if datetime.now(timezone.utc) - fetched_at > timedelta(hours=_CACHE_TTL_HOURS):
-                return None
-            return [DBArtifact(**a) for a in data["artifacts"]]
-        except Exception as e:
-            logger.debug(f"Cache miss ({cache_file}): {e}")
-            return None
-
-    def _save_cache(self, cache_file: Path, artifacts: list[DBArtifact]) -> None:
-        data = {
-            "fetched_at": datetime.now(timezone.utc).isoformat(),
-            "artifacts": [a.model_dump(mode="json") for a in artifacts],
-        }
-        cache_file.write_text(json.dumps(data, indent=2))
+        return self._fetch_raw_index(info)
 
     def _fetch_raw_index(self, info: ProjectInfo) -> list[DBArtifact]:
         """Fetch the per-project JSON index from the registry raw content URL."""
