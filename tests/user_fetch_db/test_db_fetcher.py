@@ -1,5 +1,5 @@
 """
-Tests for DBFetcher — version listing, artifact lookup, download, checksum.
+Tests for DBFetcher — version listing, snapshot lookup, download, checksum.
 
 Network tests are marked `needs_network` and use the test registry URL.
 All other tests mock HTTP responses.
@@ -13,7 +13,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from esgvoc.core.db_artifact import DBArtifact
+from esgvoc.core.db_snapshot import DBSnapshot
 from esgvoc.core.db_fetcher import (
     DBFetcher,
     EsgvocChecksumError,
@@ -142,12 +142,12 @@ class TestVersionListing:
         assert versions[0] == "v2.0.0"
 
 
-class TestGetArtifact:
+class TestGetSnapshot:
     def test_get_specific_version(self, tmp_path):
         index = _make_index([_release("v1.0.0"), _release("v2.0.0")])
         fetcher = DBFetcher()
         fetcher._session = _mock_session(index)
-        art = fetcher.get_artifact("universe", "v1.0.0")
+        art = fetcher.get_snapshot("universe", "v1.0.0")
         assert art.version == "v1.0.0"
 
     def test_get_latest_returns_newest_stable(self, tmp_path):
@@ -158,7 +158,7 @@ class TestGetArtifact:
         ])
         fetcher = DBFetcher()
         fetcher._session = _mock_session(index)
-        art = fetcher.get_artifact("universe", "latest")
+        art = fetcher.get_snapshot("universe", "latest")
         assert art.version == "v2.0.0"
 
     def test_version_not_found_raises(self, tmp_path):
@@ -166,21 +166,21 @@ class TestGetArtifact:
         fetcher = DBFetcher()
         fetcher._session = _mock_session(index)
         with pytest.raises(EsgvocVersionNotFoundError):
-            fetcher.get_artifact("universe", "v99.0.0")
+            fetcher.get_snapshot("universe", "v99.0.0")
 
     def test_no_stable_releases_raises_for_latest(self, tmp_path):
         index = _make_index([_release("dev-latest", is_prerelease=True)])
         fetcher = DBFetcher()
         fetcher._session = _mock_session(index)
         with pytest.raises(EsgvocVersionNotFoundError):
-            fetcher.get_artifact("universe", "latest")
+            fetcher.get_snapshot("universe", "latest")
 
 
 
 class TestDownload:
-    def _make_artifact(self, content: bytes, tmp_path: Path) -> DBArtifact:
+    def _make_snapshot(self, content: bytes, tmp_path: Path) -> DBSnapshot:
         checksum = hashlib.sha256(content).hexdigest()
-        return DBArtifact(
+        return DBSnapshot(
             project_id="universe",
             version="v1.0.0",
             download_url="https://example.com/universe-v1.0.0.db",
@@ -190,7 +190,7 @@ class TestDownload:
 
     def test_download_writes_file(self, tmp_path):
         content = b"fake-db-content"
-        artifact = self._make_artifact(content, tmp_path)
+        snapshot = self._make_snapshot(content, tmp_path)
         target = tmp_path / "universe" / "v1.0.0.db"
 
         fetcher = DBFetcher()
@@ -201,13 +201,13 @@ class TestDownload:
         fetcher._session = MagicMock()
         fetcher._session.get.return_value = resp
 
-        result = fetcher.download_db(artifact, target, show_progress=False)
+        result = fetcher.download_db(snapshot, target, show_progress=False)
         assert result == target
         assert target.read_bytes() == content
 
     def test_download_skipped_if_checksum_matches(self, tmp_path):
         content = b"already-there"
-        artifact = self._make_artifact(content, tmp_path)
+        snapshot = self._make_snapshot(content, tmp_path)
         target = tmp_path / "universe" / "v1.0.0.db"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(content)
@@ -215,12 +215,12 @@ class TestDownload:
         fetcher = DBFetcher()
         fetcher._session = MagicMock()
 
-        fetcher.download_db(artifact, target, show_progress=False)
+        fetcher.download_db(snapshot, target, show_progress=False)
         fetcher._session.get.assert_not_called()
 
     def test_checksum_mismatch_raises(self, tmp_path):
         content = b"correct-content"
-        artifact = DBArtifact(
+        snapshot = DBSnapshot(
             project_id="universe",
             version="v1.0.0",
             download_url="https://example.com/x.db",
@@ -237,16 +237,16 @@ class TestDownload:
         fetcher._session.get.return_value = resp
 
         with pytest.raises(EsgvocChecksumError):
-            fetcher.download_db(artifact, target, show_progress=False)
+            fetcher.download_db(snapshot, target, show_progress=False)
 
     def test_download_offline_raises(self, tmp_path):
-        artifact = DBArtifact(
+        snapshot = DBSnapshot(
             project_id="universe", version="v1.0.0",
             download_url="https://example.com/x.db",
         )
         fetcher = DBFetcher(offline=True)
         with pytest.raises(EsgvocOfflineError):
-            fetcher.download_db(artifact, tmp_path / "out.db", show_progress=False)
+            fetcher.download_db(snapshot, tmp_path / "out.db", show_progress=False)
 
 
 # ---------------------------------------------------------------------------
@@ -267,15 +267,15 @@ class TestNetworkFetch:
         assert len(versions) > 0
         assert any(v.startswith("v") for v in versions)
 
-    def test_get_universe_v1_artifact(self, tmp_path):
+    def test_get_universe_v1_snapshot(self, tmp_path):
         fetcher = DBFetcher()
-        art = fetcher.get_artifact("universe", "v1.0.0")
+        art = fetcher.get_snapshot("universe", "v1.0.0")
         assert art.version == "v1.0.0"
         assert art.download_url.startswith("https://")
 
     def test_download_universe_v1(self, tmp_path):
         fetcher = DBFetcher()
-        art = fetcher.get_artifact("universe", "v1.0.0")
+        art = fetcher.get_snapshot("universe", "v1.0.0")
         target = tmp_path / "universe" / "v1.0.0.db"
         fetcher.download_db(art, target, show_progress=False)
         assert target.exists()

@@ -73,7 +73,7 @@ class PublishResult:
 
 class DBPublisher:
     """
-    Publishes a pre-built database artifact to a GitHub Release.
+    Publishes a pre-built database snapshot to a GitHub Release.
 
     Parameters
     ----------

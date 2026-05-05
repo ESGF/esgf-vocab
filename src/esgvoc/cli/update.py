@@ -48,7 +48,7 @@ def update(
     any_updated = False
     for pid in projects:
         try:
-            artifact = fetcher.get_artifact(pid, version="latest" if not prerelease else "dev-latest")
+            snapshot = fetcher.get_snapshot(pid, version="latest" if not prerelease else "dev-latest")
         except EsgvocVersionNotFoundError as e:
             console.print(f"[yellow]{pid}:[/yellow] {e}")
             continue
@@ -57,7 +57,7 @@ def update(
             continue
 
         active = state.get_active(pid)
-        latest = artifact.version
+        latest = snapshot.version
 
         if active == latest:
             console.print(f"[dim]{pid}:[/dim] already at {latest}")
@@ -68,24 +68,24 @@ def update(
             continue
 
         # Download
-        target = UserState.db_path(pid, artifact.version)
+        target = UserState.db_path(pid, snapshot.version)
         if not target.exists():
             console.print(f"Downloading {pid}@{latest}…")
             try:
-                fetcher.download_db(artifact, target)
+                fetcher.download_db(snapshot, target)
             except Exception as e:
                 console.print(f"[red]Download failed:[/red] {e}")
                 continue
         else:
             console.print(f"[dim]{pid}@{latest} already on disk[/dim]")
 
-        state.add_installed(pid, artifact.version)
+        state.add_installed(pid, snapshot.version)
         if not no_activate:
-            state.set_active(pid, artifact.version, source="registry",
-                             checksum=artifact.checksum_sha256)
-            console.print(f"[green]{pid}:[/green] {active or 'none'} → {artifact.version} (active)")
+            state.set_active(pid, snapshot.version, source="registry",
+                             checksum=snapshot.checksum_sha256)
+            console.print(f"[green]{pid}:[/green] {active or 'none'} → {snapshot.version} (active)")
         else:
-            console.print(f"[green]{pid}:[/green] {artifact.version} installed (not activated)")
+            console.print(f"[green]{pid}:[/green] {snapshot.version} installed (not activated)")
 
         any_updated = True
 

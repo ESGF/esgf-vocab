@@ -1,5 +1,5 @@
 """
-DBFetcher: downloads pre-built versioned database artifacts.
+DBFetcher: downloads pre-built versioned database snapshots.
 
 Version discovery uses a single raw HTTP GET per project:
   GET {REGISTRY_BASE_URL}/{project_id}.json
@@ -45,7 +45,7 @@ from typing import Optional
 
 import requests
 
-from esgvoc.core.db_artifact import DBArtifact
+from esgvoc.core.db_snapshot import DBSnapshot
 from esgvoc.core.github_registry import ProjectInfo, get_project, known_project_ids
 
 logger = logging.getLogger(__name__)
@@ -77,7 +77,7 @@ class EsgvocChecksumError(RuntimeError):
 
 class DBFetcher:
     """
-    Fetches pre-built database artifacts from the esgvoc_dbs registry.
+    Fetches pre-built database snapshots from the esgvoc_dbs registry.
 
     Parameters
     ----------
@@ -104,14 +104,14 @@ class DBFetcher:
         include_prerelease:
             If True, include dev-latest and other pre-release tags.
         """
-        artifacts = self._fetch_releases(project_id)
+        snapshots = self._fetch_releases(project_id)
         if not include_prerelease:
-            artifacts = [a for a in artifacts if not a.is_prerelease]
-        return [a.version for a in artifacts]
+            snapshots = [s for s in snapshots if not s.is_prerelease]
+        return [s.version for s in snapshots]
 
-    def get_artifact(self, project_id: str, version: str = "latest") -> DBArtifact:
+    def get_snapshot(self, project_id: str, version: str = "latest") -> DBSnapshot:
         """
-        Return the artifact metadata for a specific version.
+        Return the snapshot metadata for a specific version.
 
         Parameters
         ----------
@@ -120,21 +120,21 @@ class DBFetcher:
         version:
             Semver tag ('v2.1.0'), 'latest', or 'dev-latest'.
         """
-        artifacts = self._fetch_releases(project_id)
+        snapshots = self._fetch_releases(project_id)
 
         if version == "latest":
-            stable = [a for a in artifacts if not a.is_prerelease]
+            stable = [s for s in snapshots if not s.is_prerelease]
             if not stable:
                 raise EsgvocVersionNotFoundError(
                     f"No stable releases found for '{project_id}'."
                 )
             return stable[0]
 
-        for artifact in artifacts:
-            if artifact.version == version:
-                return artifact
+        for snapshot in snapshots:
+            if snapshot.version == version:
+                return snapshot
 
-        available = [a.version for a in artifacts]
+        available = [s.version for s in snapshots]
         raise EsgvocVersionNotFoundError(
             f"Version '{version}' not found for project '{project_id}'.\n"
             f"Available: {', '.join(available) or 'none'}"
@@ -142,12 +142,12 @@ class DBFetcher:
 
     def download_db(
         self,
-        artifact: DBArtifact,
+        snapshot: DBSnapshot,
         target: Path,
         show_progress: bool = True,
     ) -> Path:
         """
-        Download a DB artifact to *target* atomically.
+        Download a DB snapshot to *target* atomically.
 
         If *target* already exists and the checksum matches, the download is
         skipped and the existing file is returned.
@@ -157,8 +157,8 @@ class DBFetcher:
         self._check_online("download database")
 
         # Check if already present and valid
-        if target.exists() and artifact.checksum_sha256:
-            if _sha256(target) == artifact.checksum_sha256:
+        if target.exists() and snapshot.checksum_sha256:
+            if _sha256(target) == snapshot.checksum_sha256:
                 logger.debug(f"Already up-to-date: {target}")
                 return target
 
@@ -166,7 +166,7 @@ class DBFetcher:
 
         for attempt in range(1, _MAX_RETRIES + 1):
             try:
-                self._download_atomic(artifact, target, show_progress)
+                self._download_atomic(snapshot, target, show_progress)
                 break
             except EsgvocChecksumError:
                 if attempt == _MAX_RETRIES:
@@ -175,9 +175,9 @@ class DBFetcher:
 
         return target
 
-    def check_compatibility(self, artifact: DBArtifact) -> tuple[bool, str]:
+    def check_compatibility(self, snapshot: DBSnapshot) -> tuple[bool, str]:
         """
-        Check whether *artifact* is compatible with the installed esgvoc version.
+        Check whether *snapshot* is compatible with the installed esgvoc version.
 
         Returns (compatible, message). If compatible is False, message explains why.
         """
@@ -187,11 +187,11 @@ class DBFetcher:
         if installed is None:
             return True, ""  # Cannot determine — allow
 
-        if artifact.esgvoc_min_version:
-            min_v = _parse_version(artifact.esgvoc_min_version)
+        if snapshot.esgvoc_min_version:
+            min_v = _parse_version(snapshot.esgvoc_min_version)
             if min_v is not None and installed < min_v:
                 return False, (
-                    f"{artifact.project_id}@{artifact.version} requires esgvoc >= {artifact.esgvoc_min_version}.\n"
+                    f"{snapshot.project_id}@{snapshot.version} requires esgvoc >= {snapshot.esgvoc_min_version}.\n"
                     f"You have esgvoc {installed_str}.\n"
                     f"Run: pip install --upgrade esgvoc"
                 )
@@ -216,7 +216,7 @@ class DBFetcher:
         session.headers["Accept"] = "application/json"
         return session
 
-    def _fetch_releases(self, project_id: str) -> list[DBArtifact]:
+    def _fetch_releases(self, project_id: str) -> list[DBSnapshot]:
         """Fetch the release index for a project directly from the registry."""
         info = get_project(project_id)
         if info is None:
@@ -228,7 +228,7 @@ class DBFetcher:
         self._check_online(f"fetch index for '{project_id}'")
         return self._fetch_raw_index(info)
 
-    def _fetch_raw_index(self, info: ProjectInfo) -> list[DBArtifact]:
+    def _fetch_raw_index(self, info: ProjectInfo) -> list[DBSnapshot]:
         """Fetch the per-project JSON index from the registry raw content URL."""
         url = info.raw_index_url
         logger.debug(f"Fetching registry index: {url}")
@@ -250,7 +250,7 @@ class DBFetcher:
         except Exception as e:
             raise EsgvocNetworkError(f"Invalid JSON in registry index for '{info.project_id}': {e}") from e
 
-        artifacts: list[DBArtifact] = []
+        snapshots: list[DBSnapshot] = []
         for release in index.get("releases", []):
             version = release.get("version", "")
             if not version:
@@ -261,7 +261,7 @@ class DBFetcher:
                     published_at = datetime.fromisoformat(
                         release["published_at"].replace("Z", "+00:00")
                     )
-                artifacts.append(DBArtifact(
+                snapshots.append(DBSnapshot(
                     project_id=info.project_id,
                     version=version,
                     download_url=release["url"],
@@ -275,17 +275,17 @@ class DBFetcher:
             except Exception as e:
                 logger.warning(f"Skipping malformed release entry for '{info.project_id}': {e}")
 
-        # Sort: stable releases newest first, then pre-releases
-        def sort_key(a: DBArtifact):
-            v = _parse_version(a.version) or (0, 0, 0, 0)
-            return (0 if not a.is_prerelease else 1, v)
+        # Sort: stable snapshots newest first, then pre-releases
+        def sort_key(s: DBSnapshot):
+            v = _parse_version(s.version) or (0, 0, 0, 0)
+            return (0 if not s.is_prerelease else 1, v)
 
-        artifacts.sort(key=sort_key, reverse=True)
-        return artifacts
+        snapshots.sort(key=sort_key, reverse=True)
+        return snapshots
 
     def _download_atomic(
         self,
-        artifact: DBArtifact,
+        snapshot: DBSnapshot,
         target: Path,
         show_progress: bool,
     ) -> None:
@@ -296,13 +296,13 @@ class DBFetcher:
             tmp_path = Path(tmp.name)
 
         try:
-            self._stream_download(artifact, tmp_path, show_progress)
-            if artifact.checksum_sha256:
+            self._stream_download(snapshot, tmp_path, show_progress)
+            if snapshot.checksum_sha256:
                 actual = _sha256(tmp_path)
-                if actual != artifact.checksum_sha256:
+                if actual != snapshot.checksum_sha256:
                     raise EsgvocChecksumError(
-                        f"Checksum mismatch for {artifact.db_filename()}!\n"
-                        f"  Expected: {artifact.checksum_sha256}\n"
+                        f"Checksum mismatch for {snapshot.db_filename()}!\n"
+                        f"  Expected: {snapshot.checksum_sha256}\n"
                         f"  Got:      {actual}"
                     )
             shutil.move(str(tmp_path), str(target))
@@ -312,13 +312,13 @@ class DBFetcher:
 
     def _stream_download(
         self,
-        artifact: DBArtifact,
+        snapshot: DBSnapshot,
         dest: Path,
         show_progress: bool,
     ) -> None:
         try:
             resp = self._session.get(
-                artifact.download_url, stream=True, timeout=_DOWNLOAD_TIMEOUT
+                snapshot.download_url, stream=True, timeout=_DOWNLOAD_TIMEOUT
             )
             resp.raise_for_status()
         except requests.exceptions.ConnectionError as e:
@@ -334,7 +334,7 @@ class DBFetcher:
                     f.write(chunk)
                     downloaded += len(chunk)
                     if show_progress and total:
-                        _print_progress(downloaded, total, artifact.db_filename())
+                        _print_progress(downloaded, total, snapshot.db_filename())
 
         if show_progress and total:
             print()  # newline after progress bar

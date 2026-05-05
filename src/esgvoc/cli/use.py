@@ -108,7 +108,7 @@ def use(
 
         console.print(f"Fetching release info for [cyan]{project_id}@{requested}[/cyan]…")
         try:
-            artifact = fetcher.get_artifact(project_id, version=requested)
+            snapshot = fetcher.get_snapshot(project_id, version=requested)
         except EsgvocVersionNotFoundError as e:
             console.print(f"[red]Version not found:[/red] {e}")
             raise typer.Exit(3) from None
@@ -118,28 +118,28 @@ def use(
 
         # Use the resolved concrete version as the name on disk
         # (e.g. "latest" resolves to "v2.1.0")
-        name = artifact.version
+        name = snapshot.version
         target = UserState.db_path(project_id, name)
 
         # Check if already on disk with matching checksum
-        if target.exists() and artifact.checksum_sha256:
+        if target.exists() and snapshot.checksum_sha256:
             import hashlib
             digest = hashlib.sha256(target.read_bytes()).hexdigest()
-            if digest == artifact.checksum_sha256:
+            if digest == snapshot.checksum_sha256:
                 console.print(f"[dim]{project_id}@{name} already up-to-date, checksum matches.[/dim]")
-                _activate(state, project_id, name, "registry", artifact.checksum_sha256)
+                _activate(state, project_id, name, "registry", snapshot.checksum_sha256)
                 return
             console.print(f"[yellow]{project_id}@{name} has changed remotely, re-downloading…[/yellow]")
 
-        mb = (artifact.size_bytes or 0) / 1_048_576
+        mb = (snapshot.size_bytes or 0) / 1_048_576
         console.print(f"Downloading [cyan]{project_id}@{name}[/cyan] ({mb:.1f} MB)…")
         try:
-            fetcher.download_db(artifact, target)
+            fetcher.download_db(snapshot, target)
         except Exception as e:
             console.print(f"[red]Download failed:[/red] {e}")
             raise typer.Exit(2) from None
 
-        _activate(state, project_id, name, "registry", artifact.checksum_sha256)
+        _activate(state, project_id, name, "registry", snapshot.checksum_sha256)
         return
 
     # ---------------------------------------------------------------

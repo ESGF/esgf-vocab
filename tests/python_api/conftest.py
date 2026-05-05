@@ -96,8 +96,8 @@ def installed_dbs(tmp_path_factory, test_registry_url):
     for project_id, version in PROJECTS_TO_INSTALL:
         target = UserState.db_path(project_id, version)
         if not target.exists():
-            artifact = fetcher.get_artifact(project_id, version)
-            fetcher.download_db(artifact, target, show_progress=False)
+            snapshot = fetcher.get_snapshot(project_id, version)
+            fetcher.download_db(snapshot, target, show_progress=False)
         UserState.load().set_active(project_id, version, source="registry")
         installed[project_id] = target
 

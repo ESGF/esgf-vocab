@@ -1,5 +1,5 @@
 """
-DBArtifact: metadata model for a pre-built versioned database artifact.
+DBSnapshot: metadata model for a pre-built versioned database snapshot.
 
 This model represents the information fetched from a GitHub Release for a
 CV project (cmip7, cmip6, etc.). It is used by DBFetcher to describe what
@@ -12,8 +12,8 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class DBArtifact(BaseModel):
-    """Metadata for a downloadable pre-built project database."""
+class DBSnapshot(BaseModel):
+    """Metadata for a downloadable pre-built project database snapshot."""
 
     project_id: str
     """e.g. 'cmip7'"""
@@ -22,10 +22,10 @@ class DBArtifact(BaseModel):
     """Semantic version tag, e.g. 'v2.1.0' or 'dev-latest'"""
 
     universe_version: Optional[str] = None
-    """Universe version embedded in this DB, e.g. 'v1.2.0'"""
+    """Universe version embedded in this snapshot, e.g. 'v1.2.0'"""
 
     esgvoc_min_version: Optional[str] = None
-    """Minimum esgvoc version required to use this DB."""
+    """Minimum esgvoc version required to use this snapshot."""
 
     published_at: Optional[datetime] = None
     """When this release was published on GitHub."""
@@ -43,7 +43,7 @@ class DBArtifact(BaseModel):
     """Release notes / changelog from the manifest."""
 
     commit_sha: Optional[str] = None
-    """Source commit SHA embedded in the DB (for dev builds)."""
+    """Source commit SHA embedded in the snapshot (for dev builds)."""
 
     is_prerelease: bool = False
     """True for dev-latest and other pre-release builds."""
@@ -52,5 +52,5 @@ class DBArtifact(BaseModel):
         return self.version == "dev-latest" or self.is_prerelease
 
     def db_filename(self) -> str:
-        """Canonical filename for this artifact on disk (inside the project subdir)."""
+        """Canonical filename for this snapshot on disk (inside the project subdir)."""
         return f"{self.version}.db"

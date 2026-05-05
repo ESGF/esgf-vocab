@@ -12,7 +12,7 @@ from unittest.mock import MagicMock, patch
 from typer.testing import CliRunner
 
 from esgvoc.cli.use import app as use_app
-from esgvoc.core.db_artifact import DBArtifact
+from esgvoc.core.db_snapshot import DBSnapshot
 from esgvoc.core.service.user_state import UserState
 
 from .conftest import make_db, sha256
@@ -20,8 +20,8 @@ from .conftest import make_db, sha256
 runner = CliRunner()
 
 
-def _make_artifact(db_path: Path, project_id: str, version: str) -> DBArtifact:
-    return DBArtifact(
+def _make_artifact(db_path: Path, project_id: str, version: str) -> DBSnapshot:
+    return DBSnapshot(
         project_id=project_id,
         version=version,
         download_url=f"https://example.com/{project_id}-{version}.db",
@@ -31,10 +31,10 @@ def _make_artifact(db_path: Path, project_id: str, version: str) -> DBArtifact:
     )
 
 
-def mock_fetcher(artifact: DBArtifact):
+def mock_fetcher(snapshot: DBSnapshot):
     """Return a context manager that patches DBFetcher with a mock that copies the DB."""
     mock = MagicMock()
-    mock.get_artifact.return_value = artifact
+    mock.get_snapshot.return_value = snapshot
 
     def _copy(art, target, show_progress=True, **kw):
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -61,11 +61,11 @@ class TestUseRegistryVersion:
         db = UserState.db_path("universe", "v1.0.0")
         db.parent.mkdir(parents=True, exist_ok=True)
         make_db(db, "universe", "1.0.0")
-        artifact = _make_artifact(db, "universe", "v1.0.0")
+        snapshot = _make_artifact(db, "universe", "v1.0.0")
         db.unlink()  # remove so the use command must "download" it
 
         mock_inst = MagicMock()
-        mock_inst.get_artifact.return_value = artifact
+        mock_inst.get_snapshot.return_value = snapshot
 
         def _copy(art, target, show_progress=True, **kw):
             make_db(target, "universe", "1.0.0")
@@ -84,10 +84,10 @@ class TestUseRegistryVersion:
         monkeypatch.setenv("ESGVOC_HOME", str(tmp_path))
         db = UserState.db_path("universe", "v1.0.0")
         make_db(db, "universe", "1.0.0")
-        artifact = _make_artifact(db, "universe", "v1.0.0")
+        snapshot = _make_artifact(db, "universe", "v1.0.0")
 
         mock_inst = MagicMock()
-        mock_inst.get_artifact.return_value = artifact
+        mock_inst.get_snapshot.return_value = snapshot
 
         with patch("esgvoc.core.db_fetcher.DBFetcher", return_value=mock_inst):
             result = runner.invoke(use_app, ["universe@v1.0.0"])
@@ -105,7 +105,7 @@ class TestUseRegistryVersion:
         from esgvoc.core.db_fetcher import EsgvocVersionNotFoundError
 
         mock_inst = MagicMock()
-        mock_inst.get_artifact.side_effect = EsgvocVersionNotFoundError("not found")
+        mock_inst.get_snapshot.side_effect = EsgvocVersionNotFoundError("not found")
 
         with patch("esgvoc.core.db_fetcher.DBFetcher", return_value=mock_inst):
             result = runner.invoke(use_app, ["universe@v99.0.0"])
@@ -117,7 +117,7 @@ class TestUseRegistryVersion:
         from esgvoc.core.db_fetcher import EsgvocNetworkError
 
         mock_inst = MagicMock()
-        mock_inst.get_artifact.side_effect = EsgvocNetworkError("no network")
+        mock_inst.get_snapshot.side_effect = EsgvocNetworkError("no network")
 
         with patch("esgvoc.core.db_fetcher.DBFetcher", return_value=mock_inst):
             result = runner.invoke(use_app, ["universe@v1.0.0"])
