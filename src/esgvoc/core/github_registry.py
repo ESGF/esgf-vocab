@@ -10,7 +10,7 @@ Tag format: `{project_id}.{version}`  (e.g. `cmip7.v1.2.7`)
 The raw index URL for a project is:
   {REGISTRY_BASE_URL}/{project_id}.json
 
-Default REGISTRY_BASE_URL: https://raw.githubusercontent.com/WCRP-CMIP/esgvoc_dbs/main
+Default REGISTRY_BASE_URL: https://raw.githubusercontent.com/WCRP-CMIP/esgvoc_registry/main
 Override via env var: ESGVOC_REGISTRY_BASE_URL
 
 Custom/private projects can be registered at runtime via register_project().
@@ -26,8 +26,8 @@ from typing import Optional
 # Registry base URL (overridable via env var for testing / enterprise)
 # ---------------------------------------------------------------------------
 
-_DEFAULT_REGISTRY_BASE = "https://raw.githubusercontent.com/WCRP-CMIP/esgvoc_dbs/main"
-_REGISTRY_REPO = "WCRP-CMIP/esgvoc_dbs"
+_DEFAULT_REGISTRY_BASE = "https://raw.githubusercontent.com/WCRP-CMIP/esgvoc_registry/main"
+_REGISTRY_REPO = "WCRP-CMIP/esgvoc_registry"
 
 REGISTRY_BASE_URL: str = os.environ.get("ESGVOC_REGISTRY_BASE_URL", _DEFAULT_REGISTRY_BASE)
 """Base URL for fetching per-project JSON index files.
