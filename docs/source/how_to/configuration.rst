@@ -144,19 +144,13 @@ Removing Installed Databases
    Removing the active version deactivates the project. Run
    ``esgvoc use <project>@<version>`` afterwards to re-activate another version.
 
-Checking for ESGVoc Software Updates
-=====================================
+Checking the Installed ESGVoc Version
+=======================================
 
 .. code-block:: bash
 
    # Show the installed esgvoc version
    esgvoc version
-
-   # Check PyPI for a newer esgvoc release
-   esgvoc version --check
-
-   # Reset the update-reminder timer
-   esgvoc version --reset-reminder
 
 Data Storage Locations
 =======================

@@ -1,6 +1,5 @@
 import typer
 from rich.console import Console
-from rich.table import Table
 
 from esgvoc.admin.cli import app as admin_app
 from esgvoc.cli.clean import app as clean_app
@@ -42,58 +41,11 @@ app.add_typer(test_cv_app)
 
 
 @app.command()
-def version(
-    check: bool = typer.Option(False, "--check", "-c", help="Check PyPI for available updates"),
-    reset_reminder: bool = typer.Option(False, "--reset-reminder", help="Reset update reminder timer"),
-):
-    """Show esgvoc version and optionally check for updates."""
+def version():
+    """Show esgvoc version."""
     from esgvoc import __version__
-    from esgvoc.core.version_checker import get_version_checker
 
     console.print(f"esgvoc version: [cyan]{__version__}[/cyan]")
-
-    checker = get_version_checker()
-
-    if reset_reminder:
-        if checker:
-            checker.reset_reminder()
-            console.print("[green]Update reminder has been reset.[/green]")
-        else:
-            console.print("[yellow]Version checker not initialized.[/yellow]")
-        return
-
-    if check:
-        if checker is None:
-            console.print("[yellow]Version checker not initialized.[/yellow]")
-            raise typer.Exit(1)
-
-        console.print("\n[dim]Checking for updates...[/dim]")
-
-        # Force a fresh check, bypassing cache intervals
-        info = checker.check_now()
-
-        table = Table(title="Version Information")
-        table.add_column("Property", style="cyan")
-        table.add_column("Value", style="green")
-
-        table.add_row("Current Version", info["current_version"])
-        table.add_row("Latest Version", info["latest_version"] or "Unknown")
-        table.add_row("Last Checked", info["last_checked"] or "Never")
-
-        if info["update_available"]:
-            table.add_row("Update Available", "[bold green]Yes[/bold green]")
-        else:
-            table.add_row("Update Available", "[dim]No[/dim]")
-
-        console.print(table)
-
-        if info["update_available"]:
-            console.print("\n[yellow]Update using one of:[/yellow]")
-            console.print("  pip install --upgrade esgvoc")
-            console.print("  uv pip install --upgrade esgvoc")
-            console.print("  conda update esgvoc")
-            console.print("\n[yellow]After updating, re-activate vocabularies if needed:[/yellow]")
-            console.print("  esgvoc use <project>@latest")
 
 
 def main():

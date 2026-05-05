@@ -151,11 +151,10 @@ esgvoc remove cmip7@v2.0.0
 esgvoc remove cmip7 --all
 ```
 
-### Checking for esgvoc software updates
+### Checking the installed esgvoc version
 
 ```bash
-# Show the installed version and check PyPI for newer releases
-esgvoc version --check
+esgvoc version
 ```
 
 ## Advanced use cases

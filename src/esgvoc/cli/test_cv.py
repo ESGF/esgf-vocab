@@ -50,6 +50,8 @@ _PROJECT_REPOS: dict[str, str] = {
     "input4mips": "PCMDI/input4MIPs_Cvs",
     "obs4ref": "Climate-REF/Obs4REF_CVs",
     "cordex-cmip6": "WCRP-CORDEX/cordex-cmip6-cv",
+    "cordex-cmip5": "WCRP-CORDEX/cordex-cmip5",
+    "emd": "WCRP-CMIP/Essential-Model-Documentation",
 }
 
 _TEMP_VERSION_NAME = "_test_run_temp"
