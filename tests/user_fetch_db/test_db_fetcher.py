@@ -90,13 +90,13 @@ class TestSha256:
 
 class TestOfflineMode:
     def test_offline_raises_on_list_versions(self, tmp_path):
-        fetcher = DBFetcher(cache_dir=tmp_path, offline=True)
+        fetcher = DBFetcher(offline=True)
         with pytest.raises(EsgvocOfflineError):
             fetcher.list_versions("universe")
 
     def test_offline_env_var(self, tmp_path, monkeypatch):
         monkeypatch.setenv("ESGVOC_OFFLINE", "true")
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         with pytest.raises(EsgvocOfflineError):
             fetcher.list_versions("universe")
 
@@ -108,7 +108,7 @@ class TestVersionListing:
             _release("v1.0.0"),
             _release("dev-latest", is_prerelease=True),
         ])
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         fetcher._session = _mock_session(index)
         versions = fetcher.list_versions("universe")
         assert "v2.0.0" in versions
@@ -120,13 +120,13 @@ class TestVersionListing:
             _release("v1.0.0"),
             _release("dev-latest", is_prerelease=True),
         ])
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         fetcher._session = _mock_session(index)
         versions = fetcher.list_versions("universe", include_prerelease=True)
         assert "dev-latest" in versions
 
     def test_unknown_project_raises(self, tmp_path):
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         with pytest.raises(EsgvocVersionNotFoundError):
             fetcher.list_versions("nonexistent_xyz")
 
@@ -136,7 +136,7 @@ class TestVersionListing:
             _release("v2.0.0"),
             _release("v1.5.0"),
         ])
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         fetcher._session = _mock_session(index)
         versions = fetcher.list_versions("universe")
         assert versions[0] == "v2.0.0"
@@ -145,7 +145,7 @@ class TestVersionListing:
 class TestGetArtifact:
     def test_get_specific_version(self, tmp_path):
         index = _make_index([_release("v1.0.0"), _release("v2.0.0")])
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         fetcher._session = _mock_session(index)
         art = fetcher.get_artifact("universe", "v1.0.0")
         assert art.version == "v1.0.0"
@@ -156,44 +156,25 @@ class TestGetArtifact:
             _release("v1.0.0"),
             _release("dev-latest", is_prerelease=True),
         ])
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         fetcher._session = _mock_session(index)
         art = fetcher.get_artifact("universe", "latest")
         assert art.version == "v2.0.0"
 
     def test_version_not_found_raises(self, tmp_path):
         index = _make_index([_release("v1.0.0")])
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         fetcher._session = _mock_session(index)
         with pytest.raises(EsgvocVersionNotFoundError):
             fetcher.get_artifact("universe", "v99.0.0")
 
     def test_no_stable_releases_raises_for_latest(self, tmp_path):
         index = _make_index([_release("dev-latest", is_prerelease=True)])
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         fetcher._session = _mock_session(index)
         with pytest.raises(EsgvocVersionNotFoundError):
             fetcher.get_artifact("universe", "latest")
 
-
-class TestIndexCache:
-    def test_cache_is_written_after_fetch(self, tmp_path):
-        index = _make_index([_release("v1.0.0")])
-        fetcher = DBFetcher(cache_dir=tmp_path)
-        fetcher._session = _mock_session(index)
-        fetcher.list_versions("universe")
-        cache_file = tmp_path / "registry_universe.json"
-        assert cache_file.exists()
-
-    def test_cache_is_used_on_second_call(self, tmp_path):
-        index = _make_index([_release("v1.0.0")])
-        fetcher = DBFetcher(cache_dir=tmp_path)
-        fetcher._session = _mock_session(index)
-        fetcher.list_versions("universe")
-        # Second call with offline mode should hit cache, not network
-        fetcher.offline = True
-        versions = fetcher.list_versions("universe")
-        assert "v1.0.0" in versions
 
 
 class TestDownload:
@@ -212,7 +193,7 @@ class TestDownload:
         artifact = self._make_artifact(content, tmp_path)
         target = tmp_path / "universe" / "v1.0.0.db"
 
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         resp = MagicMock()
         resp.headers = {"content-length": str(len(content))}
         resp.iter_content.return_value = [content]
@@ -231,7 +212,7 @@ class TestDownload:
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(content)
 
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         fetcher._session = MagicMock()
 
         fetcher.download_db(artifact, target, show_progress=False)
@@ -247,7 +228,7 @@ class TestDownload:
         )
         target = tmp_path / "universe" / "v1.0.0.db"
 
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         resp = MagicMock()
         resp.headers = {"content-length": str(len(content))}
         resp.iter_content.return_value = [content]
@@ -263,7 +244,7 @@ class TestDownload:
             project_id="universe", version="v1.0.0",
             download_url="https://example.com/x.db",
         )
-        fetcher = DBFetcher(cache_dir=tmp_path, offline=True)
+        fetcher = DBFetcher(offline=True)
         with pytest.raises(EsgvocOfflineError):
             fetcher.download_db(artifact, tmp_path / "out.db", show_progress=False)
 
@@ -281,19 +262,19 @@ class TestNetworkFetch:
         monkeypatch.setenv("ESGVOC_REGISTRY_BASE_URL", test_registry_url)
 
     def test_list_universe_versions(self, tmp_path):
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         versions = fetcher.list_versions("universe")
         assert len(versions) > 0
         assert any(v.startswith("v") for v in versions)
 
     def test_get_universe_v1_artifact(self, tmp_path):
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         art = fetcher.get_artifact("universe", "v1.0.0")
         assert art.version == "v1.0.0"
         assert art.download_url.startswith("https://")
 
     def test_download_universe_v1(self, tmp_path):
-        fetcher = DBFetcher(cache_dir=tmp_path)
+        fetcher = DBFetcher()
         art = fetcher.get_artifact("universe", "v1.0.0")
         target = tmp_path / "universe" / "v1.0.0.db"
         fetcher.download_db(art, target, show_progress=False)

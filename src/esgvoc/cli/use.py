@@ -76,6 +76,12 @@ def use(
             raise typer.Exit(1)
         name = installed[-1]
         console.print(f"[dim]Defaulting to newest installed: {name}[/dim]")
+        target = UserState.db_path(project_id, name)
+        if not target.exists():
+            console.print(f"[red]DB file missing:[/red] {target}")
+            raise typer.Exit(1)
+        _activate(state, project_id, name, "local", checksum=None)
+        return
 
     # ---------------------------------------------------------------
     # Case 2: registry name → check checksum, download if missing or stale
