@@ -93,6 +93,71 @@ esgvoc valid IPSL cmip6plus:institution_id:ipsl
 ### Batch operations
 - The CLI supports batch validation or querying by specifying multiple terms in a single command.
 
+## Vocabulary management commands
+
+### Downloading and activating a vocabulary
+
+```bash
+# Download and activate the latest stable version
+esgvoc use cmip7@latest
+
+# Download and activate a specific version
+esgvoc use cmip7@v2.1.0
+
+# Activate the newest already-installed version (no download)
+esgvoc use cmip7
+```
+
+### Checking status
+
+```bash
+# Show installed projects and active versions
+esgvoc status
+
+# Show with full filesystem paths
+esgvoc status --paths
+```
+
+### Listing versions
+
+```bash
+# List installed versions for a project
+esgvoc list cmip7
+
+# Also show versions available for download
+esgvoc list cmip7 --available
+
+# Show full registry metadata
+esgvoc list-remote cmip7
+```
+
+### Updating vocabularies
+
+```bash
+# Update all installed projects to the latest stable release
+esgvoc update
+
+# Check for updates without downloading
+esgvoc update --check
+```
+
+### Removing installed databases
+
+```bash
+# Remove a specific version
+esgvoc remove cmip7@v2.0.0
+
+# Remove all versions for a project
+esgvoc remove cmip7 --all
+```
+
+### Checking for esgvoc software updates
+
+```bash
+# Show the installed version and check PyPI for newer releases
+esgvoc version --check
+```
+
 ## Advanced use cases
 
 - **Scripting and automation**:
