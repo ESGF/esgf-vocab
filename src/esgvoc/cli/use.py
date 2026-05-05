@@ -78,11 +78,11 @@ def use(
         console.print(f"[dim]Defaulting to newest installed: {name}[/dim]")
 
     # ---------------------------------------------------------------
-    # Case 2: registry name → auto-download if not on disk
+    # Case 2: registry name → check checksum, download if missing or stale
     # ---------------------------------------------------------------
     target = UserState.db_path(project_id, name)
 
-    if not target.exists() and _is_registry_name(name):
+    if _is_registry_name(name):
         from esgvoc.core.db_fetcher import DBFetcher, EsgvocVersionNotFoundError
         from esgvoc.core.github_registry import known_project_ids
 
@@ -120,9 +120,10 @@ def use(
             import hashlib
             digest = hashlib.sha256(target.read_bytes()).hexdigest()
             if digest == artifact.checksum_sha256:
-                console.print(f"[dim]{project_id}@{name} already on disk, checksum matches.[/dim]")
+                console.print(f"[dim]{project_id}@{name} already up-to-date, checksum matches.[/dim]")
                 _activate(state, project_id, name, "registry", artifact.checksum_sha256)
                 return
+            console.print(f"[yellow]{project_id}@{name} has changed remotely, re-downloading…[/yellow]")
 
         mb = (artifact.size_bytes or 0) / 1_048_576
         console.print(f"Downloading [cyan]{project_id}@{name}[/cyan] ({mb:.1f} MB)…")
@@ -136,23 +137,16 @@ def use(
         return
 
     # ---------------------------------------------------------------
-    # Case 3: local name or already-downloaded registry version
+    # Case 3: local name
     # ---------------------------------------------------------------
     if not target.exists():
-        if _is_registry_name(name):
-            console.print(
-                f"[red]DB file missing:[/red] {target}\n"
-                f"Re-run: esgvoc use {project_id}@{name}"
-            )
-        else:
-            console.print(
-                f"[red]'{name}' is not installed for '{project_id}'.[/red]\n"
-                f"Build and install it first: esgvoc admin build … && esgvoc admin install {project_id} <path> --name {name}"
-            )
+        console.print(
+            f"[red]'{name}' is not installed for '{project_id}'.[/red]\n"
+            f"Build and install it first: esgvoc admin build … && esgvoc admin install {project_id} <path> --name {name}"
+        )
         raise typer.Exit(1)
 
-    source = "registry" if _is_registry_name(name) else "local"
-    _activate(state, project_id, name, source, checksum=None)
+    _activate(state, project_id, name, "local", checksum=None)
 
 
 def _activate(
