@@ -41,8 +41,7 @@ def dbs():
 def clean_all():
     """[Removed] Use 'esgvoc remove' to delete installed databases."""
     console.print(
-        "[red]'esgvoc clean all' has been removed.[/red]\n"
-        "Use [cyan]esgvoc remove <project> --all[/cyan] instead."
+        "[red]'esgvoc clean all' has been removed.[/red]\nUse [cyan]esgvoc remove <project> --all[/cyan] instead."
     )
     raise typer.Exit(1)
 
@@ -50,8 +49,5 @@ def clean_all():
 @app.command()
 def component():
     """[Removed] The dev-tier config system has been eliminated."""
-    console.print(
-        "[red]'esgvoc clean component' has been removed.[/red]\n"
-        "The dev-tier config system no longer exists."
-    )
+    console.print("[red]'esgvoc clean component' has been removed.[/red]\nThe dev-tier config system no longer exists.")
     raise typer.Exit(1)

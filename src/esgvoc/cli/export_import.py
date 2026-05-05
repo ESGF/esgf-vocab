@@ -304,4 +304,4 @@ def import_cmd(
     )
 
     if offline:
-        console.print("\n[yellow]Tip:[/yellow] To force offline mode for all commands use: " "esgvoc offline enable")
+        console.print("\n[yellow]Tip:[/yellow] To force offline mode for all commands use: esgvoc offline enable")
