@@ -1,8 +1,8 @@
 from esgvoc.api.data_descriptors.activity import Activity, ActivityCMIP7
 from esgvoc.api.data_descriptors.archive import Archive
 from esgvoc.api.data_descriptors.area_label import AreaLabel
-from esgvoc.api.data_descriptors.branding_suffix import BrandingSuffix
 from esgvoc.api.data_descriptors.branded_variable import BrandedVariable
+from esgvoc.api.data_descriptors.branding_suffix import BrandingSuffix
 from esgvoc.api.data_descriptors.citation_url import CitationUrl
 from esgvoc.api.data_descriptors.contact import Contact
 from esgvoc.api.data_descriptors.conventions import Convention
@@ -27,7 +27,6 @@ from esgvoc.api.data_descriptors.EMD_models.horizontal_units import HorizontalUn
 from esgvoc.api.data_descriptors.EMD_models.model import Model
 from esgvoc.api.data_descriptors.EMD_models.model_component import EMDModelComponent
 from esgvoc.api.data_descriptors.EMD_models.reference import Reference
-from esgvoc.api.data_descriptors.EMD_models.resolution import EMDResolution
 from esgvoc.api.data_descriptors.EMD_models.temporal_refinement import TemporalRefinement
 from esgvoc.api.data_descriptors.EMD_models.truncation_method import TruncationMethod
 from esgvoc.api.data_descriptors.EMD_models.vertical_computational_grid import VerticalComputationalGrid
@@ -140,13 +139,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "archive": Archive,
     "drs_specs": DRSSpecs,
     "nominal_resolution": NominalResolution,
-    "grid_arrangement": Arrangement,  # EMD v1.0
-    "cell_variable_type": CellVariableType,  # EMD v1.0
-    "grid_mapping": GridMapping,  # EMD v1.0
-    "grid_region": GridRegion,  # EMD v1.0
     "grid_temporal_refinement": TemporalRefinement,  # EMD v1.0
-    "truncation_method": TruncationMethod,  # EMD v1.0
-    "grid_type": GridType,  # EMD v1.0
     "horizontal_units": HorizontalUnits,
     "vertical_coordinate": VerticalCoordinate,
     "horizontal_grid_cell": HorizontalGridCells,

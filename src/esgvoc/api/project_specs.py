@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 
 class DrsType(str, Enum):
@@ -50,17 +50,27 @@ class AttributeProperty(BaseModel):
     A NetCDF global attribute property specification.
     """
 
-    source_collection: str
+    model_config = ConfigDict(populate_by_name=True)
+
+    source_collection: str | None
     "The project collection that originated the property."
     is_required: bool
     "Specifies if the attribute must be present in the NetCDF file."
-    value_type: str
+    attr_field_value_type: str = Field(
+        validation_alias=AliasChoices("attr_field_value_type", "value_type")
+    )
     "The type of the attribute value."
     specific_key: str | None = None
     "Specifies a specific key in the collection."
-    field_name: str | None = None
+    attr_field_name: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("attr_field_name", "field_name"),
+    )
     "The name of the attribute field."
-    default_value: str | None = None
+    attr_field_na_value: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("attr_field_na_value", "default_value"),
+    )
     "The default value for the attribute."
 
 

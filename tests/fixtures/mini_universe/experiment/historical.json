@@ -1,0 +1,8 @@
+{
+    "@context": "000_context.jsonld",
+    "id": "historical",
+    "type": "experiment",
+    "description": "Historical simulation",
+    "parent_experiment": "piControl",
+    "related_experiments": ["piControl", "https://example.com/universe/experiment/abrupt-4xCO2"]
+}

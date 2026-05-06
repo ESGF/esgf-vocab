@@ -13,20 +13,6 @@ Major changes from v0.993:
 """
 
 # Core EMD models
-from .model import Model
-from .model_component import EMDModelComponent
-from .reference import Reference
-
-# Grid models (v1.0 nested structure)
-from .horizontal_computational_grid import HorizontalComputationalGrid
-from .horizontal_grid_cells import HorizontalGridCells
-from .horizontal_subgrid import HorizontalSubgrid
-from .vertical_computational_grid import VerticalComputationalGrid
-from .vertical_units import VerticalUnits
-
-# Supporting models
-from .resolution import EMDResolution
-
 # Controlled Vocabulary (CV) models - EMD Section 7
 from .arrangement import Arrangement
 from .calendar import Calendar
@@ -36,8 +22,21 @@ from .coordinate import Coordinate
 from .grid_mapping import GridMapping
 from .grid_region import GridRegion
 from .grid_type import GridType
+
+# Grid models (v1.0 nested structure)
+from .horizontal_computational_grid import HorizontalComputationalGrid
+from .horizontal_grid_cells import HorizontalGridCells
+from .horizontal_subgrid import HorizontalSubgrid
+from .model import Model
+from .model_component import EMDModelComponent
+from .reference import Reference
+
+# Supporting models
+from .resolution import EMDResolution
 from .temporal_refinement import TemporalRefinement
 from .truncation_method import TruncationMethod
+from .vertical_computational_grid import VerticalComputationalGrid
+from .vertical_units import VerticalUnits
 
 __all__ = [
     # Core models

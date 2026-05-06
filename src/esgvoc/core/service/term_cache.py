@@ -1,9 +1,6 @@
 """Caching for resolved JSON-LD terms to improve performance."""
 
-import json
 import logging
-from functools import lru_cache
-from pathlib import Path
 from typing import Dict
 
 logger = logging.getLogger(__name__)

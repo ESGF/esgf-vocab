@@ -1,5 +1,4 @@
 import logging
-import re
 from typing import Any, List, Optional
 
 import typer
@@ -21,20 +20,12 @@ from esgvoc.api.universe import (
     get_term_in_data_descriptor,
     get_term_in_universe,
 )
+from esgvoc.cli.syntax_util import handle_unknown, validate_key_format
 
 app = typer.Typer()
 console = Console()
 
 _LOGGER = logging.getLogger(__name__)
-
-
-def validate_key_format(key: str):
-    """
-    Validate if the key matches the XXXX:YYYY:ZZZZ format.
-    """
-    if not re.match(r"^[a-zA-Z0-9\/_-]*:[a-zA-Z0-9\/_-]*:[a-zA-Z0-9\/_.-]*$", key):
-        raise typer.BadParameter(f"Invalid key format: {key}. Must be XXXX:YYYY:ZZZZ.")
-    return key.split(":")
 
 
 def handle_universe(data_descriptor_id: str | None, term_id: str | None, options=None):
@@ -78,10 +69,6 @@ def handle_project(project_id: str, collection_id: str | None, term_id: str | No
         else:
             return res
         # dict[str, dict]:
-
-
-def handle_unknown(x: str | None, y: str | None, z: str | None):
-    print(f"Something wrong in X,Y or Z : X={x}, Y={y}, Z={z}")
 
 
 def display(data: Any):

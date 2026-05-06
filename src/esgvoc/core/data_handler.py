@@ -1,11 +1,12 @@
-import os
 import json
 import logging
+import os
 from functools import cached_property
-from typing import Any, Optional, Dict
+from typing import Any, Dict, Optional
+
 import requests
+from pydantic import BaseModel, ConfigDict, model_validator
 from pyld import jsonld
-from pydantic import BaseModel, model_validator, ConfigDict
 
 # Configure logging
 _LOGGER = logging.getLogger(__name__)

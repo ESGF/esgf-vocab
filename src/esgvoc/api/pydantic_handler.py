@@ -1,5 +1,5 @@
 from functools import reduce
-from typing import TYPE_CHECKING, Annotated, Any, Iterable, Type, Union
+from typing import TYPE_CHECKING, Annotated, Any, Iterable, Type
 
 from pydantic import BaseModel, Discriminator, Tag, TypeAdapter
 

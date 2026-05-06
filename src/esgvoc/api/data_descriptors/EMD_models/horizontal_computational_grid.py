@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import List
 
-from pydantic import Field, field_validator, AfterValidator
+from pydantic import Field, field_validator
 
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 

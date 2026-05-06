@@ -6,7 +6,7 @@ import typer
 from rich.console import Console
 
 from esgvoc.api.projects import get_all_projects
-from esgvoc.apps.jsg.json_schema_generator import generate_json_schema, pretty_print_json_node
+from esgvoc.apps.jsg.json_schema_generator import generate_json_schema
 
 app = typer.Typer()
 console = Console()
@@ -51,7 +51,7 @@ def schema(
     if project_id not in known_projects:
         console.print(f"[red]Error: Unknown project '{project_id}'[/red]")
         console.print(f"[yellow]Available projects: {', '.join(known_projects.keys())}[/yellow]")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None
 
     try:
         _LOGGER.info(f"Generating JSON schema for project '{project_id}'")
@@ -70,4 +70,4 @@ def schema(
     except Exception as e:
         console.print(f"[red]Error generating schema: {e}[/red]")
         _LOGGER.exception("Schema generation failed")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None

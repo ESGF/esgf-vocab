@@ -1,0 +1,19 @@
+{
+    "@context": {
+        "@base": "https://example.com/universe/experiment/",
+        "@vocab": "http://schema.org/",
+        "id": "@id",
+        "type": "@type",
+        "description": {"@id": "https://schema.org/description"},
+        "parent_experiment": {
+            "@id": "https://example.com/universe/experiment/",
+            "@type": "@id",
+            "@context": {"@base": "https://example.com/universe/experiment/"}
+        },
+        "related_experiments": {
+            "@id": "https://example.com/universe/experiment/",
+            "@type": "@id",
+            "@context": {"@base": "https://example.com/universe/experiment/"}
+        }
+    }
+}

@@ -8,7 +8,7 @@ from jinja2 import Environment, FileSystemLoader
 from sqlmodel import Session
 
 from esgvoc.api import projects, search
-from esgvoc.api.project_specs import CatalogProperty, DrsType, LinkProperty
+from esgvoc.api.project_specs import CatalogProperty, LinkProperty
 from esgvoc.core.constants import COMPOSITE_REQUIRED_KEY, DRS_SPECS_JSON_KEY, PATTERN_JSON_KEY
 from esgvoc.core.db.models.project import PCollection, PTerm, TermKind
 from esgvoc.core.db.models.universe import UTerm

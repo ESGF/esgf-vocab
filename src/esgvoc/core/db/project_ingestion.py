@@ -8,7 +8,6 @@ from sqlalchemy import text
 
 import esgvoc.core.constants
 import esgvoc.core.db.connection as db
-import esgvoc.core.service as service
 from esgvoc.core.data_handler import JsonLdResource
 from esgvoc.core.db.connection import DBConnection, read_json_file, read_yaml_file
 from esgvoc.core.db.models.mixins import TermKind
@@ -57,6 +56,7 @@ def ingest_collection(
     collection_dir_path: Path,
     project: Project,
     project_db_session,
+    universe_local_path: str,
     missing_links_tracker: Optional["MissingLinksTracker"] = None,
 ) -> None:
     from esgvoc.core.service.resolver_config import ResolverConfig
@@ -87,7 +87,7 @@ def ingest_collection(
             try:
                 # Map both universe and project URLs to their local paths
                 locally_avail = {
-                    "https://esgvoc.ipsl.fr/resource/universe": service.current_state.universe.local_path,
+                    "https://esgvoc.ipsl.fr/resource/universe": universe_local_path,
                     f"https://esgvoc.ipsl.fr/resource/{project.id}": str(collection_dir_path.parent),
                 }
 
@@ -117,7 +117,7 @@ def ingest_collection(
                 json_specs = merger.resolve_merged_ids(
                     merged_data,
                     context_base_path=str(collection_dir_path.parent),
-                    fallback_context_base_path=service.current_state.universe.local_path,
+                    fallback_context_base_path=universe_local_path,
                 )
 
                 term_kind = infer_term_kind(json_specs)
@@ -184,6 +184,7 @@ def ingest_project(
     project_dir_path: Path,
     project_db_file_path: Path,
     git_hash: str,
+    universe_local_path: str,
     missing_links_tracker: Optional["MissingLinksTracker"] = None,
 ):
     try:
@@ -225,7 +226,7 @@ def ingest_project(
             if collection_dir_path.is_dir() and (collection_dir_path / "000_context.jsonld").exists():
                 _LOGGER.debug(f"found collection dir : {collection_dir_path}")
                 try:
-                    ingest_collection(collection_dir_path, project, project_db_session, missing_links_tracker)
+                    ingest_collection(collection_dir_path, project, project_db_session, universe_local_path, missing_links_tracker)
                 except Exception as e:
                     msg = f"unexpected error while ingesting collection {collection_dir_path}"
                     _LOGGER.fatal(msg)
