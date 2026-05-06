@@ -1,214 +1,97 @@
-# ESGVoc Testing Guide
+# Test Suite
 
-## Overview
+## Repos directory (for build tests)
 
-The esgvoc test suite uses a configuration-based system to test against different CV (Controlled Vocabulary) branches and project combinations. This ensures that tests can validate both development and production environments.
+Build tests (`admin_build_db/`) need locally cloned CV repositories.
+By default they are looked up in the **parent directory of the project root**
+(i.e. the folder that contains `esgf-vocab/` alongside `WCRP-universe/`, `CMIP6_CVs/`, …).
+Override with `ESGVOC_REPOS_DIR` if your layout differs.
 
-## Configuration Types
+**bash / zsh**
+```bash
+export ESGVOC_REPOS_DIR=/path/to/your/repos
+```
 
-The test suite supports three main configurations:
+**fish**
+```fish
+set -x ESGVOC_REPOS_DIR /path/to/your/repos
+```
 
-### 1. `default_dev` (Development Testing)
-- **Projects**: cmip6 + cmip6plus
-- **Branches**: `esgvoc_dev`
-- **Purpose**: Development and testing of new features
-- **When to use**: During active development of esgvoc library and CVs
+Tests in that suite are skipped automatically when the repos are not found.
 
-### 2. `default` (Production Testing)
-- **Projects**: cmip6 + cmip6plus
-- **Branches**: `esgvoc` (production branches)
-- **Purpose**: Pre-release validation and production testing
-- **When to use**: Before releasing to production, CI/CD pipelines
+---
 
-### 3. `all_dev` (Multi-Project Testing)
-- **Projects**: All 7 projects (cmip6, cmip6plus, cmip7, cordex-cmip6, input4mip, obs4ref, emd)
-- **Branches**: `esgvoc_dev`
-- **Purpose**: Testing features that require multiple projects
-- **When to use**: Testing multi-project functionality like duplicate collections
+## Registry
 
-## Running Tests
+The default registry is `https://raw.githubusercontent.com/WCRP-CMIP/esgvoc_registry/main`.
+Override with `ESGVOC_REGISTRY_BASE_URL` if you need to point to a different registry.
 
-### Development Testing (Default)
+---
+
+## Quick reference
 
 ```bash
-# Uses default_dev configuration (esgvoc_dev branches)
+# Default run — fast tests only (slow/build tests excluded)
 uv run pytest tests/
+
+# Pure unit tests — no network, no DB required (~1 s)
+uv run pytest tests/ -m "not needs_network and not needs_db and not slow"
+
+# All non-slow tests including DB/network (~10 s, downloads DBs on first run)
+uv run pytest tests/ -m "not slow"
+
+# DB tests offline — requires DBs pre-installed (see section below)
+ESGVOC_OFFLINE=true uv run pytest tests/ -m needs_db
+
+# Slow build tests only (local repos in tests_to_migrate/integration/data_test/repos/)
+uv run pytest tests/ -m slow --override-ini="addopts="
+
+# Live network tests only (always hits the registry)
+uv run pytest tests/ -m needs_network
+
+# Everything (slow + network + db)
+uv run pytest tests/ --override-ini="addopts="
+
+# Coverage report
+uv run pytest tests/ --cov=esgvoc --cov-report=term-missing
 ```
 
-### Production Testing
+## Markers
+
+| Marker | Meaning | Default |
+|---|---|---|
+| `needs_db` | Needs project DB files. Downloads on first run; runs offline once installed. | included |
+| `needs_network` | Always contacts a live server (registry HTTP, git clone). | included |
+| `slow` | Time-expensive — full DB builds, large ingestion (~15 s+ per test). | **excluded** |
+| `cvtest` | Legacy CV repo tests. | **excluded** |
+
+## Structure
+
+```
+tests/
+├── jsonld_handler/     JSON-LD loading, pydantic union models         (no DB)
+├── user_fetch_db/      EsgvocHome, UserState, DBFetcher, esgvoc use   (mocked / needs_network x3)
+├── admin_build_db/     DBBuilder.build_dev() and build_universe()     (slow / needs_network x1)
+├── cli/                esgvoc status, list, remove                    (mocked)
+├── python_api/         api.universe, api.projects                     (needs_db)
+├── drs/                DRS validator + generator smoke tests          (needs_db)
+└── EMD/                EMD model validators                           (no DB)
+```
+
+## Pre-installing DBs for offline development
+
+DBs are stored in the default home (`~/.local/share/esgvoc/` on Linux, or
+`ESGVOC_HOME` if you have set it).  Install once and the tests pick them up
+automatically on every subsequent run — no env var needed.
 
 ```bash
-# Uses default configuration (esgvoc production branches)
-ESGVOC_TEST_CONFIG=default uv run pytest tests/
+# Install once into the default home
+uv run esgvoc use universe@v1.0.0
+uv run esgvoc use cmip7@v1.0.0
+
+# From now on, needs_db tests run with no network at all
+uv run pytest tests/ -m needs_db
+
+# Confirm nothing touches the network
+ESGVOC_OFFLINE=true uv run pytest tests/ -m needs_db
 ```
-
-### Specific Test Files
-
-```bash
-# Run only API tests
-uv run pytest tests/test_api_project.py
-
-# Run with production config
-ESGVOC_TEST_CONFIG=default uv run pytest tests/test_api_project.py
-```
-
-## Environment Variables
-
-### `ESGVOC_TEST_CONFIG`
-
-Controls which configuration is used for the test suite.
-
-- **Values**: `default_dev` (default) | `default` | `all_dev`
-- **Default**: `default_dev`
-- **Example**:
-  ```bash
-  export ESGVOC_TEST_CONFIG=default
-  uv run pytest tests/
-  ```
-
-## Test Configuration System
-
-### How It Works
-
-1. **Session Setup** (`conftest.py`):
-   - Saves the user's current active configuration
-   - Provides fixtures to switch between configurations
-   - Restores the original configuration after all tests complete
-
-2. **Install Test** (`test_install.py`):
-   - Creates required test configurations if they don't exist
-   - Reads `ESGVOC_TEST_CONFIG` to determine which config to use
-   - Synchronizes all projects in the selected configuration
-   - Switches to the selected config for subsequent tests
-
-3. **Individual Tests**:
-   - Most tests use the configuration set by `test_install.py`
-   - Tests requiring specific configs use fixtures:
-     - `use_default_dev_config`: Temporarily switch to default_dev
-     - `use_default_config`: Temporarily switch to default
-     - `use_all_dev_config`: Temporarily switch to all_dev
-
-### Using Fixtures in Tests
-
-```python
-def test_multiple_collections_per_data_descriptor(use_all_dev_config):
-    """This test needs all_dev config for cordex-cmip6 data."""
-    # Test automatically uses all_dev config
-    collections = projects.get_collection_from_data_descriptor_in_project(
-        "cordex-cmip6", "mip_era"
-    )
-    assert len(collections) == 2  # mip_era and project_id
-```
-
-## CI/CD Integration
-
-### Development Pipeline
-
-```yaml
-- name: Run Development Tests
-  run: uv run pytest tests/
-  env:
-    ESGVOC_TEST_CONFIG: default_dev
-```
-
-### Production Pipeline
-
-```yaml
-- name: Run Production Tests
-  run: uv run pytest tests/
-  env:
-    ESGVOC_TEST_CONFIG: default
-```
-
-## Transition from Development to Production
-
-When preparing for a production release:
-
-1. **Verify CVs are released** on `esgvoc` branches
-2. **Run tests against production config**:
-   ```bash
-   ESGVOC_TEST_CONFIG=default uv run pytest tests/
-   ```
-3. **Check all tests pass** with production CVs
-4. **Update CI/CD** to use `default` config for release validation
-
-## Troubleshooting
-
-### "Config not found" error
-
-If you get a configuration not found error:
-```bash
-# Re-run the install test to create missing configs
-uv run pytest tests/test_install.py
-```
-
-### Tests using wrong configuration
-
-Check the environment variable:
-```bash
-echo $ESGVOC_TEST_CONFIG
-# Should be either empty (uses default_dev) or "default" or "all_dev"
-```
-
-Unset if needed:
-```bash
-unset ESGVOC_TEST_CONFIG
-```
-
-### User config not restored
-
-If your original configuration isn't restored after tests:
-```bash
-# Manually switch back
-esgvoc config switch your-original-config
-```
-
-The session fixture should handle this automatically, but if tests are interrupted, you may need to manually restore.
-
-## Adding New Test Configurations
-
-To add a new test configuration:
-
-1. **Create configuration function** in `test_install.py`:
-   ```python
-   def _ensure_my_config_exists():
-       my_config = {
-           "projects": [...],
-           "universe": {...}
-       }
-       if "my_config" not in service.config_manager.list_configs():
-           service.config_manager.add_config("my_config", my_config)
-   ```
-
-2. **Call in test_install()**:
-   ```python
-   _ensure_my_config_exists()
-   ```
-
-3. **Add fixture in conftest.py**:
-   ```python
-   @pytest.fixture
-   def use_my_config():
-       """Fixture to switch to 'my_config' for a test."""
-       switch_to_config("my_config")
-       yield
-   ```
-
-4. **Update README** with the new configuration
-
-## Best Practices
-
-1. **Use fixtures for specific configs**: If a test needs a specific configuration, use the appropriate fixture rather than manually switching.
-
-2. **Keep configs in sync**: When CV structure changes, update the config definitions in `test_install.py`.
-
-3. **Test both dev and prod**: Before releases, run the full test suite against both `default_dev` and `default` configurations.
-
-4. **Don't commit config changes**: The test suite creates configs automatically - don't manually modify them in your user config directory.
-
-## Related Files
-
-- `tests/conftest.py`: Configuration fixtures and session management
-- `tests/test_install.py`: Config creation and initialization
-- `tests/test_api_project.py`: Example of using `use_all_dev_config` fixture
-- `tests/api_inputs.py`: Test data based on cmip6/cmip6plus projects

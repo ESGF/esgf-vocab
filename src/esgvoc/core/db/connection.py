@@ -3,6 +3,7 @@ from pathlib import Path
 
 import yaml
 from sqlalchemy import Engine
+from sqlalchemy.pool import NullPool
 from sqlmodel import Session, create_engine
 
 
@@ -10,7 +11,11 @@ class DBConnection:
     SQLITE_URL_PREFIX = 'sqlite://'
 
     def __init__(self, db_file_path: Path, echo: bool = False) -> None:
-        self.engine = create_engine(f'{DBConnection.SQLITE_URL_PREFIX}/{db_file_path}', echo=echo)
+        self.engine = create_engine(
+            f'{DBConnection.SQLITE_URL_PREFIX}/{db_file_path}',
+            echo=echo,
+            poolclass=NullPool,
+        )
         self.name = db_file_path.stem
         self.file_path = db_file_path.absolute()
 

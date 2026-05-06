@@ -1,20 +1,15 @@
-from esgvoc.core.service import current_state
+"""
+esgvoc.api.service — legacy shim
+
+The old `install()` function (which cloned repos and built DBs via the dev-tier
+config system) has been removed. Use `esgvoc use <project>@<version>` instead
+to download and activate a pre-built database.
+"""
 
 
-def install(fail_on_missing_links: bool = False) -> int:
-    """Synchronize all repositories and databases.
-
-    This function clones/updates the remote repositories and rebuilds
-    the local database caches as needed.
-
-    Args:
-        fail_on_missing_links: If True, track missing @id references and
-            return -1 if any were found. Defaults to False.
-
-    Returns:
-        0 if successful, -1 if missing links were found (when fail_on_missing_links=True).
-    """
-    result = current_state.synchronize_all(fail_on_missing_links=fail_on_missing_links)
-    current_state.fetch_versions()
-    current_state.connect_db()
-    return result
+def install(*args, **kwargs):
+    raise NotImplementedError(
+        "'install()' has been removed. "
+        "Use 'esgvoc use <project>@<version>' (CLI) or "
+        "download a pre-built database via DBFetcher."
+    )

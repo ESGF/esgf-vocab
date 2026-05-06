@@ -1,277 +1,387 @@
 """
-Main validator interface for NetCDF global attributes.
+GA — Global Attributes validator for NetCDF files.
 
-This module provides the high-level API for validating NetCDF global attributes
-against project specifications loaded from the esgvoc database.
+Validates each attribute in a NetCDF file against the controlled vocabulary
+specifications stored in the esgvoc project database.
+
+Public API
+----------
+    parse_ncdump_global_attributes(ncdump_output) -> dict[str, Any]
+    GAValidator(project_id, specs=None)
+        .validate(attributes, filename=None)    -> GAReport
+        .validate_ncdump(ncdump_output, ...)    -> GAReport
+    GAReport          — result dataclass with .is_valid, .errors, .missing, .extra
+    AttributeResult   — per-attribute validation outcome
 """
 
-from typing import Optional, Dict, Any, List
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass, field
+from typing import Any
 
 import esgvoc.api.projects as projects
-from esgvoc.api.project_specs import AttributeSpecification
+from esgvoc.api.project_specs import AttributeProperty, AttributeSpecification
 from esgvoc.core.exceptions import EsgvocNotFoundError
-from .models import (
-    NetCDFHeader,
-    NetCDFHeaderParser,
-    ValidationReport,
-    ValidationSeverity,
-)
-from .models.validator import GlobalAttributeValidator
+
+# ---------------------------------------------------------------------------
+# ncdump parser
+# ---------------------------------------------------------------------------
+
+
+def parse_ncdump_global_attributes(ncdump_output: str) -> dict[str, Any]:
+    """
+    Extract global attributes from ``ncdump -h`` output.
+
+    Returns a dict of ``{attribute_name: value}`` where value is ``str``,
+    ``int``, or ``float`` as determined by the ncdump representation.
+    Multiline string values (comma-continued lines) are collapsed to their
+    first segment — sufficient for CV-validated attributes which are always
+    single values.
+    """
+    attrs: dict[str, Any] = {}
+    in_globals = False
+    pending_name: str | None = None
+    pending_parts: list[str] = []
+
+    for raw_line in ncdump_output.splitlines():
+        line = raw_line.strip()
+
+        if line == "// global attributes:":
+            in_globals = True
+            continue
+
+        if not in_globals:
+            continue
+
+        # End of file or section boundary (non-attribute line that doesn't
+        # continue a pending attribute)
+        if (not line or line == "}") and pending_name is None:
+            break
+
+        if line.startswith(":"):
+            # Flush any pending multiline attribute
+            if pending_name is not None:
+                attrs[pending_name] = _join_and_parse(pending_parts)
+                pending_name, pending_parts = None, []
+
+            m = re.match(r":(\w+)\s*=\s*(.*)", line)
+            if not m:
+                continue
+            name = m.group(1)
+            rest = m.group(2)
+
+            if line.endswith(";"):
+                attrs[name] = _parse_attr_value(rest.rstrip(";").strip())
+            else:
+                # Multiline: collect continuation lines
+                pending_name = name
+                pending_parts = [rest.rstrip(",").strip()]
+
+        elif pending_name is not None:
+            part = line.rstrip(";").rstrip(",").strip()
+            pending_parts.append(part)
+            if line.endswith(";"):
+                attrs[pending_name] = _join_and_parse(pending_parts)
+                pending_name, pending_parts = None, []
+
+    if pending_name is not None:
+        attrs[pending_name] = _join_and_parse(pending_parts)
+
+    return attrs
+
+
+def _join_and_parse(parts: list[str]) -> Any:
+    """Collapse multiline ncdump value parts and parse the first segment."""
+    joined = " ".join(parts)
+    return _parse_attr_value(joined)
+
+
+def _parse_attr_value(raw: str) -> Any:
+    """Convert a raw ncdump value string to a Python scalar."""
+    raw = raw.strip()
+
+    if raw.startswith('"'):
+        # Quoted string — extract first complete quoted segment
+        m = re.match(r'"((?:[^"\\]|\\.)*)"', raw)
+        if m:
+            return m.group(1).replace("\\n", "\n").replace('\\"', '"')
+        return raw.lstrip('"')
+
+    # Numeric — ncdump uses trailing 'f' suffix for single-precision floats
+    clean = raw.rstrip("f")
+    try:
+        return int(clean)
+    except ValueError:
+        pass
+    try:
+        return float(clean)
+    except ValueError:
+        pass
+    return raw
+
+
+# ---------------------------------------------------------------------------
+# Result types
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class AttributeResult:
+    """Outcome of validating one global attribute."""
+
+    name: str
+    """NetCDF attribute name."""
+    valid: bool
+    """True when the value was accepted."""
+    message: str
+    """Human-readable explanation (short)."""
+    value: Any = None
+    """The actual value found in the file."""
+    collection: str | None = None
+    """Collection used for validation, if any."""
+
+
+@dataclass
+class GAReport:
+    """Validation report for the global attributes of a NetCDF file."""
+
+    project_id: str
+    filename: str | None
+    results: list[AttributeResult] = field(default_factory=list)
+    """One entry per attribute that has a spec entry."""
+    missing: list[str] = field(default_factory=list)
+    """Required attributes that were absent from the file."""
+    extra: list[str] = field(default_factory=list)
+    """Attributes present in the file but not in the project spec."""
+
+    @property
+    def is_valid(self) -> bool:
+        return not self.missing and all(r.valid for r in self.results)
+
+    @property
+    def errors(self) -> list[AttributeResult]:
+        """Validated attributes that failed."""
+        return [r for r in self.results if not r.valid]
+
+    def __str__(self) -> str:
+        header = f"GA Validation — project={self.project_id}"
+        if self.filename:
+            header += f"  file={self.filename}"
+        status = "VALID" if self.is_valid else "INVALID"
+        counts = f"{len(self.errors)} error(s), {len(self.missing)} missing, {len(self.extra)} extra"
+        lines = [header, f"Status: {status}  ({counts})"]
+
+        if self.errors:
+            lines.append("\nErrors:")
+            for r in self.errors:
+                lines.append(f"  • {r.name} = {r.value!r}: {r.message}")
+
+        if self.missing:
+            lines.append("\nMissing required attributes:")
+            for a in self.missing:
+                lines.append(f"  • {a}")
+
+        if self.extra:
+            lines.append(f"\nExtra attributes ({len(self.extra)}): {', '.join(self.extra)}")
+
+        return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Validator
+# ---------------------------------------------------------------------------
 
 
 class GAValidator:
     """
-    Main validator class for the GA (Global Attributes) application.
+    Validate NetCDF global attributes against a project's controlled vocabulary.
 
-    This class provides a high-level interface for validating NetCDF global
-    attributes against project specifications loaded from the esgvoc database.
+    Parameters
+    ----------
+    project_id:
+        esgvoc project identifier (e.g. ``"cmip6"``, ``"cmip7"``).
+    specs:
+        Pre-loaded attribute specifications.  When ``None`` (default) the
+        specs are loaded from the active database for *project_id*.
+        Passing specs explicitly is useful for testing without a database.
+
+    Raises
+    ------
+    EsgvocNotFoundError
+        If *project_id* is not found in the database (only when *specs* is None).
+    ValueError
+        If the project exists but has no ``attr_specs`` defined.
     """
 
-    def __init__(self, project_id: str = "cmip6"):
-        """
-        Initialize the GA validator.
-
-        :param project_id: Project identifier for validation
-        """
+    def __init__(self, project_id: str, specs: AttributeSpecification | None = None):
         self.project_id = project_id
+        self._specs: AttributeSpecification = specs if specs is not None else self._load_specs()
 
-        # Load attribute specifications from database
-        self.attribute_specs = self._load_from_database()
-
-        # Initialize the validator
-        self.validator = GlobalAttributeValidator(self.attribute_specs, project_id)
-
-    def _load_from_database(self) -> AttributeSpecification:
-        """Load attribute specifications from the esgvoc database."""
+    def _load_specs(self) -> AttributeSpecification:
         project = projects.get_project(self.project_id)
-
         if project is None:
-            raise EsgvocNotFoundError(f"Project '{self.project_id}' not found in database")
-
+            raise EsgvocNotFoundError(f"project '{self.project_id}' not found")
         if project.attr_specs is None:
-            raise ValueError(f"Project '{self.project_id}' has no attribute specifications")
-
+            raise ValueError(f"project '{self.project_id}' has no attribute specifications (attr_specs)")
         return project.attr_specs
 
-    def validate_from_ncdump(self, ncdump_output: str, filename: Optional[str] = None) -> ValidationReport:
-        """
-        Validate global attributes from ncdump command output.
+    # ------------------------------------------------------------------
+    # Public validation entry-points
+    # ------------------------------------------------------------------
 
-        :param ncdump_output: Output from ncdump -h command
-        :param filename: Optional filename for reporting
-        :return: Validation report
+    def validate(
+        self,
+        attributes: dict[str, Any],
+        filename: str | None = None,
+    ) -> GAReport:
         """
-        # Parse the NetCDF header
-        try:
-            header = NetCDFHeaderParser.parse_from_ncdump(ncdump_output)
-        except Exception as e:
-            # Return error report if parsing fails
-            report = ValidationReport(filename=filename, project_id=self.project_id, is_valid=False)
-            report.add_issue(
-                {
-                    "attribute_name": "parse_error",
-                    "severity": ValidationSeverity.ERROR,
-                    "message": f"Failed to parse ncdump output: {str(e)}",
-                    "actual_value": None,
-                    "expected_value": None,
-                    "source_collection": None,
-                }
+        Validate a dictionary of global attributes.
+
+        Parameters
+        ----------
+        attributes:
+            ``{attr_name: value}`` as extracted from the NetCDF file.
+        filename:
+            Optional filename for reporting purposes.
+        """
+        spec_by_name = self._build_spec_index()
+
+        results: list[AttributeResult] = []
+        missing: list[str] = []
+        extra: list[str] = []
+
+        for name, spec in spec_by_name.items():
+            if spec.is_required and name not in attributes:
+                missing.append(name)
+
+        for attr_name, attr_value in attributes.items():
+            if attr_name not in spec_by_name:
+                extra.append(attr_name)
+                continue
+            results.append(self._validate_one(attr_name, attr_value, spec_by_name[attr_name]))
+
+        return GAReport(
+            project_id=self.project_id,
+            filename=filename,
+            results=results,
+            missing=missing,
+            extra=extra,
+        )
+
+    def validate_ncdump(
+        self,
+        ncdump_output: str,
+        filename: str | None = None,
+    ) -> GAReport:
+        """
+        Parse ``ncdump -h`` output and validate the global attributes.
+
+        If *filename* is not provided it is extracted from the ncdump header.
+        """
+        attrs = parse_ncdump_global_attributes(ncdump_output)
+        if filename is None:
+            m = re.match(r"netcdf\s+(.+?)\s*\{", ncdump_output.lstrip())
+            if m:
+                filename = m.group(1)
+        return self.validate(attrs, filename)
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+
+    def _build_spec_index(self) -> dict[str, AttributeProperty]:
+        """Map each effective attribute name to its AttributeProperty."""
+        index: dict[str, AttributeProperty] = {}
+        for spec in self._specs:
+            name = spec.attr_field_name or spec.source_collection
+            if name is not None:
+                index[name] = spec
+        return index
+
+    def _validate_one(self, name: str, value: Any, spec: AttributeProperty) -> AttributeResult:
+        """Validate a single attribute value against its spec."""
+        if spec.source_collection is None:
+            # Free-text attribute — no controlled vocabulary to check against
+            return AttributeResult(name=name, valid=True, message="no collection constraint", value=value)
+
+        str_value = str(value).strip()
+
+        # Honour the NA / not-applicable value if defined
+        if spec.attr_field_na_value is not None and str_value == spec.attr_field_na_value:
+            return AttributeResult(
+                name=name,
+                valid=True,
+                message=f"matches NA value ({str_value!r})",
+                value=value,
+                collection=spec.source_collection,
             )
-            return report
 
-        # Set filename if provided
-        if filename:
-            header.filename = filename
+        if spec.specific_key is not None:
+            return self._validate_specific_key(name, str_value, value, spec)
 
-        # Validate global attributes
-        return self.validator.validate(header.global_attributes, header.filename)
+        return self._validate_in_collection(name, str_value, value, spec)
 
-    def validate_from_attributes_dict(
-        self, attributes: Dict[str, Any], filename: Optional[str] = None
-    ) -> ValidationReport:
-        """
-        Validate global attributes from a dictionary.
+    def _validate_specific_key(
+        self,
+        name: str,
+        str_value: str,
+        raw_value: Any,
+        spec: AttributeProperty,
+    ) -> AttributeResult:
+        """Validate that value matches ``spec.specific_key`` field of some term."""
+        matching = projects.get_terms_in_collection_by_key_value(
+            self.project_id, spec.source_collection, spec.specific_key, str_value
+        )
+        if matching:
+            return AttributeResult(
+                name=name,
+                valid=True,
+                message="valid",
+                value=raw_value,
+                collection=spec.source_collection,
+            )
+        return AttributeResult(
+            name=name,
+            valid=False,
+            message=(
+                f"{str_value!r} not found in field '{spec.specific_key}' of collection '{spec.source_collection}'"
+            ),
+            value=raw_value,
+            collection=spec.source_collection,
+        )
 
-        :param attributes: Dictionary of global attributes
-        :param filename: Optional filename for reporting
-        :return: Validation report
-        """
-        from .models.netcdf_header import NetCDFGlobalAttributes
+    def _validate_in_collection(
+        self,
+        name: str,
+        str_value: str,
+        raw_value: Any,
+        spec: AttributeProperty,
+    ) -> AttributeResult:
+        """Validate that value matches a term in the collection."""
+        try:
+            matches = projects.valid_term_in_collection(str_value, self.project_id, spec.source_collection)
+        except EsgvocNotFoundError as exc:
+            return AttributeResult(
+                name=name,
+                valid=False,
+                message=f"collection '{spec.source_collection}' not found: {exc}",
+                value=raw_value,
+                collection=spec.source_collection,
+            )
 
-        global_attrs = NetCDFGlobalAttributes(attributes=attributes)
-        return self.validator.validate(global_attrs, filename)
-
-
-    def get_required_attributes(self) -> List[str]:
-        """
-        Get list of required attribute names.
-
-        :return: List of required attribute names
-        """
-        return [
-            spec.field_name or spec.source_collection
-            for spec in self.attribute_specs
-            if spec.is_required
-        ]
-
-    def get_optional_attributes(self) -> List[str]:
-        """
-        Get list of optional attribute names.
-
-        :return: List of optional attribute names
-        """
-        return [
-            spec.field_name or spec.source_collection
-            for spec in self.attribute_specs
-            if not spec.is_required
-        ]
-
-    def get_attribute_info(self, attribute_name: str) -> Optional[Dict[str, Any]]:
-        """
-        Get information about a specific attribute.
-
-        :param attribute_name: Name of the attribute
-        :return: Attribute information dictionary or None if not found
-        """
-        spec = None
-        for s in self.attribute_specs:
-            field_name = s.field_name or s.source_collection
-            if field_name == attribute_name:
-                spec = s
-                break
-
-        if spec is None:
-            return None
-
-        return {
-            "name": attribute_name,
-            "source_collection": spec.source_collection,
-            "value_type": spec.value_type,
-            "required": spec.is_required,
-            "default_value": spec.default_value,
-            "specific_key": spec.specific_key,
-        }
-
-    def list_attributes(self) -> List[str]:
-        """
-        Get list of all defined attribute names.
-
-        :return: List of all attribute names
-        """
-        return [spec.field_name or spec.source_collection for spec in self.attribute_specs]
-
-    def reload_config(self) -> None:
-        """
-        Reload attribute specifications from the database.
-        """
-        self.attribute_specs = self._load_from_database()
-        self.validator = GlobalAttributeValidator(self.attribute_specs, self.project_id)
-
-
-class GAValidatorFactory:
-    """
-    Factory for creating GA validators for different projects.
-    """
-
-    @staticmethod
-    def create_cmip6_validator() -> GAValidator:
-        """
-        Create a validator configured for CMIP6.
-
-        :return: GAValidator instance for CMIP6
-        """
-        return GAValidator(project_id="cmip6")
-
-    @staticmethod
-    def create_cmip7_validator() -> GAValidator:
-        """
-        Create a validator configured for CMIP7.
-
-        :return: GAValidator instance for CMIP7
-        """
-        return GAValidator(project_id="cmip7")
-
-
-def validate_netcdf_attributes(
-    ncdump_output: str, project_id: str = "cmip6", filename: Optional[str] = None
-) -> ValidationReport:
-    """
-    Convenience function to validate NetCDF global attributes.
-
-    Loads attribute specifications from the esgvoc database for the specified project.
-
-    :param ncdump_output: Output from ncdump -h command
-    :param project_id: Project identifier for validation
-    :param filename: Optional filename for reporting
-    :return: Validation report
-    """
-    validator = GAValidator(project_id)
-    return validator.validate_from_ncdump(ncdump_output, filename)
-
-
-def create_validation_summary(report: ValidationReport) -> str:
-    """
-    Create a human-readable summary of a validation report.
-
-    :param report: Validation report to summarize
-    :return: Formatted summary string
-    """
-    lines = []
-    lines.append("=" * 60)
-    lines.append("NetCDF Global Attributes Validation Report")
-    lines.append("=" * 60)
-
-    if report.filename:
-        lines.append(f"File: {report.filename}")
-    lines.append(f"Project: {report.project_id}")
-    lines.append(f"Status: {'VALID' if report.is_valid else 'INVALID'}")
-    lines.append("")
-
-    # Summary statistics
-    lines.append("Summary:")
-    lines.append(f"  • Errors: {report.error_count}")
-    lines.append(f"  • Warnings: {report.warning_count}")
-    lines.append(f"  • Info messages: {report.info_count}")
-    lines.append(f"  • Validated attributes: {len(report.validated_attributes)}")
-    lines.append(f"  • Missing required attributes: {len(report.missing_attributes)}")
-    lines.append(f"  • Extra attributes: {len(report.extra_attributes)}")
-    lines.append("")
-
-    # Issues by severity
-    if report.issues:
-        lines.append("Issues:")
-        lines.append("")
-
-        for severity in [ValidationSeverity.ERROR, ValidationSeverity.WARNING, ValidationSeverity.INFO]:
-            severity_issues = report.get_issues_by_severity(severity)
-            if severity_issues:
-                lines.append(f"{severity.value.upper()}S:")
-                for i, issue in enumerate(severity_issues):
-                    lines.append(f"  • {issue.attribute_name}: {issue.message}")
-                    if issue.expected_value is not None:
-                        lines.append(f"    Expected: {issue.expected_value}")
-                    if issue.actual_value is not None:
-                        lines.append(f"    Actual: {issue.actual_value}")
-
-                    # Add separator between errors (except for the last one)
-                    if i < len(severity_issues) - 1:
-                        lines.append("    " + "-" * 50)
-                        lines.append("")
-                lines.append("")
-
-    # Missing attributes
-    if report.missing_attributes:
-        lines.append("Missing Required Attributes:")
-        for attr in report.missing_attributes:
-            lines.append(f"  • {attr}")
-        lines.append("")
-
-    # Extra attributes
-    if report.extra_attributes:
-        lines.append("Extra Attributes (not in specification):")
-        for attr in report.extra_attributes:
-            lines.append(f"  • {attr}")
-        lines.append("")
-
-    lines.append("=" * 60)
-    return "\n".join(lines)
+        if matches:
+            return AttributeResult(
+                name=name,
+                valid=True,
+                message="valid",
+                value=raw_value,
+                collection=spec.source_collection,
+            )
+        return AttributeResult(
+            name=name,
+            valid=False,
+            message=f"{str_value!r} not found in collection '{spec.source_collection}'",
+            value=raw_value,
+            collection=spec.source_collection,
+        )

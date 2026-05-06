@@ -1,53 +1,32 @@
+"""
+esgvoc install  [REMOVED]
+
+This command has been removed. Use 'esgvoc use' instead:
+
+  esgvoc use cmip7@latest       — download and activate latest version
+  esgvoc use cmip7@v2.1.0       — download and activate a specific version
+
+To install a locally built database use:
+  esgvoc admin install cmip7 ./cmip7.db [--name my-experiment]
+"""
+
 import typer
 from rich.console import Console
 
-from esgvoc.api import install as api_install
-from esgvoc.core.service import current_state
-
 app = typer.Typer()
+console = Console()
+
 
 @app.command()
-def install(
-    fail_on_missing_links: bool = typer.Option(
-        False,
-        "--fail-on-missing-links",
-        help="Exit with code -1 if any @id references cannot be resolved during database population.",
-    ),
-):
-    """Initialize default config and apply settings"""
-    try:
-        typer.echo("Initialized default configuration")
-
-        # Check if any components are in offline mode
-        offline_components = []
-        if current_state.universe.offline_mode:
-            offline_components.append("universe")
-        for project_name, project in current_state.projects.items():
-            if project.offline_mode:
-                offline_components.append(project_name)
-
-        if offline_components:
-            typer.echo(f"Note: The following components are in offline mode: {', '.join(offline_components)}")
-            typer.echo("Only local repositories and databases will be used.")
-
-        result = api_install(fail_on_missing_links=fail_on_missing_links)
-
-        current_state.get_state_summary()
-
-        # Display final status after installation
-        console = Console()
-        typer.echo("\nInstallation completed. Final status:")
-        console.print(current_state.table())
-
-        # Exit with code -1 if missing links were found
-        if result != 0:
-            raise typer.Exit(result)
-
-    except typer.Exit:
-        raise
-    except Exception as e:
-        typer.echo(f"Error during installation: {str(e)}", err=True)
-        raise typer.Exit(1)
-
-if __name__ == "__main__":
-    app()
+def install():
+    """[Removed] Use 'esgvoc use <project>@<version>' instead."""
+    console.print(
+        "[red]'esgvoc install' has been removed.[/red]\n\n"
+        "Use [cyan]esgvoc use <project>@<version>[/cyan] to download and activate a database.\n"
+        "Examples:\n"
+        "  esgvoc use cmip7@latest\n"
+        "  esgvoc use cmip7@v2.1.0\n\n"
+        "To install a locally built DB:\n"
+        "  esgvoc admin install cmip7 ./cmip7.db --name my-experiment"
+    )
+    raise typer.Exit(1)

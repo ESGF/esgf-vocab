@@ -5,6 +5,7 @@ Horizontal grid arrangement types (Arakawa grids).
 """
 
 from pydantic import Field
+
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 

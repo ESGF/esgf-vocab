@@ -11,9 +11,10 @@ ESGVOC is a Python library designed to simplify interaction with controlled voca
   - Perform cross-validation and search operations.
   - Supports case-sensitive, wildcard, and approximate matching.
 
-- **Caching**:
-  - Download CVs to a local database for offline use.
-  - Keep the local cache up-to-date.
+- **Vocabulary databases**:
+  - Download versioned pre-built databases for offline use.
+  - Keep installed databases up to date with `esgvoc update`.
+  - Switch between versions without reinstalling.
 
 - **Validation**:
   - Validate string values against CV terms (DRS).
@@ -24,12 +25,12 @@ ESGVOC is a Python library designed to simplify interaction with controlled voca
 
 The ESGVOC library supports a wide range of use cases, including:
 
-### Caching
+### Vocabulary database management
 
-- Usage without internet access.
-- Downloading CVs to a local archive or database.
-- Updating the local cache.
-- Performing consistency checks between the local cache and remote CV repositories.
+- Download versioned project databases from the registry (`esgvoc use <project>@latest`).
+- Switch between installed versions without re-downloading.
+- Update to the latest release (`esgvoc update`).
+- Usage without internet access once a version is downloaded.
 
 ### Listing
 
@@ -91,6 +92,7 @@ user/cli.md
 ```{toctree}
 :caption: How to 
 
+how_to/configuration.rst
 how_to/get.rst
 how_to/valid.rst
 how_to/validate_drs.rst

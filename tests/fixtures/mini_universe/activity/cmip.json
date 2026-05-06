@@ -1,0 +1,7 @@
+{
+    "@context": "000_context.jsonld",
+    "id": "cmip",
+    "type": "activity",
+    "description": "Coupled Model Intercomparison Project",
+    "drs_name": "CMIP"
+}

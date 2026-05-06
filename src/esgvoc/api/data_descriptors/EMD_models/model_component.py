@@ -6,7 +6,7 @@ Properties that provide a description of individual model components.
 
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List
 
 from pydantic import Field, field_validator
 

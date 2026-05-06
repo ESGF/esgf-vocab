@@ -88,7 +88,7 @@ class RepoFetcher:
             data = response.json()
             return [GitHubRepository(**repo) for repo in data]
         except ValidationError as e:
-            raise Exception(f"Data validation error: {e}")
+            raise Exception(f"Data validation error: {e}") from e
 
     def fetch_repository_details(self, owner: str, repo: str) -> GitHubRepository:
         """
@@ -110,7 +110,7 @@ class RepoFetcher:
             data = response.json()
             return GitHubRepository(**data)
         except ValidationError as e:
-            raise Exception(f"Data validation error: {e}")
+            raise Exception(f"Data validation error: {e}") from e
 
     def fetch_branch_details(self, owner: str, repo: str, branch: str) -> GitHubBranch:
         """
@@ -132,7 +132,7 @@ class RepoFetcher:
         try:
             return GitHubBranch(**response.json())
         except ValidationError as e:
-            raise Exception(f"Data validation error: {e}")
+            raise Exception(f"Data validation error: {e}") from e
 
     def list_directory(self, owner, repo, branch="main"):
         """
@@ -206,8 +206,8 @@ class RepoFetcher:
                     try:
                         subprocess.run(["git", "reset", "--hard"], capture_output=True, check=False)
                         subprocess.run(["git", "clean", "-fd"], capture_output=True, check=False)
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        _LOGGER.debug("git cleanup failed: %s", e)
 
                     # Check if the requested branch exists locally
                     try:
@@ -217,7 +217,8 @@ class RepoFetcher:
                             check=False
                         )
                         branch_exists_locally = result.returncode == 0
-                    except Exception:
+                    except Exception as e:
+                        _LOGGER.debug("Could not probe local branch %s: %s", branch, e)
                         branch_exists_locally = False
 
                     if not branch_exists_locally and branch:

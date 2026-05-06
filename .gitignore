@@ -30,3 +30,37 @@ sb.py
 CHANGELOG.md
 .coverage
 codemcp.toml
+
+# esgvoc local dev config (ESGVOC_HOME override)
+.esgvoc_config_vers/
+.esgvoc_share_vers/
+
+# Integration test data: cloned repos + pre-built DBs (populated on first run, reused after)
+tests/integration/data_test/
+
+# Python version pin
+.python-version
+
+# Dev/scratch docs and notes
+md_dir/
+
+# Dev/scratch scripts and data
+explore_api.py
+export_cmip7_cvs.py
+sb_input4mips.py
+scripts/
+cmip7_CVs.json
+cmip7_schema_issue
+cmor_test
+link_schema.json
+link_schema_cmip6.json
+links
+log_install
+stac_cmip7_test.json
+temp/
+temp_file/
+allstacSchema/
+ZZZ_Apydantise
+
+# Built DB artifacts
+*.db

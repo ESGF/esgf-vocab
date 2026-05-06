@@ -15,13 +15,18 @@ This application allows testing of project CVs and Universe CVs with support for
 """
 
 import json
+import logging
 import os
+import shutil
 import sys
+import traceback
 from pathlib import Path
 from typing import List
 
 from pydantic import ValidationError
 from rich.console import Console
+
+_LOGGER = logging.getLogger(__name__)
 
 import esgvoc.core.service as service
 from esgvoc.core.service.configuration.setting import (
@@ -149,10 +154,9 @@ class CVTester:
             }
 
             # Clean up old test_cv_temp data directories (repos and dbs) to ensure fresh start
-            import shutil
             test_data_dir = self.config_manager.data_dir / self.test_config_name
             if test_data_dir.exists():
-                console.print(f"[yellow]Cleaning up old test data directories...[/yellow]")
+                console.print("[yellow]Cleaning up old test data directories...[/yellow]")
                 try:
                     shutil.rmtree(test_data_dir)
                     console.print(f"[green]  ✓ Removed: {test_data_dir}[/green]")
@@ -206,8 +210,6 @@ class CVTester:
 
         except Exception as e:
             console.print(f"[red]❌ Configuration failed: {e}[/red]")
-            import traceback
-
             console.print(traceback.format_exc())
             return False
 
@@ -252,8 +254,6 @@ class CVTester:
             return True
         except Exception as e:
             console.print(f"[red]❌ CV synchronization failed: {e}[/red]")
-            import traceback
-
             console.print(traceback.format_exc())
             return False
 
@@ -403,16 +403,16 @@ class CVTester:
         errors = []
 
         # Add clear section header
-        console.print(f"\n[bold blue]📋 Testing YAML Specification Files[/bold blue]")
+        console.print("\n[bold blue]📋 Testing YAML Specification Files[/bold blue]")
         console.print(f"[dim]Repository path: {repo_dir}[/dim]")
 
         # Import constants and YAML handling
         try:
             from esgvoc.core.constants import (
-                PROJECT_SPECS_FILENAME,
-                DRS_SPECS_FILENAME,
+                ATTRIBUTES_SPECS_FILENAME,
                 CATALOG_SPECS_FILENAME,
-                ATTRIBUTES_SPECS_FILENAME
+                DRS_SPECS_FILENAME,
+                PROJECT_SPECS_FILENAME,
             )
         except ImportError as e:
             error_msg = f"❌ Missing required esgvoc constants: {e}"
@@ -423,7 +423,7 @@ class CVTester:
         try:
             import yaml
         except ImportError:
-            error_msg = f"❌ PyYAML not installed. Install with: pip install PyYAML"
+            error_msg = "❌ PyYAML not installed. Install with: pip install PyYAML"
             errors.append(error_msg)
             console.print(f"[red]{error_msg}[/red]")
             return errors
@@ -441,7 +441,7 @@ class CVTester:
             console.print(f"📄 Testing {PROJECT_SPECS_FILENAME}...")
             try:
                 with open(project_specs_file, "r", encoding="utf-8") as f:
-                    project_specs = yaml.safe_load(f)
+                    yaml.safe_load(f)
                 console.print(f"   [green]✅ {PROJECT_SPECS_FILENAME} parsed successfully[/green]")
                 files_tested += 1
             except yaml.YAMLError as e:
@@ -586,7 +586,7 @@ class CVTester:
             console.print(f"   [yellow]⚠️  Optional file {ATTRIBUTES_SPECS_FILENAME} not found[/yellow]")
 
         # Validate collection references
-        console.print(f"\n📂 Validating collection references...")
+        console.print("\n📂 Validating collection references...")
         if source_collections:
             console.print(f"   Found {len(source_collections)} source_collection references")
 
@@ -604,7 +604,7 @@ class CVTester:
             console.print("   [yellow]⚠️  No collection references found in YAML specs[/yellow]")
 
         # Final YAML validation summary
-        console.print(f"\n📊 YAML Validation Summary:")
+        console.print("\n📊 YAML Validation Summary:")
         if files_tested == 0:
             error_msg = "❌ No YAML specification files found"
             errors.append(error_msg)
@@ -634,7 +634,7 @@ class CVTester:
         try:
             import yaml
         except ImportError:
-            errors.append(f"❌ PyYAML not installed. Install with: pip install PyYAML")
+            errors.append("❌ PyYAML not installed. Install with: pip install PyYAML")
             return errors
 
         console.print(f"🔍 Testing esgvoc ingestion compatibility for {project_name}...")
@@ -659,7 +659,7 @@ class CVTester:
                 # Test attr_specs ingestion specifically
                 attr_specs_file = repo_dir / ATTRIBUTES_SPECS_FILENAME
                 if attr_specs_file.exists() and "attr_specs" in specs:
-                    console.print(f"   [green]✅ attr_specs found in ingested project data[/green]")
+                    console.print("   [green]✅ attr_specs found in ingested project data[/green]")
 
                     # Load the original YAML for comparison
                     with open(attr_specs_file, "r", encoding="utf-8") as f:
@@ -701,19 +701,19 @@ class CVTester:
                         console.print(f"   [yellow]⚠️  Structure difference: YAML type={type(original_attr_specs)}, Ingested type={type(ingested_attr_specs)}[/yellow]")
 
                 elif attr_specs_file.exists():
-                    console.print(f"   [yellow]⚠️  attr_specs.yaml exists but not found in ingested project specs[/yellow]")
+                    console.print("   [yellow]⚠️  attr_specs.yaml exists but not found in ingested project specs[/yellow]")
 
                 # Test drs_specs ingestion
                 if "drs_specs" in specs:
-                    console.print(f"   [green]✅ drs_specs found in ingested project data[/green]")
+                    console.print("   [green]✅ drs_specs found in ingested project data[/green]")
                 else:
-                    console.print(f"   [yellow]⚠️  drs_specs not found in ingested project data (may be optional)[/yellow]")
+                    console.print("   [yellow]⚠️  drs_specs not found in ingested project data (may be optional)[/yellow]")
 
                 # Test catalog_specs ingestion
                 if "catalog_specs" in specs:
-                    console.print(f"   [green]✅ catalog_specs found in ingested project data[/green]")
+                    console.print("   [green]✅ catalog_specs found in ingested project data[/green]")
                 else:
-                    console.print(f"   [yellow]⚠️  catalog_specs not found in ingested project data (may be optional)[/yellow]")
+                    console.print("   [yellow]⚠️  catalog_specs not found in ingested project data (may be optional)[/yellow]")
 
             else:
                 # More detailed error message about missing specs
@@ -775,7 +775,8 @@ class CVTester:
                             for line in formatted_json.split("\n"):
                                 console.print(f"    {line}")
                             break
-                    except Exception:
+                    except Exception as e:
+                        _LOGGER.debug("Could not inspect term file %s: %s", json_file, e)
                         continue
                 else:
                     console.print(f"  [dim]No file found containing term ID '{term_id}'[/dim]")
@@ -788,7 +789,7 @@ class CVTester:
             if hasattr(current_state, "universe") and current_state.universe.local_path:
                 universe_dir = Path(current_state.universe.local_path)
 
-                console.print(f"\n[blue]🌌 Universe Repository (resolved via DataMerger):[/blue]")
+                console.print("\n[blue]🌌 Universe Repository (resolved via DataMerger):[/blue]")
 
                 # First, try to use DataMerger to resolve the universe term if project term exists
                 resolved_universe_term = None
@@ -809,7 +810,7 @@ class CVTester:
                             "https://espri-mod.github.io/mip-cmor-tables": str(current_state.universe.local_path)
                         }
 
-                        console.print(f"  [dim]Attempting DataMerger resolution...[/dim]")
+                        console.print("  [dim]Attempting DataMerger resolution...[/dim]")
 
                         # Check if project term has an @id link
                         if "@id" in project_term_content:
@@ -825,7 +826,7 @@ class CVTester:
                                 universe_term_path = universe_dir / universe_relative_path
                                 console.print(f"  [dim]Expected universe path: {universe_term_path}[/dim]")
                         else:
-                            console.print(f"  [dim]Project term has no @id link to universe[/dim]")
+                            console.print("  [dim]Project term has no @id link to universe[/dim]")
                             # Even without @id, try to infer the universe path from context base
                             try:
                                 # Read the context file to get the base
@@ -858,7 +859,7 @@ class CVTester:
                             # If we have more than one result, the last one is the fully merged term
                             resolved_universe_term = merger_result[-1]
 
-                            console.print(f"  [green]✅ Term resolved via DataMerger (merged from universe)[/green]")
+                            console.print("  [green]✅ Term resolved via DataMerger (merged from universe)[/green]")
                             if universe_term_path:
                                 console.print(f"  [dim]Resolved universe path: {universe_term_path}[/dim]")
                                 console.print(
@@ -908,7 +909,7 @@ class CVTester:
                             console.print(f"  [red]❌ Error reading resolved universe file: {e}[/red]")
                     else:
                         # Show detailed path info - don't try direct collection path since it's wrong
-                        console.print(f"  [red]❌ Term not found in universe:[/red]")
+                        console.print("  [red]❌ Term not found in universe:[/red]")
                         if universe_term_path:
                             console.print(
                                 f"    [dim]• DataMerger resolved path: {universe_term_path} (exists: {universe_term_path.exists()})[/dim]"
@@ -945,15 +946,15 @@ class CVTester:
                                         console.print(
                                             f"    [dim]• Case mismatch found: {casing_matches[0]} vs {term_id}.json[/dim]"
                                         )
-                        except Exception:
-                            pass
+                        except Exception as e:
+                            _LOGGER.debug("Could not check casing for %s: %s", term_id, e)
             else:
-                console.print(f"  [yellow]⚠️  Universe path not available[/yellow]")
+                console.print("  [yellow]⚠️  Universe path not available[/yellow]")
         except Exception as e:
             console.print(f"  [red]❌ Error accessing universe: {e}[/red]")
 
         # 3. Try to query the term via esgvoc API
-        console.print(f"\n[blue]🔗 ESGVoc API Query:[/blue]")
+        console.print("\n[blue]🔗 ESGVoc API Query:[/blue]")
         try:
             import esgvoc.api as ev
 
@@ -963,13 +964,13 @@ class CVTester:
                 matching_terms = [term for term in project_terms if term.id == term_id]
                 if matching_terms:
                     term = matching_terms[0]
-                    console.print(f"  [green]✅ Term found in esgvoc project API[/green]")
+                    console.print("  [green]✅ Term found in esgvoc project API[/green]")
                     console.print(f"    ID: {term.id}")
                     console.print(f"    Type: {term.type}")
                     console.print(f"    Label: {getattr(term, 'label', 'N/A')}")
                     console.print(f"    Description: {getattr(term, 'description', 'N/A')[:100]}...")
                 else:
-                    console.print(f"  [red]❌ Term not found in esgvoc project API[/red]")
+                    console.print("  [red]❌ Term not found in esgvoc project API[/red]")
             except Exception as e:
                 console.print(f"  [red]❌ Error querying project API: {e}[/red]")
 
@@ -979,13 +980,13 @@ class CVTester:
                 matching_universe_terms = [term for term in universe_terms if term.id == term_id]
                 if matching_universe_terms:
                     term = matching_universe_terms[0]
-                    console.print(f"  [green]✅ Term found in esgvoc universe API[/green]")
+                    console.print("  [green]✅ Term found in esgvoc universe API[/green]")
                     console.print(f"    ID: {term.id}")
                     console.print(f"    Type: {term.type}")
                     console.print(f"    Label: {getattr(term, 'label', 'N/A')}")
                     console.print(f"    Description: {getattr(term, 'description', 'N/A')[:100]}...")
                 else:
-                    console.print(f"  [red]❌ Term not found in esgvoc universe API[/red]")
+                    console.print("  [red]❌ Term not found in esgvoc universe API[/red]")
             except Exception as e:
                 console.print(f"  [red]❌ Error querying universe API: {e}[/red]")
 
@@ -1046,7 +1047,7 @@ class CVTester:
                     if "id" in term_content and "@id" not in term_content and "@base" in context_mappings:
                         terms_using_base_expansion.append({"file": term_file.name, "id": term_id})
 
-                except Exception as e:
+                except Exception:
                     continue
 
             # Check for unused context keys (excluding standard JSON-LD keys)
@@ -1078,7 +1079,8 @@ class CVTester:
                         filename_id_mismatches.append(
                             {"file": term_file.name, "expected_id": expected_id, "actual_id": actual_id}
                         )
-                except Exception:
+                except Exception as e:
+                    _LOGGER.debug("Could not inspect term file %s: %s", term_file, e)
                     continue
 
             if filename_id_mismatches:
@@ -1112,7 +1114,7 @@ class CVTester:
         try:
             current_state = service.get_state()
             if not hasattr(current_state, "universe") or not current_state.universe.local_path:
-                console.print(f"[dim]⚠️  Universe path not available for validation[/dim]")
+                console.print("[dim]⚠️  Universe path not available for validation[/dim]")
                 return True
 
             universe_dir = Path(current_state.universe.local_path)
@@ -1127,7 +1129,6 @@ class CVTester:
             for item in universe_dir.iterdir():
                 if item.is_dir():
                     json_files = list(item.glob("*.json"))
-                    jsonld_files = [f for f in json_files if f.name.endswith(".jsonld")]
                     regular_json_files = [f for f in json_files if not f.name.endswith(".jsonld")]
 
                     if regular_json_files:
@@ -1273,7 +1274,7 @@ class CVTester:
                         element_id = content.get("id", json_file.stem)
                         repo_elements.append(element_id)
                         repo_element_sources[element_id] = {"file": json_file.name, "from_id_field": "id" in content}
-                    except:
+                    except Exception:
                         element_id = json_file.stem
                         repo_elements.append(element_id)
                         repo_element_sources[element_id] = {"file": json_file.name, "from_id_field": False}
@@ -1293,7 +1294,7 @@ class CVTester:
 
                         # Debug missing elements source tracking
                         if self.debug_missing_terms:
-                            console.print(f"   [dim]Missing elements and their sources:[/dim]")
+                            console.print("   [dim]Missing elements and their sources:[/dim]")
                             for elem in missing_elements:
                                 source_info = repo_element_sources.get(
                                     elem, {"file": "unknown", "from_id_field": False}
@@ -1309,7 +1310,7 @@ class CVTester:
                             for missing_element in missing_elements:
                                 self._debug_missing_term(project_name, collection_name, missing_element, repo_path)
                         else:
-                            console.print(f"[dim]💡 Use --debug-terms for detailed analysis of missing elements[/dim]")
+                            console.print("[dim]💡 Use --debug-terms for detailed analysis of missing elements[/dim]")
                     else:
                         console.print(f"   [green]✅ All elements in '{collection_name}' are queryable[/green]")
 
@@ -1319,14 +1320,14 @@ class CVTester:
 
                     # Attempt to identify the failing term by testing each one individually
                     try:
-                        console.print(f"   [yellow]⚠️  Attempting to identify failing term...[/yellow]")
+                        console.print("   [yellow]⚠️  Attempting to identify failing term...[/yellow]")
                         for repo_elem in repo_elements:
                             try:
                                 ev.get_term_in_collection(project_name, collection_name, repo_elem)
                             except Exception as term_error:
                                 error_msg += f"\n   → Failing term: '{repo_elem}' - {term_error}"
                                 break
-                    except:
+                    except Exception:
                         pass  # If we can't identify the specific term, just use the original error
 
                     errors.append(error_msg)
@@ -1460,7 +1461,7 @@ class CVTester:
         console.print(f"[dim]Debug: Active config before API test: {current_active}[/dim]")
 
         # Step 4: Test YAML specs ingestion compatibility
-        console.print(f"[blue]Testing YAML specs ingestion compatibility...[/blue]")
+        console.print("[blue]Testing YAML specs ingestion compatibility...[/blue]")
         ingestion_errors = self._test_esgvoc_specs_ingestion(project_name, Path(repo_path))
         if ingestion_errors:
             console.print(f"[red]❌ YAML specs ingestion test failed with {len(ingestion_errors)} errors:[/red]")
@@ -1468,7 +1469,7 @@ class CVTester:
                 console.print(f"   {error}")
             success = False
         else:
-            console.print(f"[green]✅ YAML specs ingestion test passed![/green]")
+            console.print("[green]✅ YAML specs ingestion test passed![/green]")
 
         # Step 5: Test esgvoc API access
         if not self.test_esgvoc_api_access(project_name, repo_path):
@@ -1499,10 +1500,9 @@ class CVTester:
                 service.current_state = service.get_state()
 
                 # Clean up test_cv_temp data directories (repos and dbs)
-                import shutil
                 test_data_dir = self.config_manager.data_dir / self.test_config_name
                 if test_data_dir.exists():
-                    console.print(f"[blue]Cleaning up test data directories...[/blue]")
+                    console.print("[blue]Cleaning up test data directories...[/blue]")
                     try:
                         shutil.rmtree(test_data_dir)
                         console.print(f"[green]  ✓ Removed: {test_data_dir}[/green]")
