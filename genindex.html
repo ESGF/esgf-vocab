@@ -145,12 +145,13 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="user/introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user/terms.html">Controlled vocabulary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user/cached_database.html">Database and functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/cached_database.html">Database management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user/api.html">ESGVOC API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user/cli.html">Command Line Interface (CLI)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">How to</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="how_to/configuration.html">Vocabulary Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="how_to/get.html">Get</a></li>
 <li class="toctree-l1"><a class="reference internal" href="how_to/valid.html">Valid</a></li>
 <li class="toctree-l1"><a class="reference internal" href="how_to/validate_drs.html">Valid DRS</a></li>
@@ -399,8 +400,6 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDModelComponent.accept">(esgvoc.api.data_descriptors.EMDModelComponent method)</a>
 </li>
-        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDResolution.accept">(esgvoc.api.data_descriptors.EMDResolution method)</a>
-</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ForcingIndex.accept">(esgvoc.api.data_descriptors.ForcingIndex method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.accept">(esgvoc.api.data_descriptors.Frequency method)</a>
@@ -550,6 +549,12 @@
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.IssueKind.ASSIGNED">ASSIGNED (esgvoc.apps.drs.report.IssueKind attribute)</a>
 </li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.AttributeProperty.attr_field_na_value">attr_field_na_value (esgvoc.api.project_specs.AttributeProperty attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.AttributeProperty.attr_field_name">attr_field_name (esgvoc.api.project_specs.AttributeProperty attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.AttributeProperty.attr_field_value_type">attr_field_value_type (esgvoc.api.project_specs.AttributeProperty attribute)</a>
+</li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.ProjectSpecs.attr_specs">attr_specs (esgvoc.api.project_specs.ProjectSpecs attribute)</a>
 </li>
   </ul></td>
@@ -684,8 +689,6 @@
       </ul></li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.CatalogSpecification.dataset_properties">dataset_properties (esgvoc.api.project_specs.CatalogSpecification attribute)</a>
 </li>
-      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.AttributeProperty.default_value">default_value (esgvoc.api.project_specs.AttributeProperty attribute)</a>
-</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ActivityCMIP7.describe">describe (esgvoc.api.data_descriptors.ActivityCMIP7 property)</a>
 
       <ul>
@@ -736,8 +739,6 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DRSSpecs.describe">(esgvoc.api.data_descriptors.DRSSpecs property)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDModelComponent.describe">(esgvoc.api.data_descriptors.EMDModelComponent property)</a>
-</li>
-        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDResolution.describe">(esgvoc.api.data_descriptors.EMDResolution property)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ForcingIndex.describe">(esgvoc.api.data_descriptors.ForcingIndex property)</a>
 </li>
@@ -889,8 +890,6 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDModelComponent.description">(esgvoc.api.data_descriptors.EMDModelComponent attribute)</a>
 </li>
-        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDResolution.description">(esgvoc.api.data_descriptors.EMDResolution attribute)</a>
-</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ForcingIndex.description">(esgvoc.api.data_descriptors.ForcingIndex attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.description">(esgvoc.api.data_descriptors.Frequency attribute)</a>
@@ -1034,8 +1033,6 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DRSSpecs.drs_name">(esgvoc.api.data_descriptors.DRSSpecs attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDModelComponent.drs_name">(esgvoc.api.data_descriptors.EMDModelComponent attribute)</a>
-</li>
-        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDResolution.drs_name">(esgvoc.api.data_descriptors.EMDResolution attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.drs_name">(esgvoc.api.data_descriptors.Frequency attribute)</a>
 </li>
@@ -1270,8 +1267,6 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.family">(esgvoc.api.data_descriptors.Model attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.AttributeProperty.field_name">field_name (esgvoc.api.project_specs.AttributeProperty attribute)</a>
-</li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsType.FILE_NAME">FILE_NAME (esgvoc.api.project_specs.DrsType attribute)</a>
 
       <ul>
@@ -1335,6 +1330,8 @@
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGenerationReport.generated_drs_expression">generated_drs_expression (esgvoc.apps.drs.report.DrsGenerationReport attribute)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.GenerationIssueVisitor">GenerationIssueVisitor (class in esgvoc.apps.drs.report)</a>
+</li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_active_database_info">get_active_database_info() (in module esgvoc.api.projects)</a>
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_all_collections_in_project">get_all_collections_in_project() (in module esgvoc.api.projects)</a>
 </li>
@@ -1468,8 +1465,6 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DRSSpecs.id">(esgvoc.api.data_descriptors.DRSSpecs attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDModelComponent.id">(esgvoc.api.data_descriptors.EMDModelComponent attribute)</a>
-</li>
-        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDResolution.id">(esgvoc.api.data_descriptors.EMDResolution attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ForcingIndex.id">(esgvoc.api.data_descriptors.ForcingIndex attribute)</a>
 </li>
@@ -1678,8 +1673,6 @@
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport.mapping_used">(esgvoc.apps.drs.report.DrsValidationReport attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDResolution.mean_resolution">mean_resolution (esgvoc.api.data_descriptors.EMDResolution attribute)</a>
-</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Organisation.members">members (esgvoc.api.data_descriptors.Organisation attribute)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGenerationReport.MISSING_TAG">MISSING_TAG (esgvoc.apps.drs.report.DrsGenerationReport attribute)</a>
@@ -2090,8 +2083,6 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDModelComponent.type">(esgvoc.api.data_descriptors.EMDModelComponent attribute)</a>
 </li>
-        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDResolution.type">(esgvoc.api.data_descriptors.EMDResolution attribute)</a>
-</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ForcingIndex.type">(esgvoc.api.data_descriptors.ForcingIndex attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.type">(esgvoc.api.data_descriptors.Frequency attribute)</a>
@@ -2329,8 +2320,6 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.AttributeProperty.value_type">value_type (esgvoc.api.project_specs.AttributeProperty attribute)</a>
-</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.var_def_qualifier">var_def_qualifier (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Table.variable_entry">variable_entry (esgvoc.api.data_descriptors.Table attribute)</a>

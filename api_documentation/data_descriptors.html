@@ -146,12 +146,13 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user/terms.html">Controlled vocabulary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user/cached_database.html">Database and functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/cached_database.html">Database management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user/api.html">ESGVOC API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user/cli.html">Command Line Interface (CLI)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">How to</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../how_to/configuration.html">Vocabulary Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/get.html">Get</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/valid.html">Valid</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/validate_drs.html">Valid DRS</a></li>
@@ -559,16 +560,6 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDModelComponent.validate_code_base_format"><code class="docutils literal notranslate"><span class="pre">EMDModelComponent.validate_code_base_format</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings"><code class="docutils literal notranslate"><span class="pre">EMDModelComponent.validate_non_empty_strings</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDModelComponent.describe"><code class="docutils literal notranslate"><span class="pre">EMDModelComponent.describe</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution"><code class="docutils literal notranslate"><span class="pre">EMDResolution</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.description"><code class="docutils literal notranslate"><span class="pre">EMDResolution.description</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.drs_name"><code class="docutils literal notranslate"><span class="pre">EMDResolution.drs_name</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.id"><code class="docutils literal notranslate"><span class="pre">EMDResolution.id</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.mean_resolution"><code class="docutils literal notranslate"><span class="pre">EMDResolution.mean_resolution</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.type"><code class="docutils literal notranslate"><span class="pre">EMDResolution.type</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.accept"><code class="docutils literal notranslate"><span class="pre">EMDResolution.accept()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.describe"><code class="docutils literal notranslate"><span class="pre">EMDResolution.describe</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ForcingIndex"><code class="docutils literal notranslate"><span class="pre">ForcingIndex</span></code></a><ul class="nav section-nav flex-column">
@@ -1242,10 +1233,10 @@ of the schemas for these two classes.</p>
 <span class="w">                     </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                        </span><span class="nt">&quot;oneOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">                           </span><span class="p">{</span>
-<span class="w">                              </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/ExperimentLegacy&quot;</span>
+<span class="w">                              </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/ExperimentCMIP7&quot;</span>
 <span class="w">                           </span><span class="p">},</span>
 <span class="w">                           </span><span class="p">{</span>
-<span class="w">                              </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/ExperimentCMIP7&quot;</span>
+<span class="w">                              </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/ExperimentLegacy&quot;</span>
 <span class="w">                           </span><span class="p">},</span>
 <span class="w">                           </span><span class="p">{</span>
 <span class="w">                              </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/ExperimentBase&quot;</span>
@@ -1545,10 +1536,10 @@ of the schemas for these two classes.</p>
 <span class="w">                  </span><span class="p">{</span>
 <span class="w">                     </span><span class="nt">&quot;oneOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">                        </span><span class="p">{</span>
-<span class="w">                           </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/ExperimentLegacy&quot;</span>
+<span class="w">                           </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/ExperimentCMIP7&quot;</span>
 <span class="w">                        </span><span class="p">},</span>
 <span class="w">                        </span><span class="p">{</span>
-<span class="w">                           </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/ExperimentCMIP7&quot;</span>
+<span class="w">                           </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/ExperimentLegacy&quot;</span>
 <span class="w">                        </span><span class="p">},</span>
 <span class="w">                        </span><span class="p">{</span>
 <span class="w">                           </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/ExperimentBase&quot;</span>
@@ -1635,7 +1626,7 @@ of the schemas for these two classes.</p>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;ExperimentLegacy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;An &#39;experiment&#39; refers to a specific, controlled simulation conducted using climate models to     investigate particular aspects of the Earth&#39;s climate system. These experiments are designed     with set parameters, such as initial conditions, external forcings (like greenhouse gas     concentrations or solar radiation), and duration, to explore and understand climate behavior     under various scenarios and conditions.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Fallback experiment model for non-CMIP7 data (CMIP6, CMIP6-plus, and intermediate formats).\n\nAccepts both traditional CMIP6 experiments (with experiment_id/activity_id/experiment)\nand intermediate CMIP7-like formats used in cmip6plus that lack fields such as\nmin_number_yrs_per_sim or parent_mip_era.\nAll own fields are optional so this model matches any data that does not satisfy\nExperimentCMIP7&#39;s required-field set.&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span>
@@ -1655,19 +1646,43 @@ of the schemas for these two classes.</p>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">&quot;experiment_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Experiment Id&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Experiment Id&quot;</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">&quot;activity_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">               </span><span class="p">},</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Activity Id&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                     </span><span class="p">},</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Activity Id&quot;</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">&quot;experiment&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Experiment&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Experiment&quot;</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">&quot;tier&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1678,6 +1693,7 @@ of the schemas for these two classes.</p>
 <span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
 <span class="w">                  </span><span class="p">}</span>
 <span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tier&quot;</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">&quot;sub_experiment_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1807,11 +1823,7 @@ of the schemas for these two classes.</p>
 <span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">&quot;drs_name&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">&quot;experiment_id&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">&quot;activity_id&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">&quot;experiment&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">&quot;tier&quot;</span>
+<span class="w">            </span><span class="s2">&quot;drs_name&quot;</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ExperimentLegacy&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
@@ -4870,172 +4882,13 @@ description=”The model components (identified by their component properties) w
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">family</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">name</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">component</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">code_base</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model_component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">component</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">name</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">family</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">code_base</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model_component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings" title="Link to this definition">#</a></dt>
 <dd><p>Validate that string fields are not empty.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.EMDModelComponent.describe">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">describe</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDModelComponent.describe" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class pydantic_model">
-<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.EMDResolution">
-<em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">EMDResolution</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/resolution.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDResolution" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlainTermDataDescriptor</span></code></a></p>
-<p>The nominal resolution (in km) characterises the resolution of a model’s native horizontal grid.</p>
-<p>See section 5.1 Native horizontal grid properties.
-Options for the native horizontal grid nominal resolution property are defined
-in the following table as a function of the value of the mean resolution km property:</p>
-<div class="pst-scrollable-table-container"><table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Mean resolution R</p></th>
-<th class="head"><p>Nominal resolution</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>0.036 ≤ R &lt; 0.072</p></td>
-<td><p>0.05 km</p></td>
-</tr>
-<tr class="row-odd"><td><p>0.072 ≤ R &lt; 0.16</p></td>
-<td><p>0.1 km</p></td>
-</tr>
-<tr class="row-even"><td><p>0.16 ≤ R &lt; 0.36</p></td>
-<td><p>0.25 km</p></td>
-</tr>
-<tr class="row-odd"><td><p>0.36 ≤ R &lt; 0.72</p></td>
-<td><p>0.5 km</p></td>
-</tr>
-<tr class="row-even"><td><p>0.72 ≤ R &lt; 1.6</p></td>
-<td><p>1 km</p></td>
-</tr>
-<tr class="row-odd"><td><p>1.6 ≤ R &lt; 3.6</p></td>
-<td><p>2.5 km</p></td>
-</tr>
-<tr class="row-even"><td><p>3.6 ≤ R &lt; 7.2</p></td>
-<td><p>5 km</p></td>
-</tr>
-<tr class="row-odd"><td><p>7.2 ≤ R &lt; 16</p></td>
-<td><p>10 km</p></td>
-</tr>
-<tr class="row-even"><td><p>16 ≤ R &lt; 36</p></td>
-<td><p>25 km</p></td>
-</tr>
-<tr class="row-odd"><td><p>36 ≤ R &lt; 72</p></td>
-<td><p>50 km</p></td>
-</tr>
-<tr class="row-even"><td><p>72 ≤ R &lt; 160</p></td>
-<td><p>100 km</p></td>
-</tr>
-<tr class="row-odd"><td><p>160 ≤ R &lt; 360</p></td>
-<td><p>250 km</p></td>
-</tr>
-<tr class="row-even"><td><p>360 ≤ R &lt; 720</p></td>
-<td><p>500 km</p></td>
-</tr>
-<tr class="row-odd"><td><p>720 ≤ R &lt; 1600</p></td>
-<td><p>1000 km</p></td>
-</tr>
-<tr class="row-even"><td><p>1600 ≤ R &lt; 3600</p></td>
-<td><p>2500 km</p></td>
-</tr>
-<tr class="row-odd"><td><p>3600 ≤ R &lt; 7200</p></td>
-<td><p>5000 km</p></td>
-</tr>
-<tr class="row-even"><td><p>7200 ≤ R &lt; 16000</p></td>
-<td><p>10000 km</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><details  class="autodoc_pydantic_collapsable_json">
-<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;EMDResolution&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The nominal resolution (in km) characterises the resolution of a model&#39;s native horizontal grid.\n\nSee section 5.1 Native horizontal grid properties.\nOptions for the native horizontal grid nominal resolution property are defined\nin the following table as a function of the value of the mean resolution km property:\n\n==================== ====================\nMean resolution R    Nominal resolution\n==================== ====================\n0.036 \u2264 R &lt; 0.072    0.05 km\n0.072 \u2264 R &lt; 0.16     0.1 km\n0.16 \u2264 R &lt; 0.36      0.25 km\n0.36 \u2264 R &lt; 0.72      0.5 km\n0.72 \u2264 R &lt; 1.6       1 km\n1.6 \u2264 R &lt; 3.6        2.5 km\n3.6 \u2264 R &lt; 7.2        5 km\n7.2 \u2264 R &lt; 16         10 km\n16 \u2264 R &lt; 36          25 km\n36 \u2264 R &lt; 72          50 km\n72 \u2264 R &lt; 160         100 km\n160 \u2264 R &lt; 360        250 km\n360 \u2264 R &lt; 720        500 km\n720 \u2264 R &lt; 1600       1000 km\n1600 \u2264 R &lt; 3600      2500 km\n3600 \u2264 R &lt; 7200      5000 km\n7200 \u2264 R &lt; 16000     10000 km\n==================== ====================&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Description&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;drs_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Drs Name&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;mean_resolution&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Mean Resolution&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">   </span><span class="p">},</span>
-<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">      </span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="s2">&quot;drs_name&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="s2">&quot;mean_resolution&quot;</span>
-<span class="w">   </span><span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</details></p><dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.EMDResolution.description">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDResolution.description" title="Link to this definition">#</a></dt>
-<dd><p>The description of the term.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.EMDResolution.drs_name">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">drs_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDResolution.drs_name" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.EMDResolution.id">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDResolution.id" title="Link to this definition">#</a></dt>
-<dd><p>The identifier of the terms.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.EMDResolution.mean_resolution">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean_resolution</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDResolution.mean_resolution" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.EMDResolution.type">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDResolution.type" title="Link to this definition">#</a></dt>
-<dd><p>The data descriptor to which the term belongs.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.EMDResolution.accept">
-<span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><span class="pre">DataDescriptorVisitor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/data_descriptor.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDResolution.accept" title="Link to this definition">#</a></dt>
-<dd><p>Accept an term visitor.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>visitor</strong> (<a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><em>DataDescriptorVisitor</em></a>) – The term visitor.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Depending on the visitor.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Any</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.EMDResolution.describe">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">describe</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDResolution.describe" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -10493,7 +10346,7 @@ This difference can be identified using the MIP era data descriptor.</p>
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Model.validate_component_lists">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_component_lists</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">omitted_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">prescribed_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">dynamic_components</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_component_lists" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_component_lists</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">dynamic_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">prescribed_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">omitted_components</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_component_lists" title="Link to this definition">#</a></dt>
 <dd><p>Validate component lists contain valid strings or ComponentType objects.</p>
 </dd></dl>
 
@@ -10523,7 +10376,7 @@ This difference can be identified using the MIP era data descriptor.</p>
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Model.validate_non_empty_strings">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">name</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">family</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_non_empty_strings" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">family</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">name</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_non_empty_strings" title="Link to this definition">#</a></dt>
 <dd><p>Validate that string fields are not empty.</p>
 </dd></dl>
 
@@ -14819,16 +14672,6 @@ Uses ‘wrap’ mode to override default serialization behavior completely.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDModelComponent.validate_code_base_format"><code class="docutils literal notranslate"><span class="pre">EMDModelComponent.validate_code_base_format</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings"><code class="docutils literal notranslate"><span class="pre">EMDModelComponent.validate_non_empty_strings</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDModelComponent.describe"><code class="docutils literal notranslate"><span class="pre">EMDModelComponent.describe</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution"><code class="docutils literal notranslate"><span class="pre">EMDResolution</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.description"><code class="docutils literal notranslate"><span class="pre">EMDResolution.description</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.drs_name"><code class="docutils literal notranslate"><span class="pre">EMDResolution.drs_name</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.id"><code class="docutils literal notranslate"><span class="pre">EMDResolution.id</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.mean_resolution"><code class="docutils literal notranslate"><span class="pre">EMDResolution.mean_resolution</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.type"><code class="docutils literal notranslate"><span class="pre">EMDResolution.type</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.accept"><code class="docutils literal notranslate"><span class="pre">EMDResolution.accept()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.EMDResolution.describe"><code class="docutils literal notranslate"><span class="pre">EMDResolution.describe</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ForcingIndex"><code class="docutils literal notranslate"><span class="pre">ForcingIndex</span></code></a><ul class="nav section-nav flex-column">

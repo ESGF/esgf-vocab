@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Configuration &#8212; ESGVOC  documentation</title>
+    <title>Vocabulary Management &#8212; ESGVOC  documentation</title>
   
   
   
@@ -51,6 +51,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'how_to/configuration';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Get" href="get.html" />
+    <link rel="prev" title="Command Line Interface (CLI)" href="../user/cli.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -102,8 +104,6 @@
       
       
       
-        
-      
       <dialog id="pst-primary-sidebar-modal"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
@@ -146,12 +146,13 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user/terms.html">Controlled vocabulary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user/cached_database.html">Database and functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/cached_database.html">Database management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user/api.html">ESGVOC API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user/cli.html">Command Line Interface (CLI)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">How to</span></p>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Vocabulary Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get.html">Get</a></li>
 <li class="toctree-l1"><a class="reference internal" href="valid.html">Valid</a></li>
 <li class="toctree-l1"><a class="reference internal" href="validate_drs.html">Valid DRS</a></li>
@@ -353,7 +354,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Configuration</h1>
+    <h1>Vocabulary Management</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -363,35 +364,30 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-configurations">Understanding Configurations</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#default-projects-available">Default Projects Available</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-configuration-commands">Basic Configuration Commands</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-available-projects">Viewing Available Projects</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-empty-configurations">Creating Empty Configurations</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-projects">Adding Projects</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-projects">Removing Projects</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-projects">Available Projects</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downloading-and-activating-a-version">Downloading and Activating a Version</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-current-status">Checking Current Status</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#listing-installed-and-available-versions">Listing Installed and Available Versions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-to-a-newer-version">Updating to a Newer Version</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-installed-databases">Removing Installed Databases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-the-installed-esgvoc-version">Checking the Installed ESGVoc Version</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-storage-locations">Data Storage Locations</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#overriding-the-home-directory">Overriding the Home Directory</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-configuration-management">Advanced Configuration Management</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listing-configurations">Listing Configurations</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-new-configurations">Creating New Configurations</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#switching-configurations">Switching Configurations</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-project-settings">Managing Project Settings</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-configuration-editing">Manual Configuration Editing</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-configurations">Removing Configurations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-workflows">Common Workflows</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#first-time-setup">First-Time Setup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-multiple-versions">Working with Multiple Versions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#keeping-vocabularies-up-to-date">Keeping Vocabularies Up to Date</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cleaning-up-old-versions">Cleaning Up Old Versions</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-workflows">Configuration Workflows</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-a-development-environment">Setting Up a Development Environment</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-multiple-project-environments">Setting Up Multiple Project Environments</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cleaning-up-old-projects">Cleaning Up Old Projects</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-file-location">Configuration File Location</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-using-locally-built-databases">Advanced: Using Locally Built Databases</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-not-found">Configuration Not Found</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#project-already-exists">Project Already Exists</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reset-to-clean-state">Reset to Clean State</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#no-projects-installed">No Projects Installed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#version-not-found">Version Not Found</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#network-errors">Network Errors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#overriding-the-registry-url">Overriding the Registry URL</a></li>
 </ul>
 </li>
 </ul>
@@ -405,278 +401,345 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="configuration">
-<h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h1>
-<p>The configuration system allows you to manage different project setups and easily switch between them. Each configuration defines which projects are active and where their repositories and databases are stored.</p>
-<section id="understanding-configurations">
-<h2>Understanding Configurations<a class="headerlink" href="#understanding-configurations" title="Link to this heading">#</a></h2>
-<p>A configuration contains:</p>
+  <section id="vocabulary-management">
+<h1>Vocabulary Management<a class="headerlink" href="#vocabulary-management" title="Link to this heading">#</a></h1>
+<p>ESGVoc works with <strong>pre-built SQLite databases</strong> downloaded from the official registry
+(<a class="reference external" href="https://github.com/WCRP-CMIP/esgvoc_registry">WCRP-CMIP/esgvoc_registry</a>).
+Each project database is versioned (e.g. <code class="docutils literal notranslate"><span class="pre">v2.1.0</span></code>) and can be downloaded, switched,
+or removed independently.</p>
+<section id="available-projects">
+<h2>Available Projects<a class="headerlink" href="#available-projects" title="Link to this heading">#</a></h2>
+<p>The following projects are available in the registry:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>ID</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">universe</span></code></p></td>
+<td><p>WCRP Universe (shared vocabulary)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cmip7</span></code></p></td>
+<td><p>CMIP7 Controlled Vocabulary</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cmip6</span></code></p></td>
+<td><p>CMIP6 Controlled Vocabulary</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cmip6plus</span></code></p></td>
+<td><p>CMIP6Plus Controlled Vocabulary</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">input4mips</span></code></p></td>
+<td><p>input4MIPs Controlled Vocabulary</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">obs4ref</span></code></p></td>
+<td><p>obs4REF Controlled Vocabulary</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cordex-cmip6</span></code></p></td>
+<td><p>CORDEX-CMIP6 Controlled Vocabulary</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cordex-cmip5</span></code></p></td>
+<td><p>CORDEX-CMIP5 Controlled Vocabulary</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">emd</span></code></p></td>
+<td><p>EMD Controlled Vocabulary</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="downloading-and-activating-a-version">
+<h2>Downloading and Activating a Version<a class="headerlink" href="#downloading-and-activating-a-version" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">use</span></code> command downloads a project database from the registry (if not
+already on disk) and activates it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download and activate the latest stable version</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@latest
+
+<span class="c1"># Download and activate a specific version</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@v2.1.0
+
+<span class="c1"># Download and activate the latest pre-release</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@dev-latest
+
+<span class="c1"># Activate a version that is already downloaded (no network needed)</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@v2.0.0
+
+<span class="c1"># Activate the newest installed version (no name required)</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7
+</pre></div>
+</div>
+<p>Version name resolution:</p>
 <ul class="simple">
-<li><p><strong>Universe settings</strong>: Global WCRP vocabulary repository settings</p></li>
-<li><p><strong>Project settings</strong>: Individual project repositories (CMIP6, Input4MIPs, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;latest</span></code> — latest stable release (auto-download)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;dev-latest</span></code> — latest pre-release (auto-download)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;vX.Y.Z</span></code> — exact registry version (auto-download if not present)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;&lt;custom&gt;</span></code> — locally built database (must be installed first via <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">admin</span> <span class="pre">install</span></code>)</p></li>
 </ul>
 </section>
-<section id="default-projects-available">
-<h2>Default Projects Available<a class="headerlink" href="#default-projects-available" title="Link to this heading">#</a></h2>
-<p>ESGVoc comes with several pre-configured projects that can be easily added:</p>
-<ul class="simple">
-<li><p><strong>cmip6</strong>: CMIP6 Controlled Vocabularies</p></li>
-<li><p><strong>cmip6plus</strong>: CMIP6Plus Controlled Vocabularies</p></li>
-<li><p><strong>input4mip</strong>: Input4MIPs Controlled Vocabularies</p></li>
-<li><p><strong>obs4mip</strong>: Obs4MIPs Controlled Vocabularies</p></li>
-<li><p><strong>cordex-cmip6</strong>: CORDEX-CMIP6 Controlled Vocabularies</p></li>
-</ul>
-</section>
-<section id="basic-configuration-commands">
-<h2>Basic Configuration Commands<a class="headerlink" href="#basic-configuration-commands" title="Link to this heading">#</a></h2>
-<section id="viewing-available-projects">
-<h3>Viewing Available Projects<a class="headerlink" href="#viewing-available-projects" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Show all available projects and their status in current config</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>avail
+<section id="checking-current-status">
+<h2>Checking Current Status<a class="headerlink" href="#checking-current-status" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Show installed projects and active versions</span>
+esgvoc<span class="w"> </span>status
 
-<span class="c1"># Check projects in a specific configuration</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>avail<span class="w"> </span>--config<span class="w"> </span>my_config
+<span class="c1"># Show full filesystem paths as well</span>
+esgvoc<span class="w"> </span>status<span class="w"> </span>--paths
 </pre></div>
 </div>
-<p>This displays a table showing which projects are active (✓) and which are available to add (○).</p>
+<p>The output lists each project, its active version, how it was sourced (<code class="docutils literal notranslate"><span class="pre">registry</span></code> or
+<code class="docutils literal notranslate"><span class="pre">local</span></code>), and all installed versions.</p>
 </section>
-<section id="creating-empty-configurations">
-<h3>Creating Empty Configurations<a class="headerlink" href="#creating-empty-configurations" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create empty configuration and switch to it</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>init<span class="w"> </span>minimal_setup
+<section id="listing-installed-and-available-versions">
+<h2>Listing Installed and Available Versions<a class="headerlink" href="#listing-installed-and-available-versions" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List all installed versions across all projects</span>
+esgvoc<span class="w"> </span>list
 
-<span class="c1"># Create empty configuration but stay on current one</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>init<span class="w"> </span>test_config<span class="w"> </span>--no-switch
+<span class="c1"># List installed versions for a specific project</span>
+esgvoc<span class="w"> </span>list<span class="w"> </span>cmip7
+
+<span class="c1"># Also show versions available for download (requires network)</span>
+esgvoc<span class="w"> </span>list<span class="w"> </span>cmip7<span class="w"> </span>--available
+
+<span class="c1"># Include pre-release versions in the remote listing</span>
+esgvoc<span class="w"> </span>list<span class="w"> </span>cmip7<span class="w"> </span>--available<span class="w"> </span>--pre
+
+<span class="c1"># Show full registry metadata for all known projects</span>
+esgvoc<span class="w"> </span>list-remote
+
+<span class="c1"># Show full registry metadata for a specific project</span>
+esgvoc<span class="w"> </span>list-remote<span class="w"> </span>cmip7
+
+<span class="c1"># Include pre-release versions in the remote listing</span>
+esgvoc<span class="w"> </span>list-remote<span class="w"> </span>cmip7<span class="w"> </span>--pre
 </pre></div>
 </div>
-<p>An empty configuration contains only universe settings with no projects, allowing you to add projects selectively.</p>
 </section>
-<section id="adding-projects">
-<h3>Adding Projects<a class="headerlink" href="#adding-projects" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add single project to current configuration</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>add<span class="w"> </span>input4mip
+<section id="updating-to-a-newer-version">
+<h2>Updating to a Newer Version<a class="headerlink" href="#updating-to-a-newer-version" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Update a specific project to the latest stable version</span>
+esgvoc<span class="w"> </span>update<span class="w"> </span>cmip7
 
-<span class="c1"># Add multiple projects at once</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>add<span class="w"> </span>input4mip<span class="w"> </span>obs4mip<span class="w"> </span>cordex-cmip6
+<span class="c1"># Update all installed projects</span>
+esgvoc<span class="w"> </span>update
 
-<span class="c1"># Add projects to specific configuration</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>add<span class="w"> </span>cmip6<span class="w"> </span>--config<span class="w"> </span>production
+<span class="c1"># Check for updates without downloading</span>
+esgvoc<span class="w"> </span>update<span class="w"> </span>--check
+
+<span class="c1"># Download but do not switch the active version</span>
+esgvoc<span class="w"> </span>update<span class="w"> </span>cmip7<span class="w"> </span>--no-activate
+
+<span class="c1"># Include pre-release versions when checking for updates</span>
+esgvoc<span class="w"> </span>update<span class="w"> </span>cmip7<span class="w"> </span>--pre
 </pre></div>
 </div>
-<p>When you add projects:</p>
-<ol class="arabic simple">
-<li><p>The project is added to the configuration using default settings</p></li>
-<li><p>The project’s controlled vocabularies are automatically downloaded</p></li>
-<li><p>Local repositories and databases are set up</p></li>
-</ol>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Projects that already exist in the configuration will be skipped with a warning.</p>
-</div>
 </section>
-<section id="removing-projects">
-<h3>Removing Projects<a class="headerlink" href="#removing-projects" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Remove single project (with confirmation)</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>rm<span class="w"> </span>input4mip
+<section id="removing-installed-databases">
+<h2>Removing Installed Databases<a class="headerlink" href="#removing-installed-databases" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Remove a specific version</span>
+esgvoc<span class="w"> </span>remove<span class="w"> </span>cmip7@v2.0.0
 
-<span class="c1"># Remove multiple projects at once</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>rm<span class="w"> </span>input4mip<span class="w"> </span>obs4mip<span class="w"> </span>cordex-cmip6
+<span class="c1"># Remove all installed versions for a project</span>
+esgvoc<span class="w"> </span>remove<span class="w"> </span>cmip7<span class="w"> </span>--all
 
-<span class="c1"># Remove without confirmation prompt</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>rm<span class="w"> </span>input4mip<span class="w"> </span>--force
-
-<span class="c1"># Remove from configuration but keep local files</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>rm<span class="w"> </span>input4mip<span class="w"> </span>--keep-files
+<span class="c1"># Remove without a confirmation prompt</span>
+esgvoc<span class="w"> </span>remove<span class="w"> </span>cmip7@v2.0.0<span class="w"> </span>--yes
 </pre></div>
 </div>
-<p>When you remove projects:</p>
-<ol class="arabic simple">
-<li><p>The project is removed from the configuration</p></li>
-<li><p>Local repository directory is deleted (unless <code class="docutils literal notranslate"><span class="pre">--keep-files</span></code>)</p></li>
-<li><p>Database file is deleted (unless <code class="docutils literal notranslate"><span class="pre">--keep-files</span></code>)</p></li>
-</ol>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>By default, removing a project deletes all its local files. Use <code class="docutils literal notranslate"><span class="pre">--keep-files</span></code> if you want to preserve the downloaded data.</p>
+<p>Removing the active version deactivates the project. Run
+<code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">use</span> <span class="pre">&lt;project&gt;&#64;&lt;version&gt;</span></code> afterwards to re-activate another version.</p>
 </div>
 </section>
-</section>
-<section id="advanced-configuration-management">
-<h2>Advanced Configuration Management<a class="headerlink" href="#advanced-configuration-management" title="Link to this heading">#</a></h2>
-<section id="listing-configurations">
-<h3>Listing Configurations<a class="headerlink" href="#listing-configurations" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List all available configurations</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>list
-
-<span class="c1"># Show current configuration content</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>show
-
-<span class="c1"># Show specific configuration content</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>show<span class="w"> </span>my_config
+<section id="checking-the-installed-esgvoc-version">
+<h2>Checking the Installed ESGVoc Version<a class="headerlink" href="#checking-the-installed-esgvoc-version" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Show the installed esgvoc version</span>
+esgvoc<span class="w"> </span>version
 </pre></div>
 </div>
 </section>
-<section id="creating-new-configurations">
-<h3>Creating New Configurations<a class="headerlink" href="#creating-new-configurations" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create configuration based on default settings</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>create<span class="w"> </span>production
-
-<span class="c1"># Create configuration based on existing one</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>create<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--base<span class="w"> </span>production
-
-<span class="c1"># Create and immediately switch to it</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>create<span class="w"> </span>development<span class="w"> </span>--switch
+<section id="data-storage-locations">
+<h2>Data Storage Locations<a class="headerlink" href="#data-storage-locations" title="Link to this heading">#</a></h2>
+<p>All project databases are stored under the <strong>esgvoc home directory</strong>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Platform</p></th>
+<th class="head"><p>Default home</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Linux</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">~/.local/share/esgvoc/</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>macOS</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">~/Library/Application</span> <span class="pre">Support/esgvoc/</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Windows</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">%LOCALAPPDATA%\ipsl\esgvoc\</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Inside the home directory:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>~/.local/share/esgvoc/
+└── dbs/
+    ├── cmip7/
+    │   ├── v2.1.0.db          ← registry download
+    │   └── v2.0.0.db          ← registry download
+    ├── cmip7.active.json      ← pointer to the active version
+    ├── cmip6/
+    │   └── v1.3.0.db
+    └── cmip6.active.json
 </pre></div>
 </div>
-</section>
-<section id="switching-configurations">
-<h3>Switching Configurations<a class="headerlink" href="#switching-configurations" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Switch to different configuration</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>switch<span class="w"> </span>production
-
-<span class="c1"># Check which configuration is currently active</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>list
-</pre></div>
-</div>
-</section>
-<section id="managing-project-settings">
-<h3>Managing Project Settings<a class="headerlink" href="#managing-project-settings" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List projects in current configuration</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>list-projects
-
-<span class="c1"># List projects in specific configuration</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>list-projects<span class="w"> </span>--config<span class="w"> </span>production
-
-<span class="c1"># Update project repository URL</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>update-project<span class="w"> </span>cmip6<span class="w"> </span>--repo<span class="w"> </span>https://github.com/new/repo
-
-<span class="c1"># Update project branch</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>update-project<span class="w"> </span>cmip6<span class="w"> </span>--branch<span class="w"> </span>new_branch
-
-<span class="c1"># Update multiple settings at once</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>update-project<span class="w"> </span>cmip6<span class="w"> </span>--repo<span class="w"> </span>https://github.com/new/repo<span class="w"> </span>--branch<span class="w"> </span>main
-</pre></div>
-</div>
-</section>
-<section id="manual-configuration-editing">
-<h3>Manual Configuration Editing<a class="headerlink" href="#manual-configuration-editing" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Edit current configuration in default editor</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>edit
-
-<span class="c1"># Edit specific configuration</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>edit<span class="w"> </span>production
-
-<span class="c1"># Use specific editor</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>edit<span class="w"> </span>--editor<span class="w"> </span>nano
-
-<span class="c1"># Modify settings via command line</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="s1">&#39;universe:branch=esgvoc_dev&#39;</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="s1">&#39;cmip6:github_repo=https://github.com/new/cmip6&#39;</span>
-</pre></div>
-</div>
-</section>
-<section id="removing-configurations">
-<h3>Removing Configurations<a class="headerlink" href="#removing-configurations" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Remove configuration (with confirmation)</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>remove<span class="w"> </span>test_config
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You cannot remove the “default” configuration, and removing the active configuration will automatically switch you to the default one.</p>
-</div>
-</section>
-</section>
-<section id="configuration-workflows">
-<h2>Configuration Workflows<a class="headerlink" href="#configuration-workflows" title="Link to this heading">#</a></h2>
-<section id="setting-up-a-development-environment">
-<h3>Setting Up a Development Environment<a class="headerlink" href="#setting-up-a-development-environment" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create empty development configuration</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>init<span class="w"> </span>dev
-
-<span class="c1"># Add only the projects you need</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>add<span class="w"> </span>cmip6<span class="w"> </span>input4mip
-
-<span class="c1"># Check what&#39;s active</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>avail
-</pre></div>
-</div>
-</section>
-<section id="setting-up-multiple-project-environments">
-<h3>Setting Up Multiple Project Environments<a class="headerlink" href="#setting-up-multiple-project-environments" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create minimal configuration for CMIP6 only</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>init<span class="w"> </span>cmip6_only
-esgvoc<span class="w"> </span>config<span class="w"> </span>add<span class="w"> </span>cmip6
-
-<span class="c1"># Create full configuration with all projects</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>init<span class="w"> </span>full_setup
-esgvoc<span class="w"> </span>config<span class="w"> </span>add<span class="w"> </span>cmip6<span class="w"> </span>cmip6plus<span class="w"> </span>input4mip<span class="w"> </span>obs4mip<span class="w"> </span>cordex-cmip6
-
-<span class="c1"># Switch between them as needed</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>switch<span class="w"> </span>cmip6_only
-esgvoc<span class="w"> </span>config<span class="w"> </span>switch<span class="w"> </span>full_setup
-</pre></div>
-</div>
-</section>
-<section id="cleaning-up-old-projects">
-<h3>Cleaning Up Old Projects<a class="headerlink" href="#cleaning-up-old-projects" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check what projects are currently active</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>avail
-
-<span class="c1"># Remove projects no longer needed (keeps files)</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>rm<span class="w"> </span>obs4mip<span class="w"> </span>cordex-cmip6<span class="w"> </span>--keep-files
-
-<span class="c1"># Or remove completely including files</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>rm<span class="w"> </span>obs4mip<span class="w"> </span>cordex-cmip6
-</pre></div>
-</div>
-</section>
-</section>
-<section id="configuration-file-location">
-<h2>Configuration File Location<a class="headerlink" href="#configuration-file-location" title="Link to this heading">#</a></h2>
-<p>Configuration files are stored in platform-specific directories:</p>
+<p>The registry JSON cache (safely deletable) lives in:</p>
 <ul class="simple">
-<li><p><strong>Linux</strong>: <code class="docutils literal notranslate"><span class="pre">~/.config/esgvoc/</span></code></p></li>
-<li><p><strong>macOS</strong>: <code class="docutils literal notranslate"><span class="pre">~/Library/Application</span> <span class="pre">Support/esgvoc/</span></code></p></li>
-<li><p><strong>Windows</strong>: <code class="docutils literal notranslate"><span class="pre">%APPDATA%\\esgvoc\\</span></code></p></li>
+<li><p><strong>Linux</strong>: <code class="docutils literal notranslate"><span class="pre">~/.cache/esgvoc/</span></code></p></li>
+<li><p><strong>macOS</strong>: <code class="docutils literal notranslate"><span class="pre">~/Library/Caches/esgvoc/</span></code></p></li>
+<li><p><strong>Windows</strong>: <code class="docutils literal notranslate"><span class="pre">%LOCALAPPDATA%\ipsl\esgvoc\Cache\</span></code></p></li>
 </ul>
-<p>The main registry file (<code class="docutils literal notranslate"><span class="pre">config_registry.toml</span></code>) tracks all configurations and which one is active.</p>
+<section id="overriding-the-home-directory">
+<h3>Overriding the Home Directory<a class="headerlink" href="#overriding-the-home-directory" title="Link to this heading">#</a></h3>
+<p>Set the <code class="docutils literal notranslate"><span class="pre">ESGVOC_HOME</span></code> environment variable to use a custom location:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">ESGVOC_HOME</span><span class="o">=</span>/data/esgvoc
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@latest
+</pre></div>
+</div>
+<p>Set <code class="docutils literal notranslate"><span class="pre">ESGVOC_DB_DIR</span></code> to override only the database root (leaving the rest of the
+home directory at its default location):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">ESGVOC_DB_DIR</span><span class="o">=</span>/fast-disk/esgvoc/dbs
+esgvoc<span class="w"> </span>status
+</pre></div>
+</div>
+</section>
+</section>
+<section id="common-workflows">
+<h2>Common Workflows<a class="headerlink" href="#common-workflows" title="Link to this heading">#</a></h2>
+<section id="first-time-setup">
+<h3>First-Time Setup<a class="headerlink" href="#first-time-setup" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download and activate the vocabulary sets you need</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>universe@latest
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@latest
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
+
+<span class="c1"># Verify everything is in order</span>
+esgvoc<span class="w"> </span>status
+</pre></div>
+</div>
+</section>
+<section id="working-with-multiple-versions">
+<h3>Working with Multiple Versions<a class="headerlink" href="#working-with-multiple-versions" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download two versions of cmip7</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@v2.0.0
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@v2.1.0
+
+<span class="c1"># List what is installed</span>
+esgvoc<span class="w"> </span>list<span class="w"> </span>cmip7
+
+<span class="c1"># Switch between them</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@v2.0.0
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@v2.1.0
+</pre></div>
+</div>
+</section>
+<section id="keeping-vocabularies-up-to-date">
+<h3>Keeping Vocabularies Up to Date<a class="headerlink" href="#keeping-vocabularies-up-to-date" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check whether updates are available (no download)</span>
+esgvoc<span class="w"> </span>update<span class="w"> </span>--check
+
+<span class="c1"># Download and activate the latest for all installed projects</span>
+esgvoc<span class="w"> </span>update
+</pre></div>
+</div>
+</section>
+<section id="cleaning-up-old-versions">
+<h3>Cleaning Up Old Versions<a class="headerlink" href="#cleaning-up-old-versions" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List what is installed</span>
+esgvoc<span class="w"> </span>list<span class="w"> </span>cmip7
+
+<span class="c1"># Remove a version you no longer need</span>
+esgvoc<span class="w"> </span>remove<span class="w"> </span>cmip7@v2.0.0
+
+<span class="c1"># Remove all versions and start fresh</span>
+esgvoc<span class="w"> </span>remove<span class="w"> </span>cmip7<span class="w"> </span>--all<span class="w"> </span>--yes
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@latest
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced-using-locally-built-databases">
+<h2>Advanced: Using Locally Built Databases<a class="headerlink" href="#advanced-using-locally-built-databases" title="Link to this heading">#</a></h2>
+<p>CV maintainers and developers can build their own databases and install them locally.
+See the <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">admin</span></code> subcommand group:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build a project database from local repos (dev mode)</span>
+esgvoc<span class="w"> </span>admin<span class="w"> </span>build<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--project-path<span class="w"> </span>./CMIP7-CVs<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--universe-path<span class="w"> </span>./WCRP-universe<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--project-id<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--cv-version<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--universe-version<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--output<span class="w"> </span>cmip7.db
+
+<span class="c1"># Install the locally built database</span>
+esgvoc<span class="w"> </span>admin<span class="w"> </span>install<span class="w"> </span>cmip7<span class="w"> </span>./cmip7.db<span class="w"> </span>--name<span class="w"> </span>my-experiment
+
+<span class="c1"># Activate it</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@my-experiment
+
+<span class="c1"># Validate a database file</span>
+esgvoc<span class="w"> </span>admin<span class="w"> </span>validate<span class="w"> </span>cmip7.db
+
+<span class="c1"># Compare two database files</span>
+esgvoc<span class="w"> </span>admin<span class="w"> </span>diff<span class="w"> </span>v2.0.0.db<span class="w"> </span>v2.1.0.db
+</pre></div>
+</div>
+<p>For the full <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">admin</span></code> reference run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">admin</span> <span class="pre">--help</span></code>.</p>
 </section>
 <section id="troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
-<section id="configuration-not-found">
-<h3>Configuration Not Found<a class="headerlink" href="#configuration-not-found" title="Link to this heading">#</a></h3>
-<p>If you get “Configuration not found” errors:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List available configurations</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>list
+<section id="no-projects-installed">
+<h3>No Projects Installed<a class="headerlink" href="#no-projects-installed" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>status
+<span class="c1"># &quot;No projects installed.&quot;</span>
 
-<span class="c1"># Switch to default if needed</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>switch<span class="w"> </span>default
+<span class="c1"># Fix: download at least one project</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@latest
 </pre></div>
 </div>
 </section>
-<section id="project-already-exists">
-<h3>Project Already Exists<a class="headerlink" href="#project-already-exists" title="Link to this heading">#</a></h3>
-<p>When adding projects that already exist:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check current projects</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>list-projects
+<section id="version-not-found">
+<h3>Version Not Found<a class="headerlink" href="#version-not-found" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check what versions exist in the registry</span>
+esgvoc<span class="w"> </span>list-remote<span class="w"> </span>cmip7
 
-<span class="c1"># Check all available projects and their status</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>avail
+<span class="c1"># Or list what is already installed</span>
+esgvoc<span class="w"> </span>list<span class="w"> </span>cmip7
 </pre></div>
 </div>
 </section>
-<section id="reset-to-clean-state">
-<h3>Reset to Clean State<a class="headerlink" href="#reset-to-clean-state" title="Link to this heading">#</a></h3>
-<p>To start fresh:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create new empty configuration</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>init<span class="w"> </span>fresh<span class="w"> </span>--no-switch
+<section id="network-errors">
+<h3>Network Errors<a class="headerlink" href="#network-errors" title="Link to this heading">#</a></h3>
+<p>If you cannot reach the registry, activate an already-downloaded version:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List locally installed versions (no network needed)</span>
+esgvoc<span class="w"> </span>list<span class="w"> </span>cmip7
 
-<span class="c1"># Remove old configuration</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>remove<span class="w"> </span>old_config
-
-<span class="c1"># Switch to clean setup</span>
-esgvoc<span class="w"> </span>config<span class="w"> </span>switch<span class="w"> </span>fresh
+<span class="c1"># Activate one</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@v2.0.0
+</pre></div>
+</div>
+</section>
+<section id="overriding-the-registry-url">
+<h3>Overriding the Registry URL<a class="headerlink" href="#overriding-the-registry-url" title="Link to this heading">#</a></h3>
+<p>For testing or enterprise setups, override the registry base URL:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">ESGVOC_REGISTRY_BASE_URL</span><span class="o">=</span>https://raw.githubusercontent.com/my-org/my-registry/main
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@latest
 </pre></div>
 </div>
 </section>
@@ -694,6 +757,24 @@ esgvoc<span class="w"> </span>config<span class="w"> </span>switch<span class="w
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="../user/cli.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Command Line Interface (CLI)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="get.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Get</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -712,35 +793,30 @@ esgvoc<span class="w"> </span>config<span class="w"> </span>switch<span class="w
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-configurations">Understanding Configurations</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#default-projects-available">Default Projects Available</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-configuration-commands">Basic Configuration Commands</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-available-projects">Viewing Available Projects</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-empty-configurations">Creating Empty Configurations</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-projects">Adding Projects</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-projects">Removing Projects</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-projects">Available Projects</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downloading-and-activating-a-version">Downloading and Activating a Version</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-current-status">Checking Current Status</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#listing-installed-and-available-versions">Listing Installed and Available Versions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-to-a-newer-version">Updating to a Newer Version</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-installed-databases">Removing Installed Databases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-the-installed-esgvoc-version">Checking the Installed ESGVoc Version</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-storage-locations">Data Storage Locations</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#overriding-the-home-directory">Overriding the Home Directory</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-configuration-management">Advanced Configuration Management</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listing-configurations">Listing Configurations</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-new-configurations">Creating New Configurations</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#switching-configurations">Switching Configurations</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-project-settings">Managing Project Settings</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-configuration-editing">Manual Configuration Editing</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-configurations">Removing Configurations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-workflows">Common Workflows</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#first-time-setup">First-Time Setup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-multiple-versions">Working with Multiple Versions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#keeping-vocabularies-up-to-date">Keeping Vocabularies Up to Date</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cleaning-up-old-versions">Cleaning Up Old Versions</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-workflows">Configuration Workflows</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-a-development-environment">Setting Up a Development Environment</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-multiple-project-environments">Setting Up Multiple Project Environments</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cleaning-up-old-projects">Cleaning Up Old Projects</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-file-location">Configuration File Location</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-using-locally-built-databases">Advanced: Using Locally Built Databases</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-not-found">Configuration Not Found</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#project-already-exists">Project Already Exists</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reset-to-clean-state">Reset to Clean State</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#no-projects-installed">No Projects Installed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#version-not-found">Version Not Found</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#network-errors">Network Errors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#overriding-the-registry-url">Overriding the Registry URL</a></li>
 </ul>
 </li>
 </ul>

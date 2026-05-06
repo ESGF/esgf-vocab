@@ -17,7 +17,7 @@ Previously, controlled vocabularies were stored in multiple locations and format
 1. **Harmonization terms through a unified CV source**  
    A single, centralized repository — referred to as the "Universe CV" — hosts all controlled vocabularies. Specialized vocabularies for specific projects reference the Universe CV via streamlined lists of IDs. This ensures consistency and eliminates duplication.
 
-2. **Providing both pythin api and a CLI**  
+2. **Providing both a Python API and a CLI**  
    `ESGVOC` provides a dedicated service for interacting with controlled vocabularies. It enables developers, administrators, and software systems to access vocabularies seamlessly via:
    - A Python API for programmatic interaction.
    - A CLI powered by [Typer](https://typer.tiangolo.com/) for command-line use.
@@ -34,7 +34,7 @@ You can install `ESGVOC` using recent Python packaging tools. It is only availab
 uv add esgvoc
 ```
 
-This ensures all dependencies are installed, and cached repositories and databases will be stored in the `.cache` directory alongside the `.venv` folder. This approach simplifies updates and uninstallation.
+This ensures all dependencies are installed. Vocabulary databases are stored in the platform data directory (e.g. `~/.local/share/esgvoc/` on Linux), independently of the virtual environment.
 
 ### Using pip in a virtual environment
 Alternatively, you can use a virtual environment:
@@ -47,38 +47,57 @@ pip install esgvoc
 
 ## Fetching vocabulary data
 
-Once installed esgvoc need to clone the following WCRP CV repositories and cache them into an SQLite database:  
+Once installed, `ESGVOC` needs to download pre-built SQLite databases for the projects
+you want to work with. Databases are served from the official registry
+([WCRP-CMIP/esgvoc_registry](https://github.com/WCRP-CMIP/esgvoc_registry)) and are
+versioned independently of the library itself.
 
+### Downloading a vocabulary
 
-`ESGVOC` primarily uses the following repositories for controlled vocabulary data:
-
-- **Universe CV**: [GitHub Repository](https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc)
-- **CMIP6 CVs**: [GitHub Repository](https://github.com/WCRP-CMIP/CMIP6_CVs/tree/esgvoc)
-- **CMIP6Plus CVs**: [GitHub Repository](https://github.com/WCRP-CMIP/CMIP6Plus_CVs/tree/esgvoc)
-
-
-```{eval-rst}
-.. warning::
-   To be accurate, ESGVOC uses the specific branch "esgvoc" in those repositories.
-```
-
-those are configured by default !
+Use the `esgvoc use` command to download and activate a project database:
 
 ```bash
-esgvoc install
+# Download and activate the latest stable universe vocabulary
+esgvoc use universe@latest
+
+# Download and activate the latest CMIP7 vocabulary
+esgvoc use cmip7@latest
+
+# Download and activate a specific version
+esgvoc use cmip6@v1.3.0
 ```
 
-This command performs the following actions:
-- Clones the official repositories.
-- Builds a cached SQLite database from the cloned data.
+Available projects include: `universe`, `cmip7`, `cmip6`, `cmip6plus`, `input4mips`,
+`obs4ref`, `cordex-cmip6`, `cordex-cmip5`, `emd`.
+
+### Checking what is installed
+
+```bash
+esgvoc status
+```
+
+### Keeping vocabularies up to date
+
+```bash
+# Check for newer versions (no download)
+esgvoc update --check
+
+# Download and activate the latest for all installed projects
+esgvoc update
+```
 
 ### Offline use
-If there is no internet access, it is still possible to use the library: copy the repositories into `.cache/repos` and then issue `esgvoc install`. The library will check the `.cache/repos` directory for existing repositories.
 
-## Official controlled vocabulary repositories
+If you have no internet access, you can still activate any version that has already
+been downloaded:
 
-### Flexibility for other repositories
-While designed for these repositories, `ESGVOC` can use other repositories if they are structured correctly.
+```bash
+# List locally installed versions (no network needed)
+esgvoc list cmip7
+
+# Activate one
+esgvoc use cmip7@v2.0.0
+```
 
 ## Requirements
 

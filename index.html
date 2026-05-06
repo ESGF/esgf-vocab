@@ -147,12 +147,13 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="user/introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user/terms.html">Controlled vocabulary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user/cached_database.html">Database and functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/cached_database.html">Database management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user/api.html">ESGVOC API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user/cli.html">Command Line Interface (CLI)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">How to</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="how_to/configuration.html">Vocabulary Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="how_to/get.html">Get</a></li>
 <li class="toctree-l1"><a class="reference internal" href="how_to/valid.html">Valid</a></li>
 <li class="toctree-l1"><a class="reference internal" href="how_to/validate_drs.html">Valid DRS</a></li>
@@ -366,7 +367,7 @@
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-cases">Use cases</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#caching">Caching</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#vocabulary-database-management">Vocabulary database management</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listing">Listing</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#searching">Searching</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#drs-validation">DRS validation</a></li>
@@ -400,10 +401,11 @@
 <li><p>Supports case-sensitive, wildcard, and approximate matching.</p></li>
 </ul>
 </li>
-<li><p><strong>Caching</strong>:</p>
+<li><p><strong>Vocabulary databases</strong>:</p>
 <ul>
-<li><p>Download CVs to a local database for offline use.</p></li>
-<li><p>Keep the local cache up-to-date.</p></li>
+<li><p>Download versioned pre-built databases for offline use.</p></li>
+<li><p>Keep installed databases up to date with <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">update</span></code>.</p></li>
+<li><p>Switch between versions without reinstalling.</p></li>
 </ul>
 </li>
 <li><p><strong>Validation</strong>:</p>
@@ -417,13 +419,13 @@
 <section id="use-cases">
 <h2>Use cases<a class="headerlink" href="#use-cases" title="Link to this heading">#</a></h2>
 <p>The ESGVOC library supports a wide range of use cases, including:</p>
-<section id="caching">
-<h3>Caching<a class="headerlink" href="#caching" title="Link to this heading">#</a></h3>
+<section id="vocabulary-database-management">
+<h3>Vocabulary database management<a class="headerlink" href="#vocabulary-database-management" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>Usage without internet access.</p></li>
-<li><p>Downloading CVs to a local archive or database.</p></li>
-<li><p>Updating the local cache.</p></li>
-<li><p>Performing consistency checks between the local cache and remote CV repositories.</p></li>
+<li><p>Download versioned project databases from the registry (<code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">use</span> <span class="pre">&lt;project&gt;&#64;latest</span></code>).</p></li>
+<li><p>Switch between installed versions without re-downloading.</p></li>
+<li><p>Update to the latest release (<code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">update</span></code>).</p></li>
+<li><p>Usage without internet access once a version is downloaded.</p></li>
 </ul>
 </section>
 <section id="listing">
@@ -486,11 +488,10 @@ unordered bag of terms.</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="user/introduction.html#fetching-vocabulary-data">Fetching vocabulary data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user/introduction.html#downloading-a-vocabulary">Downloading a vocabulary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/introduction.html#checking-what-is-installed">Checking what is installed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/introduction.html#keeping-vocabularies-up-to-date">Keeping vocabularies up to date</a></li>
 <li class="toctree-l3"><a class="reference internal" href="user/introduction.html#offline-use">Offline use</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="user/introduction.html#official-controlled-vocabulary-repositories">Official controlled vocabulary repositories</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="user/introduction.html#flexibility-for-other-repositories">Flexibility for other repositories</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="user/introduction.html#requirements">Requirements</a></li>
@@ -505,12 +506,14 @@ unordered bag of terms.</p>
 <li class="toctree-l2"><a class="reference internal" href="user/terms.html#esgvoc">ESGVOC</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="user/cached_database.html">Database and functionality</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user/cached_database.html#overview-of-database-management">Overview of database management</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="user/cached_database.html#synchronization-workflow">Synchronization workflow</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user/cached_database.html#viewing-synchronization-status">Viewing synchronization status</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="user/cached_database.html">Database management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user/cached_database.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/cached_database.html#storage-layout">Storage layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/cached_database.html#versioning-model">Versioning model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/cached_database.html#checking-installed-versions">Checking installed versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/cached_database.html#updating-vocabularies">Updating vocabularies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/cached_database.html#removing-old-versions">Removing old versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user/cached_database.html#offline-use">Offline use</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user/api.html">ESGVOC API</a><ul>
@@ -543,6 +546,15 @@ unordered bag of terms.</p>
 <li class="toctree-l3"><a class="reference internal" href="user/cli.html#batch-operations">Batch operations</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="user/cli.html#vocabulary-management-commands">Vocabulary management commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user/cli.html#downloading-and-activating-a-vocabulary">Downloading and activating a vocabulary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/cli.html#checking-status">Checking status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/cli.html#listing-versions">Listing versions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/cli.html#updating-vocabularies">Updating vocabularies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/cli.html#removing-installed-databases">Removing installed databases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user/cli.html#checking-the-installed-esgvoc-version">Checking the installed esgvoc version</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="user/cli.html#advanced-use-cases">Advanced use cases</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user/cli.html#summary">Summary</a></li>
 </ul>
@@ -552,6 +564,35 @@ unordered bag of terms.</p>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">How to</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="how_to/configuration.html">Vocabulary Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="how_to/configuration.html#available-projects">Available Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="how_to/configuration.html#downloading-and-activating-a-version">Downloading and Activating a Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="how_to/configuration.html#checking-current-status">Checking Current Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="how_to/configuration.html#listing-installed-and-available-versions">Listing Installed and Available Versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="how_to/configuration.html#updating-to-a-newer-version">Updating to a Newer Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="how_to/configuration.html#removing-installed-databases">Removing Installed Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="how_to/configuration.html#checking-the-installed-esgvoc-version">Checking the Installed ESGVoc Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="how_to/configuration.html#data-storage-locations">Data Storage Locations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="how_to/configuration.html#overriding-the-home-directory">Overriding the Home Directory</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="how_to/configuration.html#common-workflows">Common Workflows</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="how_to/configuration.html#first-time-setup">First-Time Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="how_to/configuration.html#working-with-multiple-versions">Working with Multiple Versions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="how_to/configuration.html#keeping-vocabularies-up-to-date">Keeping Vocabularies Up to Date</a></li>
+<li class="toctree-l3"><a class="reference internal" href="how_to/configuration.html#cleaning-up-old-versions">Cleaning Up Old Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="how_to/configuration.html#advanced-using-locally-built-databases">Advanced: Using Locally Built Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="how_to/configuration.html#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="how_to/configuration.html#no-projects-installed">No Projects Installed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="how_to/configuration.html#version-not-found">Version Not Found</a></li>
+<li class="toctree-l3"><a class="reference internal" href="how_to/configuration.html#network-errors">Network Errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="how_to/configuration.html#overriding-the-registry-url">Overriding the Registry URL</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="how_to/get.html">Get</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="how_to/get.html#one-term">One term</a></li>
 <li class="toctree-l2"><a class="reference internal" href="how_to/get.html#all-terms-from-one-data-descriptor-or-collection">All terms from one data descriptor or collection</a></li>
@@ -665,7 +706,7 @@ unordered bag of terms.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-cases">Use cases</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#caching">Caching</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#vocabulary-database-management">Vocabulary database management</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listing">Listing</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#searching">Searching</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#drs-validation">DRS validation</a></li>

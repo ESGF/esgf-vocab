@@ -146,12 +146,13 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terms.html">Controlled vocabulary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cached_database.html">Database and functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cached_database.html">Database management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">ESGVOC API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">How to</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../how_to/configuration.html">Vocabulary Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/get.html">Get</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/valid.html">Valid</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/validate_drs.html">Valid DRS</a></li>
@@ -370,11 +371,10 @@
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fetching-vocabulary-data">Fetching vocabulary data</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#downloading-a-vocabulary">Downloading a vocabulary</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-what-is-installed">Checking what is installed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#keeping-vocabularies-up-to-date">Keeping vocabularies up to date</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-use">Offline use</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#official-controlled-vocabulary-repositories">Official controlled vocabulary repositories</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flexibility-for-other-repositories">Flexibility for other repositories</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements">Requirements</a></li>
@@ -404,7 +404,7 @@
 <ol class="arabic simple">
 <li><p><strong>Harmonization terms through a unified CV source</strong><br />
 A single, centralized repository — referred to as the “Universe CV” — hosts all controlled vocabularies. Specialized vocabularies for specific projects reference the Universe CV via streamlined lists of IDs. This ensures consistency and eliminates duplication.</p></li>
-<li><p><strong>Providing both pythin api and a CLI</strong><br />
+<li><p><strong>Providing both a Python API and a CLI</strong><br />
 <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> provides a dedicated service for interacting with controlled vocabularies. It enables developers, administrators, and software systems to access vocabularies seamlessly via:</p>
 <ul class="simple">
 <li><p>A Python API for programmatic interaction.</p></li>
@@ -422,7 +422,7 @@ A single, centralized repository — referred to as the “Universe CV” — ho
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>add<span class="w"> </span>esgvoc
 </pre></div>
 </div>
-<p>This ensures all dependencies are installed, and cached repositories and databases will be stored in the <code class="docutils literal notranslate"><span class="pre">.cache</span></code> directory alongside the <code class="docutils literal notranslate"><span class="pre">.venv</span></code> folder. This approach simplifies updates and uninstallation.</p>
+<p>This ensures all dependencies are installed. Vocabulary databases are stored in the platform data directory (e.g. <code class="docutils literal notranslate"><span class="pre">~/.local/share/esgvoc/</span></code> on Linux), independently of the virtual environment.</p>
 </section>
 <section id="using-pip-in-a-virtual-environment">
 <h3>Using pip in a virtual environment<a class="headerlink" href="#using-pip-in-a-virtual-environment" title="Link to this heading">#</a></h3>
@@ -436,36 +436,53 @@ pip<span class="w"> </span>install<span class="w"> </span>esgvoc
 </section>
 <section id="fetching-vocabulary-data">
 <h2>Fetching vocabulary data<a class="headerlink" href="#fetching-vocabulary-data" title="Link to this heading">#</a></h2>
-<p>Once installed esgvoc need to clone the following WCRP CV repositories and cache them into an SQLite database:</p>
-<p><code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> primarily uses the following repositories for controlled vocabulary data:</p>
-<ul class="simple">
-<li><p><strong>Universe CV</strong>: <a class="reference external" href="https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc">GitHub Repository</a></p></li>
-<li><p><strong>CMIP6 CVs</strong>: <a class="reference external" href="https://github.com/WCRP-CMIP/CMIP6_CVs/tree/esgvoc">GitHub Repository</a></p></li>
-<li><p><strong>CMIP6Plus CVs</strong>: <a class="reference external" href="https://github.com/WCRP-CMIP/CMIP6Plus_CVs/tree/esgvoc">GitHub Repository</a></p></li>
-</ul>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>To be accurate, ESGVOC uses the specific branch “esgvoc” in those repositories.</p>
-</div>
-<p>those are configured by default !</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>install
+<p>Once installed, <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> needs to download pre-built SQLite databases for the projects
+you want to work with. Databases are served from the official registry
+(<a class="reference external" href="https://github.com/WCRP-CMIP/esgvoc_registry">WCRP-CMIP/esgvoc_registry</a>) and are
+versioned independently of the library itself.</p>
+<section id="downloading-a-vocabulary">
+<h3>Downloading a vocabulary<a class="headerlink" href="#downloading-a-vocabulary" title="Link to this heading">#</a></h3>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">use</span></code> command to download and activate a project database:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download and activate the latest stable universe vocabulary</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>universe@latest
+
+<span class="c1"># Download and activate the latest CMIP7 vocabulary</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@latest
+
+<span class="c1"># Download and activate a specific version</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@v1.3.0
 </pre></div>
 </div>
-<p>This command performs the following actions:</p>
-<ul class="simple">
-<li><p>Clones the official repositories.</p></li>
-<li><p>Builds a cached SQLite database from the cloned data.</p></li>
-</ul>
+<p>Available projects include: <code class="docutils literal notranslate"><span class="pre">universe</span></code>, <code class="docutils literal notranslate"><span class="pre">cmip7</span></code>, <code class="docutils literal notranslate"><span class="pre">cmip6</span></code>, <code class="docutils literal notranslate"><span class="pre">cmip6plus</span></code>, <code class="docutils literal notranslate"><span class="pre">input4mips</span></code>,
+<code class="docutils literal notranslate"><span class="pre">obs4ref</span></code>, <code class="docutils literal notranslate"><span class="pre">cordex-cmip6</span></code>, <code class="docutils literal notranslate"><span class="pre">cordex-cmip5</span></code>, <code class="docutils literal notranslate"><span class="pre">emd</span></code>.</p>
+</section>
+<section id="checking-what-is-installed">
+<h3>Checking what is installed<a class="headerlink" href="#checking-what-is-installed" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>status
+</pre></div>
+</div>
+</section>
+<section id="keeping-vocabularies-up-to-date">
+<h3>Keeping vocabularies up to date<a class="headerlink" href="#keeping-vocabularies-up-to-date" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check for newer versions (no download)</span>
+esgvoc<span class="w"> </span>update<span class="w"> </span>--check
+
+<span class="c1"># Download and activate the latest for all installed projects</span>
+esgvoc<span class="w"> </span>update
+</pre></div>
+</div>
+</section>
 <section id="offline-use">
 <h3>Offline use<a class="headerlink" href="#offline-use" title="Link to this heading">#</a></h3>
-<p>If there is no internet access, it is still possible to use the library: copy the repositories into <code class="docutils literal notranslate"><span class="pre">.cache/repos</span></code> and then issue <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code>. The library will check the <code class="docutils literal notranslate"><span class="pre">.cache/repos</span></code> directory for existing repositories.</p>
-</section>
-</section>
-<section id="official-controlled-vocabulary-repositories">
-<h2>Official controlled vocabulary repositories<a class="headerlink" href="#official-controlled-vocabulary-repositories" title="Link to this heading">#</a></h2>
-<section id="flexibility-for-other-repositories">
-<h3>Flexibility for other repositories<a class="headerlink" href="#flexibility-for-other-repositories" title="Link to this heading">#</a></h3>
-<p>While designed for these repositories, <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> can use other repositories if they are structured correctly.</p>
+<p>If you have no internet access, you can still activate any version that has already
+been downloaded:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List locally installed versions (no network needed)</span>
+esgvoc<span class="w"> </span>list<span class="w"> </span>cmip7
+
+<span class="c1"># Activate one</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@v2.0.0
+</pre></div>
+</div>
 </section>
 </section>
 <section id="requirements">
@@ -533,11 +550,10 @@ pip<span class="w"> </span>install<span class="w"> </span>esgvoc
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fetching-vocabulary-data">Fetching vocabulary data</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#downloading-a-vocabulary">Downloading a vocabulary</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-what-is-installed">Checking what is installed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#keeping-vocabularies-up-to-date">Keeping vocabularies up to date</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-use">Offline use</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#official-controlled-vocabulary-repositories">Official controlled vocabulary repositories</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flexibility-for-other-repositories">Flexibility for other repositories</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements">Requirements</a></li>

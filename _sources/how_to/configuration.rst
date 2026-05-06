@@ -1,296 +1,346 @@
-Configuration
-#############
+Vocabulary Management
+#####################
 
-The configuration system allows you to manage different project setups and easily switch between them. Each configuration defines which projects are active and where their repositories and databases are stored.
+ESGVoc works with **pre-built SQLite databases** downloaded from the official registry
+(`WCRP-CMIP/esgvoc_registry <https://github.com/WCRP-CMIP/esgvoc_registry>`_).
+Each project database is versioned (e.g. ``v2.1.0``) and can be downloaded, switched,
+or removed independently.
 
-Understanding Configurations
+Available Projects
+==================
+
+The following projects are available in the registry:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
+
+   * - ID
+     - Description
+   * - ``universe``
+     - WCRP Universe (shared vocabulary)
+   * - ``cmip7``
+     - CMIP7 Controlled Vocabulary
+   * - ``cmip6``
+     - CMIP6 Controlled Vocabulary
+   * - ``cmip6plus``
+     - CMIP6Plus Controlled Vocabulary
+   * - ``input4mips``
+     - input4MIPs Controlled Vocabulary
+   * - ``obs4ref``
+     - obs4REF Controlled Vocabulary
+   * - ``cordex-cmip6``
+     - CORDEX-CMIP6 Controlled Vocabulary
+   * - ``cordex-cmip5``
+     - CORDEX-CMIP5 Controlled Vocabulary
+   * - ``emd``
+     - EMD Controlled Vocabulary
+
+Downloading and Activating a Version
+=====================================
+
+The ``esgvoc use`` command downloads a project database from the registry (if not
+already on disk) and activates it:
+
+.. code-block:: bash
+
+   # Download and activate the latest stable version
+   esgvoc use cmip7@latest
+
+   # Download and activate a specific version
+   esgvoc use cmip7@v2.1.0
+
+   # Download and activate the latest pre-release
+   esgvoc use cmip7@dev-latest
+
+   # Activate a version that is already downloaded (no network needed)
+   esgvoc use cmip7@v2.0.0
+
+   # Activate the newest installed version (no name required)
+   esgvoc use cmip7
+
+Version name resolution:
+
+- ``@latest`` — latest stable release (auto-download)
+- ``@dev-latest`` — latest pre-release (auto-download)
+- ``@vX.Y.Z`` — exact registry version (auto-download if not present)
+- ``@<custom>`` — locally built database (must be installed first via ``esgvoc admin install``)
+
+Checking Current Status
+=======================
+
+.. code-block:: bash
+
+   # Show installed projects and active versions
+   esgvoc status
+
+   # Show full filesystem paths as well
+   esgvoc status --paths
+
+The output lists each project, its active version, how it was sourced (``registry`` or
+``local``), and all installed versions.
+
+Listing Installed and Available Versions
+========================================
+
+.. code-block:: bash
+
+   # List all installed versions across all projects
+   esgvoc list
+
+   # List installed versions for a specific project
+   esgvoc list cmip7
+
+   # Also show versions available for download (requires network)
+   esgvoc list cmip7 --available
+
+   # Include pre-release versions in the remote listing
+   esgvoc list cmip7 --available --pre
+
+   # Show full registry metadata for all known projects
+   esgvoc list-remote
+
+   # Show full registry metadata for a specific project
+   esgvoc list-remote cmip7
+
+   # Include pre-release versions in the remote listing
+   esgvoc list-remote cmip7 --pre
+
+Updating to a Newer Version
 ============================
 
-A configuration contains:
+.. code-block:: bash
 
-- **Universe settings**: Global WCRP vocabulary repository settings
-- **Project settings**: Individual project repositories (CMIP6, Input4MIPs, etc.)
+   # Update a specific project to the latest stable version
+   esgvoc update cmip7
 
-Default Projects Available
-==========================
+   # Update all installed projects
+   esgvoc update
 
-ESGVoc comes with several pre-configured projects that can be easily added:
+   # Check for updates without downloading
+   esgvoc update --check
 
-- **cmip6**: CMIP6 Controlled Vocabularies
-- **cmip6plus**: CMIP6Plus Controlled Vocabularies  
-- **input4mip**: Input4MIPs Controlled Vocabularies
-- **obs4mip**: Obs4MIPs Controlled Vocabularies
-- **cordex-cmip6**: CORDEX-CMIP6 Controlled Vocabularies
+   # Download but do not switch the active version
+   esgvoc update cmip7 --no-activate
 
-Basic Configuration Commands
-============================
+   # Include pre-release versions when checking for updates
+   esgvoc update cmip7 --pre
 
-Viewing Available Projects
---------------------------
+Removing Installed Databases
+=============================
 
 .. code-block:: bash
 
-   # Show all available projects and their status in current config
-   esgvoc config avail
+   # Remove a specific version
+   esgvoc remove cmip7@v2.0.0
 
-   # Check projects in a specific configuration
-   esgvoc config avail --config my_config
+   # Remove all installed versions for a project
+   esgvoc remove cmip7 --all
 
-This displays a table showing which projects are active (✓) and which are available to add (○).
-
-Creating Empty Configurations
------------------------------
-
-.. code-block:: bash
-
-   # Create empty configuration and switch to it
-   esgvoc config init minimal_setup
-
-   # Create empty configuration but stay on current one
-   esgvoc config init test_config --no-switch
-
-An empty configuration contains only universe settings with no projects, allowing you to add projects selectively.
-
-Adding Projects
----------------
-
-.. code-block:: bash
-
-   # Add single project to current configuration
-   esgvoc config add input4mip
-
-   # Add multiple projects at once
-   esgvoc config add input4mip obs4mip cordex-cmip6
-
-   # Add projects to specific configuration
-   esgvoc config add cmip6 --config production
-
-When you add projects:
-
-1. The project is added to the configuration using default settings
-2. The project's controlled vocabularies are automatically downloaded
-3. Local repositories and databases are set up
-
-.. note::
-   Projects that already exist in the configuration will be skipped with a warning.
-
-Removing Projects
------------------
-
-.. code-block:: bash
-
-   # Remove single project (with confirmation)
-   esgvoc config rm input4mip
-
-   # Remove multiple projects at once
-   esgvoc config rm input4mip obs4mip cordex-cmip6
-
-   # Remove without confirmation prompt
-   esgvoc config rm input4mip --force
-
-   # Remove from configuration but keep local files
-   esgvoc config rm input4mip --keep-files
-
-When you remove projects:
-
-1. The project is removed from the configuration
-2. Local repository directory is deleted (unless ``--keep-files``)
-3. Database file is deleted (unless ``--keep-files``)
+   # Remove without a confirmation prompt
+   esgvoc remove cmip7@v2.0.0 --yes
 
 .. warning::
-   By default, removing a project deletes all its local files. Use ``--keep-files`` if you want to preserve the downloaded data.
+   Removing the active version deactivates the project. Run
+   ``esgvoc use <project>@<version>`` afterwards to re-activate another version.
 
-Advanced Configuration Management
-=================================
-
-Listing Configurations
-----------------------
+Checking the Installed ESGVoc Version
+=======================================
 
 .. code-block:: bash
 
-   # List all available configurations
-   esgvoc config list
+   # Show the installed esgvoc version
+   esgvoc version
 
-   # Show current configuration content
-   esgvoc config show
+Data Storage Locations
+=======================
 
-   # Show specific configuration content
-   esgvoc config show my_config
+All project databases are stored under the **esgvoc home directory**:
 
-Creating New Configurations
----------------------------
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Platform
+     - Default home
+   * - Linux
+     - ``~/.local/share/esgvoc/``
+   * - macOS
+     - ``~/Library/Application Support/esgvoc/``
+   * - Windows
+     - ``%LOCALAPPDATA%\ipsl\esgvoc\``
+
+Inside the home directory:
+
+.. code-block:: text
+
+   ~/.local/share/esgvoc/
+   └── dbs/
+       ├── cmip7/
+       │   ├── v2.1.0.db          ← registry download
+       │   └── v2.0.0.db          ← registry download
+       ├── cmip7.active.json      ← pointer to the active version
+       ├── cmip6/
+       │   └── v1.3.0.db
+       └── cmip6.active.json
+
+The registry JSON cache (safely deletable) lives in:
+
+- **Linux**: ``~/.cache/esgvoc/``
+- **macOS**: ``~/Library/Caches/esgvoc/``
+- **Windows**: ``%LOCALAPPDATA%\ipsl\esgvoc\Cache\``
+
+Overriding the Home Directory
+------------------------------
+
+Set the ``ESGVOC_HOME`` environment variable to use a custom location:
 
 .. code-block:: bash
 
-   # Create configuration based on default settings
-   esgvoc config create production
+   export ESGVOC_HOME=/data/esgvoc
+   esgvoc use cmip7@latest
 
-   # Create configuration based on existing one
-   esgvoc config create test --base production
-
-   # Create and immediately switch to it
-   esgvoc config create development --switch
-
-Switching Configurations
-------------------------
+Set ``ESGVOC_DB_DIR`` to override only the database root (leaving the rest of the
+home directory at its default location):
 
 .. code-block:: bash
 
-   # Switch to different configuration
-   esgvoc config switch production
+   export ESGVOC_DB_DIR=/fast-disk/esgvoc/dbs
+   esgvoc status
 
-   # Check which configuration is currently active
-   esgvoc config list
+Common Workflows
+================
 
-Managing Project Settings
+First-Time Setup
+----------------
+
+.. code-block:: bash
+
+   # Download and activate the vocabulary sets you need
+   esgvoc use universe@latest
+   esgvoc use cmip7@latest
+   esgvoc use cmip6@latest
+
+   # Verify everything is in order
+   esgvoc status
+
+Working with Multiple Versions
+-------------------------------
+
+.. code-block:: bash
+
+   # Download two versions of cmip7
+   esgvoc use cmip7@v2.0.0
+   esgvoc use cmip7@v2.1.0
+
+   # List what is installed
+   esgvoc list cmip7
+
+   # Switch between them
+   esgvoc use cmip7@v2.0.0
+   esgvoc use cmip7@v2.1.0
+
+Keeping Vocabularies Up to Date
+---------------------------------
+
+.. code-block:: bash
+
+   # Check whether updates are available (no download)
+   esgvoc update --check
+
+   # Download and activate the latest for all installed projects
+   esgvoc update
+
+Cleaning Up Old Versions
 -------------------------
 
 .. code-block:: bash
 
-   # List projects in current configuration
-   esgvoc config list-projects
+   # List what is installed
+   esgvoc list cmip7
 
-   # List projects in specific configuration
-   esgvoc config list-projects --config production
+   # Remove a version you no longer need
+   esgvoc remove cmip7@v2.0.0
 
-   # Update project repository URL
-   esgvoc config update-project cmip6 --repo https://github.com/new/repo
+   # Remove all versions and start fresh
+   esgvoc remove cmip7 --all --yes
+   esgvoc use cmip7@latest
 
-   # Update project branch
-   esgvoc config update-project cmip6 --branch new_branch
+Advanced: Using Locally Built Databases
+========================================
 
-   # Update multiple settings at once
-   esgvoc config update-project cmip6 --repo https://github.com/new/repo --branch main
-
-Manual Configuration Editing
------------------------------
+CV maintainers and developers can build their own databases and install them locally.
+See the ``esgvoc admin`` subcommand group:
 
 .. code-block:: bash
 
-   # Edit current configuration in default editor
-   esgvoc config edit
+   # Build a project database from local repos (dev mode)
+   esgvoc admin build \
+       --project-path ./CMIP7-CVs \
+       --universe-path ./WCRP-universe \
+       --project-id cmip7 \
+       --cv-version dev \
+       --universe-version dev \
+       --output cmip7.db
 
-   # Edit specific configuration
-   esgvoc config edit production
+   # Install the locally built database
+   esgvoc admin install cmip7 ./cmip7.db --name my-experiment
 
-   # Use specific editor
-   esgvoc config edit --editor nano
+   # Activate it
+   esgvoc use cmip7@my-experiment
 
-   # Modify settings via command line
-   esgvoc config set 'universe:branch=esgvoc_dev'
-   esgvoc config set 'cmip6:github_repo=https://github.com/new/cmip6'
+   # Validate a database file
+   esgvoc admin validate cmip7.db
 
-Removing Configurations
------------------------
+   # Compare two database files
+   esgvoc admin diff v2.0.0.db v2.1.0.db
 
-.. code-block:: bash
-
-   # Remove configuration (with confirmation)
-   esgvoc config remove test_config
-
-.. note::
-   You cannot remove the "default" configuration, and removing the active configuration will automatically switch you to the default one.
-
-Configuration Workflows
-========================
-
-Setting Up a Development Environment
-------------------------------------
-
-.. code-block:: bash
-
-   # Create empty development configuration
-   esgvoc config init dev
-
-   # Add only the projects you need
-   esgvoc config add cmip6 input4mip
-
-   # Check what's active
-   esgvoc config avail
-
-Setting Up Multiple Project Environments
-----------------------------------------
-
-.. code-block:: bash
-
-   # Create minimal configuration for CMIP6 only
-   esgvoc config init cmip6_only
-   esgvoc config add cmip6
-
-   # Create full configuration with all projects
-   esgvoc config init full_setup
-   esgvoc config add cmip6 cmip6plus input4mip obs4mip cordex-cmip6
-
-   # Switch between them as needed
-   esgvoc config switch cmip6_only
-   esgvoc config switch full_setup
-
-Cleaning Up Old Projects
-------------------------
-
-.. code-block:: bash
-
-   # Check what projects are currently active
-   esgvoc config avail
-
-   # Remove projects no longer needed (keeps files)
-   esgvoc config rm obs4mip cordex-cmip6 --keep-files
-
-   # Or remove completely including files
-   esgvoc config rm obs4mip cordex-cmip6
-
-Configuration File Location
-===========================
-
-Configuration files are stored in platform-specific directories:
-
-- **Linux**: ``~/.config/esgvoc/``
-- **macOS**: ``~/Library/Application Support/esgvoc/``  
-- **Windows**: ``%APPDATA%\\esgvoc\\``
-
-The main registry file (``config_registry.toml``) tracks all configurations and which one is active.
+For the full ``esgvoc admin`` reference run ``esgvoc admin --help``.
 
 Troubleshooting
 ===============
 
-Configuration Not Found
------------------------
-
-If you get "Configuration not found" errors:
+No Projects Installed
+---------------------
 
 .. code-block:: bash
 
-   # List available configurations
-   esgvoc config list
+   esgvoc status
+   # "No projects installed."
 
-   # Switch to default if needed
-   esgvoc config switch default
+   # Fix: download at least one project
+   esgvoc use cmip7@latest
 
-Project Already Exists
-----------------------
-
-When adding projects that already exist:
+Version Not Found
+-----------------
 
 .. code-block:: bash
 
-   # Check current projects
-   esgvoc config list-projects
+   # Check what versions exist in the registry
+   esgvoc list-remote cmip7
 
-   # Check all available projects and their status
-   esgvoc config avail
+   # Or list what is already installed
+   esgvoc list cmip7
 
-Reset to Clean State
---------------------
+Network Errors
+--------------
 
-To start fresh:
+If you cannot reach the registry, activate an already-downloaded version:
 
 .. code-block:: bash
 
-   # Create new empty configuration
-   esgvoc config init fresh --no-switch
+   # List locally installed versions (no network needed)
+   esgvoc list cmip7
 
-   # Remove old configuration
-   esgvoc config remove old_config
+   # Activate one
+   esgvoc use cmip7@v2.0.0
 
-   # Switch to clean setup
-   esgvoc config switch fresh
+Overriding the Registry URL
+----------------------------
+
+For testing or enterprise setups, override the registry base URL:
+
+.. code-block:: bash
+
+   export ESGVOC_REGISTRY_BASE_URL=https://raw.githubusercontent.com/my-org/my-registry/main
+   esgvoc use cmip7@latest

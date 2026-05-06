@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Database and functionality &#8212; ESGVOC  documentation</title>
+    <title>Database management &#8212; ESGVOC  documentation</title>
   
   
   
@@ -146,12 +146,13 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terms.html">Controlled vocabulary</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Database and functionality</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Database management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">ESGVOC API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">How to</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../how_to/configuration.html">Vocabulary Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/get.html">Get</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/valid.html">Valid</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/validate_drs.html">Valid DRS</a></li>
@@ -353,7 +354,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Database and functionality</h1>
+    <h1>Database management</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -363,11 +364,13 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-database-management">Overview of database management</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronization-workflow">Synchronization workflow</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-synchronization-status">Viewing synchronization status</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#storage-layout">Storage layout</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#versioning-model">Versioning model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-installed-versions">Checking installed versions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-vocabularies">Updating vocabularies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-old-versions">Removing old versions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-use">Offline use</a></li>
 </ul>
             </nav>
         </div>
@@ -379,49 +382,140 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="database-and-functionality">
-<h1>Database and functionality<a class="headerlink" href="#database-and-functionality" title="Link to this heading">#</a></h1>
-<section id="overview-of-database-management">
-<h2>Overview of database management<a class="headerlink" href="#overview-of-database-management" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code> command is responsible for managing the synchronization process between the controlled vocabulary repositories, the local file system, and the SQLite database. This ensures that the database always reflects the most up-to-date state of the repositories.</p>
-<section id="synchronization-workflow">
-<h3>Synchronization workflow<a class="headerlink" href="#synchronization-workflow" title="Link to this heading">#</a></h3>
-<p>For each configured controlled vocabulary repository, the synchronization process involves the following steps:</p>
-<ol class="arabic simple">
-<li><p><strong>Version check</strong></p>
-<ul class="simple">
-<li><p>The software determines the current version of each controlled vocabulary by examining the latest commit in three locations:</p>
-<ul>
-<li><p>The remote GitHub repository (if internet access).</p></li>
-<li><p>The locally cloned repository (if it exists).</p></li>
-<li><p>The cached SQLite database (if it exists)
-.</p></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong>Database update process</strong></p>
-<ul class="simple">
-<li><p>The goal of the synchronization process is to ensure the database reflects the most recent version of the controlled vocabulary.</p></li>
-<li><p>If the local repository does not exist or is outdated, the software clones or updates the repository from GitHub.</p></li>
-<li><p>The SQLite database is rebuilt or updated as necessary to match the most recent version of the controlled vocabulary.</p></li>
-</ul>
-</li>
-</ol>
-<p>By automating this process, <code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> guarantees that users have access to the latest available controlled vocabularies without requiring manual intervention.</p>
+  <section id="database-management">
+<h1>Database management<a class="headerlink" href="#database-management" title="Link to this heading">#</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ESGVOC</span></code> works with <strong>pre-built SQLite databases</strong> served from the official registry
+(<a class="reference external" href="https://github.com/WCRP-CMIP/esgvoc_registry">WCRP-CMIP/esgvoc_registry</a>).
+Each project (e.g. <code class="docutils literal notranslate"><span class="pre">cmip7</span></code>, <code class="docutils literal notranslate"><span class="pre">cmip6</span></code>, <code class="docutils literal notranslate"><span class="pre">universe</span></code>) has independently versioned databases
+following semantic versioning (e.g. <code class="docutils literal notranslate"><span class="pre">v2.1.0</span></code>).</p>
+<p>Multiple versions of a project database can coexist on disk. The currently active
+version is tracked via a lightweight pointer file per project.</p>
 </section>
-<section id="viewing-synchronization-status">
-<h3>Viewing synchronization status<a class="headerlink" href="#viewing-synchronization-status" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">status</span></code> command provides a detailed summary of the current state of synchronization for each controlled vocabulary repository. Specifically, it shows:</p>
-<ul class="simple">
-<li><p>The latest commit version of the remote GitHub repository.</p></li>
-<li><p>The latest commit version of the local repository.</p></li>
-<li><p>The version of the cached SQLite database.</p></li>
-</ul>
-<p>This information helps users understand whether any part of the system is outdated and requires synchronization.</p>
+<section id="storage-layout">
+<h2>Storage layout<a class="headerlink" href="#storage-layout" title="Link to this heading">#</a></h2>
+<p>Databases are stored under the esgvoc home directory:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Platform</p></th>
+<th class="head"><p>Default location</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Linux</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">~/.local/share/esgvoc/</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>macOS</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">~/Library/Application</span> <span class="pre">Support/esgvoc/</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Windows</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">%LOCALAPPDATA%\ipsl\esgvoc\</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Inside the home directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~/.local/share/esgvoc/
+└── dbs/
+    ├── cmip7/
+    │   ├── v2.1.0.db          ← downloaded from registry
+    │   └── v2.0.0.db          ← older version kept on disk
+    ├── cmip7.active.json      ← pointer: {&quot;active&quot;: &quot;v2.1.0&quot;, &quot;source&quot;: &quot;registry&quot;}
+    ├── cmip6/
+    │   └── v1.3.0.db
+    └── cmip6.active.json
+</pre></div>
+</div>
+<p>Set the <code class="docutils literal notranslate"><span class="pre">ESGVOC_HOME</span></code> environment variable to override the home directory, or
+<code class="docutils literal notranslate"><span class="pre">ESGVOC_DB_DIR</span></code> to override only the database root.</p>
+</section>
+<section id="versioning-model">
+<h2>Versioning model<a class="headerlink" href="#versioning-model" title="Link to this heading">#</a></h2>
+<p>Each database file is tagged with a <strong>semantic version</strong> that matches the corresponding
+release in the registry. A database file named <code class="docutils literal notranslate"><span class="pre">v2.1.0.db</span></code> contains the vocabulary
+as published at that release.</p>
+<p>The registry also provides two special aliases:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Alias</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">latest</span></code></p></td>
+<td><p>Latest stable release (resolves to a concrete version at download time)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dev-latest</span></code></p></td>
+<td><p>Latest pre-release / development snapshot</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="checking-installed-versions">
+<h2>Checking installed versions<a class="headerlink" href="#checking-installed-versions" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Show active version and source for every installed project</span>
+esgvoc<span class="w"> </span>status
+
+<span class="c1"># Include full filesystem paths</span>
+esgvoc<span class="w"> </span>status<span class="w"> </span>--paths
+
+<span class="c1"># List all installed versions for a project</span>
+esgvoc<span class="w"> </span>list<span class="w"> </span>cmip7
+
+<span class="c1"># Compare with what the registry offers</span>
+esgvoc<span class="w"> </span>list<span class="w"> </span>cmip7<span class="w"> </span>--available
+
+<span class="c1"># Show full registry metadata (size, publish date, compatibility)</span>
+esgvoc<span class="w"> </span>list-remote<span class="w"> </span>cmip7
+</pre></div>
+</div>
+</section>
+<section id="updating-vocabularies">
+<h2>Updating vocabularies<a class="headerlink" href="#updating-vocabularies" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">update</span></code> command checks the registry for a newer stable version and
+downloads it if one is available:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check for updates without downloading anything</span>
+esgvoc<span class="w"> </span>update<span class="w"> </span>--check
+
+<span class="c1"># Download and activate the latest for all installed projects</span>
+esgvoc<span class="w"> </span>update
+
+<span class="c1"># Update a specific project only</span>
+esgvoc<span class="w"> </span>update<span class="w"> </span>cmip7
+
+<span class="c1"># Download but keep the current active version unchanged</span>
+esgvoc<span class="w"> </span>update<span class="w"> </span>cmip7<span class="w"> </span>--no-activate
+</pre></div>
+</div>
+</section>
+<section id="removing-old-versions">
+<h2>Removing old versions<a class="headerlink" href="#removing-old-versions" title="Link to this heading">#</a></h2>
+<p>Old database files can be removed to reclaim disk space:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Remove a specific version</span>
+esgvoc<span class="w"> </span>remove<span class="w"> </span>cmip7@v2.0.0
+
+<span class="c1"># Remove all versions for a project</span>
+esgvoc<span class="w"> </span>remove<span class="w"> </span>cmip7<span class="w"> </span>--all
+</pre></div>
+</div>
+</section>
+<section id="offline-use">
+<h2>Offline use<a class="headerlink" href="#offline-use" title="Link to this heading">#</a></h2>
+<p>All queries (get, valid, DRS) run entirely against the local SQLite database — no
+network access is required once a version has been downloaded.</p>
+<p>To work offline, activate any already-downloaded version:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List what is available locally</span>
+esgvoc<span class="w"> </span>list<span class="w"> </span>cmip7
+
+<span class="c1"># Activate a local version (no network)</span>
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip7@v2.0.0
+</pre></div>
+</div>
 <hr class="docutils" />
-<p>The intended purpose of these databases is to provide an efficient and rapid query system, accessible exclusively through the API or the CLI.</p>
-</section>
+<p>The intended purpose of these databases is to provide an efficient and rapid query
+system, accessible exclusively through the API or the CLI.</p>
 </section>
 </section>
 
@@ -472,11 +566,13 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-database-management">Overview of database management</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronization-workflow">Synchronization workflow</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-synchronization-status">Viewing synchronization status</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#storage-layout">Storage layout</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#versioning-model">Versioning model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-installed-versions">Checking installed versions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-vocabularies">Updating vocabularies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-old-versions">Removing old versions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-use">Offline use</a></li>
 </ul>
   </nav></div>
 
