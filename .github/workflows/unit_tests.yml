@@ -32,9 +32,6 @@ jobs:
       - name: Sync
         run: uv sync
 
-      - name: Install
-        run: uv run esgvoc install
-
       - name: Library Tests
         run: uv run pytest tests
 
