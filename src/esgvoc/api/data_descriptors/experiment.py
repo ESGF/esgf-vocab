@@ -7,7 +7,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Union
 
-from pydantic import BeforeValidator, Field
+from pydantic import BeforeValidator, Field, model_validator
 from typing_extensions import Annotated
 
 from esgvoc.api.data_descriptors.activity import Activity
@@ -172,18 +172,20 @@ class ExperimentCMIP7(PlainTermDataDescriptor):
 
 class ExperimentLegacy(PlainTermDataDescriptor):
     """
-    An 'experiment' refers to a specific, controlled simulation conducted using climate models to \
-    investigate particular aspects of the Earth's climate system. These experiments are designed \
-    with set parameters, such as initial conditions, external forcings (like greenhouse gas \
-    concentrations or solar radiation), and duration, to explore and understand climate behavior \
-    under various scenarios and conditions.
+    Fallback experiment model for non-CMIP7 data (CMIP6, CMIP6-plus, and intermediate formats).
+
+    Accepts both traditional CMIP6 experiments (with experiment_id/activity_id/experiment)
+    and intermediate CMIP7-like formats used in cmip6plus that lack fields such as
+    min_number_yrs_per_sim or parent_mip_era.
+    All own fields are optional so this model matches any data that does not satisfy
+    ExperimentCMIP7's required-field set.
     """
 
-    # Required fields
-    experiment_id: str  # Discriminator - distinguishes Legacy from CMIP7
-    activity_id: list[str]
-    experiment: str
-    tier: int | None
+    # Traditional CMIP6 fields — optional because intermediate formats omit them
+    experiment_id: str | None = None
+    activity_id: list[str] | None = None
+    experiment: str | None = None
+    tier: int | None = None
 
     # Optional fields
     sub_experiment_id: list[str] | None = None
@@ -210,6 +212,15 @@ class ExperimentBase(PlainTermDataDescriptor):
     required_model_components: list[ComponentType | str] | None = None
     additional_allowed_model_components: list[ComponentType | str] = Field(default_factory=list)
 
+    @model_validator(mode="before")
+    @classmethod
+    def _forbid_direct_instantiation(cls, v):
+        raise ValueError(
+            f"Data could not be parsed as ExperimentLegacy or ExperimentCMIP7 "
+            f"and fell back to {cls.__name__}, which is not allowed. "
+            "Ensure all required fields are present and have valid types."
+        )
 
-# Priority: Try strict models first (Legacy, CMIP7), then fall back to Base
-Experiment = create_union(ExperimentLegacy, ExperimentCMIP7, ExperimentBase)
+
+# Priority: ExperimentCMIP7 first (most specific), then Legacy (all-optional fallback), then Base (errors)
+Experiment = create_union(ExperimentCMIP7, ExperimentLegacy, ExperimentBase)
