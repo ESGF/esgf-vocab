@@ -90,7 +90,7 @@ def installed_dbs(tmp_path_factory, test_registry_url):
     os.environ["ESGVOC_HOME"] = str(home)
     os.environ["ESGVOC_REGISTRY_BASE_URL"] = test_registry_url
 
-    fetcher = DBFetcher(cache_dir=home / "cache")
+    fetcher = DBFetcher()
     installed: dict[str, Path] = {}
 
     for project_id, version in PROJECTS_TO_INSTALL:
