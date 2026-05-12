@@ -26,7 +26,7 @@ console = Console()
 
 # Patterns that indicate a registry-sourced name (auto-download eligible)
 _REGISTRY_PATTERNS = re.compile(
-    r"^(v\d+\.\d+\.\d+.*|latest|dev-latest)$"
+    r"^(v?\d+\.\d+\.\d+.*|latest|dev-latest)$"
 )
 
 
@@ -44,11 +44,11 @@ def _parse_project_name(spec: str) -> tuple[str, Optional[str]]:
 
 @app.command()
 def use(
-    spec: str = typer.Argument(
+    specs: list[str] = typer.Argument(
         ...,
         help=(
-            "Project and version, e.g. 'cmip7@v2.1.0', 'cmip7@latest', "
-            "or 'cmip7@my-experiment'. Omit name to activate newest installed."
+            "One or more project specs, e.g. 'cmip7@1.1.0', 'universe@latest', "
+            "'cmip7@my-experiment'. Omit version to activate newest installed."
         ),
     ),
     prerelease: bool = typer.Option(
@@ -56,12 +56,31 @@ def use(
         help="When using 'latest', include pre-release versions.",
     ),
 ):
-    """Activate a project version, downloading from the registry if needed."""
+    """Activate one or more project versions, downloading from the registry if needed."""
+    from esgvoc.core.service.user_state import UserState
+
+    state = UserState.load()
+    failed: list[str] = []
+
+    for spec in specs:
+        try:
+            _use_one(spec, prerelease, state)
+        except typer.Exit as e:
+            failed.append(spec)
+            if len(specs) == 1:
+                raise
+            console.print(f"[red]Failed:[/red] {spec} (exit {e.exit_code}), continuing…")
+
+    if failed:
+        console.print(f"\n[red]Failed specs:[/red] {', '.join(failed)}")
+        raise typer.Exit(1)
+
+
+def _use_one(spec: str, prerelease: bool, state) -> None:
+    """Activate a single project spec."""
     from esgvoc.core.service.user_state import UserState
 
     project_id, name = _parse_project_name(spec)
-
-    state = UserState.load()
 
     # ---------------------------------------------------------------
     # Case 1: no name given → activate newest already-installed version
@@ -117,7 +136,7 @@ def use(
             raise typer.Exit(2) from None
 
         # Use the resolved concrete version as the name on disk
-        # (e.g. "latest" resolves to "v2.1.0")
+        # (e.g. "latest" resolves to "1.1.0")
         name = snapshot.version
         target = UserState.db_path(project_id, name)
 
