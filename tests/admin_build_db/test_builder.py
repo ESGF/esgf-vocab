@@ -562,7 +562,7 @@ class TestBuildUniverseOrchestration:
                 universe_ref="main",
                 output_path=output,
             )
-        assert result.cv_version == "standalone"
+        assert result.cv_version == "0.0.0-unknown"
 
 
 # ---------------------------------------------------------------------------
