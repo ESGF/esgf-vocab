@@ -67,6 +67,11 @@ class AttributeProperty(BaseModel):
         validation_alias=AliasChoices("attr_field_name", "field_name"),
     )
     "The name of the attribute field."
+
+    @property
+    def field_name(self) -> str | None:
+        """Backward-compatibility alias for attr_field_name."""
+        return self.attr_field_name
     attr_field_na_value: str | None = Field(
         default=None,
         validation_alias=AliasChoices("attr_field_na_value", "default_value"),

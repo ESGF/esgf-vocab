@@ -288,6 +288,8 @@ class CatalogPropertiesJsonTranslator:
         else:
             field_value["type"] = catalog_property.catalog_field_value_type
             root_property = field_value
+            if "string" in catalog_property.catalog_field_value_type and catalog_property.source_collection is None:
+                root_property["maxLength"] = 1064
 
         if (property_key is not None) and (property_value is not None):
             root_property[property_key] = property_value

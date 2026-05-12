@@ -48,6 +48,7 @@ class BuildResult:
     esgvoc_version: str
     checksum_sha256: str
     size_bytes: int
+    release_notes: Optional[str] = None
 
     def summary(self) -> str:
         mb = self.size_bytes / 1_048_576
@@ -279,7 +280,9 @@ class DBBuilder:
             shutil.copy2(str(universe_db), str(output_path))
 
             esgvoc_version = getattr(esgvoc, "__version__", "unknown")
-            cv_ver = universe_version or "standalone"
+            # Load manifest from universe repo if present (provides release_notes)
+            universe_manifest = Manifest.load_or_default(universe_path, project_id="universe")
+            cv_ver = universe_version or universe_manifest.cv_version or "standalone"
             metadata = {
                 "project_id": "universe",
                 "cv_version": cv_ver,
@@ -288,7 +291,8 @@ class DBBuilder:
                 "universe_commit_sha": universe_sha or "unknown",
                 "build_date": datetime.now(timezone.utc).isoformat(),
                 "esgvoc_version": esgvoc_version,
-                "esgvoc_min_version": esgvoc_min_version or esgvoc_version,
+                "esgvoc_min_version": esgvoc_min_version or universe_manifest.esgvoc.min_version or esgvoc_version,
+                "release_notes": universe_manifest.release_notes or "",
             }
             self._embed_metadata(output_path, metadata)
             checksum = _sha256(output_path)
@@ -305,6 +309,7 @@ class DBBuilder:
                 esgvoc_version=getattr(esgvoc, "__version__", "unknown"),
                 checksum_sha256=checksum,
                 size_bytes=output_path.stat().st_size,
+                release_notes=universe_manifest.release_notes,
             )
 
     # ------------------------------------------------------------------
@@ -371,6 +376,7 @@ class DBBuilder:
             "build_date": build_date.isoformat(),
             "esgvoc_version": esgvoc_version,
             "esgvoc_min_version": manifest.esgvoc.min_version or esgvoc_version,
+            "release_notes": manifest.release_notes or "",
         }
         self._embed_metadata(output_path, metadata)
 
@@ -389,6 +395,7 @@ class DBBuilder:
             esgvoc_version=esgvoc_version,
             checksum_sha256=checksum,
             size_bytes=output_path.stat().st_size,
+            release_notes=manifest.release_notes,
         )
 
     def _build_universe_db(self, universe_path: Path, universe_db: Path, universe_sha: Optional[str]) -> None:
