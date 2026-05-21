@@ -60,7 +60,7 @@ class AttributeProperty(BaseModel):
         validation_alias=AliasChoices("attr_field_value_type", "value_type")
     )
     "The type of the attribute value."
-    specific_key: str | None = None
+    source_collection_key: str | None = None
     "Specifies a specific key in the collection."
     attr_field_name: str | None = Field(
         default=None,
