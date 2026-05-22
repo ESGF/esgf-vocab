@@ -18,10 +18,12 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from functools import cached_property
 from typing import Any
 
 import esgvoc.api.projects as projects
 from esgvoc.api.project_specs import AttributeProperty, AttributeSpecification
+from esgvoc.apps.ncattvalid.exceptions import InvalidNcdumpError
 from esgvoc.core.exceptions import EsgvocNotFoundError
 
 # ---------------------------------------------------------------------------
@@ -43,6 +45,15 @@ def parse_ncdump_global_attributes(ncdump_output: str) -> dict[str, Any]:
     in_globals = False
     pending_name: str | None = None
     pending_parts: list[str] = []
+
+    if "// global attributes:" not in ncdump_output:
+        raise InvalidNcdumpError(
+            "Invalid ncdump input.\n"
+            "\nThe expected format is the output of:\n"
+            "    ncdump -h <file.nc>\n"
+            "\nMissing section:\n"
+            "    // global attributes:"
+        )
 
     for raw_line in ncdump_output.splitlines():
         line = raw_line.strip()
@@ -128,11 +139,13 @@ def _parse_attr_value(raw: str) -> Any:
 
 @dataclass
 class AttributeResult:
-    """Outcome of validating one global attribute."""
+    """
+    Outcome of validating one global attribute.
+    """
 
     name: str
     """NetCDF attribute name."""
-    valid: bool
+    is_valid: bool
     """True when the value was accepted."""
     message: str
     """Human-readable explanation (short)."""
@@ -144,7 +157,9 @@ class AttributeResult:
 
 @dataclass
 class GAReport:
-    """Validation report for the global attributes of a NetCDF file."""
+    """
+    Validation report for the global attributes of a NetCDF file.
+    """
 
     project_id: str
     filename: str | None
@@ -153,16 +168,16 @@ class GAReport:
     missing: list[str] = field(default_factory=list)
     """Required attributes that were absent from the file."""
     extra: list[str] = field(default_factory=list)
-    """Attributes present in the file but not in the project spec."""
+    """Attributes present in the file but not in the project spec. Extra attributes are informational and do not invalidate the report."""
 
     @property
     def is_valid(self) -> bool:
-        return not self.missing and all(r.valid for r in self.results)
+        return not self.missing and all(r.is_valid for r in self.results)
 
     @property
     def errors(self) -> list[AttributeResult]:
         """Validated attributes that failed."""
-        return [r for r in self.results if not r.valid]
+        return [r for r in self.results if not r.is_valid]
 
     def __str__(self) -> str:
         header = f"GA Validation — project={self.project_id}"
@@ -245,21 +260,20 @@ class GAValidator:
         filename:
             Optional filename for reporting purposes.
         """
-        spec_by_name = self._build_spec_index()
 
         results: list[AttributeResult] = []
         missing: list[str] = []
         extra: list[str] = []
 
-        for name, spec in spec_by_name.items():
+        for name, spec in self._spec_by_name.items():
             if spec.is_required and name not in attributes:
                 missing.append(name)
 
         for attr_name, attr_value in attributes.items():
-            if attr_name not in spec_by_name:
+            if attr_name not in self._spec_by_name:
                 extra.append(attr_name)
                 continue
-            results.append(self._validate_one(attr_name, attr_value, spec_by_name[attr_name]))
+            results.append(self.validate_one(attr_name, attr_value))
 
         return GAReport(
             project_id=self.project_id,
@@ -286,11 +300,47 @@ class GAValidator:
                 filename = m.group(1)
         return self.validate(attrs, filename)
 
+    def validate_one(self, name: str, value: Any) -> AttributeResult:
+        """
+        Validate a single attribute value against its spec.
+        """
+
+        if name not in self._spec_by_name:
+            return AttributeResult(
+                name=name,
+                is_valid=False,
+                message=f"Unknown NetCDF attribute '{name}' for project {self.project_id}",
+                value=value,
+            )
+        spec = self._spec_by_name[name]
+
+        if spec.source_collection is None:
+            # Free-text attribute — no controlled vocabulary to check against
+            return AttributeResult(name=name, is_valid=False, message=f"Collection {name} not found in project {self.project_id}", value=value)
+
+        str_value = str(value).strip()
+
+        # Honour the NA / not-applicable value if defined
+        if spec.attr_field_na_value is not None and str_value == spec.attr_field_na_value:
+            return AttributeResult(
+                name=name,
+                is_valid=True,
+                message=f"matches NA value ({str_value!r})",
+                value=value,
+                collection=spec.source_collection,
+            )
+
+        if spec.source_collection_key is not None:
+            return self._validate_specific_key(name, str_value, value, spec)
+
+        return self._validate_in_collection(name, str_value, value, spec)
+
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _build_spec_index(self) -> dict[str, AttributeProperty]:
+    @cached_property
+    def _spec_by_name(self) -> dict[str, AttributeProperty]:
         """Map each effective attribute name to its AttributeProperty."""
         index: dict[str, AttributeProperty] = {}
         for spec in self._specs:
@@ -299,29 +349,6 @@ class GAValidator:
                 index[name] = spec
         return index
 
-    def _validate_one(self, name: str, value: Any, spec: AttributeProperty) -> AttributeResult:
-        """Validate a single attribute value against its spec."""
-        if spec.source_collection is None:
-            # Free-text attribute — no controlled vocabulary to check against
-            return AttributeResult(name=name, valid=True, message="no collection constraint", value=value)
-
-        str_value = str(value).strip()
-
-        # Honour the NA / not-applicable value if defined
-        if spec.attr_field_na_value is not None and str_value == spec.attr_field_na_value:
-            return AttributeResult(
-                name=name,
-                valid=True,
-                message=f"matches NA value ({str_value!r})",
-                value=value,
-                collection=spec.source_collection,
-            )
-
-        if spec.specific_key is not None:
-            return self._validate_specific_key(name, str_value, value, spec)
-
-        return self._validate_in_collection(name, str_value, value, spec)
-
     def _validate_specific_key(
         self,
         name: str,
@@ -329,23 +356,23 @@ class GAValidator:
         raw_value: Any,
         spec: AttributeProperty,
     ) -> AttributeResult:
-        """Validate that value matches ``spec.specific_key`` field of some term."""
+        """Validate that value matches ``spec.source_collection_key`` field of some term."""
         matching = projects.get_terms_in_collection_by_key_value(
-            self.project_id, spec.source_collection, spec.specific_key, str_value
+            self.project_id, spec.source_collection, spec.source_collection_key, str_value
         )
         if matching:
             return AttributeResult(
                 name=name,
-                valid=True,
+                is_valid=True,
                 message="valid",
                 value=raw_value,
                 collection=spec.source_collection,
             )
         return AttributeResult(
             name=name,
-            valid=False,
+            is_valid=False,
             message=(
-                f"{str_value!r} not found in field '{spec.specific_key}' of collection '{spec.source_collection}'"
+                f"{str_value!r} not found in field '{spec.source_collection_key}' of collection '{spec.source_collection}' for NetCDF attribute '{name}'"
             ),
             value=raw_value,
             collection=spec.source_collection,
@@ -364,7 +391,7 @@ class GAValidator:
         except EsgvocNotFoundError as exc:
             return AttributeResult(
                 name=name,
-                valid=False,
+                is_valid=False,
                 message=f"collection '{spec.source_collection}' not found: {exc}",
                 value=raw_value,
                 collection=spec.source_collection,
@@ -373,15 +400,15 @@ class GAValidator:
         if matches:
             return AttributeResult(
                 name=name,
-                valid=True,
+                is_valid=True,
                 message="valid",
                 value=raw_value,
                 collection=spec.source_collection,
             )
         return AttributeResult(
             name=name,
-            valid=False,
-            message=f"{str_value!r} not found in collection '{spec.source_collection}'",
+            is_valid=False,
+            message=f"{str_value!r} not found in collection '{spec.source_collection}' for NetCDF attribute '{name}'",
             value=raw_value,
             collection=spec.source_collection,
         )
