@@ -316,7 +316,7 @@ class GAValidator:
 
         if spec.source_collection is None:
             # Free-text attribute — no controlled vocabulary to check against
-            return AttributeResult(name=name, is_valid=False, message=f"Collection {name} not found in project {self.project_id}", value=value)
+            return AttributeResult(name=name, is_valid=True, message="free-text attribute (not CV validated)", value=value)
 
         str_value = str(value).strip()
 

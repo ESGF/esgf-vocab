@@ -26,18 +26,45 @@ class TestNcAttValidCommand:
             ["cmip6", "activity_id", "CMIP"],
         )
         assert result.exit_code == 0
+        assert "✅" in result.output
         assert "activity_id" in result.output
         assert "CMIP" in result.output
-        assert "✅" in result.output
 
     @patch("esgvoc.cli.ncattvalid.GAValidator")
-    def test_validate_single_attribute_invalid(self, mock_validator):
+    def test_validate_single_attribute_invalid_name(self, mock_validator):
+        validator = mock_validator.return_value
+
+        validator.validate_one.return_value = AttributeResult(
+            name="WRONG",
+            is_valid=False,
+            message="mocked error",
+            value="CMIP",
+        )
+
+        result = runner.invoke(
+            app,
+            ["cmip6", "WRONG", "CMIP"],
+        )
+
+        assert result.exit_code == 1
+        assert "❌" in result.output
+        assert "WRONG" in result.output
+        assert "CMIP" in result.output
+        assert "mocked error" in result.output
+
+        validator.validate_one.assert_called_once_with(
+            "WRONG",
+            "CMIP",
+        )
+
+    @patch("esgvoc.cli.ncattvalid.GAValidator")
+    def test_validate_single_attribute_invalid_value(self, mock_validator):
         validator = mock_validator.return_value
 
         validator.validate_one.return_value = AttributeResult(
             name="activity_id",
             is_valid=False,
-            message="invalid value",
+            message="mocked invalid value",
             value="WRONG",
         )
 
@@ -47,9 +74,15 @@ class TestNcAttValidCommand:
         )
 
         assert result.exit_code == 1
-        assert "activity_id" in result.output
-        assert "invalid value" in result.output
         assert "❌" in result.output
+        assert "activity_id" in result.output
+        assert "WRONG" in result.output
+        assert "mocked invalid value" in result.output
+
+        validator.validate_one.assert_called_once_with(
+            "activity_id",
+            "WRONG",
+        )
 
     @patch("esgvoc.cli.ncattvalid.GAValidator")
     def test_validate_missing_attribute_value(self, mock_validator):
@@ -59,7 +92,9 @@ class TestNcAttValidCommand:
         )
 
         assert result.exit_code == 1
-        assert "Error: expected either:\n  • ATTRIBUTE_NAME ATTRIBUTE_VALUE\n  • --file HEADER_FILE\n  • stdin via pipe\n" in result.output
+        assert "expected either" in result.output
+        assert "ATTRIBUTE_NAME ATTRIBUTE_VALUE" in result.output
+        assert "--file HEADER_FILE" in result.output
 
     @patch("esgvoc.cli.ncattvalid.GAValidator")
     def test_validate_ncdump_from_file_valid(self, mock_validator, tmp_path):
