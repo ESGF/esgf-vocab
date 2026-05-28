@@ -56,9 +56,7 @@ class AttributeProperty(BaseModel):
     "The project collection that originated the property."
     is_required: bool
     "Specifies if the attribute must be present in the NetCDF file."
-    attr_field_value_type: str = Field(
-        validation_alias=AliasChoices("attr_field_value_type", "value_type")
-    )
+    attr_field_value_type: str = Field(validation_alias=AliasChoices("attr_field_value_type", "value_type"))
     "The type of the attribute value."
     specific_key: str | None = None
     "Specifies a specific key in the collection."
@@ -72,6 +70,7 @@ class AttributeProperty(BaseModel):
     def field_name(self) -> str | None:
         """Backward-compatibility alias for attr_field_name."""
         return self.attr_field_name
+
     attr_field_na_value: str | None = Field(
         default=None,
         validation_alias=AliasChoices("attr_field_na_value", "default_value"),

@@ -86,7 +86,17 @@ class DBValidator:
             val = metadata.get(key, "")
             result.add(f"metadata.{key}", bool(val), val or "missing")
 
-        # 5. Core tables have data — checked based on DB type
+        # 5. Ingestion errors — if tracked, must be zero
+        ingestion_errors = metadata.get("ingestion_errors", "")
+        if ingestion_errors:
+            error_count = int(ingestion_errors)
+            result.add(
+                "ingestion_errors",
+                error_count == 0,
+                f"{error_count} term(s) failed to ingest" if error_count > 0 else "0",
+            )
+
+        # 6. Core tables have data — checked based on DB type
         is_universe = metadata.get("project_id", "") == "universe"
         if is_universe:
             core_tables = [
@@ -113,6 +123,12 @@ class DBValidator:
                 self._check_sample_query(conn, result)
 
         conn.close()
+
+        # 7. API term instantiation — try to instantiate every term through the public API
+        project_id = metadata.get("project_id", "")
+        if project_id:
+            self._check_all_terms_via_api(db_path, project_id, result, is_universe=is_universe)
+
         return result
 
     def validate_schema(self, project_path: Path) -> ValidationResult:
@@ -177,6 +193,62 @@ class DBValidator:
                 result.add(f"FTS index {table}", count > 0, f"{count} rows")
             except Exception as e:
                 result.add(f"FTS index {table}", False, str(e))
+
+    @staticmethod
+    def _check_all_terms_via_api(
+        db_path: Path, project_id: str, result: ValidationResult, *, is_universe: bool = False
+    ) -> None:
+        """Temporarily install the DB and try to instantiate every term via the public API."""
+        import shutil
+
+        from esgvoc.core.service.user_state import UserState
+
+        _VALIDATE_VERSION = "_validate_temp"
+
+        state = UserState.load()
+        previous_active = state.get_active(project_id)
+
+        target = UserState.db_path(project_id, _VALIDATE_VERSION)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(str(db_path), str(target))
+        state.set_active(project_id, _VALIDATE_VERSION, source="local")
+
+        try:
+            import esgvoc.api as ev
+
+            if is_universe:
+                try:
+                    terms = ev.get_all_terms_in_universe()
+                    result.add("API term instantiation", True, f"{len(terms)} universe terms OK")
+                except Exception as exc:
+                    result.add("API term instantiation", False, str(exc))
+            else:
+                collections = ev.get_all_collections_in_project(project_id)
+                total = 0
+                failed_collections: list[str] = []
+                for coll_name in collections:
+                    try:
+                        terms = ev.get_all_terms_in_collection(project_id, coll_name)
+                        total += len(terms)
+                    except Exception as exc:
+                        failed_collections.append(f"{coll_name}: {exc}")
+
+                if failed_collections:
+                    msg = f"{len(failed_collections)} collection(s) failed: " + "; ".join(failed_collections[:3])
+                    result.add("API term instantiation", False, msg)
+                else:
+                    result.add("API term instantiation", True, f"{total} terms across {len(collections)} collections OK")
+        finally:
+            # Restore previous state
+            if previous_active:
+                state.set_active(project_id, previous_active, source="local")
+            else:
+                state.remove_active(project_id)
+            target.unlink(missing_ok=True)
+            try:
+                target.parent.rmdir()
+            except OSError:
+                pass
 
     @staticmethod
     def _check_sample_query(conn: sqlite3.Connection, result: ValidationResult) -> None:
