@@ -35,7 +35,7 @@ def ingest_universe(
     universe_repo_dir_path: Path,
     universe_db_file_path: Path,
     missing_links_tracker: Optional["MissingLinksTracker"] = None,
-) -> None:
+) -> int:
     try:
         connection = db.DBConnection(universe_db_file_path)
     except Exception as e:
@@ -43,12 +43,14 @@ def ingest_universe(
         _LOGGER.fatal(msg)
         raise IOError(msg) from e
 
+    total_errors = 0
     for data_descriptor_dir_path in universe_repo_dir_path.iterdir():
         if (
             data_descriptor_dir_path.is_dir() and (data_descriptor_dir_path / "000_context.jsonld").exists()
         ):  # TODO may be put that in setting
             try:
-                ingest_data_descriptor(data_descriptor_dir_path, connection, str(universe_repo_dir_path), missing_links_tracker)
+                errors = ingest_data_descriptor(data_descriptor_dir_path, connection, str(universe_repo_dir_path), missing_links_tracker)
+                total_errors += errors
             except Exception as e:
                 msg = f"unexpected error while processing data descriptor {data_descriptor_dir_path}"
                 _LOGGER.fatal(msg)
@@ -80,6 +82,13 @@ def ingest_universe(
             raise EsgvocDbError(msg) from e
         session.commit()
 
+    if total_errors > 0:
+        _LOGGER.error(
+            f"❌ {total_errors} term(s) failed to ingest in universe"
+        )
+
+    return total_errors
+
 
 def ingest_metadata_universe(connection, git_hash):
     with connection.create_session() as session:
@@ -93,7 +102,7 @@ def ingest_data_descriptor(
     connection: db.DBConnection,
     universe_local_path: str,
     missing_links_tracker: Optional["MissingLinksTracker"] = None,
-) -> None:
+) -> int:
     from esgvoc.core.service.resolver_config import ResolverConfig
 
     data_descriptor_id = data_descriptor_path.name
@@ -110,6 +119,7 @@ def ingest_data_descriptor(
         # We ll know it only when we ll add a term (hypothesis all term have the same kind in a data_descriptor)
         data_descriptor = UDataDescriptor(id=data_descriptor_id, context=context, term_kind="")
         term_kind_dd = None
+        error_count = 0
 
         _LOGGER.debug(f"add data_descriptor : {data_descriptor_id}")
         for term_file_path in data_descriptor_path.iterdir():
@@ -154,6 +164,7 @@ def ingest_data_descriptor(
                         f"   Error Message: {str(e)}\n"
                         f"   Full Traceback:\n{traceback.format_exc()}"
                     )
+                    error_count += 1
                     continue
                 if term_id and json_specs and data_descriptor and term_kind:
                     _LOGGER.debug(f"adding {term_id}")
@@ -176,6 +187,7 @@ def ingest_data_descriptor(
             data_descriptor.term_kind = TermKind.PLAIN
         session.add(data_descriptor)
         session.commit()
+        return error_count
 
 
 def get_universe_term(data_descriptor_id: str, term_id: str, universe_db_session: Session) -> tuple[TermKind, dict]:

@@ -390,7 +390,10 @@ class TestValidTermFull:
         import esgvoc.api.projects as projects
 
         result = projects.valid_term_in_all_projects("this_value_certainly_does_not_match_xyz_123")
-        assert result == []
+        # Freetext pattern terms (regex ".*") legitimately match any value,
+        # so only assert that non-freetext terms are absent.
+        non_freetext = [m for m in result if m.term_id != "freetext"]
+        assert non_freetext == []
 
 
 class TestValidTermInCollection:

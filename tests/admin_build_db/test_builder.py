@@ -497,6 +497,7 @@ class TestBuildUniverseOrchestration:
 
         def _fake_build_universe_db(universe_path, universe_db, universe_sha):
             _make_sqlite(universe_db)
+            return 0
 
         with patch.object(builder, "_clone"), \
              patch.object(builder, "_build_universe_db", side_effect=_fake_build_universe_db):
@@ -516,6 +517,7 @@ class TestBuildUniverseOrchestration:
 
         def _fake_build_universe_db(universe_path, universe_db, universe_sha):
             _make_sqlite(universe_db)
+            return 0
 
         with patch.object(builder, "_clone") as mock_clone, \
              patch.object(builder, "_build_universe_db", side_effect=_fake_build_universe_db):
@@ -532,6 +534,7 @@ class TestBuildUniverseOrchestration:
 
         def _fake_build_universe_db(universe_path, universe_db, universe_sha):
             _make_sqlite(universe_db)
+            return 0
 
         with patch.object(builder, "_clone"), \
              patch.object(builder, "_build_universe_db", side_effect=_fake_build_universe_db):
@@ -554,6 +557,7 @@ class TestBuildUniverseOrchestration:
 
         def _fake_build_universe_db(universe_path, universe_db, universe_sha):
             _make_sqlite(universe_db)
+            return 0
 
         with patch.object(builder, "_clone"), \
              patch.object(builder, "_build_universe_db", side_effect=_fake_build_universe_db):
@@ -580,9 +584,11 @@ class TestRunBuildManifestOverrides:
 
         def _fake_universe_db(universe_path, universe_db, universe_sha):
             _make_sqlite(universe_db)
+            return 0
 
         def _fake_project_db(project_path, universe_path, universe_db, project_db, project_sha):
             _make_sqlite(project_db)
+            return 0
 
         with patch.object(builder, "_build_universe_db", side_effect=_fake_universe_db), \
              patch.object(builder, "_build_project_db", side_effect=_fake_project_db):
@@ -617,9 +623,11 @@ class TestRunBuildManifestOverrides:
 
         def _fake_universe_db(universe_path, universe_db, universe_sha):
             _make_sqlite(universe_db)
+            return 0
 
         def _fake_project_db(project_path, universe_path, universe_db, project_db, project_sha):
             _make_sqlite(project_db)
+            return 0
 
         with patch.object(builder, "_build_universe_db", side_effect=_fake_universe_db), \
              patch.object(builder, "_build_project_db", side_effect=_fake_project_db):
@@ -697,7 +705,7 @@ class TestMissingLinksTrackerPaths:
              patch("esgvoc.core.db.models.universe.universe_create_db"), \
              patch("esgvoc.core.db.connection.DBConnection"), \
              patch("esgvoc.core.db.universe_ingestion.ingest_metadata_universe"), \
-             patch("esgvoc.core.db.universe_ingestion.ingest_universe"):
+             patch("esgvoc.core.db.universe_ingestion.ingest_universe", return_value=0):
             with pytest.raises(RuntimeError, match="missing links sentinel"):
                 builder._build_universe_db(tmp_path, universe_db, "abc123")
 
@@ -719,7 +727,7 @@ class TestMissingLinksTrackerPaths:
 
         with patch("esgvoc.admin.builder.MissingLinksTracker", return_value=mock_tracker), \
              patch("esgvoc.core.db.models.project.project_create_db"), \
-             patch("esgvoc.core.db.project_ingestion.ingest_project"):
+             patch("esgvoc.core.db.project_ingestion.ingest_project", return_value=0):
             with pytest.raises(RuntimeError, match="missing links sentinel"):
                 builder._build_project_db(
                     project_path=tmp_path,
@@ -742,8 +750,143 @@ class TestMissingLinksTrackerPaths:
              patch("esgvoc.core.db.models.universe.universe_create_db"), \
              patch("esgvoc.core.db.connection.DBConnection"), \
              patch("esgvoc.core.db.universe_ingestion.ingest_metadata_universe"), \
-             patch("esgvoc.core.db.universe_ingestion.ingest_universe"):
-            builder._build_universe_db(tmp_path, universe_db, None)
+             patch("esgvoc.core.db.universe_ingestion.ingest_universe", return_value=0):
+            result = builder._build_universe_db(tmp_path, universe_db, None)
+        assert result == 0
 
         # MissingLinksTracker should never be instantiated when flag is False
         MockTracker.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# Ingestion error tracking — error counts propagate to metadata & BuildResult
+# ---------------------------------------------------------------------------
+
+class TestIngestionErrorTracking:
+
+    def test_run_build_stores_zero_errors_in_metadata(self, tmp_path):
+        builder = DBBuilder(work_dir=tmp_path, verbose=False)
+        output = tmp_path / "out.db"
+
+        def _fake_universe_db(universe_path, universe_db, universe_sha):
+            _make_sqlite(universe_db)
+            return 0
+
+        def _fake_project_db(project_path, universe_path, universe_db, project_db, project_sha):
+            _make_sqlite(project_db)
+            return 0
+
+        with patch.object(builder, "_build_universe_db", side_effect=_fake_universe_db), \
+             patch.object(builder, "_build_project_db", side_effect=_fake_project_db):
+            builder._run_build(
+                project_path=tmp_path,
+                universe_path=tmp_path,
+                project_sha="aaa",
+                universe_sha="bbb",
+                output_path=output,
+                tmp=tmp_path,
+                manifest_overrides={"project_id": "test", "cv_version": "1.0"},
+            )
+
+        conn = sqlite3.connect(str(output))
+        rows = dict(conn.execute("SELECT key, value FROM _esgvoc_metadata").fetchall())
+        conn.close()
+        assert rows["ingestion_errors"] == "0"
+
+    def test_run_build_stores_nonzero_errors_in_metadata(self, tmp_path):
+        builder = DBBuilder(work_dir=tmp_path, verbose=False)
+        output = tmp_path / "out.db"
+
+        def _fake_universe_db(universe_path, universe_db, universe_sha):
+            _make_sqlite(universe_db)
+            return 3
+
+        def _fake_project_db(project_path, universe_path, universe_db, project_db, project_sha):
+            _make_sqlite(project_db)
+            return 2
+
+        with patch.object(builder, "_build_universe_db", side_effect=_fake_universe_db), \
+             patch.object(builder, "_build_project_db", side_effect=_fake_project_db):
+            builder._run_build(
+                project_path=tmp_path,
+                universe_path=tmp_path,
+                project_sha="aaa",
+                universe_sha="bbb",
+                output_path=output,
+                tmp=tmp_path,
+                manifest_overrides={"project_id": "test", "cv_version": "1.0"},
+            )
+
+        conn = sqlite3.connect(str(output))
+        rows = dict(conn.execute("SELECT key, value FROM _esgvoc_metadata").fetchall())
+        conn.close()
+        assert rows["ingestion_errors"] == "5"
+
+    def test_build_universe_stores_errors_in_metadata(self, tmp_path):
+        builder = DBBuilder(work_dir=tmp_path / "work", verbose=False)
+        output = tmp_path / "universe.db"
+
+        def _fake_build_universe_db(universe_path, universe_db, universe_sha):
+            _make_sqlite(universe_db)
+            return 7
+
+        with patch.object(builder, "_clone"), \
+             patch.object(builder, "_build_universe_db", side_effect=_fake_build_universe_db):
+            builder.build_universe(
+                universe_repo="WCRP-CMIP/WCRP-universe",
+                universe_ref="main",
+                output_path=output,
+            )
+
+        conn = sqlite3.connect(str(output))
+        rows = dict(conn.execute("SELECT key, value FROM _esgvoc_metadata").fetchall())
+        conn.close()
+        assert rows["ingestion_errors"] == "7"
+
+    def test_build_universe_db_returns_error_count(self, tmp_path):
+        builder = DBBuilder(fail_on_missing_links=False, verbose=False)
+        universe_db = tmp_path / "universe.db"
+
+        with patch("esgvoc.core.db.models.universe.universe_create_db"), \
+             patch("esgvoc.core.db.connection.DBConnection"), \
+             patch("esgvoc.core.db.universe_ingestion.ingest_metadata_universe"), \
+             patch("esgvoc.core.db.universe_ingestion.ingest_universe", return_value=5):
+            result = builder._build_universe_db(tmp_path, universe_db, "sha")
+        assert result == 5
+
+    def test_build_project_db_returns_error_count(self, tmp_path):
+        builder = DBBuilder(fail_on_missing_links=False, verbose=False)
+        universe_db = tmp_path / "universe.db"
+        project_db = tmp_path / "project.db"
+        _make_sqlite(universe_db)
+
+        with patch("esgvoc.core.db.models.project.project_create_db"), \
+             patch("esgvoc.core.db.project_ingestion.ingest_project", return_value=4):
+            result = builder._build_project_db(
+                project_path=tmp_path,
+                universe_path=tmp_path,
+                universe_db=universe_db,
+                project_db=project_db,
+                project_sha="sha",
+            )
+        assert result == 4
+
+    def test_release_notes_in_build_result(self, tmp_path):
+        result = BuildResult(
+            output_path=tmp_path / "test.db",
+            project_id="test",
+            cv_version="1.0",
+            universe_version="1.0",
+            commit_sha="abc",
+            universe_commit_sha="def",
+            build_date=datetime.now(timezone.utc),
+            esgvoc_version="0.1.0",
+            checksum_sha256="a" * 64,
+            size_bytes=1024,
+            release_notes="Initial release",
+        )
+        assert result.release_notes == "Initial release"
+
+    def test_release_notes_defaults_to_none(self, tmp_path):
+        result = _fake_result(tmp_path)
+        assert result.release_notes is None

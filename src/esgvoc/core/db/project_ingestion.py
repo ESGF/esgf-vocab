@@ -58,7 +58,7 @@ def ingest_collection(
     project_db_session,
     universe_local_path: str,
     missing_links_tracker: Optional["MissingLinksTracker"] = None,
-) -> None:
+) -> int:
     from esgvoc.core.service.resolver_config import ResolverConfig
 
     collection_id = collection_dir_path.name
@@ -80,6 +80,7 @@ def ingest_collection(
     )  # We ll know it only when we ll add a term
     # (hypothesis all term have the same kind in a collection) # noqa E116
     term_kind_collection = None
+    error_count = 0
 
     for term_file_path in collection_dir_path.iterdir():
         _LOGGER.debug(f"found term path : {term_file_path}")
@@ -136,6 +137,7 @@ def ingest_collection(
                     f"   Error Message: {str(e)}\n"
                     f"   Full Traceback:\n{traceback.format_exc()}"
                 )
+                error_count += 1
                 continue
             try:
                 term = PTerm(
@@ -155,6 +157,7 @@ def ingest_collection(
                     f"   Error Message: {str(e)}\n"
                     f"   Full Traceback:\n{traceback.format_exc()}"
                 )
+                error_count += 1
                 continue
     # Report ingestion results for this collection
     json_file_count = len([f for f in collection_dir_path.glob("*.json")])
@@ -178,6 +181,7 @@ def ingest_collection(
         )
         collection.term_kind = TermKind.PLAIN
     project_db_session.add(collection)
+    return error_count
 
 
 def ingest_project(
@@ -186,7 +190,7 @@ def ingest_project(
     git_hash: str,
     universe_local_path: str,
     missing_links_tracker: Optional["MissingLinksTracker"] = None,
-):
+) -> int:
     try:
         project_connection = db.DBConnection(project_db_file_path)
     except Exception as e:
@@ -221,12 +225,14 @@ def ingest_project(
         project = Project(id=project_id, specs=project_specs, git_hash=git_hash)
         project_db_session.add(project)
 
+        total_errors = 0
         for collection_dir_path in project_dir_path.iterdir():
             # TODO maybe put that in settings
             if collection_dir_path.is_dir() and (collection_dir_path / "000_context.jsonld").exists():
                 _LOGGER.debug(f"found collection dir : {collection_dir_path}")
                 try:
-                    ingest_collection(collection_dir_path, project, project_db_session, universe_local_path, missing_links_tracker)
+                    errors = ingest_collection(collection_dir_path, project, project_db_session, universe_local_path, missing_links_tracker)
+                    total_errors += errors
                 except Exception as e:
                     msg = f"unexpected error while ingesting collection {collection_dir_path}"
                     _LOGGER.fatal(msg)
@@ -258,3 +264,10 @@ def ingest_project(
             _LOGGER.fatal(msg)
             raise EsgvocDbError(msg) from e
         project_db_session.commit()
+
+        if total_errors > 0:
+            _LOGGER.error(
+                f"❌ {total_errors} term(s) failed to ingest in project '{project_id}'"
+            )
+
+        return total_errors
