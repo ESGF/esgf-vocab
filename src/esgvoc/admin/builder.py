@@ -274,7 +274,7 @@ class DBBuilder:
 
             universe_db = tmp / "universe.db"
             self._log("Building universe DB…")
-            self._build_universe_db(universe_path, universe_db, universe_sha)
+            ingestion_errors = self._build_universe_db(universe_path, universe_db, universe_sha)
 
             output_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(str(universe_db), str(output_path))
@@ -293,6 +293,7 @@ class DBBuilder:
                 "esgvoc_version": esgvoc_version,
                 "esgvoc_min_version": esgvoc_min_version or universe_manifest.esgvoc.min_version or esgvoc_version,
                 "release_notes": universe_manifest.release_notes or "",
+                "ingestion_errors": str(ingestion_errors),
             }
             self._embed_metadata(output_path, metadata)
             checksum = _sha256(output_path)
@@ -348,17 +349,18 @@ class DBBuilder:
 
         # 1. Build universe
         self._log("Building universe DB…")
-        self._build_universe_db(universe_path, universe_db, universe_sha)
+        universe_errors = self._build_universe_db(universe_path, universe_db, universe_sha)
 
         # 2. Build project (with universe path injected into service context)
         self._log(f"Building project DB ({manifest.project.id})…")
-        self._build_project_db(
+        project_errors = self._build_project_db(
             project_path=project_path,
             universe_path=universe_path,
             universe_db=universe_db,
             project_db=project_db,
             project_sha=project_sha,
         )
+        ingestion_errors = universe_errors + project_errors
 
         # 3. Copy project DB to output
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -377,6 +379,7 @@ class DBBuilder:
             "esgvoc_version": esgvoc_version,
             "esgvoc_min_version": manifest.esgvoc.min_version or esgvoc_version,
             "release_notes": manifest.release_notes or "",
+            "ingestion_errors": str(ingestion_errors),
         }
         self._embed_metadata(output_path, metadata)
 
@@ -398,12 +401,11 @@ class DBBuilder:
             release_notes=manifest.release_notes,
         )
 
-    def _build_universe_db(self, universe_path: Path, universe_db: Path, universe_sha: Optional[str]) -> None:
+    def _build_universe_db(self, universe_path: Path, universe_db: Path, universe_sha: Optional[str]) -> int:
         from esgvoc.core.db.connection import DBConnection
         from esgvoc.core.db.models.universe import universe_create_db
         from esgvoc.core.db.universe_ingestion import ingest_metadata_universe, ingest_universe
 
-        print(self)
         if universe_db.exists():
             universe_db.unlink()
         universe_db.parent.mkdir(parents=True, exist_ok=True)
@@ -413,11 +415,13 @@ class DBBuilder:
         ingest_metadata_universe(conn, universe_sha or "unknown")
 
         tracker = MissingLinksTracker() if self.fail_on_missing_links else None
-        ingest_universe(universe_path, universe_db, tracker)
+        errors = ingest_universe(universe_path, universe_db, tracker)
 
         if tracker and tracker.has_missing_links():
             tracker.print_summary()
             tracker.check_and_raise()
+
+        return errors
 
     def _build_project_db(
         self,
@@ -426,7 +430,7 @@ class DBBuilder:
         universe_db: Path,
         project_db: Path,
         project_sha: Optional[str],
-    ) -> None:
+    ) -> int:
         from esgvoc.core.db.models.project import project_create_db
         from esgvoc.core.db.project_ingestion import ingest_project
 
@@ -442,11 +446,13 @@ class DBBuilder:
         # is no prior row — which is what the API expects (SQLITE_FIRST_PK = 1).
 
         tracker = MissingLinksTracker() if self.fail_on_missing_links else None
-        ingest_project(project_path, project_db, project_sha or "unknown", str(universe_path), tracker)
+        errors = ingest_project(project_path, project_db, project_sha or "unknown", str(universe_path), tracker)
 
         if tracker and tracker.has_missing_links():
             tracker.print_summary()
             tracker.check_and_raise()
+
+        return errors
 
     # ------------------------------------------------------------------
     # Metadata

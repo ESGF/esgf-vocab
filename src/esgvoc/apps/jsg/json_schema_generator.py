@@ -288,6 +288,8 @@ class CatalogPropertiesJsonTranslator:
         else:
             field_value["type"] = catalog_property.catalog_field_value_type
             root_property = field_value
+            if "string" in catalog_property.catalog_field_value_type and catalog_property.source_collection is None:
+                root_property["maxLength"] = 1064
 
         if (property_key is not None) and (property_value is not None):
             root_property[property_key] = property_value
@@ -380,6 +382,27 @@ def generate_json_schema(project_id: str) -> dict:
     else:
         raise EsgvocNotFoundError(f"unknown project '{project_id}'")
 
+def get_schema_version(project_id: str) -> str:
+    """
+    Return the catalog schema version for the given project.
+
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :returns: The catalog schema version string.
+    :rtype: str
+    :raises EsgvocNotFoundError: If the project or its catalog specs are not found.
+    """
+    project_specs = projects.get_project(project_id)
+    if project_specs is not None:
+        catalog_specs = project_specs.catalog_specs
+        if catalog_specs is not None:
+            return catalog_specs.version
+        else:
+            raise EsgvocNotFoundError(
+                f"catalog properties for the project '{project_id}' are missing"
+            )
+    else:
+        raise EsgvocNotFoundError(f"unknown project '{project_id}'")
 
 def pretty_print_json_node(obj: dict) -> str:
     """
