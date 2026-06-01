@@ -60,3 +60,5 @@ class EsgvocMissingLinksError(EsgvocException):
             lines.append(f"    Local path tried: {link.local_path}")
             lines.append("")
         return "\n".join(lines)
+
+
