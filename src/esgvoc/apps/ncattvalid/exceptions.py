@@ -1,0 +1,2 @@
+class InvalidNcdumpError(ValueError):
+    pass
