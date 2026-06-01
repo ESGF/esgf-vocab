@@ -5,8 +5,8 @@ No database or network access required.
 """
 
 import pytest
-
-from esgvoc.apps.ga.validator import parse_ncdump_global_attributes
+from esgvoc.apps.ncattvalid.exceptions import InvalidNcdumpError
+from esgvoc.apps.ncattvalid.validator import parse_ncdump_global_attributes
 
 _FULL_NCDUMP = """\
 netcdf tas_Amon_CanESM5_historical_r11i1p1f1_gn_185001-201412 {
@@ -37,12 +37,22 @@ variables:
 
 class TestParseNcdumpGlobalAttributes:
 
-    def test_empty_string_returns_empty_dict(self):
-        assert parse_ncdump_global_attributes("") == {}
+    def test_empty_string_raises_invalid_ncdump(self):
+        with pytest.raises(InvalidNcdumpError):
+            parse_ncdump_global_attributes("")
 
-    def test_no_global_attrs_section_returns_empty_dict(self):
+    def test_no_global_attrs_section_raises(self):
         ncdump = "netcdf test {\ndimensions:\n    time = 10 ;\n}"
-        assert parse_ncdump_global_attributes(ncdump) == {}
+
+        with pytest.raises(InvalidNcdumpError):
+            parse_ncdump_global_attributes(ncdump)
+
+    def test_invalid_ncdump_error_message(self):
+        with pytest.raises(InvalidNcdumpError) as exc:
+            parse_ncdump_global_attributes("blah")
+
+        assert "global attributes" in str(exc.value)
+        assert "ncdump -h" in str(exc.value)
 
     def test_simple_string_attribute(self):
         ncdump = 'netcdf test {\n// global attributes:\n        :activity_id = "CMIP" ;\n}'
