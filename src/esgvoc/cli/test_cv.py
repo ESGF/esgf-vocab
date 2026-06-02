@@ -257,41 +257,24 @@ def _api_smoke_test(project_id: str) -> bool:
         _print_api_summary(errors)
         return False
 
-    # 2. Spot-check terms in the first few collections
+    # 2. Instantiate ALL terms in ALL collections (full API validation)
     table = Table(title=f"Collection summary — {project_id}")
     table.add_column("Collection", style="cyan")
     table.add_column("Terms", justify="right")
     table.add_column("Status")
 
-    spot_limit = 5  # Check up to this many collections in detail
-    for coll_name in collections[:spot_limit]:
+    total_terms = 0
+    for coll_name in collections:
         try:
             terms = ev.get_all_terms_in_collection(project_id, coll_name)
+            total_terms += len(terms)
             table.add_row(coll_name, str(len(terms)), "[green]OK[/green]")
         except Exception as exc:
             table.add_row(coll_name, "?", f"[red]ERROR: {exc}[/red]")
             errors.append(f"get_all_terms_in_collection({coll_name!r}): {exc}")
 
-    if len(collections) > spot_limit:
-        table.add_row(f"… {len(collections) - spot_limit} more", "", "[dim]not spot-checked[/dim]")
-
     console.print(table)
-
-    # 3. Instantiate one term from the first collection (if any)
-    if collections:
-        first_coll = collections[0]
-        try:
-            terms = ev.get_all_terms_in_collection(project_id, first_coll)
-            if terms:
-                term = terms[0]
-                console.print(
-                    f"  [green]✓[/green] Instantiated term: [cyan]{first_coll}/{term.id}[/cyan] (type={term.type})"
-                )
-            else:
-                console.print(f"  [yellow]⚠[/yellow] Collection '{first_coll}' is empty")
-        except Exception as exc:
-            errors.append(f"instantiate first term in {first_coll!r}: {exc}")
-            console.print(f"  [red]✗[/red] Instantiate term: {exc}")
+    console.print(f"  [green]✓[/green] {total_terms} terms instantiated across {len(collections)} collections")
 
     _print_api_summary(errors)
     return len(errors) == 0

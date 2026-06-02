@@ -10,6 +10,7 @@ from sqlmodel import Session
 from esgvoc.api import projects, search
 from esgvoc.api.project_specs import CatalogProperty, LinkProperty
 from esgvoc.core.constants import COMPOSITE_REQUIRED_KEY, DRS_SPECS_JSON_KEY, PATTERN_JSON_KEY
+from esgvoc.core.service.user_state import UserState
 from esgvoc.core.db.models.project import PCollection, PTerm, TermKind
 from esgvoc.core.db.models.universe import UTerm
 from esgvoc.core.exceptions import EsgvocException, EsgvocNotFoundError, EsgvocNotImplementedError, EsgvocValueError
@@ -360,9 +361,11 @@ def generate_json_schema(project_id: str) -> dict:
             ]
             required_link_rels = [lp.rel for lp in catalog_specs.link_properties if lp.is_required]
 
+            state = UserState.load()
+            snapshot_version = state.get_active(project_id) or project_specs.version
             json_raw_str = template.render(
                 project_id=project_specs.drs_name,
-                catalog_version=catalog_specs.version,
+                catalog_version=snapshot_version,
                 dataset_id_regex=dataset_id_regex,
                 base_id_regex=base_id_regex,
                 catalog_dataset_properties=catalog_dataset_properties,
@@ -382,6 +385,28 @@ def generate_json_schema(project_id: str) -> dict:
     else:
         raise EsgvocNotFoundError(f"unknown project '{project_id}'")
 
+def get_schema_version(project_id: str) -> str:
+    """
+    Return the snapshot version used for the schema of the given project.
+
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :returns: The active snapshot version string (e.g. 'dev-latest', 'v1.2.1').
+    :rtype: str
+    :raises EsgvocNotFoundError: If the project or its catalog specs are not found.
+    """
+    project_specs = projects.get_project(project_id)
+    if project_specs is not None:
+        catalog_specs = project_specs.catalog_specs
+        if catalog_specs is not None:
+            state = UserState.load()
+            return state.get_active(project_id) or project_specs.version
+        else:
+            raise EsgvocNotFoundError(
+                f"catalog properties for the project '{project_id}' are missing"
+            )
+    else:
+        raise EsgvocNotFoundError(f"unknown project '{project_id}'")
 
 def pretty_print_json_node(obj: dict) -> str:
     """
