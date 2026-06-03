@@ -273,7 +273,7 @@ class GAValidator:
             if attr_name not in self._spec_by_name:
                 extra.append(attr_name)
                 continue
-            results.append(self.validate_one(attr_name, attr_value))
+            results.extend(self.validate_one(attr_name, attr_value))
 
         return GAReport(
             project_id=self.project_id,
@@ -300,40 +300,52 @@ class GAValidator:
                 filename = m.group(1)
         return self.validate(attrs, filename)
 
-    def validate_one(self, name: str, value: Any) -> AttributeResult:
+    def validate_one(self, name: str, value: Any) -> list[AttributeResult]:
         """
         Validate a single attribute value against its spec.
         """
 
         if name not in self._spec_by_name:
-            return AttributeResult(
-                name=name,
-                is_valid=False,
-                message=f"Unknown NetCDF attribute '{name}' for project {self.project_id}",
-                value=value,
-            )
+            return [
+                AttributeResult(
+                    name=name,
+                    is_valid=False,
+                    message=f"Unknown NetCDF attribute '{name}' for project {self.project_id}",
+                    value=value,
+                )
+            ]
         spec = self._spec_by_name[name]
 
         if spec.source_collection is None:
             # Free-text attribute — no controlled vocabulary to check against
-            return AttributeResult(name=name, is_valid=True, message="free-text attribute (not CV validated)", value=value)
+            return [
+                AttributeResult(name=name, is_valid=True, message="free-text attribute (not CV validated)", value=value)
+            ]
 
         str_value = str(value).strip()
 
         # Honour the NA / not-applicable value if defined
         if spec.attr_field_na_value is not None and str_value == spec.attr_field_na_value:
-            return AttributeResult(
-                name=name,
-                is_valid=True,
-                message=f"matches NA value ({str_value!r})",
-                value=value,
-                collection=spec.source_collection,
-            )
+            return [
+                AttributeResult(
+                    name=name,
+                    is_valid=True,
+                    message=f"matches NA value ({str_value!r})",
+                    value=value,
+                    collection=spec.source_collection,
+                )
+            ]
 
         if spec.source_collection_key is not None:
-            return self._validate_specific_key(name, str_value, value, spec)
+            return [self._validate_specific_key(name, str_value, value, spec)]
 
-        return self._validate_in_collection(name, str_value, value, spec)
+        if self._spec_by_name[name].attr_field_value_type == "string_array":
+            return [
+                self._validate_in_collection(name, attr_value_split, str(attr_value_split).strip(), spec)
+                for attr_value_split in value.split(" ")
+            ]
+        else:
+            return [self._validate_in_collection(name, str_value, value, spec)]
 
     # ------------------------------------------------------------------
     # Internal helpers

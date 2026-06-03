@@ -275,10 +275,11 @@ class TestAttributeValidation:
     def test_validate_one_unknown_attribute(self, specs_basic):
         v = _make_validator(specs_basic)
 
-        result = v.validate_one("unknown", "value")
+        results = v.validate_one("unknown", "value")
 
-        assert not result.is_valid
-        assert "Unknown NetCDF attribute" in result.message
+        assert len(results) == 1
+        assert not results[0].is_valid
+        assert "Unknown NetCDF attribute" in results[0].message
 
     def test_validate_one_free_text_attribute(self):
         specs = [
@@ -292,12 +293,13 @@ class TestAttributeValidation:
 
         v = _make_validator(specs)
 
-        result = v.validate_one(
+        results = v.validate_one(
             "comment",
             "hello world",
         )
 
-        assert result.is_valid
+        assert len(results) == 1
+        assert results[0].is_valid
 
 
 # ---------------------------------------------------------------------------

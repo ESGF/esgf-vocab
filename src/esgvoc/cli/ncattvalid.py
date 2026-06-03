@@ -30,20 +30,21 @@ def _make_panel(
     )
 
 
-def _display_attribute_result(result: AttributeResult) -> None:
+def _display_attribute_result(results: list[AttributeResult]) -> None:
     """
     Render a single attribute validation result.
     """
 
-    if result.is_valid:
-        console.print(
-            f"✅ [yellow]{result.name}[/yellow]=[green]{result.value!r}[/green]"
-        )
-    else:
-        console.print(
-            f"❌ [yellow]{result.name}[/yellow]=[red]{result.value!r}[/red]"
-        )
-        console.print(f"   [white]{result.message}[/white]")
+    for result in results:
+        if result.is_valid:
+            console.print(
+                f"✅ [yellow]{result.name}[/yellow]=[green]{result.value!r}[/green]"
+            )
+        else:
+            console.print(
+                f"❌ [yellow]{result.name}[/yellow]=[red]{result.value!r}[/red]"
+            )
+            console.print(f"   [white]{result.message}[/white]")
 
 
 def _display_report(
@@ -179,14 +180,14 @@ def ncattvalid(
 
     # Single attribute validation
     if attribute_name is not None and attribute_value is not None:
-        result = validator.validate_one(
+        results = validator.validate_one(
             attribute_name,
             attribute_value,
         )
 
-        _display_attribute_result(result)
+        _display_attribute_result(results)
 
-        raise typer.Exit(code=0 if result.is_valid else 1)
+        raise typer.Exit(code=0 if all(result.is_valid for result in results) else 1)
 
     # Invalid partial arguments
     if attribute_name is not None or attribute_value is not None:
