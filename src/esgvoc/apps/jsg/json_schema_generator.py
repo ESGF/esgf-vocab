@@ -363,9 +363,10 @@ def generate_json_schema(project_id: str) -> dict:
 
             state = UserState.load()
             snapshot_version = state.get_active(project_id) or project_specs.version
+            stac_version = snapshot_version if snapshot_version.startswith("v") else f"v{snapshot_version}"
             json_raw_str = template.render(
                 project_id=project_specs.drs_name,
-                catalog_version=snapshot_version,
+                catalog_version=stac_version,
                 dataset_id_regex=dataset_id_regex,
                 base_id_regex=base_id_regex,
                 catalog_dataset_properties=catalog_dataset_properties,
@@ -400,7 +401,8 @@ def get_schema_version(project_id: str) -> str:
         catalog_specs = project_specs.catalog_specs
         if catalog_specs is not None:
             state = UserState.load()
-            return state.get_active(project_id) or project_specs.version
+            version = state.get_active(project_id) or project_specs.version
+            return version if version.startswith("v") else f"v{version}"
         else:
             raise EsgvocNotFoundError(
                 f"catalog properties for the project '{project_id}' are missing"

@@ -97,6 +97,7 @@ how_to/get.rst
 how_to/valid.rst
 how_to/validate_drs.rst
 how_to/generate_drs.rst
+how_to/validate_ncatt.rst
 ```
 
 ```{toctree}

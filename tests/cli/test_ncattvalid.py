@@ -14,12 +14,12 @@ class TestNcAttValidCommand:
     def test_validate_single_attribute_valid(self, mock_validator):
         validator = mock_validator.return_value
 
-        validator.validate_one.return_value = AttributeResult(
+        validator.validate_one.return_value = [AttributeResult(
             name="activity_id",
             is_valid=True,
             message="valid",
             value="CMIP",
-        )
+        )]
 
         result = runner.invoke(
             app,
@@ -34,12 +34,12 @@ class TestNcAttValidCommand:
     def test_validate_single_attribute_invalid_name(self, mock_validator):
         validator = mock_validator.return_value
 
-        validator.validate_one.return_value = AttributeResult(
+        validator.validate_one.return_value = [AttributeResult(
             name="WRONG",
             is_valid=False,
             message="mocked error",
             value="CMIP",
-        )
+        )]
 
         result = runner.invoke(
             app,
@@ -61,12 +61,12 @@ class TestNcAttValidCommand:
     def test_validate_single_attribute_invalid_value(self, mock_validator):
         validator = mock_validator.return_value
 
-        validator.validate_one.return_value = AttributeResult(
+        validator.validate_one.return_value = [AttributeResult(
             name="activity_id",
             is_valid=False,
             message="mocked invalid value",
             value="WRONG",
-        )
+        )]
 
         result = runner.invoke(
             app,
