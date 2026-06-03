@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Controlled vocabulary &#8212; ESGVOC  documentation</title>
+    <title>Valid Global Attributes &#8212; ESGVOC  documentation</title>
   
   
   
@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -48,11 +49,12 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'user/terms';</script>
+    <script src="../_static/tabs.js?v=3030b3cb"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how_to/validate_ncatt';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Database management" href="cached_database.html" />
-    <link rel="prev" title="Introduction" href="introduction.html" />
+    <link rel="next" title="ESGVOC library tutorial" href="../guides/basics_esgvoc.html" />
+    <link rel="prev" title="Generate DRS" href="generate_drs.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -143,21 +145,21 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Welcome</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Controlled vocabulary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cached_database.html">Database management</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">ESGVOC API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/terms.html">Controlled vocabulary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/cached_database.html">Database management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/api.html">ESGVOC API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/cli.html">Command Line Interface (CLI)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">How to</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../how_to/configuration.html">Vocabulary Management</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../how_to/get.html">Get</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../how_to/valid.html">Valid</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../how_to/validate_drs.html">Valid DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../how_to/generate_drs.html">Generate DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../how_to/validate_ncatt.html">Valid Global Attributes</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Vocabulary Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get.html">Get</a></li>
+<li class="toctree-l1"><a class="reference internal" href="valid.html">Valid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validate_drs.html">Valid DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generate_drs.html">Generate DRS</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Valid Global Attributes</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
@@ -249,7 +251,7 @@
       
       
       
-      <li><a href="https://github.com/ESGF/esgf-vocab/issues/new?title=Issue%20on%20page%20%2Fuser/terms.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/ESGF/esgf-vocab/issues/new?title=Issue%20on%20page%20%2Fhow_to/validate_ncatt.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -279,7 +281,7 @@
       
       
       
-      <li><a href="../_sources/user/terms.md" target="_blank"
+      <li><a href="../_sources/how_to/validate_ncatt.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -289,7 +291,7 @@
 <span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="btn__text-container">.md</span>
+<span class="btn__text-container">.rst</span>
 </a>
 </li>
       
@@ -355,7 +357,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Controlled vocabulary</h1>
+    <h1>Valid Global Attributes</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -365,12 +367,10 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-descriptor">Data Descriptor</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#term">Term</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universe">Universe</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#collection">Collection</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project">Project</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc">ESGVOC</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#one-attribute">One Attribute</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validate-a-full-netcdf-header">Validate a Full NetCDF Header</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validation-report">Validation Report</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error Handling</a></li>
 </ul>
             </nav>
         </div>
@@ -382,41 +382,122 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="controlled-vocabulary">
-<h1>Controlled vocabulary<a class="headerlink" href="#controlled-vocabulary" title="Link to this heading">#</a></h1>
-<section id="data-descriptor">
-<h2>Data Descriptor<a class="headerlink" href="#data-descriptor" title="Link to this heading">#</a></h2>
-<p>Climate modeling data relies on various informational elements to organize, index, and document simulations. Although these metadata may have different names, the latters are grouped according to their consistency. These groups are referred here as Data Descriptors. Each Data Descriptor represents a subset of information with a common definition across all climate simulations. For example, the “experiment” Data Descriptor provides details about the experimental protocol of a numerical simulation. Each Data Descriptor serves as a structured representation of a specific type of information, defining the necessary keys (or attributes) to characterize this information. Each Data Descriptor is implemented as a Pydantic model to ensure compliance across different instances of that model, called terms. For instance, the “experiment” Data Descriptor requires attributes such as an identifier (id), a category (type), an official typographic name (drs_name), a description, etc. The structure of these models varies depending on its semantic.</p>
-</section>
-<section id="term">
-<h2>Term<a class="headerlink" href="#term" title="Link to this heading">#</a></h2>
-<p>A term is a possible word or a element within a Data Descriptor of the vocabulary. Technically, a term corresponds to an instance of a Data Descriptor, adhering to its Pydantic model. Thus, a term is a unique set of key-value pairs within the same Data Descriptor.
-There are three categories of terms:</p>
+  <section id="valid-global-attributes">
+<h1>Valid Global Attributes<a class="headerlink" href="#valid-global-attributes" title="Link to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">ncattvalid</span></code> application validates NetCDF global attributes against ESGVOC controlled vocabularies and project specifications.</p>
+<p>It can validate:</p>
 <ul class="simple">
-<li><p>Plain terms: These are manually defined with a fixed syntax (e.g., institutions, physical variables, etc.) The set of plain terms is finite, as it includes only those explicitly described by the vocabulary authors.</p></li>
-<li><p>Pattern-based terms: These terms follow predefined patterns, typically described using regular expressions, and can potentially form infinite sets (e.g., dates, time periods, etc.)</p></li>
-<li><p>Composite terms: These are terms constructed from other terms (with possible recursion). They may be decomposable using textual separators (e.g., a period consists of two dates separated by a - symbol).</p></li>
+<li><p>a single attribute/value pair</p></li>
+<li><p>a full NetCDF header</p></li>
 </ul>
-</section>
-<section id="universe">
-<h2>Universe<a class="headerlink" href="#universe" title="Link to this heading">#</a></h2>
-<p>Each term is represented as a JSON file. The JSON files for all terms belonging to the same Data Descriptor are organized within a dedicated folder, hosted on a dedicated WCRP GitHub <a class="reference external" href="https://github.com/WCRP-CMIP/WCRP-universe/tree/esgvoc">repository</a>. This repository, also called “universe”, contains the complete set of possible terms. The universe repository serves to structure and harmonize all possible terms independently of specific projects in which they are used. The terms of the universe are in a way factorized for the WCRP projects in order to avoid any divergence and hence the controlled nature of the vocabularies.</p>
-</section>
-<section id="collection">
-<h2>Collection<a class="headerlink" href="#collection" title="Link to this heading">#</a></h2>
-<p>A Collection is a subset of a Data Descriptor. It is a list that references terms from the same Data Descriptor using their identifiers. Consequently, a collection cannot contain terms from multiple Data Descriptors. Each collection follows the same Pydantic model as the Data Descriptor it corresponds. Additionally, for any referenced term, a collection may override the original information by adding new key-value pairs or modifying existing ones in the JSON structure.</p>
+<p>This helps ensure that NetCDF files comply with CMIP metadata conventions and ESGVOC project specifications.</p>
+<section id="one-attribute">
+<h2>One Attribute<a class="headerlink" href="#one-attribute" title="Link to this heading">#</a></h2>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>ncattvalid<span class="w"> </span>cmip6<span class="w"> </span>activity_id<span class="w"> </span>CMIP
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>ncattvalid<span class="w"> </span>cmip6<span class="w"> </span>experiment_id<span class="w"> </span>historical
+</pre></div>
+</div>
+<img alt="../_images/CLI_Valid_attr_one.png" src="../_images/CLI_Valid_attr_one.png" />
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The terms of the universe and the projects are identical. Only any changes introduced by the projects may differentiate them.</p>
+<p>This mode validates a single NetCDF global attribute value
+against the project’s controlled vocabulary.</p>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">esgvoc.apps.ncattvalid.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">GAValidator</span>
+
+<span class="n">validator</span> <span class="o">=</span> <span class="n">GAValidator</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6&quot;</span><span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_one</span><span class="p">(</span>
+    <span class="s2">&quot;activity_id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CMIP&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/API_Valid_attr_one.png" src="../_images/API_Valid_attr_one.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">validate_one</span></code> returns an <code class="docutils literal notranslate"><span class="pre">AttributeResult</span></code> object.</p>
+</div>
+</div></div>
+</section>
+<section id="validate-a-full-netcdf-header">
+<h2>Validate a Full NetCDF Header<a class="headerlink" href="#validate-a-full-netcdf-header" title="Link to this heading">#</a></h2>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">Command line interface</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">API as python lib</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><p>Validate from stdin:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ncdump<span class="w"> </span>-h<span class="w"> </span>file.nc<span class="w"> </span><span class="p">|</span><span class="w"> </span>esgvoc<span class="w"> </span>ncattvalid<span class="w"> </span>cmip6
+</pre></div>
+</div>
+<p>Validate from a file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>ncattvalid<span class="w"> </span>cmip6<span class="w"> </span>--file<span class="w"> </span>header.txt
+</pre></div>
+</div>
+<p>Verbose mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>ncattvalid<span class="w"> </span>cmip6<span class="w"> </span>--file<span class="w"> </span>header.txt<span class="w"> </span>--verbose
+</pre></div>
+</div>
+<img alt="../_images/CLI_Valid_attr_header.png" src="../_images/CLI_Valid_attr_header.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The input must be the output of:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ncdump<span class="w"> </span>-h<span class="w"> </span>file.nc
+</pre></div>
+</div>
+<p>and contain a <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">global</span> <span class="pre">attributes:</span></code> section to be parsed.</p>
+</div>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">esgvoc.apps.ncattvalid.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">GAValidator</span>
+
+<span class="n">validator</span> <span class="o">=</span> <span class="n">GAValidator</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;header.txt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">report</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_ncdump</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+<img alt="../_images/API_Valid_attr_header.png" src="../_images/API_Valid_attr_header.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">validate_ncdump</span></code> returns a <code class="docutils literal notranslate"><span class="pre">GAReport</span></code> object.</p>
+</div>
+</div></div>
+</section>
+<section id="validation-report">
+<h2>Validation Report<a class="headerlink" href="#validation-report" title="Link to this heading">#</a></h2>
+<p>The validation report may contain:</p>
+<ul class="simple">
+<li><p>✅ valid attributes</p></li>
+<li><p>❌ invalid attributes</p></li>
+<li><p>❓ missing required attributes</p></li>
+<li><p>➕ extra attributes not defined in the project specification</p></li>
+</ul>
+<p>Example output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>───────────────── Validation failed ─────────────────
+
+File: test.nc
+Project: cmip6
+
+╭─ Invalid attributes ──────────────────────────────╮
+│ ❌ activity_id=&#39;WRONG&#39;                            │
+│    &#39;WRONG&#39; not found in collection &#39;activity_id&#39;  │
+╰───────────────────────────────────────────────────╯
+
+╭─ Missing required attributes ─────────────────────╮
+│ ❓ experiment_id                                  │
+╰───────────────────────────────────────────────────╯
+</pre></div>
 </div>
 </section>
-<section id="project">
-<h2>Project<a class="headerlink" href="#project" title="Link to this heading">#</a></h2>
-<p>A project is defined by a set of collections, where each collection is stored as a JSON file. All collections belonging to the same project are hosted in a dedicated WCRP GitHub repository, separate from the universe one (e.g., <a class="reference external" href="https://github.com/WCRP-CMIP/CMIP6_CVs/tree/esgvoc">CMIP6</a> and <a class="reference external" href="https://github.com/WCRP-CMIP/CMIP6Plus_CVs/tree/esgvoc">CMIP6Plus</a>). Each project selects terms from the universe to build an operational vocabulary that is actively used in climate data. A project is also defined by its Data Reference Syntax (DRS), which specifies the file structure, dataset ID templates, and file naming conventions. These syntactic rules are documented in a JSON file located at the root of the project’s GitHub repository.</p>
-</section>
-<section id="esgvoc">
-<h2>ESGVOC<a class="headerlink" href="#esgvoc" title="Link to this heading">#</a></h2>
-<p>The purpose of the ESGVOC library is to parse json files of terms from the universe and projects, and cache them (SQLite) in order to respond to listing, search and DRS validation queries.</p>
+<section id="error-handling">
+<h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading">#</a></h2>
+<p>Invalid or incomplete <code class="docutils literal notranslate"><span class="pre">ncdump</span></code> input raises an error.</p>
+<p>Possible errors include:</p>
+<ul class="simple">
+<li><p>missing <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">global</span> <span class="pre">attributes:</span></code> section</p></li>
+<li><p>malformed attribute definitions</p></li>
+<li><p>unknown NetCDF attributes</p></li>
+<li><p>invalid controlled vocabulary values</p></li>
+</ul>
 </section>
 </section>
 
@@ -432,20 +513,20 @@ There are three categories of terms:</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="introduction.html"
+       href="generate_drs.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Introduction</p>
+        <p class="prev-next-title">Generate DRS</p>
       </div>
     </a>
     <a class="right-next"
-       href="cached_database.html"
+       href="../guides/basics_esgvoc.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Database management</p>
+        <p class="prev-next-title">ESGVOC library tutorial</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -467,12 +548,10 @@ There are three categories of terms:</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-descriptor">Data Descriptor</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#term">Term</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universe">Universe</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#collection">Collection</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project">Project</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc">ESGVOC</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#one-attribute">One Attribute</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validate-a-full-netcdf-header">Validate a Full NetCDF Header</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validation-report">Validation Report</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error Handling</a></li>
 </ul>
   </nav></div>
 
