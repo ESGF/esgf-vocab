@@ -985,6 +985,15 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Table.describe"><code class="docutils literal notranslate"><span class="pre">Table.describe</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel"><code class="docutils literal notranslate"><span class="pre">TempModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel.description"><code class="docutils literal notranslate"><span class="pre">TempModel.description</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel.drs_name"><code class="docutils literal notranslate"><span class="pre">TempModel.drs_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel.id"><code class="docutils literal notranslate"><span class="pre">TempModel.id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel.type"><code class="docutils literal notranslate"><span class="pre">TempModel.type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel.accept"><code class="docutils literal notranslate"><span class="pre">TempModel.accept()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel.describe"><code class="docutils literal notranslate"><span class="pre">TempModel.describe</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TemporalLabel"><code class="docutils literal notranslate"><span class="pre">TemporalLabel</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TemporalLabel.description"><code class="docutils literal notranslate"><span class="pre">TemporalLabel.description</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TemporalLabel.drs_name"><code class="docutils literal notranslate"><span class="pre">TemporalLabel.drs_name</span></code></a></li>
@@ -4883,7 +4892,7 @@ description=”The model components (identified by their component properties) w
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">name</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">component</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">family</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">code_base</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">description</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model_component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">family</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">component</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">code_base</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">name</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model_component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings" title="Link to this definition">#</a></dt>
 <dd><p>Validate that string fields are not empty.</p>
 </dd></dl>
 
@@ -10347,7 +10356,7 @@ This difference can be identified using the MIP era data descriptor.</p>
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Model.validate_component_lists">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_component_lists</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">dynamic_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">prescribed_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">omitted_components</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_component_lists" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_component_lists</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">dynamic_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">omitted_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">prescribed_components</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_component_lists" title="Link to this definition">#</a></dt>
 <dd><p>Validate component lists contain valid strings or ComponentType objects.</p>
 </dd></dl>
 
@@ -10377,7 +10386,7 @@ This difference can be identified using the MIP era data descriptor.</p>
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Model.validate_non_empty_strings">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">family</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">name</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_non_empty_strings" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">family</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">name</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_non_empty_strings" title="Link to this definition">#</a></dt>
 <dd><p>Validate that string fields are not empty.</p>
 </dd></dl>
 
@@ -12370,6 +12379,93 @@ If items are dicts (resolved references), extract the ‘id’ field.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Table.describe">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">describe</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Table.describe" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.TempModel">
+<em class="property"><span class="pre">Pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esgvoc.api.data_descriptors.</span></span><span class="sig-name descname"><span class="pre">TempModel</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.TempModel" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlainTermDataDescriptor</span></code></a></p>
+<p>Temporary simplified model descriptor.</p>
+<p>Used as a short-term stand-in for Model when the available data
+does not yet contain the full EMD v1.0 Section 2 fields.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TempModel&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Temporary simplified model descriptor.\n\nUsed as a short-term stand-in for Model when the available data\ndoes not yet contain the full EMD v1.0 Section 2 fields.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Description&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;drs_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Drs Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;drs_name&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.TempModel.description">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.TempModel.description" title="Link to this definition">#</a></dt>
+<dd><p>The description of the term.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.TempModel.drs_name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">drs_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.TempModel.drs_name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.TempModel.id">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.TempModel.id" title="Link to this definition">#</a></dt>
+<dd><p>The identifier of the terms.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.TempModel.type">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.TempModel.type" title="Link to this definition">#</a></dt>
+<dd><p>The data descriptor to which the term belongs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.TempModel.accept">
+<span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><span class="pre">DataDescriptorVisitor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/data_descriptor.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.TempModel.accept" title="Link to this definition">#</a></dt>
+<dd><p>Accept an term visitor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>visitor</strong> (<a class="reference internal" href="#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor"><em>DataDescriptorVisitor</em></a>) – The term visitor.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Depending on the visitor.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.TempModel.describe">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">describe</span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.TempModel.describe" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -15095,6 +15191,15 @@ Uses ‘wrap’ mode to override default serialization behavior completely.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Table.accept"><code class="docutils literal notranslate"><span class="pre">Table.accept()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Table.normalize_variable_entry"><code class="docutils literal notranslate"><span class="pre">Table.normalize_variable_entry</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.Table.describe"><code class="docutils literal notranslate"><span class="pre">Table.describe</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel"><code class="docutils literal notranslate"><span class="pre">TempModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel.description"><code class="docutils literal notranslate"><span class="pre">TempModel.description</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel.drs_name"><code class="docutils literal notranslate"><span class="pre">TempModel.drs_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel.id"><code class="docutils literal notranslate"><span class="pre">TempModel.id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel.type"><code class="docutils literal notranslate"><span class="pre">TempModel.type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel.accept"><code class="docutils literal notranslate"><span class="pre">TempModel.accept()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TempModel.describe"><code class="docutils literal notranslate"><span class="pre">TempModel.describe</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.TemporalLabel"><code class="docutils literal notranslate"><span class="pre">TemporalLabel</span></code></a><ul class="nav section-nav flex-column">
