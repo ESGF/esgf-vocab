@@ -24,7 +24,7 @@ from esgvoc.api.data_descriptors.EMD_models.horizontal_computational_grid import
 from esgvoc.api.data_descriptors.EMD_models.horizontal_grid_cells import HorizontalGridCells
 from esgvoc.api.data_descriptors.EMD_models.horizontal_subgrid import HorizontalSubgrid
 from esgvoc.api.data_descriptors.EMD_models.horizontal_units import HorizontalUnits
-from esgvoc.api.data_descriptors.EMD_models.model import Model
+from esgvoc.api.data_descriptors.EMD_models.model import Model, TempModel
 from esgvoc.api.data_descriptors.EMD_models.model_component import EMDModelComponent
 from esgvoc.api.data_descriptors.EMD_models.reference import Reference
 from esgvoc.api.data_descriptors.EMD_models.temporal_refinement import TemporalRefinement
@@ -116,7 +116,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "coordinate": Coordinate,
     "grid_mapping": GridMapping,  # EMD v1.0
     "model_componentEMD": EMDModelComponent,  # EMD v1.0
-    "model": Model,  # EMD v1.0
+    "model": TempModel,  # EMD v1.0 (temporary simplified model)
     "reference": Reference,  # EMD v1.0
     # "resolution": EMDResolution,
     "grid_type": GridType,  # EMD v1.0

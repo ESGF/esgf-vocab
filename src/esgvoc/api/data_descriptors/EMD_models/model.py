@@ -19,6 +19,17 @@ from .model_component import EMDModelComponent
 from .reference import Reference
 
 
+class TempModel(PlainTermDataDescriptor):
+    """
+    Temporary simplified model descriptor.
+
+    Used as a short-term stand-in for Model when the available data
+    does not yet contain the full EMD v1.0 Section 2 fields.
+    """
+
+    pass
+
+
 class Model(PlainTermDataDescriptor):
     """
     Top-level model description (EMD v1.0 Section 2).
