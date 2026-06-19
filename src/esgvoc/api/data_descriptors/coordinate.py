@@ -59,14 +59,14 @@ class CoordinateCore(PlainTermDataDescriptor):
     Allowed values are "X", "Y", "Z" and "T".
     """
 
-    positive: str | None = None
+    positive_direction: str | None = None
     """
     Positive direction for vertical coordinates when applicable.
 
     Allowed values are "up" or "down".
     """
 
-    direction: str | None = None
+    stored_direction: str | None = None
     """
     Expected storage direction of coordinate values when applicable.
 
