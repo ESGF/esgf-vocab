@@ -9,7 +9,7 @@ from pydantic import Field
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
-class CoordinateCore(PlainTermDataDescriptor):
+class Coordinate(PlainTermDataDescriptor):
     """
     A coordinate variable and auxiliary variable describes how climate data are
     located in space, time, or along other physical or categorical axes.
