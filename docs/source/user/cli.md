@@ -81,6 +81,26 @@ esgvoc valid IPSL cmip6plus:institution_id:
 esgvoc valid IPSL cmip6plus:institution_id:ipsl
 ```
 
+### Describing models
+
+The `describe` command shows the pydantic model (schema) associated with a data descriptor or a project collection. This is useful for discovering available fields, their types, and reading the model's documentation.
+
+```bash
+# Describe a universe data descriptor
+esgvoc describe source
+
+# Explicit universe keyword (equivalent)
+esgvoc describe universe source
+
+# Describe a project collection (returns the concrete model variant)
+esgvoc describe cmip7 experiment
+
+# List all collection-to-model mappings for a project
+esgvoc describe cmip7
+```
+
+When a data descriptor has multiple variants (e.g. `source` has `SourceCMIP7` and `SourceLegacy`), `describe` lists all variants with their fields. When used with a project collection, it returns the specific variant used by that project.
+
 ## Features and limitations
 
 ### Filtering and querying

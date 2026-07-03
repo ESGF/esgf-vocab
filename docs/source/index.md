@@ -94,6 +94,7 @@ user/cli.md
 
 how_to/configuration.rst
 how_to/get.rst
+how_to/describe.rst
 how_to/valid.rst
 how_to/validate_drs.rst
 how_to/generate_drs.rst

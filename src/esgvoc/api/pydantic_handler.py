@@ -95,6 +95,32 @@ def get_pydantic_class(data_descriptor_id_or_term_type: str) -> type["DataDescri
         raise EsgvocDbError(f"'{data_descriptor_id_or_term_type}' pydantic class not found")
 
 
+def get_pydantic_class_by_name(class_name: str) -> type["DataDescriptor"] | None:
+    """
+    Get a Pydantic DataDescriptor class by its class name (e.g. "SourceCMIP7", "Frequency").
+
+    Walks all subclasses of DataDescriptor to find a match.
+
+    Args:
+        class_name: The Python class name of the model
+
+    Returns:
+        The corresponding class, or None if not found.
+    """
+    from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+
+    def _find(cls: type) -> type | None:
+        if cls.__name__ == class_name:
+            return cls
+        for sub in cls.__subclasses__():
+            found = _find(sub)
+            if found is not None:
+                return found
+        return None
+
+    return _find(DataDescriptor)
+
+
 def instantiate_pydantic_term(
     term: "UTerm | PTerm", selected_term_fields: Iterable[str] | None
 ) -> "DataDescriptor | DataDescriptorSubSet":
