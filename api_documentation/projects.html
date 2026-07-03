@@ -154,6 +154,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../how_to/configuration.html">Vocabulary Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/get.html">Get</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to/describe.html">Describe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/valid.html">Valid</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/validate_drs.html">Valid DRS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/generate_drs.html">Generate DRS</a></li>
@@ -381,6 +382,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_collection_from_data_descriptor_in_project"><code class="docutils literal notranslate"><span class="pre">get_collection_from_data_descriptor_in_project()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_collection_in_project"><code class="docutils literal notranslate"><span class="pre">get_collection_in_project()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_data_descriptor_from_collection_in_project"><code class="docutils literal notranslate"><span class="pre">get_data_descriptor_from_collection_in_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_model_from_collection"><code class="docutils literal notranslate"><span class="pre">get_model_from_collection()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_project"><code class="docutils literal notranslate"><span class="pre">get_project()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_term_from_universe_term_id_in_all_projects"><code class="docutils literal notranslate"><span class="pre">get_term_from_universe_term_id_in_all_projects()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_term_from_universe_term_id_in_project"><code class="docutils literal notranslate"><span class="pre">get_term_from_universe_term_id_in_project()</span></code></a></li>
@@ -885,6 +887,30 @@ or no corresponding datadescriptor to the given collection, the function return 
 :returns: name of the datadescriptor that is pointed by collection in the project
 Returns None if no matches are found.
 :rtype: str or None</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgvoc.api.projects.get_model_from_collection">
+<span class="sig-prename descclassname"><span class="pre">esgvoc.api.projects.</span></span><span class="sig-name descname"><span class="pre">get_model_from_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.DataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptor"><span class="pre">DataDescriptor</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/projects.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.projects.get_model_from_collection" title="Link to this definition">#</a></dt>
+<dd><p>Returns the concrete Pydantic model class for a given collection in a project.</p>
+<p>For data descriptors with multiple variants (e.g. Source has SourceCMIP7 and
+SourceLegacy), this returns the specific variant used by this project’s collection,
+not the union type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – A project id</p></li>
+<li><p><strong>collection_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – A collection id</p></li>
+<li><p><strong>version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Optional project version</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The concrete Pydantic model class, or None if not found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)">type</a>[<a class="reference internal" href="data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.DataDescriptor" title="esgvoc.api.data_descriptors.data_descriptor.DataDescriptor">DataDescriptor</a>] | None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -1758,6 +1784,7 @@ returns the terms that the value matches.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_collection_from_data_descriptor_in_project"><code class="docutils literal notranslate"><span class="pre">get_collection_from_data_descriptor_in_project()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_collection_in_project"><code class="docutils literal notranslate"><span class="pre">get_collection_in_project()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_data_descriptor_from_collection_in_project"><code class="docutils literal notranslate"><span class="pre">get_data_descriptor_from_collection_in_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_model_from_collection"><code class="docutils literal notranslate"><span class="pre">get_model_from_collection()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_project"><code class="docutils literal notranslate"><span class="pre">get_project()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_term_from_universe_term_id_in_all_projects"><code class="docutils literal notranslate"><span class="pre">get_term_from_universe_term_id_in_all_projects()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.projects.get_term_from_universe_term_id_in_project"><code class="docutils literal notranslate"><span class="pre">get_term_from_universe_term_id_in_project()</span></code></a></li>

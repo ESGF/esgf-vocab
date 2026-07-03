@@ -154,6 +154,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../how_to/configuration.html">Vocabulary Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/get.html">Get</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to/describe.html">Describe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/valid.html">Valid</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/validate_drs.html">Valid DRS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to/generate_drs.html">Generate DRS</a></li>
@@ -375,6 +376,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-commands">Basic commands</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-data">Querying data</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-data">Validating data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#describing-models">Describing models</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features-and-limitations">Features and limitations</a><ul class="visible nav section-nav flex-column">
@@ -497,6 +499,24 @@ esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> 
 esgvoc<span class="w"> </span>valid<span class="w"> </span>IPSL<span class="w"> </span>cmip6plus:institution_id:ipsl
 </pre></div>
 </div>
+</section>
+<section id="describing-models">
+<h3>Describing models<a class="headerlink" href="#describing-models" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">describe</span></code> command shows the pydantic model (schema) associated with a data descriptor or a project collection. This is useful for discovering available fields, their types, and reading the model’s documentation.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Describe a universe data descriptor</span>
+esgvoc<span class="w"> </span>describe<span class="w"> </span><span class="nb">source</span>
+
+<span class="c1"># Explicit universe keyword (equivalent)</span>
+esgvoc<span class="w"> </span>describe<span class="w"> </span>universe<span class="w"> </span><span class="nb">source</span>
+
+<span class="c1"># Describe a project collection (returns the concrete model variant)</span>
+esgvoc<span class="w"> </span>describe<span class="w"> </span>cmip7<span class="w"> </span>experiment
+
+<span class="c1"># List all collection-to-model mappings for a project</span>
+esgvoc<span class="w"> </span>describe<span class="w"> </span>cmip7
+</pre></div>
+</div>
+<p>When a data descriptor has multiple variants (e.g. <code class="docutils literal notranslate"><span class="pre">source</span></code> has <code class="docutils literal notranslate"><span class="pre">SourceCMIP7</span></code> and <code class="docutils literal notranslate"><span class="pre">SourceLegacy</span></code>), <code class="docutils literal notranslate"><span class="pre">describe</span></code> lists all variants with their fields. When used with a project collection, it returns the specific variant used by that project.</p>
 </section>
 </section>
 <section id="features-and-limitations">
@@ -670,6 +690,7 @@ esgvoc<span class="w"> </span>remove<span class="w"> </span>cmip7<span class="w"
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-commands">Basic commands</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-data">Querying data</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-data">Validating data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#describing-models">Describing models</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features-and-limitations">Features and limitations</a><ul class="visible nav section-nav flex-column">
