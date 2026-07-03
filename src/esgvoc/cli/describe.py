@@ -1,4 +1,5 @@
 import logging
+import types
 import typing
 from typing import List, Optional, get_args, get_origin
 
@@ -39,6 +40,62 @@ def _get_union_variants(cls) -> list[type[BaseModel]]:
     return variants
 
 
+def _is_nullable(annotation) -> bool:
+    """Check if a type annotation accepts None (e.g. str | None, Optional[str])."""
+    origin = get_origin(annotation)
+    if origin is types.UnionType or origin is typing.Union:
+        return type(None) in get_args(annotation)
+    # Handle ForwardRef like Union[str, 'Experiment', None]
+    if isinstance(annotation, typing.ForwardRef):
+        arg = annotation.__forward_arg__
+        if arg.startswith("Union[") and "None" in arg:
+            return True
+    return False
+
+
+def _format_type(annotation) -> str:
+    """Format a type annotation into a readable string."""
+    # Handle ForwardRef - extract the inner type string and clean it up
+    if isinstance(annotation, typing.ForwardRef):
+        arg = annotation.__forward_arg__
+        # Parse Union[X, Y, None] forward refs into "X | Y"
+        if arg.startswith("Union[") and arg.endswith("]"):
+            inner = arg[6:-1]
+            parts = [p.strip().strip("'\"") for p in inner.split(",")]
+            parts = [p for p in parts if p != "None"]
+            return " | ".join(parts)
+        return arg
+    origin = get_origin(annotation)
+    # Handle Annotated types (e.g. from create_union)
+    if origin is typing.Annotated:
+        inner_args = get_args(annotation)
+        if inner_args:
+            inner = inner_args[0]
+            inner_origin = get_origin(inner)
+            # Detect create_union pattern: Annotated[X | Y, Discriminator(...)]
+            if inner_origin is types.UnionType or inner_origin is typing.Union:
+                variants = _get_union_variants(annotation)
+                if variants:
+                    return " | ".join(v.__name__ for v in variants)
+            return _format_type(inner)
+        return str(annotation)
+    # Handle X | None (UnionType or typing.Union)
+    if origin is types.UnionType or origin is typing.Union:
+        args = [a for a in get_args(annotation) if a is not type(None)]
+        if len(args) == 1:
+            return _format_type(args[0])
+        return " | ".join(_format_type(a) for a in args)
+    # Handle generic types like list[str], dict[str, int]
+    if origin is not None:
+        args = get_args(annotation)
+        origin_name = getattr(origin, "__name__", str(origin))
+        if args:
+            args_str = ", ".join(_format_type(a) for a in args)
+            return f"{origin_name}[{args_str}]"
+        return origin_name
+    return getattr(annotation, "__name__", str(annotation))
+
+
 def _display_concrete_model(model_cls: type[BaseModel], name: str) -> None:
     """Display a concrete pydantic model's fields and docstring."""
     table = Table(title=f"{name} → {model_cls.__name__}")
@@ -46,9 +103,10 @@ def _display_concrete_model(model_cls: type[BaseModel], name: str) -> None:
     table.add_column("Type", style="green")
     table.add_column("Required", style="yellow")
     for field_name, field_info in model_cls.model_fields.items():
-        required = "yes" if field_info.is_required() else "no"
         annotation = field_info.annotation
-        type_str = getattr(annotation, "__name__", str(annotation))
+        nullable = _is_nullable(annotation)
+        required = "yes" if field_info.is_required() and not nullable else "no"
+        type_str = _format_type(annotation)
         table.add_row(field_name, type_str, required)
     console.print(table)
     if model_cls.__doc__:
