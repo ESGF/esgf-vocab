@@ -1,6 +1,7 @@
 import typer
 from esgvoc.admin.cli import app as admin_app
 from esgvoc.cli.clean import app as clean_app
+from esgvoc.cli.describe import app as describe_app
 from esgvoc.cli.drs import app as drs_app
 from esgvoc.cli.export_import import app as export_import_app
 from esgvoc.cli.find import app as find_app
@@ -30,6 +31,7 @@ app.add_typer(install_app)
 app.add_typer(drs_app)
 app.add_typer(offline_app, name="offline")
 app.add_typer(clean_app, name="clean")
+app.add_typer(describe_app)
 app.add_typer(find_app)
 app.add_typer(schema_app)
 app.add_typer(admin_app, name="admin")
