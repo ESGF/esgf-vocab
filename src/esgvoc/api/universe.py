@@ -441,3 +441,32 @@ def find_items_in_universe(
             session, processed_expression, dd_statement, term_statement, limit, offset
         )
         return result
+
+
+def get_model_from_data_descriptor(
+    data_descriptor_id: str,
+) -> type[DataDescriptor] | None:
+    """
+    Returns the Pydantic model class associated with the given data descriptor in the universe.
+
+    For data descriptors that have a single model (e.g. ``frequency``), returns that class directly
+    (e.g. :class:`Frequency`).
+    For data descriptors backed by a union (e.g. ``source``), returns the union type
+    (e.g. ``Source = create_union(SourceCMIP7, SourceLegacy)``).
+
+    Use :func:`get_model_from_collection` in :mod:`esgvoc.api.projects` to obtain the
+    concrete variant used by a specific project collection.
+
+    :param data_descriptor_id: The id of the data descriptor (e.g. ``"source"``, ``"frequency"``).
+    :type data_descriptor_id: str
+    :returns: The Pydantic model class (or union type), or ``None`` if the data descriptor id
+        is not found in the mapping.
+    :rtype: type[DataDescriptor] | None
+    """
+    from esgvoc.api.pydantic_handler import get_pydantic_class
+    from esgvoc.core.exceptions import EsgvocDbError
+
+    try:
+        return get_pydantic_class(data_descriptor_id)
+    except EsgvocDbError:
+        return None

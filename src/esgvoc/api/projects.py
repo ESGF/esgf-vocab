@@ -1055,6 +1055,51 @@ def get_data_descriptor_from_collection_in_project(project_id: str, collection_i
     return result
 
 
+def get_model_from_collection(
+    project_id: str, collection_id: str, version: str | None = None
+) -> type[DataDescriptor] | None:
+    """
+    Returns the concrete Pydantic model class for a given collection in a project.
+
+    For data descriptors with multiple variants (e.g. Source has SourceCMIP7 and
+    SourceLegacy), this returns the specific variant used by this project's collection,
+    not the union type.
+
+    :param project_id: A project id
+    :type project_id: str
+    :param collection_id: A collection id
+    :type collection_id: str
+    :param version: Optional project version
+    :type version: str | None
+    :returns: The concrete Pydantic model class, or None if not found.
+    :rtype: type[DataDescriptor] | None
+    """
+    from pydantic import TypeAdapter
+
+    from esgvoc.api.pydantic_handler import get_pydantic_class
+
+    if connection := _get_project_connection(project_id, version):
+        with connection.create_session() as session:
+            collection = _get_collection_in_project(collection_id, session)
+            if collection is None:
+                return None
+            # Get the pydantic class (possibly a union) from the data descriptor id
+            try:
+                pydantic_cls = get_pydantic_class(collection.data_descriptor_id)
+            except Exception:
+                return None
+            # Grab the first term to resolve the concrete variant
+            first_term = session.exec(
+                select(PTerm).where(PTerm.collection_pk == collection.pk)
+            ).first()
+            if first_term is None:
+                return None
+            adapter = TypeAdapter(pydantic_cls)
+            instance = adapter.validate_python(first_term.specs)
+            return type(instance)
+    return None
+
+
 def _get_term_from_universe_term_id_in_project(
     data_descriptor_id: str, universe_term_id: str, project_session: Session
 ) -> PTerm | None:
