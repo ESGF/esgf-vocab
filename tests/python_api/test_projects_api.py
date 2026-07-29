@@ -778,3 +778,62 @@ class TestGetTermsByKeyValue:
                 assert len(result) >= 1
                 return
         pytest.skip("No term with drs_name found in cmip7")
+
+
+class TestValidationWithoutUniverse:
+    """Verify that project validation works without the universe DB installed."""
+
+    @pytest.fixture(autouse=True)
+    def hide_universe(self, installed_dbs):
+        """Temporarily make the universe DB unreachable."""
+        from esgvoc.core.service.user_state import UserState
+
+        state = UserState.load()
+        original = state.get_active("universe")
+        state.remove_active("universe")
+        try:
+            yield
+        finally:
+            if original:
+                state.set_active("universe", original, source="registry")
+
+    def test_plain_term_validation(self, installed_dbs):
+        import esgvoc.api.projects as projects
+
+        result = projects.valid_term_in_collection("mon", "cmip7", "frequency")
+        assert len(result) == 1
+        assert result[0].term_id == "mon"
+
+    def test_pattern_term_validation(self, installed_dbs):
+        import esgvoc.api.projects as projects
+
+        result = projects.valid_term_in_collection("r1i1p1f1", "cmip7", "variant_label")
+        assert len(result) >= 1
+
+    def test_valid_term_in_project(self, installed_dbs):
+        import esgvoc.api.projects as projects
+
+        result = projects.valid_term_in_project("mon", "cmip7")
+        assert isinstance(result, list)
+        assert any(m.collection_id == "frequency" for m in result)
+
+    def test_valid_term_returns_report(self, installed_dbs):
+        import esgvoc.api.projects as projects
+        from esgvoc.api.report import ValidationReport
+
+        report = projects.valid_term("mon", "cmip7", "frequency", "mon")
+        assert isinstance(report, ValidationReport)
+        assert report.nb_errors == 0
+
+    def test_invalid_value(self, installed_dbs):
+        import esgvoc.api.projects as projects
+
+        result = projects.valid_term_in_collection("NONEXISTENT_VALUE_XYZ", "cmip7", "frequency")
+        assert result == []
+
+    def test_valid_term_in_all_projects(self, installed_dbs):
+        import esgvoc.api.projects as projects
+
+        result = projects.valid_term_in_all_projects("mon")
+        assert isinstance(result, list)
+        assert len(result) >= 1
