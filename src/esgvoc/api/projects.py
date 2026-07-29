@@ -6,7 +6,6 @@ from typing import Iterable, Sequence, cast
 from sqlalchemy import text
 from sqlmodel import Session, and_, col, select
 
-import esgvoc.api.universe as universe
 import esgvoc.core.constants as constants
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
 from esgvoc.api.project_specs import ProjectSpecs
@@ -18,7 +17,6 @@ from esgvoc.api.search import (
     execute_find_item_statements,
     execute_match_statement,
     generate_matching_condition,
-    get_universe_session,
     handle_rank_limit_offset,
     instantiate_pydantic_terms,
     process_expression,
@@ -75,36 +73,25 @@ def _get_project_session_with_exception(project_id: str, version: str | None = N
 
 
 def _resolve_composite_term_part(
-    composite_term_part: dict, universe_session: Session, project_session: Session
-) -> UTerm | PTerm | Sequence[UTerm | PTerm]:
+    composite_term_part: dict, project_session: Session
+) -> PTerm | Sequence[PTerm]:
+    """Resolve a composite term part using only the project's own collections."""
+    term_type = composite_term_part[constants.TERM_TYPE_JSON_KEY]
     if constants.TERM_ID_JSON_KEY in composite_term_part:
-        # First find the term in the universe than in the current project
         term_id = composite_term_part[constants.TERM_ID_JSON_KEY]
-        term_type = composite_term_part[constants.TERM_TYPE_JSON_KEY]
-        uterm = universe._get_term_in_data_descriptor(
-            data_descriptor_id=term_type, term_id=term_id, session=universe_session
-        )
-        if uterm:
-            return uterm
-        else:
-            pterm = _get_term_in_collection(collection_id=term_type, term_id=term_id, session=project_session)
+        pterm = _get_term_in_collection(collection_id=term_type, term_id=term_id, session=project_session)
         if pterm:
             return pterm
         else:
             msg = f"unable to find the term '{term_id}' in '{term_type}'"
             raise EsgvocNotFoundError(msg)
     else:
-        term_type = composite_term_part[constants.TERM_TYPE_JSON_KEY]
-        data_descriptor = universe._get_data_descriptor_in_universe(term_type, universe_session)
-        if data_descriptor is not None:
-            return data_descriptor.terms
+        collection = _get_collection_in_project(term_type, project_session)
+        if collection is not None:
+            return collection.terms
         else:
-            collection = _get_collection_in_project(term_type, project_session)
-            if collection is not None:
-                return collection.terms
-            else:
-                msg = f"unable to find the terms of '{term_type}'"
-                raise EsgvocNotFoundError(msg)
+            msg = f"unable to find the terms of '{term_type}'"
+            raise EsgvocNotFoundError(msg)
 
 
 def _get_composite_term_separator_parts(term: UTerm | PTerm) -> tuple[str, list]:
@@ -114,7 +101,7 @@ def _get_composite_term_separator_parts(term: UTerm | PTerm) -> tuple[str, list]
 
 
 def _valid_value_composite_term_with_separator(
-    value: str, term: UTerm | PTerm, universe_session: Session, project_session: Session
+    value: str, term: UTerm | PTerm, project_session: Session
 ) -> list[UniverseTermError | ProjectTermError]:
     separator, parts = _get_composite_term_separator_parts(term)
     required_indices = {i for i, p in enumerate(parts) if p.get(constants.COMPOSITE_REQUIRED_KEY, False)}
@@ -164,8 +151,11 @@ def _valid_value_composite_term_with_separator(
 
             # Resolve term ID list if not present
             if "id" not in part:
-                terms = universe.get_all_terms_in_data_descriptor(part["type"], None)
-                part["id"] = [term.id for term in terms]
+                collection = _get_collection_in_project(part["type"], project_session)
+                if collection is not None and collection.terms:
+                    part["id"] = [term.id for term in collection.terms]
+                else:
+                    part["id"] = []
             if isinstance(part["id"], str):
                 part["id"] = [part["id"]]
 
@@ -174,10 +164,10 @@ def _valid_value_composite_term_with_separator(
             for id in part["id"]:
                 part_copy = dict(part)
                 part_copy["id"] = id
-                resolved_term = _resolve_composite_term_part(part_copy, universe_session, project_session)
+                resolved_term = _resolve_composite_term_part(part_copy, project_session)
                 # resolved_term can't be a list of terms here.
                 resolved_term = cast(UTerm | PTerm, resolved_term)
-                errors = _valid_value(given_value, resolved_term, universe_session, project_session)
+                errors = _valid_value(given_value, resolved_term, project_session)
                 if not errors:
                     valid_for_this_part = True
                     break
@@ -191,7 +181,7 @@ def _valid_value_composite_term_with_separator(
     return [_create_term_error(value, term)]  # No valid combination found
 
 
-def _transform_to_pattern(term: UTerm | PTerm, universe_session: Session, project_session: Session) -> str:
+def _transform_to_pattern(term: UTerm | PTerm, project_session: Session) -> str:
     match term.kind:
         case TermKind.PLAIN:
             if constants.DRS_SPECS_JSON_KEY in term.specs:
@@ -204,13 +194,13 @@ def _transform_to_pattern(term: UTerm | PTerm, universe_session: Session, projec
             separator, parts = _get_composite_term_separator_parts(term)
             result = ""
             for part in parts:
-                resolved_term = _resolve_composite_term_part(part, universe_session, project_session)
+                resolved_term = _resolve_composite_term_part(part, project_session)
                 if isinstance(resolved_term, Sequence):
                     pattern = ""
                     for r_term in resolved_term:
-                        pattern += _transform_to_pattern(r_term, universe_session, project_session)
+                        pattern += _transform_to_pattern(r_term, project_session)
                 else:
-                    pattern = _transform_to_pattern(resolved_term, universe_session, project_session)
+                    pattern = _transform_to_pattern(resolved_term, project_session)
                 result = f"{result}{pattern}{separator}"
             result = result.rstrip(separator)
         case _:
@@ -221,11 +211,11 @@ def _transform_to_pattern(term: UTerm | PTerm, universe_session: Session, projec
 # TODO: support optionality of parts of composite.
 # It is backtrack possible for more than one missing parts.
 def _valid_value_composite_term_separator_less(
-    value: str, term: UTerm | PTerm, universe_session: Session, project_session: Session
+    value: str, term: UTerm | PTerm, project_session: Session
 ) -> list[UniverseTermError | ProjectTermError]:
     result = list()
     try:
-        pattern = _transform_to_pattern(term, universe_session, project_session)
+        pattern = _transform_to_pattern(term, project_session)
         try:
             # Patterns terms are meant to be validated individually.
             # So their regex are defined as a whole (begins by a ^, ends by a $).
@@ -247,14 +237,14 @@ def _valid_value_composite_term_separator_less(
 
 
 def _valid_value_for_composite_term(
-    value: str, term: UTerm | PTerm, universe_session: Session, project_session: Session
+    value: str, term: UTerm | PTerm, project_session: Session
 ) -> list[UniverseTermError | ProjectTermError]:
     result = list()
     separator, _ = _get_composite_term_separator_parts(term)
     if separator:
-        result = _valid_value_composite_term_with_separator(value, term, universe_session, project_session)
+        result = _valid_value_composite_term_with_separator(value, term, project_session)
     else:
-        result = _valid_value_composite_term_separator_less(value, term, universe_session, project_session)
+        result = _valid_value_composite_term_separator_less(value, term, project_session)
     return result
 
 
@@ -268,7 +258,7 @@ def _create_term_error(value: str, term: UTerm | PTerm) -> UniverseTermError | P
 
 
 def _valid_value(
-    value: str, term: UTerm | PTerm, universe_session: Session, project_session: Session
+    value: str, term: UTerm | PTerm, project_session: Session
 ) -> list[UniverseTermError | ProjectTermError]:
     result = list()
     match term.kind:
@@ -284,7 +274,7 @@ def _valid_value(
             if pattern_match is None:
                 result.append(_create_term_error(value, term))
         case TermKind.COMPOSITE:
-            result.extend(_valid_value_for_composite_term(value, term, universe_session, project_session))
+            result.extend(_valid_value_for_composite_term(value, term, project_session))
         case _:
             raise EsgvocDbError(f"unsupported term kind '{term.kind}'")
     return result
@@ -305,12 +295,12 @@ def _search_plain_term_and_valid_value(value: str, collection_id: str, project_s
 
 
 def _valid_value_against_all_terms_of_collection(
-    value: str, collection: PCollection, universe_session: Session, project_session: Session
+    value: str, collection: PCollection, project_session: Session
 ) -> list[str]:
     if collection.terms:
         result = list()
         for pterm in collection.terms:
-            _errors = _valid_value(value, pterm, universe_session, project_session)
+            _errors = _valid_value(value, pterm, project_session)
             if not _errors:
                 result.append(pterm.id)
         return result
@@ -319,7 +309,7 @@ def _valid_value_against_all_terms_of_collection(
 
 
 def _valid_value_against_given_term(
-    value: str, project_id: str, collection_id: str, term_id: str, universe_session: Session, project_session: Session
+    value: str, project_id: str, collection_id: str, term_id: str, project_session: Session
 ) -> list[UniverseTermError | ProjectTermError]:
     # [OPTIMIZATION]
     key = value + project_id + collection_id + term_id
@@ -328,7 +318,7 @@ def _valid_value_against_given_term(
     else:
         term = _get_term_in_collection(collection_id, term_id, project_session)
         if term:
-            result = _valid_value(value, term, universe_session, project_session)
+            result = _valid_value(value, term, project_session)
         else:
             raise EsgvocNotFoundError(f"unable to find term '{term_id}' " + f"in collection '{collection_id}'")
         _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE[key] = result
@@ -366,15 +356,15 @@ def valid_term(value: str, project_id: str, collection_id: str, term_id: str, ve
     :raises EsgvocNotFoundError: If any of the provided ids is not found
     """
     value = _check_value(value)
-    with get_universe_session() as universe_session, _get_project_session_with_exception(project_id, version) as project_session:
+    with _get_project_session_with_exception(project_id, version) as project_session:
         errors = _valid_value_against_given_term(
-            value, project_id, collection_id, term_id, universe_session, project_session
+            value, project_id, collection_id, term_id, project_session
         )
         return ValidationReport(expression=value, errors=errors)
 
 
 def _valid_term_in_collection(
-    value: str, project_id: str, collection_id: str, universe_session: Session, project_session: Session
+    value: str, project_id: str, collection_id: str, project_session: Session
 ) -> list[MatchingTerm]:
     # [OPTIMIZATION]
     key = value + project_id + collection_id
@@ -394,7 +384,7 @@ def _valid_term_in_collection(
                         )
                 case _:
                     term_ids_found = _valid_value_against_all_terms_of_collection(
-                        value, collection, universe_session, project_session
+                        value, collection, project_session
                     )
                     for term_id_found in term_ids_found:
                         result.append(
@@ -435,17 +425,17 @@ def valid_term_in_collection(value: str, project_id: str, collection_id: str, ve
     :rtype: list[MatchingTerm]
     :raises EsgvocNotFoundError: If any of the provided ids is not found
     """
-    with get_universe_session() as universe_session, _get_project_session_with_exception(project_id, version) as project_session:
-        return _valid_term_in_collection(value, project_id, collection_id, universe_session, project_session)
+    with _get_project_session_with_exception(project_id, version) as project_session:
+        return _valid_term_in_collection(value, project_id, collection_id, project_session)
 
 
 def _valid_term_in_project(
-    value: str, project_id: str, universe_session: Session, project_session: Session
+    value: str, project_id: str, project_session: Session
 ) -> list[MatchingTerm]:
     result = list()
     collections = _get_all_collections_in_project(project_session)
     for collection in collections:
-        result.extend(_valid_term_in_collection(value, project_id, collection.id, universe_session, project_session))
+        result.extend(_valid_term_in_collection(value, project_id, collection.id, project_session))
     return result
 
 
@@ -474,8 +464,8 @@ def valid_term_in_project(value: str, project_id: str, version: str | None = Non
     :rtype: list[MatchingTerm]
     :raises EsgvocNotFoundError: If the `project_id` is not found
     """
-    with get_universe_session() as universe_session, _get_project_session_with_exception(project_id, version) as project_session:
-        return _valid_term_in_project(value, project_id, universe_session, project_session)
+    with _get_project_session_with_exception(project_id, version) as project_session:
+        return _valid_term_in_project(value, project_id, project_session)
 
 
 def valid_term_in_all_projects(value: str) -> list[MatchingTerm]:
@@ -499,10 +489,9 @@ def valid_term_in_all_projects(value: str) -> list[MatchingTerm]:
     :rtype: list[MatchingTerm]
     """
     result = list()
-    with get_universe_session() as universe_session:
-        for project_id in get_all_projects():
-            with _get_project_session_with_exception(project_id) as project_session:
-                result.extend(_valid_term_in_project(value, project_id, universe_session, project_session))
+    for project_id in get_all_projects():
+        with _get_project_session_with_exception(project_id) as project_session:
+            result.extend(_valid_term_in_project(value, project_id, project_session))
     return result
 
 
