@@ -7,7 +7,7 @@ from typing import Sequence
 from jinja2 import Environment, FileSystemLoader
 from sqlmodel import Session
 
-from esgvoc.api import projects, search
+from esgvoc.api import projects
 from esgvoc.api.project_specs import CatalogProperty, LinkProperty
 from esgvoc.core.constants import COMPOSITE_REQUIRED_KEY, DRS_SPECS_JSON_KEY, PATTERN_JSON_KEY
 from esgvoc.core.service.user_state import UserState
@@ -85,13 +85,13 @@ def _process_plain_term(term: PTerm, source_collection_key: str) -> tuple[str, s
 
 
 def _process_col_composite_terms(
-    collection: PCollection, universe_session: Session, project_session: Session
+    collection: PCollection, project_session: Session
 ) -> tuple[str, list[str | dict], bool]:
     result: list[str | dict] = list()
     property_key = ""
     has_pattern = False
     for term in collection.terms:
-        property_key, property_value, _has_pattern = _process_composite_term(term, universe_session, project_session)
+        property_key, property_value, _has_pattern = _process_composite_term(term, project_session)
         if isinstance(property_value, list):
             result.extend(property_value)
         else:
@@ -101,7 +101,7 @@ def _process_col_composite_terms(
 
 
 def _inner_process_composite_term(
-    resolved_term: UTerm | PTerm, universe_session: Session, project_session: Session
+    resolved_term: UTerm | PTerm, project_session: Session
 ) -> tuple[str | list, bool]:
     is_pattern = False
     match resolved_term.kind:
@@ -111,7 +111,7 @@ def _inner_process_composite_term(
             result = resolved_term.specs[PATTERN_JSON_KEY].replace("^", "").replace("$", "")
             is_pattern = True
         case TermKind.COMPOSITE:
-            _, result, is_pattern = _process_composite_term(resolved_term, universe_session, project_session)
+            _, result, is_pattern = _process_composite_term(resolved_term, project_session)
         case _:
             msg = f"unsupported term kind '{resolved_term.kind}'"
             raise EsgvocNotImplementedError(msg)
@@ -119,9 +119,9 @@ def _inner_process_composite_term(
 
 
 def _accumulate_resolved_part(
-    resolved_part: list, resolved_term: UTerm | PTerm, universe_session: Session, project_session: Session
+    resolved_part: list, resolved_term: UTerm | PTerm, project_session: Session
 ) -> bool:
-    tmp, has_pattern = _inner_process_composite_term(resolved_term, universe_session, project_session)
+    tmp, has_pattern = _inner_process_composite_term(resolved_term, project_session)
     if isinstance(tmp, list):
         resolved_part.extend(tmp)
     else:
@@ -145,20 +145,20 @@ def _generate_combinations(items_parts: list[list], required_parts: list[bool]) 
 
 
 def _process_composite_term(
-    term: UTerm | PTerm, universe_session: Session, project_session: Session
+    term: UTerm | PTerm, project_session: Session
 ) -> tuple[str, list[str | dict], bool]:
     items_parts: list[list[str]] = list()
     required_parts: list[bool] = list()
     separator, parts = projects._get_composite_term_separator_parts(term)
     has_pattern = False
     for part in parts:
-        resolved_term = projects._resolve_composite_term_part(part, universe_session, project_session)
+        resolved_term = projects._resolve_composite_term_part(part, project_session)
         resolved_part = list()
         if isinstance(resolved_term, Sequence):
             for r_term in resolved_term:
-                has_pattern |= _accumulate_resolved_part(resolved_part, r_term, universe_session, project_session)
+                has_pattern |= _accumulate_resolved_part(resolved_part, r_term, project_session)
         else:
-            has_pattern = _accumulate_resolved_part(resolved_part, resolved_term, universe_session, project_session)
+            has_pattern = _accumulate_resolved_part(resolved_part, resolved_term, project_session)
         items_parts.append(resolved_part)
         required_parts.append(part[COMPOSITE_REQUIRED_KEY])
     property_values: list[str | dict] = list()
@@ -199,7 +199,6 @@ class CatalogPropertiesJsonTranslator:
     def __init__(self, project_id: str) -> None:
         self.project_id = project_id
         # Project session can't be None here.
-        self.universe_session: Session = search.get_universe_session()
         self.project_session: Session = projects._get_project_session_with_exception(project_id)
         self.collections: dict[str, PCollection] = dict()
         for collection in projects._get_all_collections_in_project(self.project_session):
@@ -207,7 +206,6 @@ class CatalogPropertiesJsonTranslator:
 
     def __exit__(self, exception_type, exception_value, exception_traceback):
         self.project_session.close()
-        self.universe_session.close()
         if exception_type is not None:
             raise exception_value
         return True
@@ -240,7 +238,6 @@ class CatalogPropertiesJsonTranslator:
                     case TermKind.COMPOSITE:
                         property_key, property_value, _ = _process_col_composite_terms(
                             collection=collection,
-                            universe_session=self.universe_session,
                             project_session=self.project_session,
                         )
                     case TermKind.PATTERN:
@@ -267,7 +264,6 @@ class CatalogPropertiesJsonTranslator:
                     case TermKind.COMPOSITE:
                         property_key, property_value, _ = _process_composite_term(
                             term=pterm_found,
-                            universe_session=self.universe_session,
                             project_session=self.project_session,
                         )
                     case TermKind.PATTERN:
