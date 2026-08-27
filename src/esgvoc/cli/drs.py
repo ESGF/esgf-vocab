@@ -79,7 +79,7 @@ def drsvalid(
 
     entries = drs_entries or []
 
-    if not sys.stdin.isatty():  # Check if input is being piped via stdin
+    if sys.stdin is not None and not sys.stdin.isatty():  # Check if input is being piped via stdin
         entries.extend(el for line in sys.stdin for el in shlex.split(line))
 
     if file:
@@ -193,7 +193,7 @@ def drsgen(
 
     entries = drs_entries or []
 
-    if not sys.stdin.isatty():  # Check if input is being piped via stdin
+    if sys.stdin is not None and not sys.stdin.isatty():  # Check if input is being piped via stdin
         entries.extend(el for line in sys.stdin for el in shlex.split(line))
 
     if file:
