@@ -29,9 +29,11 @@ class Variable(PlainTermDataDescriptor):
     leading to the idea of a 'branded variable'.
     For details, see :py:class:`BrandedVariable`.
 
-    Sometimes 'variable' is also referred to as 'root name' or 'out name'.
-    There is mostly a one to one mapping between CF standard names and variables.
-    However, this is not always possible so please don't assume this is always the case.
+    Depending on the project, a variable term can represent a branded-variable
+    root, a historical output name, or a named physical parameter. These names
+    often coincide, but distinct terms are retained when a project distinguishes
+    them. There is also mostly a one-to-one mapping between CF standard names and
+    variables, but consumers must not assume either correspondence is universal.
     """
 
     long_name: str | None

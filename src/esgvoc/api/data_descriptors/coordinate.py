@@ -1,135 +1,149 @@
 """
-Model (i.e. schema/definition) of the variable data descriptor
+Model of the CV coordinate data descriptor.
 """
 
-from typing import Union
+from typing import Literal
 
-from pydantic import Field
+from pydantic import model_validator
 
+from esgvoc.api.data_descriptors._validators import NonEmptyString, validate_coordinate_data_type
+from esgvoc.api.data_descriptors.coordinate_type import CoordinateType
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 
 
-class Coordinate(PlainTermDataDescriptor):
+class DataCoordinate(PlainTermDataDescriptor):
     """
-    A coordinate variable and auxiliary variable describes how climate data are
-    located in space, time, or along other physical or categorical axes.
+    A coordinate or dimension definition for climate data files.
 
-    Examples: "latitude", "longitude", "time", "plev", "height2m", "basin"
+    Coordinates describe how spatial, temporal, and other axes are represented
+    in a data file. Each coordinate is a standalone vocabulary term identified
+    by its ``id``; consumers can use ``coordinate_type`` and other attributes
+    to determine which validation or generation rules apply.
 
-    Coordinates define the reference system used to interpret the values of
-    climate variables. They provide information about where and when data are
-    valid, and how values are organised along physical, temporal, vertical,
-    spectral, or categorical dimensions.
+    Branded variables reference coordinates by ID in their ``dimensions`` field.
 
-    Unlike variables, coordinates do not represent measured quantities themselves;
-    they describe the domain over which variables are defined. There is generally
-    a close relationship between CF standard names and coordinates, but multiple
-    coordinates may exist for a similar physical concept (e.g. model levels,
-    pressure levels, scalar heights, projected axes), so this mapping should not
-    be assumed to be one-to-one.
-
+    Examples: "latitude", "longitude", "time", "plev19", "height2m", "basin"
     """
 
-    data_type: str
+    coordinate_type: CoordinateType | NonEmptyString
     """
-    Data type expected for the coordinate.
+    Structural classification of this coordinate.
 
+    References a :class:`CoordinateType` term by ID when it has not been
+    resolved.
     """
 
-    cf_standard_name: str | None = None
+    axis: Literal["T", "X", "Y", "Z"] | None = None
+    """
+    CF coordinate axis identifier, when applicable.
+    """
+
+    data_type: Literal["character", "double", "integer", "real"]
+    """
+    Data type expected for the coordinate variable.
+    """
+
+    long_name: NonEmptyString | None = None
+    """
+    Human-readable name / title of the coordinate.
+    """
+
+    cf_standard_name: NonEmptyString | None = None
     """
     CF standard name associated with the coordinate.
-
     """
 
-    long_name: str | None = None
+    out_name: NonEmptyString
     """
-    Human-readable long name of the coordinate.
-    """
-
-    description: str | None = None
-    """
-    Free-text description of the coordinate.
+    Variable or dimension name written to the data file.
     """
 
-    axis: str | None = Field(default=None, pattern=r"^[XYZT]$")
+    units: NonEmptyString | None = None
     """
-    Coordinate axis when applicable.
-
-    Allowed values are "X", "Y", "Z" and "T".
+    Units of the coordiante.
     """
 
-    positive_direction: str | None = None
+    positive: Literal["up", "down"] | None = None
     """
-    Positive direction for vertical coordinates when applicable.
-
-    Allowed values are "up" or "down".
+    Direction of increasing coordinate values, when applicable.
     """
 
-    stored_direction: str | None = None
+    stored_direction: Literal["increasing", "decreasing"] | None = None
     """
-    Expected storage direction of coordinate values when applicable.
-
-    Allowed values are "increasing" or "decreasing".
+    Expected storage order of coordinate values, when applicable.
     """
 
-    units: str | None = None
+    coordinate_values: list[float | int | NonEmptyString] | NonEmptyString | None = None
     """
-    Units of the coordinate.
-
-    """
-
-    has_bounds: bool | None = None
-    """
-    Whether coordinate bounds are expected.
+    Expected coordinate values, or ``None`` when values are model-dependent.
     """
 
-    value: Union[int, float, str] | None = None
+    coordinate_bounds: list[float | int] | None = None
     """
-    Scalar coordinate value.
-
-    """
-
-    lower_bound: Union[float, int] | None = None
-    """
-    Lower scalar bound when the coordinate defines a single bounded value.
+    Expected coordinate bounds, or ``None`` when not applicable or when bounds are model-dependent.
     """
 
-    upper_bound: Union[float, int] | None = None
+    bounds_required: bool | None = None
     """
-    Upper scalar bound when the coordinate defines a single bounded value.
-    """
-
-    values: list[Union[int, float, str]] | None = None
-    """
-    Requested coordinate values.
-
-    This comes from the DReq `requested_values` column.
+    Whether an associated bounds variable is required.
     """
 
-    bounds: list[Union[float, int]] | None = None
+    tolerance: float | None = None
     """
-    Requested coordinate bounds.
+    Relative tolerance used when matching requested coordinates against values
+    and bounds stored in a data file.
 
-    This comes from the DReq `requested_bounds` column.
+    Tolerance applies only to one-dimensional numerical coordinates for which
+    multiple values or multiple bound intervals have been requested. It does
+    not apply to scalar coordinates: when a single value or a single pair of
+    bounds is requested, only ``valid_min`` and ``valid_max`` constrain it.
+
+    Using zero-based Python/C ordering, ``coordinate_values`` is a flat vector
+    of shape ``(m,)``. For requested value ``coordinate_values[i]``, the
+    permitted absolute difference from the corresponding stored value is the
+    smaller of 0.1 percent times ``tolerance`` times its absolute value and
+    ``tolerance`` times the adjacent requested-value spacing. The following
+    value supplies the spacing for ``i == 0``; the preceding value supplies it
+    for subsequent indices.
+
+    ``coordinate_bounds`` is a flat edge vector of shape ``(m + 1,)`` in
+    Python/C order, defining interval ``i`` as
+    ``[coordinate_bounds[i], coordinate_bounds[i + 1]]``. Each requested bound
+    is matched using the smaller of ``tolerance`` times the interval width and
+    0.1 percent times ``tolerance`` times the bound's absolute value.
+
+    For example, a tolerance of ``1`` permits deviations of no more than 0.1 percent.
     """
 
-    valid_min: Union[float, int] | None = None
+    valid_min: float | None = None
     """
-    Minimum valid value, when defined.
-    """
-
-    valid_max: Union[float, int] | None = None
-    """
-    Maximum valid value, when defined.
+    Minimum valid coordinate value, when defined.
     """
 
-    size: int | None = None
+    valid_max: float | None = None
     """
-    Declared coordinate size, when defined.
+    Maximum valid coordinate value, when defined.
     """
 
     is_climatology: bool | None = None
     """
-    Whether the coordinate represents climatological time.
+    Only applicable for time coordinates (axis == "T"). Whether this time coordinate uses a
+    climatology attribute instead of bounds.
     """
+
+    is_generic_model_level_coordinate: bool | None = None
+    """
+    Only applicable for vertical coordinates (axis == "Z"). Whether this is a generic,
+    model-dependent vertical level coordinate.
+    """
+
+    @model_validator(mode="after")
+    def validate_climatology_axis(self):
+        """
+        Validate relationships between coordinate fields.
+        """
+        if self.is_climatology and self.axis != "T":
+            raise ValueError("is_climatology can only be True when axis is 'T'")
+        if self.is_generic_model_level_coordinate and self.axis != "Z":
+            raise ValueError("is_generic_model_level_coordinate can only be True when axis is 'Z'")
+        return validate_coordinate_data_type(self)

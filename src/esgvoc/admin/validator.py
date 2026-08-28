@@ -72,9 +72,7 @@ class DBValidator:
 
         # 3. Metadata table present
         try:
-            rows = conn.execute(
-                "SELECT key, value FROM _esgvoc_metadata"
-            ).fetchall()
+            rows = conn.execute("SELECT key, value FROM _esgvoc_metadata").fetchall()
             metadata = dict(rows)
             result.add("_esgvoc_metadata table", True, f"{len(metadata)} entries")
         except Exception as e:
@@ -160,6 +158,7 @@ class DBValidator:
 
         # JSON files
         import json
+
         json_files = list(project_path.rglob("*.json"))
         errors = []
         for jf in json_files:
@@ -183,13 +182,10 @@ class DBValidator:
     @staticmethod
     def _check_fts(conn: sqlite3.Connection, result: ValidationResult, *, is_universe: bool = False) -> None:
         """Verify that the FTS5 full-text-search index is functional."""
-        fts_tables = (
-            ("uterms_fts5", "udata_descriptors_fts5") if is_universe
-            else ("pterms_fts5", "pcollections_fts5")
-        )
+        fts_tables = ("uterms_fts5", "udata_descriptors_fts5") if is_universe else ("pterms_fts5", "pcollections_fts5")
         for table in fts_tables:
             try:
-                count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+                count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0] # noqa
                 result.add(f"FTS index {table}", count > 0, f"{count} rows")
             except Exception as e:
                 result.add(f"FTS index {table}", False, str(e))
@@ -220,16 +216,20 @@ class DBValidator:
                 try:
                     terms = ev.get_all_terms_in_universe()
                     result.add("API term instantiation", True, f"{len(terms)} universe terms OK")
+                    DBValidator._check_resolved_references(terms, result)
+                    DBValidator._check_resolved_model_relationships(terms, result)
                 except Exception as exc:
                     result.add("API term instantiation", False, str(exc))
             else:
                 collections = ev.get_all_collections_in_project(project_id)
                 total = 0
+                all_terms = []
                 failed_collections: list[str] = []
                 for coll_name in collections:
                     try:
                         terms = ev.get_all_terms_in_collection(project_id, coll_name)
                         total += len(terms)
+                        all_terms.extend(terms)
                     except Exception as exc:
                         failed_collections.append(f"{coll_name}: {exc}")
 
@@ -237,7 +237,12 @@ class DBValidator:
                     msg = f"{len(failed_collections)} collection(s) failed: " + "; ".join(failed_collections[:3])
                     result.add("API term instantiation", False, msg)
                 else:
-                    result.add("API term instantiation", True, f"{total} terms across {len(collections)} collections OK")
+                    result.add(
+                        "API term instantiation", True, f"{total} terms across {len(collections)} collections OK"
+                    )
+                DBValidator._check_resolved_references(all_terms, result)
+                DBValidator._check_resolved_model_relationships(all_terms, result)
+                DBValidator._check_project_required_metadata(all_terms, result)
         finally:
             # Restore previous state
             if previous_active:
@@ -251,13 +256,237 @@ class DBValidator:
                 pass
 
     @staticmethod
+    def _check_resolved_references(terms: list, result: ValidationResult) -> None:
+        """Require reference fields in coordinate and branded-variable models to be resolved."""
+        from esgvoc.api.data_descriptors.coordinate import DataCoordinate
+        from esgvoc.api.data_descriptors.formula_term import FormulaTerm
+        from esgvoc.api.data_descriptors.grid_variable import GridVariable
+        from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable
+        from esgvoc.api.data_descriptors.model_level_coordinate import ModelLevelCoordinate
+
+        reference_fields = (
+            (DataCoordinate, ("coordinate_type",)),
+            (FormulaTerm, ("dimensions",)),
+            (GridVariable, ("dimensions",)),
+            (
+                ModelLevelCoordinate,
+                ("generic_level_name", "z_factors", "z_bounds_factors"),
+            ),
+            (
+                KnownBrandedVariable,
+                (
+                    "variable_root_name",
+                    "dimensions",
+                    "temporal_label",
+                    "vertical_label",
+                    "horizontal_label",
+                    "area_label",
+                    "realm",
+                    "table_id",
+                    "frequency",
+                ),
+            ),
+        )
+        errors = []
+        checked_references = 0
+
+        def audit_model(value, path: str) -> None:
+            for model_class, fields in reference_fields:
+                if isinstance(value, model_class):
+                    for field_name in fields:
+                        audit_value(getattr(value, field_name, None), f"{path}.{field_name}")
+                    return
+
+        def audit_value(value, path: str) -> None:
+            nonlocal checked_references
+            if value is None:
+                return
+            if isinstance(value, str):
+                checked_references += 1
+                errors.append(f"{path}: unresolved reference {value!r}")
+                return
+            if isinstance(value, (list, tuple)):
+                for index, item in enumerate(value):
+                    audit_value(item, f"{path}[{index}]")
+                return
+            checked_references += 1
+            audit_model(value, path)
+
+        for term in terms:
+            audit_model(term, f"{type(term).__name__}[{getattr(term, 'id', '?')}]")
+
+        if errors:
+            result.add(
+                "Resolved coordinate and branded-variable references",
+                False,
+                f"{len(errors)} unresolved reference(s): " + "; ".join(errors[:3]),
+            )
+        elif checked_references:
+            result.add(
+                "Resolved coordinate and branded-variable references",
+                True,
+                f"{checked_references} reference(s) checked",
+            )
+
+    @staticmethod
+    def _check_resolved_model_relationships(terms: list, result: ValidationResult) -> None:
+        """Check semantic relationships that require fully resolved references."""
+        from esgvoc.api.data_descriptors.area_label import AreaLabel
+        from esgvoc.api.data_descriptors.coordinate import DataCoordinate
+        from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
+        from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable
+        from esgvoc.api.data_descriptors.model_level_coordinate import ModelLevelCoordinate
+        from esgvoc.api.data_descriptors.temporal_label import TemporalLabel
+        from esgvoc.api.data_descriptors.variable import Variable
+        from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
+
+        branded_variables = [term for term in terms if isinstance(term, KnownBrandedVariable)]
+        model_level_coordinates = [term for term in terms if isinstance(term, ModelLevelCoordinate)]
+        if not branded_variables and not model_level_coordinates:
+            return
+
+        errors = []
+        for term in model_level_coordinates:
+            if not isinstance(term.generic_level_name, DataCoordinate):
+                errors.append(f"{term.id}: generic_level_name is unresolved")
+            elif not term.generic_level_name.is_generic_model_level_coordinate:
+                errors.append(f"{term.id}: generic_level_name does not reference a generic model-level DataCoordinate")
+
+        for term in branded_variables:
+            if not isinstance(term.variable_root_name, Variable):
+                errors.append(f"{term.id}: variable_root_name is unresolved")
+            else:
+                root = term.variable_root_name
+                expected_drs_name = f"{root.drs_name}_{term.branding_suffix_name}"
+                if term.drs_name != expected_drs_name:
+                    errors.append(f"{term.id}: drs_name {term.drs_name!r} does not equal {expected_drs_name!r}")
+
+            labels = (
+                term.temporal_label,
+                term.vertical_label,
+                term.horizontal_label,
+                term.area_label,
+            )
+            label_classes = (TemporalLabel, VerticalLabel, HorizontalLabel, AreaLabel)
+            if all(isinstance(label, label_class) for label, label_class in zip(labels, label_classes, strict=True)):
+                expected_suffix = (
+                    f"{term.temporal_label.drs_name}-{term.vertical_label.drs_name}-"
+                    f"{term.horizontal_label.drs_name}-{term.area_label.drs_name}"
+                )
+                if term.branding_suffix_name != expected_suffix:
+                    errors.append(
+                        f"{term.id}: branding_suffix_name {term.branding_suffix_name!r} "
+                        f"does not equal {expected_suffix!r}"
+                    )
+            else:
+                errors.append(f"{term.id}: one or more branding labels are unresolved")
+
+        if errors:
+            result.add(
+                "Resolved coordinate and branded-variable relationships",
+                False,
+                f"{len(errors)} error(s): " + "; ".join(errors[:3]),
+            )
+        else:
+            result.add(
+                "Resolved coordinate and branded-variable relationships",
+                True,
+                f"{len(model_level_coordinates) + len(branded_variables)} term(s) checked",
+            )
+
+    @staticmethod
+    def _check_project_required_metadata(terms: list, result: ValidationResult) -> None:
+        """Require project-specific metadata after Universe and project terms are resolved."""
+        from esgvoc.api.data_descriptors.coordinate import DataCoordinate
+        from esgvoc.api.data_descriptors.formula_term import FormulaTerm
+        from esgvoc.api.data_descriptors.grid_axis import GridAxis
+        from esgvoc.api.data_descriptors.grid_variable import GridVariable
+        from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable
+        from esgvoc.api.data_descriptors.model_level_coordinate import ModelLevelCoordinate
+
+        relevant_types = (
+            DataCoordinate,
+            FormulaTerm,
+            GridAxis,
+            ModelLevelCoordinate,
+            KnownBrandedVariable,
+        )
+        reference_fields = (
+            (DataCoordinate, ()),
+            (FormulaTerm, ("dimensions",)),
+            (GridAxis, ()),
+            (GridVariable, ("dimensions",)),
+            (
+                ModelLevelCoordinate,
+                ("generic_level_name", "z_factors", "z_bounds_factors"),
+            ),
+            (KnownBrandedVariable, ("dimensions",)),
+        )
+        relevant_terms = []
+        seen_terms = set()
+
+        def collect(value) -> None:
+            if value is None or isinstance(value, str):
+                return
+            if isinstance(value, (list, tuple)):
+                for item in value:
+                    collect(item)
+                return
+            for model_class, fields in reference_fields:
+                if isinstance(value, model_class):
+                    if isinstance(value, relevant_types):
+                        term_key = (type(value), value.id)
+                        if term_key not in seen_terms:
+                            seen_terms.add(term_key)
+                            relevant_terms.append(value)
+                    for field_name in fields:
+                        collect(getattr(value, field_name, None))
+                    return
+
+        for term in terms:
+            collect(term)
+
+        if not relevant_terms:
+            return
+
+        errors = [
+            f"{type(term).__name__}[{term.id}].long_name is missing"
+            for term in relevant_terms
+            if not isinstance(term, GridAxis) and (not isinstance(term.long_name, str) or not term.long_name.strip())
+        ]
+        for term in relevant_terms:
+            if not isinstance(term, GridAxis):
+                continue
+            has_name = any(
+                isinstance(value, str) and value.strip() for value in (term.long_name, term.cf_standard_name)
+            )
+            axis_metadata = (
+                term.axis,
+                term.data_type,
+                term.out_name,
+                term.units,
+            )
+            if not has_name and any(value is not None for value in axis_metadata):
+                errors.append(f"GridAxis[{term.id}].long_name and cf_standard_name are missing")
+        if errors:
+            result.add(
+                "Resolved project required metadata",
+                False,
+                f"{len(errors)} error(s): " + "; ".join(errors[:3]),
+            )
+        else:
+            result.add(
+                "Resolved project required metadata",
+                True,
+                f"{len(relevant_terms)} term(s) checked",
+            )
+
+    @staticmethod
     def _check_sample_query(conn: sqlite3.Connection, result: ValidationResult) -> None:
         """Run a representative query that exercises joins (project DB only)."""
         try:
             row = conn.execute(
-                "SELECT t.id FROM pterms t "
-                "JOIN pcollections c ON t.collection_pk = c.pk "
-                "LIMIT 1"
+                "SELECT t.id FROM pterms t JOIN pcollections c ON t.collection_pk = c.pk LIMIT 1"
             ).fetchone()
             result.add("Sample join query", row is not None, row[0] if row else "no rows")
         except Exception as e:
