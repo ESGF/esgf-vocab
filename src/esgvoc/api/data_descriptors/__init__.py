@@ -45,7 +45,8 @@ from esgvoc.api.data_descriptors.grid_variable import GridVariable
 from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
 from esgvoc.api.data_descriptors.initialization_index import InitializationIndex
 from esgvoc.api.data_descriptors.institution import Institution
-from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable
+from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable as _KnownBrandedVariable
+from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariableModel
 from esgvoc.api.data_descriptors.license import License
 from esgvoc.api.data_descriptors.member_id import MemberId
 
@@ -76,6 +77,8 @@ from esgvoc.api.data_descriptors.tracking_id import TrackingId
 from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
+
+KnownBrandedVariable = _KnownBrandedVariable
 
 ActivityCMIP7.model_rebuild()
 
@@ -115,7 +118,7 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "branding_suffix": BrandingSuffix,
     "branded_variable": BrandedVariable,
     "publication_status": PublicationStatus,
-    "known_branded_variable": KnownBrandedVariable,
+    "known_branded_variable": KnownBrandedVariableModel,
     "calendar": Calendar,
     "component_type": ComponentType,
     "grid_arrangement": Arrangement,  # EMD v1.0

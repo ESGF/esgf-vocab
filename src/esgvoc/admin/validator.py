@@ -422,6 +422,12 @@ class DBValidator:
             ),
             (KnownBrandedVariable, ("dimensions",)),
         )
+        # Nested references can currently contain the Universe version of a
+        # term even when the project defines an overlay for the same ID. Build
+        # an index first so required project metadata is checked on that fully
+        # resolved top-level term. If no project term exists, the nested
+        # Universe term is retained and missing metadata is still reported.
+        project_terms = {(type(term), term.id): term for term in terms if isinstance(term, relevant_types)}
         relevant_terms = []
         seen_terms = set()
 
@@ -436,9 +442,11 @@ class DBValidator:
                 if isinstance(value, model_class):
                     if isinstance(value, relevant_types):
                         term_key = (type(value), value.id)
-                        if term_key not in seen_terms:
-                            seen_terms.add(term_key)
-                            relevant_terms.append(value)
+                        if term_key in seen_terms:
+                            return
+                        seen_terms.add(term_key)
+                        value = project_terms.get(term_key, value)
+                        relevant_terms.append(value)
                     for field_name in fields:
                         collect(getattr(value, field_name, None))
                     return

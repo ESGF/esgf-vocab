@@ -15,6 +15,7 @@ from esgvoc.api.data_descriptors.table import Table
 from esgvoc.api.data_descriptors.temporal_label import TemporalLabel
 from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
+from esgvoc.api.pydantic_handler import create_union
 
 
 class KnownBrandedVariable(PlainTermDataDescriptor):
@@ -232,3 +233,102 @@ class KnownBrandedVariable(PlainTermDataDescriptor):
         if len(self.flag_values) != len(self.flag_meanings):
             raise ValueError("flag_values and flag_meanings must have equal lengths")
         return self
+
+
+class KnownBrandedVariableLegacy(PlainTermDataDescriptor):
+    """
+    Legacy known branded variable used by published ESGVoc databases.
+
+    This model preserves the schema that predates the coordinate-model update.
+    In particular, it uses ``cf_units``, permits empty legacy directive fields,
+    and has no required ``out_name``. New vocabulary records use
+    :class:`KnownBrandedVariable` and its stricter validation instead.
+    """
+
+    cf_standard_name: str
+    """
+    CF standard name.
+    """
+
+    cf_units: str
+    """
+    CF standard units under the legacy field name.
+    """
+
+    cf_sn_status: str
+    """
+    Status of the CF standard name.
+    """
+
+    variable_root_name: str
+    """
+    Variable root name.
+    """
+
+    var_def_qualifier: str = ""
+    """
+    Legacy variable-definition qualifier.
+    """
+
+    branding_suffix_name: str
+    """
+    Branding suffix.
+    """
+
+    dimensions: list[str]
+    """
+    Ordered dimension identifiers.
+    """
+
+    cell_methods: str = ""
+    """
+    CF cell-methods string.
+    """
+
+    cell_measures: str = ""
+    """
+    CF cell-measures string.
+    """
+
+    history: str = ""
+    """
+    Legacy registration history.
+    """
+
+    realm: str
+    """
+    Earth-system realm identifier.
+    """
+
+    temporal_label: str
+    """
+    Temporal branding label.
+    """
+
+    vertical_label: str
+    """
+    Vertical branding label.
+    """
+
+    horizontal_label: str
+    """
+    Horizontal branding label.
+    """
+
+    area_label: str
+    """
+    Area branding label.
+    """
+
+    bn_status: str
+    """
+    Status of the branded name.
+    """
+
+    positive_direction: str = ""
+    """
+    Legacy positive-direction metadata.
+    """
+
+
+KnownBrandedVariableModel = create_union(KnownBrandedVariable, KnownBrandedVariableLegacy)

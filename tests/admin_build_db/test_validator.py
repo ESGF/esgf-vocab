@@ -638,3 +638,32 @@ class TestProjectRequiredMetadata:
 
         assert not result.passed
         assert "DataCoordinate[latitude].long_name is missing" in result.checks[0][2]
+
+    def test_nested_universe_term_uses_matching_project_term_metadata(self):
+        universe_formula_term = FormulaTerm.model_construct(id="p0", long_name=None)
+        model_level = ModelLevelCoordinate.model_construct(
+            id="standard_hybrid_sigma",
+            long_name="hybrid sigma pressure coordinate",
+            z_factors=[universe_formula_term],
+        )
+        project_formula_term = FormulaTerm.model_construct(
+            id="p0",
+            long_name="vertical coordinate formula term: reference pressure",
+        )
+        result = ValidationResult()
+
+        # Keep the model level first to reproduce collection traversal finding
+        # its nested Universe reference before the project FormulaTerm.
+        DBValidator._check_project_required_metadata(
+            [model_level, project_formula_term],
+            result,
+        )
+
+        assert result.passed
+        assert result.checks == [
+            (
+                "Resolved project required metadata",
+                True,
+                "2 term(s) checked",
+            )
+        ]

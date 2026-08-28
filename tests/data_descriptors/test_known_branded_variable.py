@@ -3,15 +3,20 @@ Tests for the known branded variable data descriptor model.
 """
 
 import pytest
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 
 from esgvoc.api.data_descriptors.area_label import AreaLabel
 from esgvoc.api.data_descriptors.coordinate import DataCoordinate
 from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
-from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable
+from esgvoc.api.data_descriptors.known_branded_variable import (
+    KnownBrandedVariable,
+    KnownBrandedVariableLegacy,
+    KnownBrandedVariableModel,
+)
 from esgvoc.api.data_descriptors.temporal_label import TemporalLabel
 from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
+from esgvoc.api.pydantic_handler import get_pydantic_class
 
 
 def known_branded_variable_data(**updates):
@@ -402,3 +407,45 @@ def test_known_branded_variable_fields_match_proposal():
     }
 
     assert set(KnownBrandedVariable.model_fields) == inherited_fields | proposal_fields
+
+
+def test_legacy_database_record_uses_legacy_model():
+    record = {
+        "id": "mrro_tavg-u-hxy-lnd",
+        "type": "known_branded_variable",
+        "drs_name": "mrro_tavg-u-hxy-lnd",
+        "description": "Total runoff",
+        "cf_standard_name": "runoff_flux",
+        "cf_units": "kg m-2 s-1",
+        "cf_sn_status": "approved",
+        "variable_root_name": "mrro",
+        "var_def_qualifier": "",
+        "branding_suffix_name": "tavg-u-hxy-lnd",
+        "dimensions": ["longitude", "latitude", "time"],
+        "cell_methods": "area: mean where land time: mean",
+        "cell_measures": "area: areacella",
+        "history": ": registered",
+        "realm": "land",
+        "temporal_label": "tavg",
+        "vertical_label": "u",
+        "horizontal_label": "hxy",
+        "area_label": "lnd",
+        "bn_status": "accepted",
+        "positive_direction": "",
+    }
+
+    registered_model = get_pydantic_class("known_branded_variable")
+    model = TypeAdapter(registered_model).validate_python(record)
+
+    assert registered_model is KnownBrandedVariableModel
+    assert isinstance(model, KnownBrandedVariableLegacy)
+    assert model.var_def_qualifier == ""
+    assert not hasattr(model, "out_name")
+
+
+def test_current_database_record_uses_current_model():
+    model = TypeAdapter(KnownBrandedVariableModel).validate_python(
+        known_branded_variable_data()
+    )
+
+    assert type(model) is KnownBrandedVariable
