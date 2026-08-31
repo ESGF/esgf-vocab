@@ -450,11 +450,11 @@ with their fields, types, and docstrings.</p>
 </div><div aria-labelledby="tab-0-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
 
 <span class="c1"># Returns the pydantic class (or union type for multi-variant descriptors)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_model_from_data_descriptor</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_model_from_data_descriptor</span><span class="p">(</span><span class="s2">"source"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>  <span class="c1"># Source (union of SourceCMIP7, SourceLegacy)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_model_from_data_descriptor</span><span class="p">(</span><span class="s2">&quot;frequency&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>  <span class="c1"># &lt;class &#39;Frequency&#39;&gt;</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_model_from_data_descriptor</span><span class="p">(</span><span class="s2">"frequency"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>  <span class="c1"># &lt;class 'Frequency'&gt;</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">model_fields</span><span class="p">)</span>
 </pre></div>
@@ -471,9 +471,9 @@ with their fields, types, and docstrings.</p>
 not the union type.</p>
 </div><div aria-labelledby="tab-1-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
 
-<span class="c1"># Returns the concrete pydantic class for this project&#39;s collection</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_model_from_collection</span><span class="p">(</span><span class="s2">&quot;cmip7&quot;</span><span class="p">,</span> <span class="s2">&quot;experiment&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>           <span class="c1"># &lt;class &#39;ExperimentCMIP7&#39;&gt;</span>
+<span class="c1"># Returns the concrete pydantic class for this project's collection</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_model_from_collection</span><span class="p">(</span><span class="s2">"cmip7"</span><span class="p">,</span> <span class="s2">"experiment"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>           <span class="c1"># &lt;class 'ExperimentCMIP7'&gt;</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>   <span class="c1"># docstring</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">model_fields</span><span class="p">)</span>  <span class="c1"># field metadata</span>
 </pre></div>
@@ -495,10 +495,10 @@ Use <code class="docutils literal notranslate"><span class="pre">get_model_from_
 <p>Lists every collection in the project alongside the pydantic model it resolves to.</p>
 </div><div aria-labelledby="tab-2-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-2-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
 
-<span class="n">collections</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_all_collections_in_project</span><span class="p">(</span><span class="s2">&quot;cmip7&quot;</span><span class="p">)</span>
+<span class="n">collections</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_all_collections_in_project</span><span class="p">(</span><span class="s2">"cmip7"</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">coll</span> <span class="ow">in</span> <span class="n">collections</span><span class="p">:</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_model_from_collection</span><span class="p">(</span><span class="s2">&quot;cmip7&quot;</span><span class="p">,</span> <span class="n">coll</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">coll</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;unresolved&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_model_from_collection</span><span class="p">(</span><span class="s2">"cmip7"</span><span class="p">,</span> <span class="n">coll</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">coll</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'unresolved'</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div></div>

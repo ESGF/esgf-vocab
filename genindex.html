@@ -393,6 +393,7 @@
  | <a href="#W"><strong>W</strong></a>
  | <a href="#X"><strong>X</strong></a>
  | <a href="#Y"><strong>Y</strong></a>
+ | <a href="#Z"><strong>Z</strong></a>
  
 </div>
 <h2 id="A">A</h2>
@@ -427,6 +428,8 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Coordinate.accept">(esgvoc.api.data_descriptors.Coordinate method)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CoordinateType.accept">(esgvoc.api.data_descriptors.CoordinateType method)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CreationDate.accept">(esgvoc.api.data_descriptors.CreationDate method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor.accept">(esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor method)</a>
@@ -438,6 +441,8 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor.accept">(esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor.accept">(esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor method)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.accept">(esgvoc.api.data_descriptors.DataCoordinate method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataSpecsVersion.accept">(esgvoc.api.data_descriptors.DataSpecsVersion method)</a>
 </li>
@@ -451,17 +456,23 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ForcingIndex.accept">(esgvoc.api.data_descriptors.ForcingIndex method)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FormulaTerm.accept">(esgvoc.api.data_descriptors.FormulaTerm method)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.accept">(esgvoc.api.data_descriptors.Frequency method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FurtherInfoUrl.accept">(esgvoc.api.data_descriptors.FurtherInfoUrl method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Grid.accept">(esgvoc.api.data_descriptors.Grid method)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridAxis.accept">(esgvoc.api.data_descriptors.GridAxis method)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridMapping.accept">(esgvoc.api.data_descriptors.GridMapping method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridRegion.accept">(esgvoc.api.data_descriptors.GridRegion method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridType.accept">(esgvoc.api.data_descriptors.GridType method)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.accept">(esgvoc.api.data_descriptors.GridVariable method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalComputationalGrid.accept">(esgvoc.api.data_descriptors.HorizontalComputationalGrid method)</a>
 </li>
@@ -488,6 +499,8 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.accept">(esgvoc.api.data_descriptors.Model method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.accept">(esgvoc.api.data_descriptors.ModelComponent method)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.accept">(esgvoc.api.data_descriptors.ModelLevelCoordinate method)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.NominalResolution.accept">(esgvoc.api.data_descriptors.NominalResolution method)</a>
 </li>
@@ -608,6 +621,14 @@
 </li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.ProjectSpecs.attr_specs">attr_specs (esgvoc.api.project_specs.ProjectSpecs attribute)</a>
 </li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.axis">axis (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridAxis.axis">(esgvoc.api.data_descriptors.GridAxis attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.axis">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -618,10 +639,16 @@
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.bn_status">bn_status (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VerticalComputationalGrid.bottom_layer_thickness">bottom_layer_thickness (esgvoc.api.data_descriptors.VerticalComputationalGrid attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.bounds_required">bounds_required (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.bounds_required">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.branding_suffix_name">branding_suffix_name (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
 </li>
   </ul></td>
@@ -650,11 +677,21 @@
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.cf_sn_status">cf_sn_status (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
 </li>
-      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.cf_standard_name">cf_standard_name (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.cf_standard_name">cf_standard_name (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FormulaTerm.cf_standard_name">(esgvoc.api.data_descriptors.FormulaTerm attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridAxis.cf_standard_name">(esgvoc.api.data_descriptors.GridAxis attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.cf_standard_name">(esgvoc.api.data_descriptors.GridVariable attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.cf_standard_name">(esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.cf_standard_name">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Region.cf_standard_region">cf_standard_region (esgvoc.api.data_descriptors.Region attribute)</a>
-</li>
-      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.cf_units">cf_units (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Reference.citation">citation (esgvoc.api.data_descriptors.Reference attribute)</a>
 </li>
@@ -712,7 +749,15 @@
 </li>
       <li><a href="api_documentation/miscellaneous.html#esgvoc.core.db.models.mixins.TermKind.COMPOSITE">COMPOSITE (esgvoc.core.db.models.mixins.TermKind attribute)</a>
 </li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.compound_name">compound_name (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.IssueKind.CONFLICT">CONFLICT (esgvoc.apps.drs.report.IssueKind attribute)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.coordinate_bounds">coordinate_bounds (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.coordinate_type">coordinate_type (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.coordinate_values">coordinate_values (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.coupled_components">coupled_components (esgvoc.api.data_descriptors.Model attribute)</a>
 </li>
@@ -726,6 +771,18 @@
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.report.UniverseTermError.data_descriptor_id">data_descriptor_id (esgvoc.api.report.UniverseTermError attribute)</a>
 </li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.data_type">data_type (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FormulaTerm.data_type">(esgvoc.api.data_descriptors.FormulaTerm attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridAxis.data_type">(esgvoc.api.data_descriptors.GridAxis attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.data_type">(esgvoc.api.data_descriptors.GridVariable attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.data_type">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.DataDescriptorVisitor">DataDescriptorVisitor (class in esgvoc.api.data_descriptors.data_descriptor)</a>
 </li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsType.DATASET_ID">DATASET_ID (esgvoc.api.project_specs.DrsType attribute)</a>
@@ -769,6 +826,8 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Coordinate.describe">(esgvoc.api.data_descriptors.Coordinate property)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CoordinateType.describe">(esgvoc.api.data_descriptors.CoordinateType property)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CreationDate.describe">(esgvoc.api.data_descriptors.CreationDate property)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor.describe">(esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor property)</a>
@@ -780,6 +839,8 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor.describe">(esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor property)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor.describe">(esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor property)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.describe">(esgvoc.api.data_descriptors.DataCoordinate property)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataSpecsVersion.describe">(esgvoc.api.data_descriptors.DataSpecsVersion property)</a>
 </li>
@@ -793,17 +854,23 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ForcingIndex.describe">(esgvoc.api.data_descriptors.ForcingIndex property)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FormulaTerm.describe">(esgvoc.api.data_descriptors.FormulaTerm property)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.describe">(esgvoc.api.data_descriptors.Frequency property)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FurtherInfoUrl.describe">(esgvoc.api.data_descriptors.FurtherInfoUrl property)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Grid.describe">(esgvoc.api.data_descriptors.Grid property)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridAxis.describe">(esgvoc.api.data_descriptors.GridAxis property)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridMapping.describe">(esgvoc.api.data_descriptors.GridMapping property)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridRegion.describe">(esgvoc.api.data_descriptors.GridRegion property)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridType.describe">(esgvoc.api.data_descriptors.GridType property)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.describe">(esgvoc.api.data_descriptors.GridVariable property)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalComputationalGrid.describe">(esgvoc.api.data_descriptors.HorizontalComputationalGrid property)</a>
 </li>
@@ -830,6 +897,8 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.describe">(esgvoc.api.data_descriptors.Model property)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.describe">(esgvoc.api.data_descriptors.ModelComponent property)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.describe">(esgvoc.api.data_descriptors.ModelLevelCoordinate property)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.NominalResolution.describe">(esgvoc.api.data_descriptors.NominalResolution property)</a>
 </li>
@@ -921,6 +990,8 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Coordinate.description">(esgvoc.api.data_descriptors.Coordinate attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CoordinateType.description">(esgvoc.api.data_descriptors.CoordinateType attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CreationDate.description">(esgvoc.api.data_descriptors.CreationDate attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor.description">(esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor attribute)</a>
@@ -932,6 +1003,8 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor.description">(esgvoc.api.data_descriptors.data_descriptor.PatternTermDataDescriptor attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor.description">(esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.description">(esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataSpecsVersion.description">(esgvoc.api.data_descriptors.DataSpecsVersion attribute)</a>
 </li>
@@ -945,17 +1018,23 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ForcingIndex.description">(esgvoc.api.data_descriptors.ForcingIndex attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FormulaTerm.description">(esgvoc.api.data_descriptors.FormulaTerm attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.description">(esgvoc.api.data_descriptors.Frequency attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FurtherInfoUrl.description">(esgvoc.api.data_descriptors.FurtherInfoUrl attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Grid.description">(esgvoc.api.data_descriptors.Grid attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridAxis.description">(esgvoc.api.data_descriptors.GridAxis attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridMapping.description">(esgvoc.api.data_descriptors.GridMapping attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridRegion.description">(esgvoc.api.data_descriptors.GridRegion attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridType.description">(esgvoc.api.data_descriptors.GridType attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.description">(esgvoc.api.data_descriptors.GridVariable attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalComputationalGrid.description">(esgvoc.api.data_descriptors.HorizontalComputationalGrid attribute)</a>
 </li>
@@ -982,6 +1061,8 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.description">(esgvoc.api.data_descriptors.Model attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.description">(esgvoc.api.data_descriptors.ModelComponent attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.description">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.NominalResolution.description">(esgvoc.api.data_descriptors.NominalResolution attribute)</a>
 </li>
@@ -1048,8 +1129,14 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.dimensions">dimensions (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FormulaTerm.dimensions">dimensions (esgvoc.api.data_descriptors.FormulaTerm attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.dimensions">(esgvoc.api.data_descriptors.GridVariable attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.dimensions">(esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.DrsType.DIRECTORY">DIRECTORY (esgvoc.api.project_specs.DrsType attribute)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.generator.DrsGenerator.directory_specs">directory_specs (esgvoc.apps.drs.generator.DrsGenerator attribute)</a>
@@ -1081,7 +1168,11 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Coordinate.drs_name">(esgvoc.api.data_descriptors.Coordinate attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CoordinateType.drs_name">(esgvoc.api.data_descriptors.CoordinateType attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor.drs_name">(esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.drs_name">(esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataSpecsVersion.drs_name">(esgvoc.api.data_descriptors.DataSpecsVersion attribute)</a>
 </li>
@@ -1089,15 +1180,21 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDModelComponent.drs_name">(esgvoc.api.data_descriptors.EMDModelComponent attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FormulaTerm.drs_name">(esgvoc.api.data_descriptors.FormulaTerm attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.drs_name">(esgvoc.api.data_descriptors.Frequency attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Grid.drs_name">(esgvoc.api.data_descriptors.Grid attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridAxis.drs_name">(esgvoc.api.data_descriptors.GridAxis attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridMapping.drs_name">(esgvoc.api.data_descriptors.GridMapping attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridRegion.drs_name">(esgvoc.api.data_descriptors.GridRegion attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridType.drs_name">(esgvoc.api.data_descriptors.GridType attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.drs_name">(esgvoc.api.data_descriptors.GridVariable attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalGridCells.drs_name">(esgvoc.api.data_descriptors.HorizontalGridCells attribute)</a>
 </li>
@@ -1118,6 +1215,8 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.drs_name">(esgvoc.api.data_descriptors.Model attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.drs_name">(esgvoc.api.data_descriptors.ModelComponent attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.drs_name">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.NominalResolution.drs_name">(esgvoc.api.data_descriptors.NominalResolution attribute)</a>
 </li>
@@ -1342,12 +1441,12 @@
       </ul></li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.CatalogSpecification.file_properties">file_properties (esgvoc.api.project_specs.CatalogSpecification attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_collections_in_project">find_collections_in_project() (in module esgvoc.api.projects)</a>
 </li>
       <li><a href="api_documentation/universe.html#esgvoc.api.universe.find_data_descriptors_in_universe">find_data_descriptors_in_universe() (in module esgvoc.api.universe)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_items_in_project">find_items_in_project() (in module esgvoc.api.projects)</a>
 </li>
       <li><a href="api_documentation/universe.html#esgvoc.api.universe.find_items_in_universe">find_items_in_universe() (in module esgvoc.api.universe)</a>
@@ -1361,6 +1460,14 @@
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.find_terms_in_project">find_terms_in_project() (in module esgvoc.api.projects)</a>
 </li>
       <li><a href="api_documentation/universe.html#esgvoc.api.universe.find_terms_in_universe">find_terms_in_universe() (in module esgvoc.api.universe)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.flag_meanings">flag_meanings (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.flag_values">flag_values (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.formula">formula (esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.frequency">frequency (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1389,6 +1496,8 @@
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGenerationReport.generated_drs_expression">generated_drs_expression (esgvoc.apps.drs.report.DrsGenerationReport attribute)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.GenerationIssueVisitor">GenerationIssueVisitor (class in esgvoc.apps.drs.report)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.generic_level_name">generic_level_name (esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_active_database_info">get_active_database_info() (in module esgvoc.api.projects)</a>
 </li>
@@ -1507,6 +1616,8 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Coordinate.id">(esgvoc.api.data_descriptors.Coordinate attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CoordinateType.id">(esgvoc.api.data_descriptors.CoordinateType attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CreationDate.id">(esgvoc.api.data_descriptors.CreationDate attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor.id">(esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor attribute)</a>
@@ -1521,6 +1632,8 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor.id">(esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.id">(esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataSpecsVersion.id">(esgvoc.api.data_descriptors.DataSpecsVersion attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Date.id">(esgvoc.api.data_descriptors.Date attribute)</a>
@@ -1533,17 +1646,23 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ForcingIndex.id">(esgvoc.api.data_descriptors.ForcingIndex attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FormulaTerm.id">(esgvoc.api.data_descriptors.FormulaTerm attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.id">(esgvoc.api.data_descriptors.Frequency attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FurtherInfoUrl.id">(esgvoc.api.data_descriptors.FurtherInfoUrl attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Grid.id">(esgvoc.api.data_descriptors.Grid attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridAxis.id">(esgvoc.api.data_descriptors.GridAxis attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridMapping.id">(esgvoc.api.data_descriptors.GridMapping attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridRegion.id">(esgvoc.api.data_descriptors.GridRegion attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridType.id">(esgvoc.api.data_descriptors.GridType attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.id">(esgvoc.api.data_descriptors.GridVariable attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalComputationalGrid.id">(esgvoc.api.data_descriptors.HorizontalComputationalGrid attribute)</a>
 </li>
@@ -1570,6 +1689,8 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.id">(esgvoc.api.data_descriptors.Model attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.id">(esgvoc.api.data_descriptors.ModelComponent attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.id">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.NominalResolution.id">(esgvoc.api.data_descriptors.NominalResolution attribute)</a>
 </li>
@@ -1641,6 +1762,10 @@
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGenerationReport.INVALID_TAG">INVALID_TAG (esgvoc.apps.drs.report.DrsGenerationReport attribute)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.IssueKind.INVALID_TERM">INVALID_TERM (esgvoc.apps.drs.report.IssueKind attribute)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.is_climatology">is_climatology (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.is_generic_model_level_coordinate">is_generic_model_level_coordinate (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.CompositeTermPart.is_required">is_required (esgvoc.api.data_descriptors.data_descriptor.CompositeTermPart attribute)</a>
 
@@ -1716,14 +1841,26 @@
 </li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.CatalogSpecification.link_properties">link_properties (esgvoc.api.project_specs.CatalogSpecification attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.LinkProperty.link_type">link_type (esgvoc.api.project_specs.LinkProperty attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Institution.location">location (esgvoc.api.data_descriptors.Institution attribute)</a>
 </li>
-      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Variable.long_name">long_name (esgvoc.api.data_descriptors.Variable attribute)</a>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.long_name">long_name (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FormulaTerm.long_name">(esgvoc.api.data_descriptors.FormulaTerm attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridAxis.long_name">(esgvoc.api.data_descriptors.GridAxis attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.long_name">(esgvoc.api.data_descriptors.GridVariable attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.long_name">(esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.long_name">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Variable.long_name">(esgvoc.api.data_descriptors.Variable attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1837,6 +1974,20 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.omitted_components">omitted_components (esgvoc.api.data_descriptors.Model attribute)</a>
 </li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.out_name">out_name (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FormulaTerm.out_name">(esgvoc.api.data_descriptors.FormulaTerm attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridAxis.out_name">(esgvoc.api.data_descriptors.GridAxis attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.out_name">(esgvoc.api.data_descriptors.GridVariable attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.out_name">(esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.out_name">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1875,8 +2026,12 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.positive_direction">positive_direction (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.positive">positive (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.positive">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
 </li>
+      </ul></li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.prescribed_components">prescribed_components (esgvoc.api.data_descriptors.Model attribute)</a>
 </li>
       <li><a href="api_documentation/jsg.html#esgvoc.apps.jsg.json_schema_generator.pretty_print_json_node">pretty_print_json_node() (in module esgvoc.apps.jsg.json_schema_generator)</a>
@@ -2029,6 +2184,12 @@
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Variable.standard_name">standard_name (esgvoc.api.data_descriptors.Variable attribute)</a>
 </li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.stored_direction">stored_direction (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.stored_direction">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -2036,6 +2197,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Table.table_date">table_date (esgvoc.api.data_descriptors.Table attribute)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.table_id">table_id (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.temporal_label">temporal_label (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
 </li>
@@ -2089,6 +2252,8 @@
       </ul></li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.LinkProperty.title">title (esgvoc.api.project_specs.LinkProperty attribute)</a>
 </li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.tolerance">tolerance (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+</li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.IssueKind.TOO_MANY">TOO_MANY (esgvoc.apps.drs.report.IssueKind attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VerticalComputationalGrid.top_layer_thickness">top_layer_thickness (esgvoc.api.data_descriptors.VerticalComputationalGrid attribute)</a>
@@ -2128,6 +2293,8 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Coordinate.type">(esgvoc.api.data_descriptors.Coordinate attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CoordinateType.type">(esgvoc.api.data_descriptors.CoordinateType attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.CreationDate.type">(esgvoc.api.data_descriptors.CreationDate attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor.type">(esgvoc.api.data_descriptors.data_descriptor.CompositeTermDataDescriptor attribute)</a>
@@ -2142,6 +2309,8 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor.type">(esgvoc.api.data_descriptors.data_descriptor.PlainTermDataDescriptor attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.type">(esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataSpecsVersion.type">(esgvoc.api.data_descriptors.DataSpecsVersion attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Date.type">(esgvoc.api.data_descriptors.Date attribute)</a>
@@ -2154,17 +2323,23 @@
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ForcingIndex.type">(esgvoc.api.data_descriptors.ForcingIndex attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FormulaTerm.type">(esgvoc.api.data_descriptors.FormulaTerm attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.type">(esgvoc.api.data_descriptors.Frequency attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FurtherInfoUrl.type">(esgvoc.api.data_descriptors.FurtherInfoUrl attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Grid.type">(esgvoc.api.data_descriptors.Grid attribute)</a>
 </li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridAxis.type">(esgvoc.api.data_descriptors.GridAxis attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridMapping.type">(esgvoc.api.data_descriptors.GridMapping attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridRegion.type">(esgvoc.api.data_descriptors.GridRegion attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridType.type">(esgvoc.api.data_descriptors.GridType attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.type">(esgvoc.api.data_descriptors.GridVariable attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalComputationalGrid.type">(esgvoc.api.data_descriptors.HorizontalComputationalGrid attribute)</a>
 </li>
@@ -2191,6 +2366,8 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.type">(esgvoc.api.data_descriptors.Model attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelComponent.type">(esgvoc.api.data_descriptors.ModelComponent attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.type">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.NominalResolution.type">(esgvoc.api.data_descriptors.NominalResolution attribute)</a>
 </li>
@@ -2269,18 +2446,30 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Resolution.unit">unit (esgvoc.api.data_descriptors.Resolution attribute)</a>
 </li>
-      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.units">units (esgvoc.api.data_descriptors.Frequency attribute)</a>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.units">units (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
 
       <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.FormulaTerm.units">(esgvoc.api.data_descriptors.FormulaTerm attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Frequency.units">(esgvoc.api.data_descriptors.Frequency attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridAxis.units">(esgvoc.api.data_descriptors.GridAxis attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.units">(esgvoc.api.data_descriptors.GridVariable attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.units">(esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.units">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
+</li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.NominalResolution.units">(esgvoc.api.data_descriptors.NominalResolution attribute)</a>
 </li>
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Variable.units">(esgvoc.api.data_descriptors.Variable attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.IssueKind.UNPARSABLE">UNPARSABLE (esgvoc.apps.drs.report.IssueKind attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.IssueKind.UNPARSABLE">UNPARSABLE (esgvoc.apps.drs.report.IssueKind attribute)</a>
+</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.License.url">url (esgvoc.api.data_descriptors.License attribute)</a>
 
       <ul>
@@ -2301,6 +2490,22 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.valid_max">valid_max (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.valid_max">(esgvoc.api.data_descriptors.GridVariable attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.valid_max">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.valid_min">valid_min (esgvoc.api.data_descriptors.DataCoordinate attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.GridVariable.valid_min">(esgvoc.api.data_descriptors.GridVariable attribute)</a>
+</li>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.valid_min">(esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.valid_term">valid_term() (in module esgvoc.api.projects)</a>
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.valid_term_in_all_projects">valid_term_in_all_projects() (in module esgvoc.api.projects)</a>
@@ -2313,11 +2518,15 @@
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalComputationalGrid.validate_at_least_one_subgrid">validate_at_least_one_subgrid() (esgvoc.api.data_descriptors.HorizontalComputationalGrid class method)</a>
 </li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.validate_branding_suffix">validate_branding_suffix() (esgvoc.api.data_descriptors.KnownBrandedVariable method)</a>
+</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.validate_calendar_list">validate_calendar_list() (esgvoc.api.data_descriptors.Model class method)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalSubgrid.validate_cell_variable_type_unique">validate_cell_variable_type_unique() (esgvoc.api.data_descriptors.HorizontalSubgrid class method)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Reference.validate_citation">validate_citation() (esgvoc.api.data_descriptors.Reference class method)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.DataCoordinate.validate_climatology_axis">validate_climatology_axis() (esgvoc.api.data_descriptors.DataCoordinate method)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDModelComponent.validate_code_base_format">validate_code_base_format() (esgvoc.api.data_descriptors.EMDModelComponent class method)</a>
 </li>
@@ -2329,6 +2538,8 @@
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VerticalComputationalGrid.validate_description_requirements">validate_description_requirements() (esgvoc.api.data_descriptors.VerticalComputationalGrid method)</a>
 </li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.validate_dimensions">validate_dimensions() (esgvoc.api.data_descriptors.KnownBrandedVariable class method)</a>
+</li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator.validate_directory">validate_directory() (esgvoc.apps.drs.validator.DrsValidator method)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Reference.validate_doi">validate_doi() (esgvoc.api.data_descriptors.Reference class method)</a>
@@ -2338,6 +2549,10 @@
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.validate_embedded_coupled_exclusivity">validate_embedded_coupled_exclusivity() (esgvoc.api.data_descriptors.Model method)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.validator.DrsValidator.validate_file_name">validate_file_name() (esgvoc.apps.drs.validator.DrsValidator method)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.validate_flag_metadata">validate_flag_metadata() (esgvoc.api.data_descriptors.KnownBrandedVariable method)</a>
+</li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.validate_generic_level_coordinate">validate_generic_level_coordinate() (esgvoc.api.data_descriptors.ModelLevelCoordinate method)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalGridCells.validate_horizontal_units">validate_horizontal_units() (esgvoc.api.data_descriptors.HorizontalGridCells class method)</a>
 </li>
@@ -2359,6 +2574,8 @@
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalGridCells.validate_resolution_range">validate_resolution_range() (esgvoc.api.data_descriptors.HorizontalGridCells class method)</a>
 </li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.validate_root_relationship">validate_root_relationship() (esgvoc.api.data_descriptors.KnownBrandedVariable method)</a>
+</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.validate_same_dynamic_components">validate_same_dynamic_components() (esgvoc.api.data_descriptors.Model class method)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalGridCells.validate_truncation_pair">validate_truncation_pair() (esgvoc.api.data_descriptors.HorizontalGridCells method)</a>
@@ -2375,6 +2592,8 @@
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport.validated">(esgvoc.apps.drs.report.DrsValidationReport property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationErrorVisitor">ValidationErrorVisitor (class in esgvoc.api.report)</a>
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ValidationIssueVisitor">ValidationIssueVisitor (class in esgvoc.apps.drs.report)</a>
@@ -2389,8 +2608,6 @@
         <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationError.value">(esgvoc.api.report.ValidationError attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.var_def_qualifier">var_def_qualifier (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Table.variable_entry">variable_entry (esgvoc.api.data_descriptors.Table attribute)</a>
@@ -2520,6 +2737,18 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalGridCells.y_resolution">y_resolution (esgvoc.api.data_descriptors.HorizontalGridCells attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Z">Z</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.z_bounds_factors">z_bounds_factors (esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.ModelLevelCoordinate.z_factors">z_factors (esgvoc.api.data_descriptors.ModelLevelCoordinate attribute)</a>
 </li>
   </ul></td>
 </tr></table>

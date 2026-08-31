@@ -460,11 +460,11 @@ against the project’s controlled vocabulary.</p>
 </div>
 </div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">esgvoc.apps.ncattvalid.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">GAValidator</span>
 
-<span class="n">validator</span> <span class="o">=</span> <span class="n">GAValidator</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6&quot;</span><span class="p">)</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">GAValidator</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">"cmip6"</span><span class="p">)</span>
 
 <span class="n">result</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_one</span><span class="p">(</span>
-    <span class="s2">&quot;activity_id&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CMIP&quot;</span><span class="p">,</span>
+    <span class="s2">"activity_id"</span><span class="p">,</span>
+    <span class="s2">"CMIP"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -501,9 +501,9 @@ against the project’s controlled vocabulary.</p>
 </div>
 </div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">esgvoc.apps.ncattvalid.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">GAValidator</span>
 
-<span class="n">validator</span> <span class="o">=</span> <span class="n">GAValidator</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6&quot;</span><span class="p">)</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">GAValidator</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">"cmip6"</span><span class="p">)</span>
 
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;header.txt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"header.txt"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">report</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_ncdump</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 </pre></div>
 </div>
@@ -530,8 +530,8 @@ File: test.nc
 Project: cmip6
 
 ╭─ Invalid attributes ──────────────────────────────╮
-│ ❌ activity_id=&#39;WRONG&#39;                            │
-│    &#39;WRONG&#39; not found in collection &#39;activity_id&#39;  │
+│ ❌ activity_id='WRONG'                            │
+│    'WRONG' not found in collection 'activity_id'  │
 ╰───────────────────────────────────────────────────╯
 
 ╭─ Missing required attributes ─────────────────────╮

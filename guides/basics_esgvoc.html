@@ -521,64 +521,64 @@ All terms from all projects (cross-validation).</p></li>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;physics_index&#39;,
- &#39;realization_index&#39;,
- &#39;temporal_label&#39;,
- &#39;mip_era&#39;,
- &#39;horizontal_label&#39;,
- &#39;directory_date&#39;,
- &#39;initialization_index&#39;,
- &#39;sub_experiment&#39;,
- &#39;forcing_index&#39;,
- &#39;consortium&#39;,
- &#39;license&#39;,
- &#39;variable&#39;,
- &#39;frequency&#39;,
- &#39;source_type&#39;,
- &#39;activity&#39;,
- &#39;vertical_label&#39;,
- &#39;source&#39;,
- &#39;date&#39;,
- &#39;model_component&#39;,
- &#39;product&#39;,
- &#39;institution&#39;,
- &#39;resolution&#39;,
- &#39;time_range&#39;,
- &#39;table&#39;,
- &#39;variant_label&#39;,
- &#39;organisation&#39;,
- &#39;experiment&#39;,
- &#39;area_label&#39;,
- &#39;realm&#39;,
- &#39;grid&#39;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>['physics_index',
+ 'realization_index',
+ 'temporal_label',
+ 'mip_era',
+ 'horizontal_label',
+ 'directory_date',
+ 'initialization_index',
+ 'sub_experiment',
+ 'forcing_index',
+ 'consortium',
+ 'license',
+ 'variable',
+ 'frequency',
+ 'source_type',
+ 'activity',
+ 'vertical_label',
+ 'source',
+ 'date',
+ 'model_component',
+ 'product',
+ 'institution',
+ 'resolution',
+ 'time_range',
+ 'table',
+ 'variant_label',
+ 'organisation',
+ 'experiment',
+ 'area_label',
+ 'realm',
+ 'grid']
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_terms_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_terms_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">"activity"</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
 <span class="c1"># each datadescriptor from the above cell could be use as argument</span>
 <span class="c1"># [:3] just to limit the result with the 3 first one</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Activity(id=&#39;dynvarmip&#39;, type=&#39;activity&#39;, drs_name=&#39;DynVarMIP&#39;, name=&#39;DynVarMIP&#39;, long_name=&#39;Dynamics and Variability Model Intercomparison Project&#39;, url=None, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;DynVarMIP&#39;),
- Activity(id=&#39;lumip&#39;, type=&#39;activity&#39;, drs_name=&#39;LUMIP&#39;, name=&#39;LUMIP&#39;, long_name=&#39;Land-Use Model Intercomparison Project&#39;, url=None, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;LUMIP&#39;),
- Activity(id=&#39;pmip&#39;, type=&#39;activity&#39;, drs_name=&#39;PMIP&#39;, name=&#39;PMIP&#39;, long_name=&#39;Palaeoclimate Modelling Intercomparison Project&#39;, url=None, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;PMIP&#39;)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Activity(id='dynvarmip', type='activity', drs_name='DynVarMIP', name='DynVarMIP', long_name='Dynamics and Variability Model Intercomparison Project', url=None, @context='000_context.jsonld', cmip_acronym='DynVarMIP'),
+ Activity(id='lumip', type='activity', drs_name='LUMIP', name='LUMIP', long_name='Land-Use Model Intercomparison Project', url=None, @context='000_context.jsonld', cmip_acronym='LUMIP'),
+ Activity(id='pmip', type='activity', drs_name='PMIP', name='PMIP', long_name='Palaeoclimate Modelling Intercomparison Project', url=None, @context='000_context.jsonld', cmip_acronym='PMIP')]
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;aerchemmip&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">"activity"</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">"aerchemmip"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Activity(id=&#39;aerchemmip&#39;, type=&#39;activity&#39;, drs_name=&#39;AerChemMIP&#39;, name=&#39;AerChemMIP&#39;, long_name=&#39;Aerosols and Chemistry Model Intercomparison Project&#39;, url=None, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;AerChemMIP&#39;)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Activity(id='aerchemmip', type='activity', drs_name='AerChemMIP', name='AerChemMIP', long_name='Aerosols and Chemistry Model Intercomparison Project', url=None, @context='000_context.jsonld', cmip_acronym='AerChemMIP')
 </pre></div>
 </div>
 </div>
@@ -589,7 +589,7 @@ All terms from all projects (cross-validation).</p></li>
 <p>The result of the previous call is a list of instances of a pydantic model of the requested data descriptor. From the above example, the result is an <strong>Activity</strong> object that can be query directly in Python.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_activity</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;aerchemmip&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_activity</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_data_descriptor</span><span class="p">(</span><span class="n">data_descriptor_id</span><span class="o">=</span><span class="s2">"activity"</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">"aerchemmip"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">my_activity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">my_activity</span><span class="o">.</span><span class="n">drs_name</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">my_activity</span><span class="o">.</span><span class="n">long_name</span><span class="p">)</span>
@@ -601,19 +601,19 @@ All terms from all projects (cross-validation).</p></li>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>aerchemmip
 AerChemMIP
 Aerosols and Chemistry Model Intercomparison Project
-id=&#39;aerchemmip&#39; type=&#39;activity&#39; drs_name=&#39;AerChemMIP&#39; name=&#39;AerChemMIP&#39; long_name=&#39;Aerosols and Chemistry Model Intercomparison Project&#39; url=None @context=&#39;000_context.jsonld&#39; cmip_acronym=&#39;AerChemMIP&#39;
+id='aerchemmip' type='activity' drs_name='AerChemMIP' name='AerChemMIP' long_name='Aerosols and Chemistry Model Intercomparison Project' url=None @context='000_context.jsonld' cmip_acronym='AerChemMIP'
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_universe</span><span class="p">(</span><span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;aerchemmip&quot;</span><span class="p">)</span> <span class="c1"># give the same result as above</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_universe</span><span class="p">(</span><span class="n">term_id</span><span class="o">=</span><span class="s2">"aerchemmip"</span><span class="p">)</span> <span class="c1"># give the same result as above</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Activity(id=&#39;aerchemmip&#39;, type=&#39;activity&#39;, drs_name=&#39;AerChemMIP&#39;, name=&#39;AerChemMIP&#39;, long_name=&#39;Aerosols and Chemistry Model Intercomparison Project&#39;, url=None, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;AerChemMIP&#39;)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Activity(id='aerchemmip', type='activity', drs_name='AerChemMIP', name='AerChemMIP', long_name='Aerosols and Chemistry Model Intercomparison Project', url=None, @context='000_context.jsonld', cmip_acronym='AerChemMIP')
 </pre></div>
 </div>
 </div>
@@ -626,14 +626,14 @@ id=&#39;aerchemmip&#39; type=&#39;activity&#39; drs_name=&#39;AerChemMIP&#39; na
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The headquarter of the institution IPSL and the CNES are both located in Paris.</span>
 <span class="c1"># We want to find the term which corresponds to the IPSL institution, but not the CNES one:</span>
-<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_data_descriptor</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;pArIs NOT CNES&#39;</span><span class="p">,</span>
-                                 <span class="n">data_descriptor_id</span><span class="o">=</span><span class="s1">&#39;institution&#39;</span><span class="p">,</span>
-                                 <span class="n">selected_term_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">])</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_data_descriptor</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">'pArIs NOT CNES'</span><span class="p">,</span>
+                                 <span class="n">data_descriptor_id</span><span class="o">=</span><span class="s1">'institution'</span><span class="p">,</span>
+                                 <span class="n">selected_term_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">'location'</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[DataDescriptorSubSet(id=&#39;ipsl&#39;, type=&#39;institution&#39;, location={&#39;city&#39;: &#39;Paris&#39;, &#39;country&#39;: [&#39;France&#39;, &#39;FR&#39;], &#39;lat&#39;: 48.855675, &#39;lon&#39;: 2.332105})]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[DataDescriptorSubSet(id='ipsl', type='institution', location={'city': 'Paris', 'country': ['France', 'FR'], 'lat': 48.855675, 'lon': 2.332105})]
 </pre></div>
 </div>
 </div>
@@ -641,14 +641,14 @@ id=&#39;aerchemmip&#39; type=&#39;activity&#39; drs_name=&#39;AerChemMIP&#39; na
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can also search in the whole universe, but expect to find many more terms:</span>
-<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_universe</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;pArIs NOT CNES&#39;</span><span class="p">,</span>
-                          <span class="n">selected_term_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">])</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_universe</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">'pArIs NOT CNES'</span><span class="p">,</span>
+                          <span class="n">selected_term_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">'location'</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[DataDescriptorSubSet(id=&#39;ipsl&#39;, type=&#39;institution&#39;, location={&#39;city&#39;: &#39;Paris&#39;, &#39;country&#39;: [&#39;France&#39;, &#39;FR&#39;], &#39;lat&#39;: 48.855675, &#39;lon&#39;: 2.332105}),
- DataDescriptorSubSet(id=&#39;institution/ipsl&#39;, type=&#39;institution&#39;, location={&#39;city&#39;: &#39;Paris&#39;, &#39;country&#39;: [&#39;France&#39;, &#39;FR&#39;], &#39;lat&#39;: 48.855675, &#39;lon&#39;: 2.332105})]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[DataDescriptorSubSet(id='ipsl', type='institution', location={'city': 'Paris', 'country': ['France', 'FR'], 'lat': 48.855675, 'lon': 2.332105}),
+ DataDescriptorSubSet(id='institution/ipsl', type='institution', location={'city': 'Paris', 'country': ['France', 'FR'], 'lat': 48.855675, 'lon': 2.332105})]
 </pre></div>
 </div>
 </div>
@@ -659,15 +659,15 @@ id=&#39;aerchemmip&#39; type=&#39;activity&#39; drs_name=&#39;AerChemMIP&#39; na
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We want to find the data descriptors time_range and its terms:</span>
-<span class="n">ev</span><span class="o">.</span><span class="n">find_items_in_universe</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;time_range&#39;</span><span class="p">)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">find_items_in_universe</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">'time_range'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Item(id=&#39;daily&#39;, kind=&lt;ItemKind.TERM: &#39;term&#39;&gt;, parent_id=&#39;time_range&#39;),
- Item(id=&#39;monthly&#39;, kind=&lt;ItemKind.TERM: &#39;term&#39;&gt;, parent_id=&#39;time_range&#39;),
- Item(id=&#39;hourly&#39;, kind=&lt;ItemKind.TERM: &#39;term&#39;&gt;, parent_id=&#39;time_range&#39;),
- Item(id=&#39;time_range&#39;, kind=&lt;ItemKind.DATA_DESCRIPTOR: &#39;data_descriptor&#39;&gt;, parent_id=&#39;universe&#39;)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Item(id='daily', kind=&lt;ItemKind.TERM: 'term'&gt;, parent_id='time_range'),
+ Item(id='monthly', kind=&lt;ItemKind.TERM: 'term'&gt;, parent_id='time_range'),
+ Item(id='hourly', kind=&lt;ItemKind.TERM: 'term'&gt;, parent_id='time_range'),
+ Item(id='time_range', kind=&lt;ItemKind.DATA_DESCRIPTOR: 'data_descriptor'&gt;, parent_id='universe')]
 </pre></div>
 </div>
 </div>
@@ -684,54 +684,54 @@ id=&#39;aerchemmip&#39; type=&#39;activity&#39; drs_name=&#39;AerChemMIP&#39; na
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;cmip6&#39;, &#39;cmip6plus&#39;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>['cmip6', 'cmip6plus']
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_collections_in_project</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_collections_in_project</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">"cmip6plus"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;member_id&#39;,
- &#39;activity_id&#39;,
- &#39;mip_era&#39;,
- &#39;institution_id&#39;,
- &#39;source_id&#39;,
- &#39;time_range&#39;,
- &#39;version&#39;,
- &#39;table_id&#39;,
- &#39;grid_label&#39;,
- &#39;experiment_id&#39;,
- &#39;variable_id&#39;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>['member_id',
+ 'activity_id',
+ 'mip_era',
+ 'institution_id',
+ 'source_id',
+ 'time_range',
+ 'version',
+ 'table_id',
+ 'grid_label',
+ 'experiment_id',
+ 'variable_id']
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_terms_in_collection</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;activity_id&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_terms_in_collection</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">"cmip6plus"</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">"activity_id"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Activity(id=&#39;cmip&#39;, type=&#39;activity&#39;, drs_name=&#39;CMIP&#39;, name=&#39;CMIP&#39;, long_name=&#39;CMIP DECK: 1pctCO2, abrupt4xCO2, amip, esm-piControl, esm-historical, historical, and piControl experiments&#39;, url=&#39;https://gmd.copernicus.org/articles/9/1937/2016/gmd-9-1937-2016.pdf&#39;, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;CMIP&#39;),
- Activity(id=&#39;lesfmip&#39;, type=&#39;activity&#39;, drs_name=&#39;LESFMIP&#39;, name=&#39;LESFMIP&#39;, long_name=&#39;The Large Ensemble Single Forcing Model Intercomparison Project&#39;, url=&#39;https://www.frontiersin.org/articles/10.3389/fclim.2022.955414/full&#39;, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;LESFMIP&#39;)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Activity(id='cmip', type='activity', drs_name='CMIP', name='CMIP', long_name='CMIP DECK: 1pctCO2, abrupt4xCO2, amip, esm-piControl, esm-historical, historical, and piControl experiments', url='https://gmd.copernicus.org/articles/9/1937/2016/gmd-9-1937-2016.pdf', @context='000_context.jsonld', cmip_acronym='CMIP'),
+ Activity(id='lesfmip', type='activity', drs_name='LESFMIP', name='LESFMIP', long_name='The Large Ensemble Single Forcing Model Intercomparison Project', url='https://www.frontiersin.org/articles/10.3389/fclim.2022.955414/full', @context='000_context.jsonld', cmip_acronym='LESFMIP')]
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_collection</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;activity_id&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;cmip&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">get_term_in_collection</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">"cmip6plus"</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">"activity_id"</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="s2">"cmip"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Activity(id=&#39;cmip&#39;, type=&#39;activity&#39;, drs_name=&#39;CMIP&#39;, name=&#39;CMIP&#39;, long_name=&#39;CMIP DECK: 1pctCO2, abrupt4xCO2, amip, esm-piControl, esm-historical, historical, and piControl experiments&#39;, url=&#39;https://gmd.copernicus.org/articles/9/1937/2016/gmd-9-1937-2016.pdf&#39;, @context=&#39;000_context.jsonld&#39;, cmip_acronym=&#39;CMIP&#39;)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Activity(id='cmip', type='activity', drs_name='CMIP', name='CMIP', long_name='CMIP DECK: 1pctCO2, abrupt4xCO2, amip, esm-piControl, esm-historical, historical, and piControl experiments', url='https://gmd.copernicus.org/articles/9/1937/2016/gmd-9-1937-2016.pdf', @context='000_context.jsonld', cmip_acronym='CMIP')
 </pre></div>
 </div>
 </div>
@@ -741,13 +741,13 @@ id=&#39;aerchemmip&#39; type=&#39;activity&#39; drs_name=&#39;AerChemMIP&#39; na
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We want to find all the term related to miroc:</span>
-<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_project</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;mir*&#39;</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s1">&#39;cmip6plus&#39;</span><span class="p">,</span> <span class="n">selected_term_fields</span><span class="o">=</span><span class="p">[])</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">find_terms_in_project</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">'mir*'</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s1">'cmip6plus'</span><span class="p">,</span> <span class="n">selected_term_fields</span><span class="o">=</span><span class="p">[])</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[DataDescriptorSubSet(id=&#39;miroc6&#39;, type=&#39;source&#39;),
- DataDescriptorSubSet(id=&#39;miroc&#39;, type=&#39;organisation&#39;)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[DataDescriptorSubSet(id='miroc6', type='source'),
+ DataDescriptorSubSet(id='miroc', type='organisation')]
 </pre></div>
 </div>
 </div>
@@ -757,11 +757,11 @@ id=&#39;aerchemmip&#39; type=&#39;activity&#39; drs_name=&#39;AerChemMIP&#39; na
 <h3>Find terms and collections<a class="headerlink" href="#find-terms-and-collections" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We want to find the collection named &#39;institution_id&#39;</span>
-<span class="n">items_found</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">find_items_in_project</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;instit*&#39;</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s1">&#39;cmip6plus&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;number of items: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">items_found</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We want to find the collection named 'institution_id'</span>
+<span class="n">items_found</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">find_items_in_project</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">'instit*'</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s1">'cmip6plus'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'number of items: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">items_found</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items_found</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;collection&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">'collection'</span><span class="p">:</span>
         <span class="k">break</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 </pre></div>
@@ -769,7 +769,7 @@ id=&#39;aerchemmip&#39; type=&#39;activity&#39; drs_name=&#39;AerChemMIP&#39; na
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>number of items: 41
-id=&#39;institution_id&#39; kind=&lt;ItemKind.COLLECTION: &#39;collection&#39;&gt; parent_id=&#39;cmip6plus&#39;
+id='institution_id' kind=&lt;ItemKind.COLLECTION: 'collection'&gt; parent_id='cmip6plus'
 </pre></div>
 </div>
 </div>
@@ -777,18 +777,18 @@ id=&#39;institution_id&#39; kind=&lt;ItemKind.COLLECTION: &#39;collection&#39;&g
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># But we probably should execute this function:</span>
-<span class="n">ev</span><span class="o">.</span><span class="n">find_collections_in_project</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">&#39;instit*&#39;</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s1">&#39;cmip6plus&#39;</span><span class="p">)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">find_collections_in_project</span><span class="p">(</span><span class="n">expression</span><span class="o">=</span><span class="s1">'instit*'</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s1">'cmip6plus'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(&#39;institution_id&#39;,
-  {&#39;@context&#39;: {&#39;id&#39;: &#39;@id&#39;,
-    &#39;type&#39;: &#39;@type&#39;,
-    &#39;@base&#39;: &#39;https://espri-mod.github.io/mip-cmor-tables/organisation/&#39;,
-    &#39;organisation&#39;: &#39;https://espri-mod.github.io/mip-cmor-tables/organisation&#39;,
-    &#39;myprop&#39;: &#39;http://TEST&#39;,
-    &#39;established&#39;: {&#39;@id&#39;: &#39;https://schema.org/foundingDate&#39;}}})]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[('institution_id',
+  {'@context': {'id': '@id',
+    'type': '@type',
+    '@base': 'https://espri-mod.github.io/mip-cmor-tables/organisation/',
+    'organisation': 'https://espri-mod.github.io/mip-cmor-tables/organisation',
+    'myprop': 'http://TEST',
+    'established': {'@id': 'https://schema.org/foundingDate'}}})]
 </pre></div>
 </div>
 </div>
@@ -799,8 +799,8 @@ id=&#39;institution_id&#39; kind=&lt;ItemKind.COLLECTION: &#39;collection&#39;&g
 <h2>Validating string against the project CV<a class="headerlink" href="#validating-string-against-the-project-cv" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">valid_string</span> <span class="o">=</span> <span class="s2">&quot;IPSL&quot;</span> <span class="c1"># the standard name of the institution : &quot;Institut Pierre Simon Laplace&quot;</span>
-<span class="n">unvalid_string</span> <span class="o">=</span> <span class="s2">&quot;ipsl&quot;</span> <span class="c1"># NOT the DRS name ! but in that case it is the &#39;id&#39; of the term</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">valid_string</span> <span class="o">=</span> <span class="s2">"IPSL"</span> <span class="c1"># the standard name of the institution : "Institut Pierre Simon Laplace"</span>
+<span class="n">unvalid_string</span> <span class="o">=</span> <span class="s2">"ipsl"</span> <span class="c1"># NOT the DRS name ! but in that case it is the 'id' of the term</span>
 </pre></div>
 </div>
 </div>
@@ -809,19 +809,19 @@ id=&#39;institution_id&#39; kind=&lt;ItemKind.COLLECTION: &#39;collection&#39;&g
 <h3>Queries based on the project and the collection ids<a class="headerlink" href="#queries-based-on-the-project-and-the-collection-ids" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_collection</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">valid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;institution_id&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_collection</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">valid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">"cmip6plus"</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">"institution_id"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[MatchingTerm(project_id=&#39;cmip6plus&#39;, collection_id=&#39;institution_id&#39;, term_id=&#39;ipsl&#39;)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[MatchingTerm(project_id='cmip6plus', collection_id='institution_id', term_id='ipsl')]
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_collection</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">unvalid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;institution_id&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_collection</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">unvalid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">"cmip6plus"</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">"institution_id"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -833,10 +833,10 @@ id=&#39;institution_id&#39; kind=&lt;ItemKind.COLLECTION: &#39;collection&#39;&g
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_collection</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">valid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;institution_id&quot;</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Valid&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_collection</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">valid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">"cmip6plus"</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">"institution_id"</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Valid"</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unvalid&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Unvalid"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -848,10 +848,10 @@ id=&#39;institution_id&#39; kind=&lt;ItemKind.COLLECTION: &#39;collection&#39;&g
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_collection</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">unvalid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">&quot;institution_id&quot;</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Valid&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_collection</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">unvalid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">"cmip6plus"</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="s2">"institution_id"</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Valid"</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unvalid&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Unvalid"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -866,12 +866,12 @@ id=&#39;institution_id&#39; kind=&lt;ItemKind.COLLECTION: &#39;collection&#39;&g
 <h3>Queries based only on the project id<a class="headerlink" href="#queries-based-only-on-the-project-id" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_project</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">valid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span><span class="o">.</span><span class="n">valid_term_in_project</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">valid_string</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="s2">"cmip6plus"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[MatchingTerm(project_id=&#39;cmip6plus&#39;, collection_id=&#39;institution_id&#39;, term_id=&#39;ipsl&#39;)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[MatchingTerm(project_id='cmip6plus', collection_id='institution_id', term_id='ipsl')]
 </pre></div>
 </div>
 </div>
@@ -887,7 +887,7 @@ id=&#39;institution_id&#39; kind=&lt;ItemKind.COLLECTION: &#39;collection&#39;&g
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[MatchingTerm(project_id=&#39;cmip6&#39;, collection_id=&#39;institution_id&#39;, term_id=&#39;ipsl&#39;), MatchingTerm(project_id=&#39;cmip6plus&#39;, collection_id=&#39;institution_id&#39;, term_id=&#39;ipsl&#39;)]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[MatchingTerm(project_id='cmip6', collection_id='institution_id', term_id='ipsl'), MatchingTerm(project_id='cmip6plus', collection_id='institution_id', term_id='ipsl')]
 []
 </pre></div>
 </div>

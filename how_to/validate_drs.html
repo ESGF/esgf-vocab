@@ -450,11 +450,11 @@ esgvoc<span class="w"> </span>drsvalid<span class="w"> </span>cmip6plus<span cla
 More examples are described later in this documentation.</p>
 </div>
 </div><div aria-labelledby="tab-0-QVBJIGFzIHB5dGhvbiBsaWI=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-QVBJIGFzIHB5dGhvbiBsaWI=" name="QVBJIGFzIHB5dGhvbiBsaWI=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">esgvoc.apps.drs.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">DrsValidator</span>
-<span class="n">validator</span> <span class="o">=</span> <span class="n">DrsValidator</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;cmip6plus&quot;</span><span class="p">)</span> <span class="c1">#instanciate</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">DrsValidator</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">"cmip6plus"</span><span class="p">)</span> <span class="c1">#instanciate</span>
 
-<span class="n">validator</span><span class="o">.</span><span class="n">validate_file_name</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="s2">&quot;od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc&quot;</span><span class="p">)</span>
-<span class="n">validator</span><span class="o">.</span><span class="n">validate_directory</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="s2">&quot;CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923&quot;</span><span class="p">)</span>
-<span class="n">validator</span><span class="o">.</span><span class="n">validate_dataset_id</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="s2">&quot;CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn&quot;</span><span class="p">)</span>
+<span class="n">validator</span><span class="o">.</span><span class="n">validate_file_name</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="s2">"od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc"</span><span class="p">)</span>
+<span class="n">validator</span><span class="o">.</span><span class="n">validate_directory</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="s2">"CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923"</span><span class="p">)</span>
+<span class="n">validator</span><span class="o">.</span><span class="n">validate_dataset_id</span><span class="p">(</span><span class="n">drs_expression</span><span class="o">=</span><span class="s2">"CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn"</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="../_images/API_drsvalid_one.png" src="../_images/API_drsvalid_one.png" />
