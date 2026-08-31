@@ -6,6 +6,8 @@ from esgvoc.api.data_descriptors.branding_suffix import BrandingSuffix
 from esgvoc.api.data_descriptors.citation_url import CitationUrl
 from esgvoc.api.data_descriptors.contact import Contact
 from esgvoc.api.data_descriptors.conventions import Convention
+from esgvoc.api.data_descriptors.coordinate import DataCoordinate
+from esgvoc.api.data_descriptors.coordinate_type import CoordinateType
 from esgvoc.api.data_descriptors.creation_date import CreationDate
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.data_descriptors.data_specs_version import DataSpecsVersion
@@ -24,7 +26,7 @@ from esgvoc.api.data_descriptors.EMD_models.horizontal_computational_grid import
 from esgvoc.api.data_descriptors.EMD_models.horizontal_grid_cells import HorizontalGridCells
 from esgvoc.api.data_descriptors.EMD_models.horizontal_subgrid import HorizontalSubgrid
 from esgvoc.api.data_descriptors.EMD_models.horizontal_units import HorizontalUnits
-from esgvoc.api.data_descriptors.EMD_models.model import Model, TempModel
+from esgvoc.api.data_descriptors.EMD_models.model import Model, TempModel  # noqa
 from esgvoc.api.data_descriptors.EMD_models.model_component import EMDModelComponent
 from esgvoc.api.data_descriptors.EMD_models.reference import Reference
 from esgvoc.api.data_descriptors.EMD_models.temporal_refinement import TemporalRefinement
@@ -34,19 +36,24 @@ from esgvoc.api.data_descriptors.EMD_models.vertical_coordinate import VerticalC
 from esgvoc.api.data_descriptors.EMD_models.vertical_units import VerticalUnits
 from esgvoc.api.data_descriptors.experiment import Experiment
 from esgvoc.api.data_descriptors.forcing_index import ForcingIndex
+from esgvoc.api.data_descriptors.formula_term import FormulaTerm
 from esgvoc.api.data_descriptors.frequency import Frequency
 from esgvoc.api.data_descriptors.further_info_url import FurtherInfoUrl
 from esgvoc.api.data_descriptors.grid import Grid
+from esgvoc.api.data_descriptors.grid_axis import GridAxis
+from esgvoc.api.data_descriptors.grid_variable import GridVariable
 from esgvoc.api.data_descriptors.horizontal_label import HorizontalLabel
 from esgvoc.api.data_descriptors.initialization_index import InitializationIndex
 from esgvoc.api.data_descriptors.institution import Institution
-from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable
+from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable as _KnownBrandedVariable
+from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariableModel
 from esgvoc.api.data_descriptors.license import License
 from esgvoc.api.data_descriptors.member_id import MemberId
 
 # from esgvoc.api.data_descriptors.model_component import ModelComponent
 from esgvoc.api.data_descriptors.mip_era import MipEra
 from esgvoc.api.data_descriptors.model_component import ModelComponent
+from esgvoc.api.data_descriptors.model_level_coordinate import ModelLevelCoordinate
 from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
 from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
 from esgvoc.api.data_descriptors.obs_type import ObsType
@@ -70,6 +77,8 @@ from esgvoc.api.data_descriptors.tracking_id import TrackingId
 from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
+
+KnownBrandedVariable = _KnownBrandedVariable
 
 ActivityCMIP7.model_rebuild()
 
@@ -109,11 +118,17 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "branding_suffix": BrandingSuffix,
     "branded_variable": BrandedVariable,
     "publication_status": PublicationStatus,
-    "known_branded_variable": KnownBrandedVariable,
+    "known_branded_variable": KnownBrandedVariableModel,
     "calendar": Calendar,
     "component_type": ComponentType,
     "grid_arrangement": Arrangement,  # EMD v1.0
     "coordinate": Coordinate,
+    "data_coordinate": DataCoordinate,
+    "coordinate_type": CoordinateType,
+    "model_level_coordinate": ModelLevelCoordinate,
+    "formula_term": FormulaTerm,
+    "grid_axis": GridAxis,
+    "grid_variable": GridVariable,
     "grid_mapping": GridMapping,  # EMD v1.0
     "model_componentEMD": EMDModelComponent,  # EMD v1.0
     "model": TempModel,  # EMD v1.0 (temporary simplified model)

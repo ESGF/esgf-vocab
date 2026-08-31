@@ -61,4 +61,3 @@ class EsgvocMissingLinksError(EsgvocException):
             lines.append("")
         return "\n".join(lines)
 
-
