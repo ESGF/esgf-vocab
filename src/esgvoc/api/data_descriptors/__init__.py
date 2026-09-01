@@ -78,6 +78,9 @@ from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
 
+# Re-export the concrete class for public use. The DATA_DESCRIPTOR_CLASS_MAPPING
+# registers KnownBrandedVariableModel (a Union that also accepts legacy records)
+# so that DB deserialization handles both current and older schemas.
 KnownBrandedVariable = _KnownBrandedVariable
 
 ActivityCMIP7.model_rebuild()
@@ -122,8 +125,8 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "calendar": Calendar,
     "component_type": ComponentType,
     "grid_arrangement": Arrangement,  # EMD v1.0
-    "coordinate": Coordinate,
-    "data_coordinate": DataCoordinate,
+    "coordinate": Coordinate,  # EMD v1.0 — distinct from data_coordinate below
+    "data_coordinate": DataCoordinate,  # New coordinate model (PR #255)
     "coordinate_type": CoordinateType,
     "model_level_coordinate": ModelLevelCoordinate,
     "formula_term": FormulaTerm,
