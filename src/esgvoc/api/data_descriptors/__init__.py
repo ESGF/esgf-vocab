@@ -56,7 +56,11 @@ from esgvoc.api.data_descriptors.model_component import ModelComponent
 from esgvoc.api.data_descriptors.model_level_coordinate import ModelLevelCoordinate
 from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
 from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
+from esgvoc.api.data_descriptors.aux_uncertainty_id import AuxUncertaintyId
+from esgvoc.api.data_descriptors.has_aux_unc import HasAuxUnc
 from esgvoc.api.data_descriptors.obs_type import ObsType
+from esgvoc.api.data_descriptors.site_id import SiteId
+from esgvoc.api.data_descriptors.site_location import SiteLocation
 from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.physics_index import PhysicsIndex
 from esgvoc.api.data_descriptors.product import Product
@@ -149,6 +153,10 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "region": Region,
     "member_id": MemberId,
     "obs_type": ObsType,  # obs4Mips
+    "has_aux_unc": HasAuxUnc,  # obs4REF
+    "aux_uncertainty_id": AuxUncertaintyId,  # obs4REF
+    "site_id": SiteId,  # obs4REF
+    "site_location": SiteLocation,  # obs4REF
     "regex": Regex,
     "citation_url": CitationUrl,
     "archive": Archive,
