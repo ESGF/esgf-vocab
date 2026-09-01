@@ -105,6 +105,9 @@ def validate_coordinate_data_type(model: Any) -> Any:
             raise ValueError("real and double coordinate values must be numeric")
         if bounds is not None and any(type(bound) not in (float, int) for bound in bounds):
             raise ValueError("real and double coordinate bounds must be numeric")
+        # Use object.__setattr__ to bypass pydantic's validate_assignment=True
+        # (set in ConfiguredBaseModel). Normal assignment would re-trigger field
+        # validation and reject the coerced list type.
         if values is not None:
             object.__setattr__(model, "coordinate_values", [float(value) for value in values])
         if bounds is not None:

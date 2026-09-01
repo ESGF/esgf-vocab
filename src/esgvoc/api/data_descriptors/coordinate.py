@@ -60,7 +60,7 @@ class DataCoordinate(PlainTermDataDescriptor):
 
     units: NonEmptyString | None = None
     """
-    Units of the coordiante.
+    Units of the coordinate.
     """
 
     positive: Literal["up", "down"] | None = None
@@ -138,7 +138,7 @@ class DataCoordinate(PlainTermDataDescriptor):
     """
 
     @model_validator(mode="after")
-    def validate_climatology_axis(self):
+    def validate_coordinate_constraints(self):
         """
         Validate relationships between coordinate fields.
         """
