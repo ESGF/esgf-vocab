@@ -56,7 +56,11 @@ from esgvoc.api.data_descriptors.model_component import ModelComponent
 from esgvoc.api.data_descriptors.model_level_coordinate import ModelLevelCoordinate
 from esgvoc.api.data_descriptors.models_test.models import CompositeTermDDex, PatternTermDDex, PlainTermDDex
 from esgvoc.api.data_descriptors.nominal_resolution import NominalResolution
+from esgvoc.api.data_descriptors.aux_uncertainty_id import AuxUncertaintyId
+from esgvoc.api.data_descriptors.has_aux_unc import HasAuxUnc
 from esgvoc.api.data_descriptors.obs_type import ObsType
+from esgvoc.api.data_descriptors.site_id import SiteId
+from esgvoc.api.data_descriptors.site_location import SiteLocation
 from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.data_descriptors.physics_index import PhysicsIndex
 from esgvoc.api.data_descriptors.product import Product
@@ -78,6 +82,9 @@ from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.variant_label import VariantLabel
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
 
+# Re-export the concrete class for public use. The DATA_DESCRIPTOR_CLASS_MAPPING
+# registers KnownBrandedVariableModel (a Union that also accepts legacy records)
+# so that DB deserialization handles both current and older schemas.
 KnownBrandedVariable = _KnownBrandedVariable
 
 ActivityCMIP7.model_rebuild()
@@ -122,8 +129,8 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "calendar": Calendar,
     "component_type": ComponentType,
     "grid_arrangement": Arrangement,  # EMD v1.0
-    "coordinate": Coordinate,
-    "data_coordinate": DataCoordinate,
+    "coordinate": Coordinate,  # EMD v1.0 — distinct from data_coordinate below
+    "data_coordinate": DataCoordinate,  # New coordinate model (PR #255)
     "coordinate_type": CoordinateType,
     "model_level_coordinate": ModelLevelCoordinate,
     "formula_term": FormulaTerm,
@@ -149,6 +156,10 @@ DATA_DESCRIPTOR_CLASS_MAPPING: dict[str, type[DataDescriptor]] = {
     "region": Region,
     "member_id": MemberId,
     "obs_type": ObsType,  # obs4Mips
+    "has_aux_unc": HasAuxUnc,  # obs4REF
+    "aux_uncertainty_id": AuxUncertaintyId,  # obs4REF
+    "site_id": SiteId,  # obs4REF
+    "site_location": SiteLocation,  # obs4REF
     "regex": Regex,
     "citation_url": CitationUrl,
     "archive": Archive,
