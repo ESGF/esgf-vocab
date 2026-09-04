@@ -29,25 +29,18 @@ class Reference(PlainTermDataDescriptor):
 
     citation: str = Field(description="A human-readable citation for the work.", min_length=1)
     doi: str = Field(
-        description="The persistent identifier (DOI) used to identify the work. Must be a valid DOI URL.", min_length=1
+        description="The persistent identifier (DOI) or URL used to identify the work.", min_length=1
     )
 
     @field_validator("doi")
     @classmethod
     def validate_doi(cls, v):
-        """Validate that DOI follows proper format (accepts proxies like doi-org.insu.bib...)."""
+        """Validate that DOI/URL is not empty and clean whitespace."""
         # Remove all whitespace to handle formatting issues
         v = "".join(v.split())
 
-        # Accept both canonical DOIs and proxy URLs
-        if not v.startswith("https://doi"):
-            raise ValueError(
-                'DOI must start with "https://doi" (canonical: https://doi.org/, proxies: https://doi-...)'
-            )
-
-        # Ensure there's an actual identifier after the DOI prefix
-        if len(v) <= len("https://doi"):
-            raise ValueError('DOI must contain identifier after "https://doi"')
+        if not v:
+            raise ValueError("DOI/URL cannot be empty")
 
         return v
 
