@@ -51,8 +51,7 @@ jobs:
           - input4mips
           - obs4ref
           - cordex-cmip6
-          # cordex-cmip5 disabled: empty cell_measures in vos_tavg-u-hxy-sea (WCRP-CORDEX/cordex-cmip5#15)
-          # - cordex-cmip5
+          - cordex-cmip5
           - emd
     steps:
       - name: Checkout
