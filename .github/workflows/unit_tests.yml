@@ -45,5 +45,6 @@ jobs:
           uv run esgvoc test run input4mips --branch esgvoc_dev --universe-branch esgvoc_dev
           uv run esgvoc test run obs4ref    --branch esgvoc_dev --universe-branch esgvoc_dev
           uv run esgvoc test run cordex-cmip6 --branch esgvoc_dev --universe-branch esgvoc_dev
-          uv run esgvoc test run cordex-cmip5 --branch esgvoc_dev --universe-branch esgvoc_dev
+          # cordex-cmip5 disabled: empty cell_measures in vos_tavg-u-hxy-sea (WCRP-CORDEX/cordex-cmip5#15)
+          # uv run esgvoc test run cordex-cmip5 --branch esgvoc_dev --universe-branch esgvoc_dev
           uv run esgvoc test run emd        --branch esgvoc_dev --universe-branch esgvoc_dev
