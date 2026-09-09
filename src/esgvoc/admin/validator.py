@@ -70,57 +70,63 @@ class DBValidator:
             result.add("Opens as SQLite", False, str(e))
             return result
 
-        # 3. Metadata table present
         try:
-            rows = conn.execute("SELECT key, value FROM _esgvoc_metadata").fetchall()
-            metadata = dict(rows)
-            result.add("_esgvoc_metadata table", True, f"{len(metadata)} entries")
-        except Exception as e:
-            result.add("_esgvoc_metadata table", False, str(e))
-            metadata = {}
-
-        # 4. Key metadata fields
-        for key in ("project_id", "cv_version", "build_date", "esgvoc_version"):
-            val = metadata.get(key, "")
-            result.add(f"metadata.{key}", bool(val), val or "missing")
-
-        # 5. Ingestion errors — if tracked, must be zero
-        ingestion_errors = metadata.get("ingestion_errors", "")
-        if ingestion_errors:
-            error_count = int(ingestion_errors)
-            result.add(
-                "ingestion_errors",
-                error_count == 0,
-                f"{error_count} term(s) failed to ingest" if error_count > 0 else "0",
-            )
-
-        # 6. Core tables have data — checked based on DB type
-        is_universe = metadata.get("project_id", "") == "universe"
-        if is_universe:
-            core_tables = [
-                ("universes", "SELECT COUNT(*) FROM universes"),
-                ("udata_descriptors", "SELECT COUNT(*) FROM udata_descriptors"),
-                ("uterms", "SELECT COUNT(*) FROM uterms"),
-            ]
-        else:
-            core_tables = [
-                ("pcollections", "SELECT COUNT(*) FROM pcollections"),
-                ("pterms", "SELECT COUNT(*) FROM pterms"),
-            ]
-
-        for table, count_query in core_tables:
+            # 3. Metadata table present
             try:
-                count = conn.execute(count_query).fetchone()[0]
-                result.add(f"{table} not empty", count > 0, f"{count} rows")
+                rows = conn.execute("SELECT key, value FROM _esgvoc_metadata").fetchall()
+                metadata = dict(rows)
+                result.add("_esgvoc_metadata table", True, f"{len(metadata)} entries")
             except Exception as e:
-                result.add(f"{table} exists", False, str(e))
+                result.add("_esgvoc_metadata table", False, str(e))
+                metadata = {}
 
-        if full:
-            self._check_fts(conn, result, is_universe=is_universe)
-            if not is_universe:
-                self._check_sample_query(conn, result)
+            # 4. Key metadata fields
+            for key in ("project_id", "cv_version", "build_date", "esgvoc_version"):
+                val = metadata.get(key, "")
+                result.add(f"metadata.{key}", bool(val), val or "missing")
 
-        conn.close()
+            # 5. Ingestion errors — if tracked, must be zero
+            ingestion_errors = metadata.get("ingestion_errors", "")
+            if ingestion_errors:
+                try:
+                    error_count = int(ingestion_errors)
+                except (ValueError, TypeError):
+                    result.add("ingestion_errors", False, f"non-numeric value: {ingestion_errors!r}")
+                    error_count = None
+                if error_count is not None:
+                    result.add(
+                        "ingestion_errors",
+                        error_count == 0,
+                        f"{error_count} term(s) failed to ingest" if error_count > 0 else "0",
+                    )
+
+            # 6. Core tables have data — checked based on DB type
+            is_universe = metadata.get("project_id", "") == "universe"
+            if is_universe:
+                core_tables = [
+                    ("universes", "SELECT COUNT(*) FROM universes"),
+                    ("udata_descriptors", "SELECT COUNT(*) FROM udata_descriptors"),
+                    ("uterms", "SELECT COUNT(*) FROM uterms"),
+                ]
+            else:
+                core_tables = [
+                    ("pcollections", "SELECT COUNT(*) FROM pcollections"),
+                    ("pterms", "SELECT COUNT(*) FROM pterms"),
+                ]
+
+            for table, count_query in core_tables:
+                try:
+                    count = conn.execute(count_query).fetchone()[0]
+                    result.add(f"{table} not empty", count > 0, f"{count} rows")
+                except Exception as e:
+                    result.add(f"{table} exists", False, str(e))
+
+            if full:
+                self._check_fts(conn, result, is_universe=is_universe)
+                if not is_universe:
+                    self._check_sample_query(conn, result)
+        finally:
+            conn.close()
 
         # 7. API term instantiation — try to instantiate every term through the public API
         project_id = metadata.get("project_id", "")
@@ -196,10 +202,11 @@ class DBValidator:
     ) -> None:
         """Temporarily install the DB and try to instantiate every term via the public API."""
         import shutil
+        import uuid
 
         from esgvoc.core.service.user_state import UserState
 
-        _VALIDATE_VERSION = "_validate_temp"
+        _VALIDATE_VERSION = f"_validate_{uuid.uuid4().hex[:8]}"
 
         state = UserState.load()
         previous_active = state.get_active(project_id)

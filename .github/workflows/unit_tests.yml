@@ -18,9 +18,10 @@ on:
       - src/**
       - tests/**
       - pyproject.toml
+
 jobs:
-  unit_tests:
-    name: Run unit tests
+  library_tests:
+    name: Library tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,13 +38,32 @@ jobs:
       - name: Library Tests
         run: uv run pytest tests
 
-      - name: CVs Tests branch esgvoc_dev
-        run: |
-          uv run esgvoc test run cmip7      --branch esgvoc_dev --universe-branch esgvoc_dev
-          uv run esgvoc test run cmip6plus  --branch esgvoc_dev --universe-branch esgvoc_dev
-          uv run esgvoc test run cmip6      --branch esgvoc_dev --universe-branch esgvoc_dev
-          uv run esgvoc test run input4mips --branch esgvoc_dev --universe-branch esgvoc_dev
-          uv run esgvoc test run obs4ref    --branch esgvoc_dev --universe-branch esgvoc_dev
-          uv run esgvoc test run cordex-cmip6 --branch esgvoc_dev --universe-branch esgvoc_dev
-          uv run esgvoc test run cordex-cmip5 --branch esgvoc_dev --universe-branch esgvoc_dev
-          uv run esgvoc test run emd        --branch esgvoc_dev --universe-branch esgvoc_dev
+  cv_tests:
+    name: CV ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - cmip7
+          - cmip6plus
+          - cmip6
+          - input4mips
+          - obs4ref
+          - cordex-cmip6
+          - cordex-cmip5
+          - emd
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync
+        run: uv sync
+
+      - name: Test ${{ matrix.project }}
+        run: uv run esgvoc test run ${{ matrix.project }} --branch esgvoc_dev --universe-branch esgvoc_dev

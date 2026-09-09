@@ -5,9 +5,10 @@ Model (i.e. schema/definition) of the activity data descriptor
 import re
 from typing import TYPE_CHECKING
 
-from pydantic import HttpUrl, field_validator
+from pydantic import Field, field_validator
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.EMD_models.reference import Reference
 from esgvoc.api.pydantic_handler import create_union
 
 if TYPE_CHECKING:
@@ -42,9 +43,12 @@ class ActivityCMIP7(PlainTermDataDescriptor):
     Experiments 'sponsored' by this activity
     """
 
-    urls: list[HttpUrl]
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    references: list[Reference | str] = Field(default_factory=list)
     """
-    URL with more information about this activity
+    Academic references to published work for this activity.
     """
 
     @field_validator("drs_name")

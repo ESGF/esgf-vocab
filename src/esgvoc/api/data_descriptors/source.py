@@ -6,6 +6,7 @@ from pydantic import Field
 
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 from esgvoc.api.data_descriptors.EMD_models.model_component import EMDModelComponent
+from esgvoc.api.data_descriptors.EMD_models.reference import Reference
 from esgvoc.api.data_descriptors.organisation import Organisation
 from esgvoc.api.pydantic_handler import create_union
 
@@ -69,6 +70,16 @@ class SourceCMIP7(PlainTermDataDescriptor):
     Model components
 
     If this source is not a model, this can/will just be an empty list.
+    """
+
+    # Note: Allowing str is under discussion.
+    # Using this to get things working.
+    # Long-term, we might do something different.
+    references: list[Reference | str] = Field(default_factory=list)
+    """
+    Academic references to published work for this source.
+
+    These are citations and DOIs for papers describing this model/source.
     """
 
     @property

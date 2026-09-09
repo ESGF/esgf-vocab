@@ -11,6 +11,10 @@ from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
 class GridAxis(PlainTermDataDescriptor):
     """
     An index axis used for an unstructured or non-standard grid.
+
+    Unlike peer coordinate models, ``data_type`` and ``out_name`` are optional
+    here because grid axes can be purely structural (defining only the axis
+    direction without specifying a concrete output variable).
     """
 
     axis: Literal["X", "Y"] | None = None
