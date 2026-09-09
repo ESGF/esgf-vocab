@@ -27,7 +27,10 @@ class TempModel(PlainTermDataDescriptor):
     does not yet contain the full EMD v1.0 Section 2 fields.
     """
 
-    pass
+    references: List[str | Reference] = Field(
+        description="One or more references to published work for the top-level model as a whole.",
+        default_factory=list,
+    )
 
 
 class Model(PlainTermDataDescriptor):
