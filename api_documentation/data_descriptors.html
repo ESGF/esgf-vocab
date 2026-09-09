@@ -423,8 +423,8 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.drs_name"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.drs_name</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.experiments"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.experiments</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.id"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.references"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.references</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.type"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.type</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.urls"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.urls</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.accept"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.accept()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.name_must_not_end_in_number"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.name_must_not_end_in_number</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.describe"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.describe</span></code></a></li>
@@ -1470,14 +1470,18 @@ of the schemas for these two classes.</p>
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Experiments"</span>
 <span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">"urls"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"references"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                  </span><span class="nt">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"uri"</span><span class="p">,</span>
-<span class="w">                  </span><span class="nt">"maxLength"</span><span class="p">:</span><span class="w"> </span><span class="mi">2083</span><span class="p">,</span>
-<span class="w">                  </span><span class="nt">"minLength"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-<span class="w">                  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
+<span class="w">                  </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                     </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/Reference"</span>
+<span class="w">                     </span><span class="p">},</span>
+<span class="w">                     </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
+<span class="w">                     </span><span class="p">}</span>
+<span class="w">                  </span><span class="p">]</span>
 <span class="w">               </span><span class="p">},</span>
-<span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Urls"</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"References"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"array"</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
@@ -1485,8 +1489,7 @@ of the schemas for these two classes.</p>
 <span class="w">            </span><span class="s2">"id"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"type"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"drs_name"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"experiments"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"urls"</span>
+<span class="w">            </span><span class="s2">"experiments"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ActivityCMIP7"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
@@ -2081,6 +2084,50 @@ of the schemas for these two classes.</p>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MipEra"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">"Reference"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">"additionalProperties"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Academic reference to published work for the top-level model or model components.\n\nAn academic reference to published work for the top-level model or one of its model\ncomponents is defined by the following properties:\n\n* **Citation** - A human-readable citation for the work.\n  E.g. Smith, R. S., Mathiot, P., Siahaan, A., Lee, V., Cornford, S. L., Gregory, J. M.,\n  et al. (2021). Coupling the U.K. Earth System model to dynamic models of the Greenland\n  and Antarctic ice sheets. Journal of Advances in Modeling Earth Systems, 13,\n  e2021MS002520. https://doi.org/10.1029/2021MS002520, 2023\n\n* **DOI** - The persistent identifier (DOI) used to identify the work.\n  A DOI is required for all references. A reference that does not already have a DOI\n  (as could be the case for some technical reports, for instance) must be given one\n  (e.g. with a service like Zenodo).\n  E.g. https://doi.org/10.1029/2021MS002520"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Id"</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Type"</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Description"</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">"drs_name"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Drs Name"</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">"citation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A human-readable citation for the work."</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"minLength"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Citation"</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">"doi"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The persistent identifier (DOI) or URL used to identify the work."</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"minLength"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Doi"</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="nt">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">"id"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"type"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"drs_name"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"citation"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"doi"</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Reference"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/ActivityCMIP7"</span>
@@ -2125,15 +2172,15 @@ of the schemas for these two classes.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.ActivityCMIP7.type">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.ActivityCMIP7.type" title="Link to this definition">#</a></dt>
-<dd><p>The data descriptor to which the term belongs.</p>
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.ActivityCMIP7.references">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">references</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#esgvoc.api.data_descriptors.Reference" title="esgvoc.api.data_descriptors.EMD_models.reference.Reference"><span class="pre">Reference</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.ActivityCMIP7.references" title="Link to this definition">#</a></dt>
+<dd><p>Academic references to published work for this activity.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.ActivityCMIP7.urls">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">urls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/networks/#pydantic.networks.HttpUrl" title="(in Pydantic v0.0.0)"><span class="pre">HttpUrl</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.ActivityCMIP7.urls" title="Link to this definition">#</a></dt>
-<dd><p>URL with more information about this activity</p>
+<dt class="sig sig-object py" id="esgvoc.api.data_descriptors.ActivityCMIP7.type">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.ActivityCMIP7.type" title="Link to this definition">#</a></dt>
+<dd><p>The data descriptor to which the term belongs.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4404,7 +4451,7 @@ model-dependent vertical level coordinate.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Constraints<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7f2c86f271a0&gt;</p></li>
+<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7ff12d23d6c0&gt;</p></li>
 </ul>
 </dd>
 <dt class="field-even">Validated by<span class="colon">:</span></dt>
@@ -5917,7 +5964,7 @@ description=”The model components (identified by their component properties) w
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">code_base</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">name</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">family</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">component</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model_component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">component</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">code_base</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">family</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">name</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model_component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.EMDModelComponent.validate_non_empty_strings" title="Link to this definition">#</a></dt>
 <dd><p>Validate that string fields are not empty.</p>
 </dd></dl>
 
@@ -6484,7 +6531,7 @@ have not been resolved.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Constraints<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7f2c86f271a0&gt;</p></li>
+<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7ff12d23d6c0&gt;</p></li>
 </ul>
 </dd>
 </dl>
@@ -7916,7 +7963,7 @@ have not been resolved.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Constraints<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7f2c86f271a0&gt;</p></li>
+<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7ff12d23d6c0&gt;</p></li>
 </ul>
 </dd>
 <dt class="field-even">Validated by<span class="colon">:</span></dt>
@@ -7947,7 +7994,7 @@ have not been resolved.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Constraints<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7f2c86f271a0&gt;</p></li>
+<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7ff12d23d6c0&gt;</p></li>
 </ul>
 </dd>
 <dt class="field-even">Validated by<span class="colon">:</span></dt>
@@ -11657,7 +11704,7 @@ dimensions reference data-coordinate terms by ID or as resolved objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Constraints<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7f2c86f271a0&gt;</p></li>
+<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7ff12d23d6c0&gt;</p></li>
 </ul>
 </dd>
 <dt class="field-even">Validated by<span class="colon">:</span></dt>
@@ -11724,7 +11771,7 @@ project retains a more specific or historical definition.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Constraints<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7f2c86f271a0&gt;</p></li>
+<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7ff12d23d6c0&gt;</p></li>
 </ul>
 </dd>
 <dt class="field-even">Validated by<span class="colon">:</span></dt>
@@ -11919,7 +11966,7 @@ may retain a different historical output name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Constraints<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7f2c86f271a0&gt;</p></li>
+<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7ff12d23d6c0&gt;</p></li>
 </ul>
 </dd>
 <dt class="field-even">Validated by<span class="colon">:</span></dt>
@@ -13958,7 +14005,7 @@ This difference can be identified using the MIP era data descriptor.</p>
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Model.validate_component_lists">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_component_lists</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">dynamic_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">prescribed_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">omitted_components</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_component_lists" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_component_lists</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">omitted_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">prescribed_components</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">dynamic_components</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_component_lists" title="Link to this definition">#</a></dt>
 <dd><p>Validate component lists contain valid strings or ComponentType objects.</p>
 </dd></dl>
 
@@ -13988,7 +14035,7 @@ This difference can be identified using the MIP era data descriptor.</p>
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="esgvoc.api.data_descriptors.Model.validate_non_empty_strings">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">family</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">name</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_non_empty_strings" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_non_empty_strings</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">name</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">description</span></em><em class="property"><span class="pre">,</span> </em><em class="xref py py-obj"><span class="pre">family</span></em><a class="reference external" href="https://github.com/ESGF/esgf-vocab/tree/main/src/esgvoc/api/data_descriptors/EMD_models/model.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgvoc.api.data_descriptors.Model.validate_non_empty_strings" title="Link to this definition">#</a></dt>
 <dd><p>Validate that string fields are not empty.</p>
 </dd></dl>
 
@@ -14869,7 +14916,7 @@ of whether any given model has or does not have a given component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Constraints<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7f2c86f271a0&gt;</p></li>
+<li><p><strong>func</strong> = &lt;function validate_non_empty_string at 0x7ff12d23d6c0&gt;</p></li>
 </ul>
 </dd>
 <dt class="field-even">Validated by<span class="colon">:</span></dt>
@@ -19276,8 +19323,8 @@ Uses ‘wrap’ mode to override default serialization behavior completely.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.drs_name"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.drs_name</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.experiments"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.experiments</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.id"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.references"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.references</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.type"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.type</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.urls"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.urls</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.accept"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.accept()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.name_must_not_end_in_number"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.name_must_not_end_in_number</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#esgvoc.api.data_descriptors.ActivityCMIP7.describe"><code class="docutils literal notranslate"><span class="pre">ActivityCMIP7.describe</span></code></a></li>
