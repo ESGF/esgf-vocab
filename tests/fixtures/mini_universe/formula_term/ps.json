@@ -1,0 +1,10 @@
+{
+    "@context": "000_context.jsonld",
+    "id": "ps",
+    "type": "formula_term",
+    "description": "",
+    "drs_name": "ps",
+    "data_type": "real",
+    "out_name": "ps",
+    "units": "Pa"
+}
