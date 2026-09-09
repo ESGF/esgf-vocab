@@ -1,0 +1,27 @@
+{
+    "@context": {
+        "@base": "https://esgvoc.ipsl.fr/resource/universe/model_level_coordinate/",
+        "@vocab": "http://schema.org/",
+        "id": "@id",
+        "type": "@type",
+        "model_level_coordinate": "https://esgvoc.ipsl.fr/resource/universe/model_level_coordinate/",
+        "z_factors": {
+            "@id": "http://schema.org/z_factors",
+            "@type": "@id",
+            "@context": {
+                "@base": "https://esgvoc.ipsl.fr/resource/universe/formula_term/"
+            }
+        },
+        "z_bounds_factors": {
+            "@id": "http://schema.org/z_bounds_factors",
+            "@type": "@id",
+            "@context": {
+                "@base": "https://esgvoc.ipsl.fr/resource/universe/formula_term/"
+            }
+        }
+    },
+    "esgvoc_resolve_modes": {
+        "z_factors": "full",
+        "z_bounds_factors": "full"
+    }
+}

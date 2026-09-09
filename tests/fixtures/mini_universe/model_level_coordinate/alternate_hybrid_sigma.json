@@ -1,0 +1,24 @@
+{
+    "@context": "000_context.jsonld",
+    "id": "alternate_hybrid_sigma",
+    "type": "model_level_coordinate",
+    "description": "",
+    "drs_name": "alternate_hybrid_sigma",
+    "axis": "Z",
+    "data_type": "double",
+    "out_name": "lev",
+    "positive": "down",
+    "stored_direction": "decreasing",
+    "formula": "p = ap + b*ps",
+    "z_factors": [
+        "ap",
+        "b",
+        "ps"
+    ],
+    "z_bounds_factors": [
+        "ap_bnds",
+        "b_bnds",
+        "ps"
+    ],
+    "generic_level_name": "alevel"
+}

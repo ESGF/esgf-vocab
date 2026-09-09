@@ -110,6 +110,7 @@ def model_level_coordinate_data(z_factors, **updates):
         "description": "Hybrid sigma pressure coordinate",
         "long_name": "hybrid sigma pressure",
         "cf_standard_name": "atmosphere_hybrid_sigma_pressure_coordinate",
+        "computed_standard_name": "air_pressure",
         "units": "1",
         "axis": "Z",
         "out_name": "lev",
@@ -634,6 +635,7 @@ def test_model_level_coordinate_accepts_missing_long_name():
     [
         ("long_name", ""),
         ("cf_standard_name", " "),
+        ("computed_standard_name", ""),
         ("units", ""),
         ("out_name", " "),
         ("formula", ""),
@@ -688,6 +690,13 @@ def test_model_level_coordinate_accepts_absent_standard_name():
     del record["cf_standard_name"]
 
     assert ModelLevelCoordinate(**record).long_name == "hybrid sigma pressure"
+
+
+def test_model_level_coordinate_accepts_absent_computed_standard_name():
+    record = model_level_coordinate_data(None)
+    del record["computed_standard_name"]
+
+    assert ModelLevelCoordinate(**record).computed_standard_name is None
 
 
 def test_new_coordinate_descriptor_models_are_registered():
