@@ -1,0 +1,10 @@
+{
+    "@context": "000_context.jsonld",
+    "id": "b",
+    "type": "formula_term",
+    "description": "",
+    "drs_name": "b",
+    "data_type": "double",
+    "out_name": "b",
+    "units": "1"
+}

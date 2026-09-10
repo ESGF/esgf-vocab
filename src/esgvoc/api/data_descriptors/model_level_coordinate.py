@@ -37,6 +37,16 @@ class ModelLevelCoordinate(PlainTermDataDescriptor):
     CF standard name associated with the coordinate.
     """
 
+    computed_standard_name: NonEmptyString | None = None
+    """
+    CF standard name of the dimensional vertical coordinate computed from the
+    parametric coordinate's formula terms.
+
+    CF strongly recommends this attribute for parametric vertical coordinates.
+    For example, an ``atmosphere_hybrid_sigma_pressure_coordinate`` computes
+    values whose standard name is ``air_pressure``.
+    """
+
     out_name: NonEmptyString
     """
     Variable or dimension name written to the data file.
