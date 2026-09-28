@@ -34,7 +34,12 @@ def update(
     ),
 ):
     """Update installed project(s) to the latest available version."""
-    from esgvoc.core.db_compat import get_min_version, incompatibility_message
+    from esgvoc.core.db_compat import (
+        get_min_version,
+        incompatibility_message,
+        newer_incompatible_release,
+        snapshot_incompatibility_message,
+    )
     from esgvoc.core.db_fetcher import DBFetcher, EsgvocVersionNotFoundError
     from esgvoc.core.service.user_state import UserState
 
@@ -59,6 +64,16 @@ def update(
 
         active = state.get_active(pid)
         latest = snapshot.version
+
+        # "latest" is the newest release usable by the installed esgvoc, if any.
+        if message := snapshot_incompatibility_message(snapshot):
+            console.print(f"[red]{pid}: {latest} not installed.[/red]\n{message}")
+            continue
+        if not prerelease and (newer := newer_incompatible_release(fetcher, snapshot)):
+            console.print(
+                f"[yellow]{pid}: {newer.version} is available but requires esgvoc >= "
+                f"{newer.esgvoc_min_version}.[/yellow]"
+            )
 
         if active == latest:
             console.print(f"[dim]{pid}:[/dim] already at {latest}")

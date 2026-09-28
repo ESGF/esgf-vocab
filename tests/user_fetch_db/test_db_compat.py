@@ -109,12 +109,12 @@ class TestIncompatibilityMessage:
         assert f"esgvoc {INSTALLED} is installed" in message
         assert "upgrade esgvoc to 7.0.0 or later" in message
         assert 'pip install --upgrade "esgvoc>=7.0.0"' in message
-        assert "esgvoc list cmip7 --available" in message
+        assert "esgvoc list-remote cmip7" in message
 
     def test_message_names_the_project_and_version(self):
         message = incompatibility_message("cordex-cmip6", "dev-latest", "7.0.0")
         assert "cordex-cmip6@dev-latest" in message
-        assert "esgvoc list cordex-cmip6 --available" in message
+        assert "esgvoc list-remote cordex-cmip6" in message
 
 
 class TestCheckDbCompatibility:

@@ -15,7 +15,8 @@ import sqlite3
 from pathlib import Path
 
 import esgvoc
-from esgvoc.core.db_fetcher import _parse_version
+from esgvoc.core.db_fetcher import DBFetcher, _parse_version
+from esgvoc.core.db_snapshot import DBSnapshot
 from esgvoc.core.exceptions import EsgvocIncompatibleDBError
 
 _LOGGER = logging.getLogger(__name__)
@@ -55,9 +56,25 @@ def incompatibility_message(project_id: str, version: str, min_version: str | No
         f"{project_id}@{version} requires esgvoc >= {min_version}, but esgvoc {esgvoc.__version__} is installed.\n"
         f"To use this version of {project_id}, upgrade esgvoc to {min_version} or later:\n"
         f'    pip install --upgrade "esgvoc>={min_version}"\n'
-        f"Or keep your esgvoc and activate another version of {project_id}:\n"
-        f"    esgvoc list {project_id} --available"
+        f"Or keep your esgvoc and activate a version of {project_id} it supports (see the Compat column):\n"
+        f"    esgvoc list-remote {project_id}"
     )
+
+
+def snapshot_incompatibility_message(snapshot: DBSnapshot) -> str | None:
+    """Same as incompatibility_message, from the esgvoc_min_version published in the registry."""
+    return incompatibility_message(snapshot.project_id, snapshot.version, snapshot.esgvoc_min_version)
+
+
+def newer_incompatible_release(fetcher: DBFetcher, snapshot: DBSnapshot) -> DBSnapshot | None:
+    """
+    Return the newest stable release of the project of *snapshot* if it is not *snapshot*
+    and requires a more recent esgvoc, None otherwise.
+    """
+    newest = fetcher.get_snapshot(snapshot.project_id, "latest", compatible_only=False)
+    if newest.version == snapshot.version or snapshot_incompatibility_message(newest) is None:
+        return None
+    return newest
 
 
 def check_db_compatibility(project_id: str, version: str, db_path: Path) -> None:

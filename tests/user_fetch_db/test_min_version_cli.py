@@ -197,7 +197,7 @@ class TestUpdate:
             "cmip7": _registry("cmip7", "v2.0.0", INCOMPATIBLE, tmp_path),
         }
         fetcher = MagicMock()
-        fetcher.get_snapshot.side_effect = lambda pid, version: fetchers[pid].get_snapshot()
+        fetcher.get_snapshot.side_effect = lambda pid, version, **kw: fetchers[pid].get_snapshot()
         fetcher.download_db.side_effect = lambda snap, target, **kw: fetchers[snap.project_id].download_db(
             snap, target
         )

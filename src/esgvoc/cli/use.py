@@ -108,6 +108,7 @@ def _use_one(spec: str, prerelease: bool, state) -> None:
     target = UserState.db_path(project_id, name)
 
     if _is_registry_name(name):
+        from esgvoc.core.db_compat import newer_incompatible_release, snapshot_incompatibility_message
         from esgvoc.core.db_fetcher import DBFetcher, EsgvocVersionNotFoundError
         from esgvoc.core.github_registry import known_project_ids
 
@@ -138,6 +139,16 @@ def _use_one(spec: str, prerelease: bool, state) -> None:
         # Use the resolved concrete version as the name on disk
         # (e.g. "latest" resolves to "1.1.0")
         name = snapshot.version
+
+        # Refuse before downloading when the registry says it requires a more recent esgvoc.
+        if message := snapshot_incompatibility_message(snapshot):
+            console.print(f"[red]Cannot activate {project_id}@{name}.[/red]\n{message}")
+            raise typer.Exit(1)
+        if requested == "latest" and (newer := newer_incompatible_release(fetcher, snapshot)):
+            console.print(
+                f"[yellow]{project_id}@{newer.version} is available but requires esgvoc >= "
+                f"{newer.esgvoc_min_version}: using {name}.[/yellow]"
+            )
         target = UserState.db_path(project_id, name)
 
         # Check if already on disk with matching checksum

@@ -109,7 +109,7 @@ class DBFetcher:
             snapshots = [s for s in snapshots if not s.is_prerelease]
         return [s.version for s in snapshots]
 
-    def get_snapshot(self, project_id: str, version: str = "latest") -> DBSnapshot:
+    def get_snapshot(self, project_id: str, version: str = "latest", compatible_only: bool = True) -> DBSnapshot:
         """
         Return the snapshot metadata for a specific version.
 
@@ -119,6 +119,10 @@ class DBFetcher:
             e.g. 'cmip7'
         version:
             Semver tag ('v2.1.0'), 'latest', or 'dev-latest'.
+        compatible_only:
+            For 'latest': return the newest stable release usable by the installed esgvoc
+            (see check_compatibility), or the newest one if none is. If False, return the
+            newest stable release.
         """
         snapshots = self._fetch_releases(project_id)
 
@@ -128,6 +132,10 @@ class DBFetcher:
                 raise EsgvocVersionNotFoundError(
                     f"No stable releases found for '{project_id}'."
                 )
+            if compatible_only:
+                compatible = [s for s in stable if self.check_compatibility(s)[0]]
+                if compatible:
+                    return compatible[0]
             return stable[0]
 
         for snapshot in snapshots:
@@ -181,22 +189,11 @@ class DBFetcher:
 
         Returns (compatible, message). If compatible is False, message explains why.
         """
-        import esgvoc
-        installed_str = getattr(esgvoc, "__version__", None)
-        installed = _parse_version(installed_str)
-        if installed is None:
-            return True, ""  # Cannot determine — allow
+        # Imported here: db_compat depends on this module.
+        from esgvoc.core.db_compat import incompatibility_message
 
-        if snapshot.esgvoc_min_version:
-            min_v = _parse_version(snapshot.esgvoc_min_version)
-            if min_v is not None and installed < min_v:
-                return False, (
-                    f"{snapshot.project_id}@{snapshot.version} requires esgvoc >= {snapshot.esgvoc_min_version}.\n"
-                    f"You have esgvoc {installed_str}.\n"
-                    f"Run: pip install --upgrade esgvoc"
-                )
-
-        return True, ""
+        message = incompatibility_message(snapshot.project_id, snapshot.version, snapshot.esgvoc_min_version)
+        return message is None, message or ""
 
     # ------------------------------------------------------------------
     # Internal helpers
