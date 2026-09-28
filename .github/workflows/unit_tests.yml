@@ -2,6 +2,14 @@ name: Unit tests
 
 on:
   workflow_dispatch:
+    inputs:
+      test_dbs_ref:
+        description: >-
+          Run the library tests against DBs built from this branch/tag of the CV repos
+          (e.g. esgvoc_dev) instead of the registry ones. Empty: registry DBs.
+        required: false
+        default: ""
+        type: string
 
   push:
     branches:
@@ -35,7 +43,13 @@ jobs:
       - name: Sync
         run: uv sync
 
+      - name: Build test DBs
+        if: inputs.test_dbs_ref != ''
+        run: uv run python tests/build_test_dbs.py "${{ runner.temp }}/test_dbs" --ref "${{ inputs.test_dbs_ref }}"
+
       - name: Library Tests
+        env:
+          ESGVOC_TEST_DBS_DIR: ${{ inputs.test_dbs_ref != '' && format('{0}/test_dbs', runner.temp) || '' }}
         run: uv run pytest tests
 
   cv_tests:
