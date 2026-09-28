@@ -64,16 +64,7 @@ def _process_link_property(link_prop: LinkProperty) -> _LinkProperty:
     )
 
 
-#def _process_col_plain_terms(collection: PCollection, source_collection_key: str) -> tuple[str, list[str]]:
-#property_values: set[str] = set()
-#for term in collection.terms:
-#    property_key, property_value = _process_plain_term(term, source_collection_key)
-#    property_values.add(property_value)
-## Filter out None values before sorting to avoid TypeError
-#filtered_values = [v for v in property_values if v is not None]
-#return property_key, sorted(filtered_values)  # type: ignore
-
-def _process_col_plain_terms(collection: PCollection, source_collection_key: str,) -> tuple[str, list[str]]:
+def _process_col_plain_terms(collection: PCollection, source_collection_key: str) -> tuple[str, list[str]]:
     property_values: set[str] = set()
     for term in collection.terms:
         property_key, value = _process_plain_term(term, source_collection_key)
@@ -87,11 +78,9 @@ def _process_col_plain_terms(collection: PCollection, source_collection_key: str
                     f"for term '{term.id}', got {type(item).__name__}"
                 )
             property_values.add(item)
-    # Filter out None values before sorting to avoid TypeError
-    filtered_values = [v for v in property_values if v is not None]
-    return property_key, sorted(filtered_values)  # type: ignore
+    return property_key, sorted(property_values)  # type: ignore
 
-#def _process_plain_term(term: PTerm, source_collection_key: str) -> tuple[str, str]:
+
 def _process_plain_term(term: PTerm, source_collection_key: str) -> tuple[str, str | list[str] | None]:
     if source_collection_key in term.specs:
         property_value = term.specs[source_collection_key]
@@ -322,6 +311,7 @@ class CatalogPropertiesJsonTranslator:
     def _translate_field_name(project_id: str, attribute_name) -> str:
         return f"{project_id}{KEY_SEPARATOR}{attribute_name}"
 
+
 def _merge_field_values(left: dict, right: dict) -> dict:
     if left.get("type") != right.get("type"):
         raise EsgvocValueError("Cannot merge different JSON types")
@@ -329,7 +319,7 @@ def _merge_field_values(left: dict, right: dict) -> dict:
         raise EsgvocValueError("Cannot merge different constraint keywords")
     if left == right:
         return left
-    # Fusionner les contraintes des éléments pour les champs tableaux.
+    # Array fields: merge the constraints of their items.
     if left.get("type") == "array":
         left_constraints = {k: v for k, v in left.items() if k != "items"}
         right_constraints = {k: v for k, v in right.items() if k != "items"}
@@ -339,7 +329,7 @@ def _merge_field_values(left: dict, right: dict) -> dict:
             **left_constraints,
             "items": _merge_field_values(left["items"], right["items"]),
         }
-    # Conserver une enum unique lorsque seule son contenu change.
+    # Keep a single enum when only its values differ.
     if "enum" in left:
         left_constraints = {k: v for k, v in left.items() if k != "enum"}
         right_constraints = {k: v for k, v in right.items() if k != "enum"}
@@ -351,7 +341,7 @@ def _merge_field_values(left: dict, right: dict) -> dict:
                     values.append(value)
 
             return {**left_constraints, "enum": values}
-    # Cas général : accepter une définition OU l'autre.
+    # General case: accept either definition.
     return {
         "type": left["type"],
         "anyOf": [
@@ -360,8 +350,9 @@ def _merge_field_values(left: dict, right: dict) -> dict:
         ],
     }
 
+
 def _catalog_properties_json_processor(
-    property_translator: CatalogPropertiesJsonTranslator, properties: list[CatalogProperty],
+    property_translator: CatalogPropertiesJsonTranslator, properties: list[CatalogProperty]
 ) -> list[_CatalogProperty]:
     grouped: dict[str, list[_CatalogProperty]] = {}
     for spec in properties:
@@ -372,13 +363,14 @@ def _catalog_properties_json_processor(
         first = definitions[0]
         merged_value = first.field_value
         for current in definitions[1:]:
-            # Vérifier la compatibilité avec la définition originale.
-            _merge_field_values(first.field_value, current.field_value)
-            # Fusionner les alternatives sans comparer leurs formes transformées.
+            # Check the compatibility with the first definition.
+            try:
+                checked_value = _merge_field_values(first.field_value, current.field_value)
+            except EsgvocValueError as e:
+                raise EsgvocValueError(f"cannot merge the definitions of '{name}': {e}") from e
+            # Merge the alternatives without comparing their transformed forms.
             if merged_value == first.field_value:
-                merged_value = _merge_field_values(
-                    first.field_value, current.field_value
-                )
+                merged_value = checked_value
             else:
                 merged_value = {
                     "type": first.field_value["type"],
@@ -396,6 +388,7 @@ def _catalog_properties_json_processor(
         )
 
     return result
+
 
 def generate_json_schema(project_id: str) -> dict:
     """
