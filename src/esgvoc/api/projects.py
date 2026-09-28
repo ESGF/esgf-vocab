@@ -944,15 +944,27 @@ def get_project(project_id: str, version: str | None = None) -> ProjectSpecs | N
     if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             project = session.get(Project, constants.SQLITE_FIRST_PK)
+            if project is None:
+                return None
+            # Prefer cv_version from metadata (unique per release); fall back to git_hash.
             try:
-                # Prefer cv_version from metadata (unique per release); fall back to git_hash.
                 meta_row = session.exec(
                     text("SELECT value FROM _esgvoc_metadata WHERE key='cv_version'")
                 ).first()
-                version_str = meta_row[0] if meta_row else project.git_hash
+            except Exception as e:
+                _LOGGER.debug("Could not read cv_version metadata for project '%s': %s", project_id, e)
+                meta_row = None
+            version_str = meta_row[0] if meta_row else project.git_hash
+            try:
                 result = ProjectSpecs(**project.specs, version=version_str)  # type: ignore
             except Exception as e:
-                _LOGGER.debug("Could not build ProjectSpecs for %s: %s", project, e)
+                _LOGGER.error(
+                    "Invalid specifications for project '%s' (version %s), the project is ignored. "
+                    "Its DB may be incompatible with this version of esgvoc: %s",
+                    project_id,
+                    version_str,
+                    e,
+                )
                 result = None
     return result
 
