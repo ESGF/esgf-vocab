@@ -1,5 +1,5 @@
 """
-Tests for esgvoc.api.universe — uses real universe@v1.0.0 database.
+Tests for esgvoc.api.universe — uses real universe DB (see conftest.py).
 
 Marked `needs_db`: network is only required on the very first run to download
 the DB.  Once installed (ESGVOC_HOME set with the DB present) tests run offline.

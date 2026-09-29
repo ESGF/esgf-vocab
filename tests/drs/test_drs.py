@@ -1,5 +1,5 @@
 """
-Tests for DRS validation and generation — uses real cmip7@v1.0.0 database.
+Tests for DRS validation and generation — uses real cmip7 DB (see tests/python_api/conftest.py).
 
 Marked `needs_db`: network is only required on the very first run to download
 the DB.  Once installed (ESGVOC_HOME set with the DB present) tests run offline.
