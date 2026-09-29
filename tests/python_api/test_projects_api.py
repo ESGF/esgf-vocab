@@ -13,20 +13,6 @@ from tests.python_api.conftest import CMIP7_TEST_VERSION
 pytestmark = pytest.mark.needs_db
 
 
-def _searchable_term_id(terms) -> str:
-    """
-    The id of the first term usable as a full-text search expression.
-
-    Ids containing a '.' (e.g. 'cf-1.11') are not interpreted by the search (known bug),
-    and the order of the terms depends on the DB build.
-    """
-    for term in terms:
-        term_id = term.id if hasattr(term, "id") else term["id"]
-        if "." not in term_id:
-            return term_id
-    pytest.skip("No term id without '.' in cmip7")
-
-
 class TestGetAllProjects:
     def test_returns_nonempty(self, installed_dbs):
         import esgvoc.api.projects as projects
@@ -492,8 +478,9 @@ class TestFindTermsInCollection:
             pytest.skip("No collections in cmip7")
         for coll in collections:
             terms = projects.get_all_terms_in_collection("cmip7", coll)
-            if terms and any("." not in (t.id if hasattr(t, "id") else t["id"]) for t in terms):
-                term_id = _searchable_term_id(terms)
+            if terms:
+                first = terms[0]
+                term_id = first.id if hasattr(first, "id") else first["id"]
                 results = projects.find_terms_in_collection(term_id, "cmip7", coll, selected_term_fields=[])
                 assert len(results) > 0
                 return
@@ -534,9 +521,22 @@ class TestFindTermsInProject:
         terms = projects.get_all_terms_in_project("cmip7")
         if not terms:
             pytest.skip("No terms in cmip7")
-        term_id = _searchable_term_id(terms)
+        first = terms[0]
+        term_id = first.id if hasattr(first, "id") else first["id"]
         results = projects.find_terms_in_project(term_id, "cmip7", selected_term_fields=[])
         assert len(results) > 0
+
+    def test_find_term_id_with_special_characters(self, installed_dbs):
+        # e.g. 'cf-1.11': '.' used to raise "unable to interpret expression".
+        import esgvoc.api.projects as projects
+
+        term_ids = [t.id for t in projects.get_all_terms_in_project("cmip7")]
+        special = [term_id for term_id in term_ids if "." in term_id or "/" in term_id]
+        if not special:
+            pytest.skip("No term id with '.' or '/' in cmip7")
+        for term_id in special[:5]:
+            results = projects.find_terms_in_project(term_id, "cmip7", selected_term_fields=[])
+            assert term_id in [t.id for t in results]
 
     def test_find_no_match_returns_empty(self, installed_dbs):
         import esgvoc.api.projects as projects
@@ -563,7 +563,7 @@ class TestFindTermsInAllProjects:
         terms = projects.get_all_terms_in_project("cmip7")
         if not terms:
             pytest.skip("No terms in cmip7")
-        first_term_id = _searchable_term_id(terms)
+        first_term_id = terms[0].id if hasattr(terms[0], "id") else terms[0]["id"]
         results = projects.find_terms_in_all_projects(first_term_id)
         assert isinstance(results, list)
         # Flatten and find the term
@@ -602,7 +602,7 @@ class TestLimitOffset:
         terms = projects.get_all_terms_in_project("cmip7")
         if not terms:
             pytest.skip("No terms in cmip7")
-        first_term_id = _searchable_term_id(terms)
+        first_term_id = terms[0].id if hasattr(terms[0], "id") else terms[0]["id"]
         # offset beyond any result set
         results = projects.find_terms_in_project(
             first_term_id, "cmip7", only_id=True, limit=10, offset=9999, selected_term_fields=[]
@@ -615,7 +615,7 @@ class TestLimitOffset:
         terms = projects.get_all_terms_in_project("cmip7")
         if not terms:
             pytest.skip("No terms in cmip7")
-        first_term_id = _searchable_term_id(terms)
+        first_term_id = terms[0].id if hasattr(terms[0], "id") else terms[0]["id"]
         # Should not raise
         results = projects.find_items_in_project(first_term_id, "cmip7", limit=10, offset=5)
         assert results is not None
@@ -629,7 +629,7 @@ class TestFindItemsInProject:
         terms = projects.get_all_terms_in_project("cmip7")
         if not terms:
             pytest.skip("No terms in cmip7")
-        first_term_id = _searchable_term_id(terms)
+        first_term_id = terms[0].id if hasattr(terms[0], "id") else terms[0]["id"]
         results = projects.find_items_in_project(first_term_id, "cmip7")
         assert results is not None
         # Should include a TERM item
