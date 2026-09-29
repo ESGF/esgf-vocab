@@ -46,16 +46,21 @@ def minimal_db(tmp_path) -> Path:
     return db_path
 
 
-def make_db(path: Path, project_id: str = "testproject", version: str = "1.0.0") -> Path:
-    """Helper: create a minimal SQLite DB at *path*."""
+def make_db(
+    path: Path, project_id: str = "testproject", version: str = "1.0.0", min_version: str | None = None
+) -> Path:
+    """Helper: create a minimal SQLite DB at *path* (requiring esgvoc >= *min_version* if given)."""
     path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(path))
     conn.execute(
         "CREATE TABLE _esgvoc_metadata (key TEXT PRIMARY KEY, value TEXT)"
     )
+    metadata = [("project_id", project_id), ("cv_version", version)]
+    if min_version is not None:
+        metadata.append(("esgvoc_min_version", min_version))
     conn.executemany(
         "INSERT INTO _esgvoc_metadata VALUES (?, ?)",
-        [("project_id", project_id), ("cv_version", version)],
+        metadata,
     )
     conn.commit()
     conn.close()

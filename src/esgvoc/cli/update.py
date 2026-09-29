@@ -34,6 +34,12 @@ def update(
     ),
 ):
     """Update installed project(s) to the latest available version."""
+    from esgvoc.core.db_compat import (
+        get_min_version,
+        incompatibility_message,
+        newer_incompatible_release,
+        snapshot_incompatibility_message,
+    )
     from esgvoc.core.db_fetcher import DBFetcher, EsgvocVersionNotFoundError
     from esgvoc.core.service.user_state import UserState
 
@@ -59,6 +65,16 @@ def update(
         active = state.get_active(pid)
         latest = snapshot.version
 
+        # "latest" is the newest release usable by the installed esgvoc, if any.
+        if message := snapshot_incompatibility_message(snapshot):
+            console.print(f"[red]{pid}: {latest} not installed.[/red]\n{message}")
+            continue
+        if not prerelease and (newer := newer_incompatible_release(fetcher, snapshot)):
+            console.print(
+                f"[yellow]{pid}: {newer.version} is available but requires esgvoc >= "
+                f"{newer.esgvoc_min_version}.[/yellow]"
+            )
+
         if active == latest:
             console.print(f"[dim]{pid}:[/dim] already at {latest}")
             continue
@@ -80,12 +96,14 @@ def update(
             console.print(f"[dim]{pid}@{latest} already on disk[/dim]")
 
         state.add_installed(pid, snapshot.version)
-        if not no_activate:
+        if no_activate:
+            console.print(f"[green]{pid}:[/green] {snapshot.version} installed (not activated)")
+        elif message := incompatibility_message(pid, snapshot.version, get_min_version(target)):
+            console.print(f"[red]{pid}: {snapshot.version} installed but not activated.[/red]\n{message}")
+        else:
             state.set_active(pid, snapshot.version, source="registry",
                              checksum=snapshot.checksum_sha256)
             console.print(f"[green]{pid}:[/green] {active or 'none'} → {snapshot.version} (active)")
-        else:
-            console.print(f"[green]{pid}:[/green] {snapshot.version} installed (not activated)")
 
         any_updated = True
 

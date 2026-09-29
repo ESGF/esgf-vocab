@@ -30,12 +30,22 @@ PROJECTS_TO_INSTALL = [
 
 
 @pytest.fixture(scope="session")
-def installed_schema_dbs(tmp_path_factory, test_registry_url):
+def installed_schema_dbs(tmp_path_factory, test_registry_url, local_test_dbs):
     """
     Ensure project DBs needed for schema tests are available.
 
-    Uses @latest so we always test against the most recent stable snapshot.
+    Uses @latest so we always test against the most recent stable snapshot,
+    or the locally built DBs with ESGVOC_TEST_DBS_DIR (see tests/conftest.py).
     """
+    if local_test_dbs is not None:
+        from tests.conftest import LOCAL_DB_NAME, install_local_test_db
+
+        for project_id, _ in PROJECTS_TO_INSTALL:
+            install_local_test_db(project_id, LOCAL_DB_NAME, local_test_dbs)
+            UserState.load().set_active(project_id, LOCAL_DB_NAME, source="local")
+        yield {project_id: LOCAL_DB_NAME for project_id, _ in PROJECTS_TO_INSTALL}
+        return
+
     from esgvoc.core.db_fetcher import DBFetcher
 
     offline = os.environ.get("ESGVOC_OFFLINE", "").lower() == "true"

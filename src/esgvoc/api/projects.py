@@ -25,7 +25,14 @@ from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import PCollection, PCollectionFTS5, Project, PTerm, PTermFTS5
 from esgvoc.core.db.models.universe import UTerm
-from esgvoc.core.exceptions import EsgvocDbError, EsgvocNotFoundError, EsgvocNotImplementedError, EsgvocValueError
+from esgvoc.core.db_compat import check_db_compatibility
+from esgvoc.core.exceptions import (
+    EsgvocDbError,
+    EsgvocIncompatibleDBError,
+    EsgvocNotFoundError,
+    EsgvocNotImplementedError,
+    EsgvocValueError,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,23 +49,20 @@ def _resolve_project_connection(project_id: str, version: str | None = None) -> 
     1. Explicit *version* → open that specific DB file.
     2. Active version from pointer file → open that DB file.
     3. None (no database found for this project).
+
+    :raises EsgvocIncompatibleDBError: If the database requires a more recent esgvoc.
     """
     from esgvoc.core.service.user_state import UserState
 
-    if version is not None:
-        db_path = UserState.db_path(project_id, version)
-        if db_path.exists():
-            return DBConnection(db_path)
+    if version is None:
+        version = UserState.load().get_active(project_id)
+        if version is None:
+            return None
+    db_path = UserState.db_path(project_id, version)
+    if not db_path.exists():
         return None
-
-    state = UserState.load()
-    active = state.get_active(project_id)
-    if active:
-        db_path = UserState.db_path(project_id, active)
-        if db_path.exists():
-            return DBConnection(db_path)
-
-    return None
+    check_db_compatibility(project_id, version, db_path)
+    return DBConnection(db_path)
 
 
 def _get_project_connection(project_id: str, version: str | None = None) -> DBConnection | None:
@@ -687,7 +691,18 @@ def get_all_projects() -> list[str]:
     """
     from esgvoc.core.service.user_state import UserState
 
-    return [pid for pid in UserState.load().all_project_ids() if pid != "universe"]
+    result = list()
+    for project_id in UserState.load().all_project_ids():
+        if project_id == "universe":
+            continue
+        try:
+            _resolve_project_connection(project_id)
+        except EsgvocIncompatibleDBError as e:
+            # Skip it rather than failing every multi-project query.
+            _LOGGER.error("Project '%s' is ignored: %s", project_id, e)
+            continue
+        result.append(project_id)
+    return result
 
 
 def _get_term_in_project(term_id: str, session: Session) -> PTerm | None:
@@ -944,15 +959,27 @@ def get_project(project_id: str, version: str | None = None) -> ProjectSpecs | N
     if connection := _get_project_connection(project_id, version):
         with connection.create_session() as session:
             project = session.get(Project, constants.SQLITE_FIRST_PK)
+            if project is None:
+                return None
+            # Prefer cv_version from metadata (unique per release); fall back to git_hash.
             try:
-                # Prefer cv_version from metadata (unique per release); fall back to git_hash.
                 meta_row = session.exec(
                     text("SELECT value FROM _esgvoc_metadata WHERE key='cv_version'")
                 ).first()
-                version_str = meta_row[0] if meta_row else project.git_hash
+            except Exception as e:
+                _LOGGER.debug("Could not read cv_version metadata for project '%s': %s", project_id, e)
+                meta_row = None
+            version_str = meta_row[0] if meta_row else project.git_hash
+            try:
                 result = ProjectSpecs(**project.specs, version=version_str)  # type: ignore
             except Exception as e:
-                _LOGGER.debug("Could not build ProjectSpecs for %s: %s", project, e)
+                _LOGGER.error(
+                    "Invalid specifications for project '%s' (version %s), the project is ignored. "
+                    "Its DB may be incompatible with this version of esgvoc: %s",
+                    project_id,
+                    version_str,
+                    e,
+                )
                 result = None
     return result
 

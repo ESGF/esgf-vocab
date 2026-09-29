@@ -36,7 +36,7 @@ PROJECTS_TO_INSTALL = [
 # ---------------------------------------------------------------------------
 
 @pytest.fixture(scope="session")
-def installed_dbs(tmp_path_factory, test_registry_url):
+def installed_dbs(tmp_path_factory, test_registry_url, local_test_dbs):
     """
     Ensure universe@v1.0.0 and cmip7@v1.0.0 are available for the session.
 
@@ -47,7 +47,20 @@ def installed_dbs(tmp_path_factory, test_registry_url):
          clear message explaining how to pre-install the databases.
 
     Returns a dict: {"universe": Path, "cmip7": Path}
+
+    With ESGVOC_TEST_DBS_DIR (see tests/conftest.py), the locally built DBs are
+    installed under these pinned versions instead.
     """
+    if local_test_dbs is not None:
+        from tests.conftest import install_local_test_db
+
+        installed: dict[str, Path] = {}
+        for project_id, version in PROJECTS_TO_INSTALL:
+            installed[project_id] = install_local_test_db(project_id, version, local_test_dbs)
+            UserState.load().set_active(project_id, version, source="local")
+        yield installed
+        return
+
     offline = os.environ.get("ESGVOC_OFFLINE", "").lower() == "true"
 
     # Check the current home (respects ESGVOC_HOME if set, otherwise platformdirs default).
