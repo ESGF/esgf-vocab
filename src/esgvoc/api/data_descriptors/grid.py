@@ -2,7 +2,11 @@
 Model (i.e. schema/definition) of the grid data descriptor
 """
 
+from pydantic import Field, field_validator
+
 from esgvoc.api.data_descriptors.data_descriptor import PlainTermDataDescriptor
+from esgvoc.api.data_descriptors.EMD_models.grid_mapping import GridMapping
+from esgvoc.api.data_descriptors.EMD_models.grid_type import GridType
 from esgvoc.api.data_descriptors.region import Region
 
 
@@ -41,3 +45,38 @@ class Grid(PlainTermDataDescriptor):
     # which makes sense in the CMIP context (it's too vague).
     # As a result, we need to have both Grid (CMIP) and HorizontalGrid (EMD)
     # and both Region (CMIP) and HorizontalGridRegion (EMD).
+
+    # The fields below are copied from the EMD horizontal_grid_cell
+    # with the same id (see the EMD sync script in CMIP7-CVs).
+    # They are optional because grids which are not described in EMD
+    # (e.g. the CMIP6-style labels "gn", "gr1") don't have them.
+    grid_type: GridType | str | None = None
+    """
+    Horizontal grid type, i.e. the method of distributing grid cells over the region
+
+    Taken from the grid_type CV (EMD v1.0 Section 7.6).
+    E.g. 'regular_latitude_longitude', 'tripolar'
+    """
+
+    n_cells: int | None = Field(default=None, ge=1)
+    """
+    Total number of cells in the horizontal grid
+
+    None if the number of grid cells is not constant or not known.
+    """
+
+    grid_mapping: GridMapping | str | None = None
+    """
+    Name of the coordinate reference system of the horizontal coordinates
+
+    Taken from the grid_mapping CV (EMD v1.0 Section 7.7).
+    E.g. 'latitude_longitude', 'polar_stereographic'
+    """
+
+    @field_validator("grid_type", "n_cells", "grid_mapping", mode="before")
+    @classmethod
+    def empty_string_to_none(cls, v):
+        """EMD uses empty strings for values which are not applicable."""
+        if v == "":
+            return None
+        return v
