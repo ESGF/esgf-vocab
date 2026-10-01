@@ -44,6 +44,15 @@ class KnownBrandedVariable(PlainTermDataDescriptor):
     Descriptive names of the branded variable.
     """
 
+    comment: list[NonEmptyString] | None = None
+    """
+    List of comments representing possible values of the ``comment`` field of CMOR
+    table entries for a respective ``known_branded_variable``.
+
+    The inherited ``description`` field contains the canonical comment when
+    one has been selected.
+    """
+
     cf_standard_name: NonEmptyString
     """
     CF standard name used by this branded variable.
@@ -187,7 +196,7 @@ class KnownBrandedVariable(PlainTermDataDescriptor):
             return value
         return [value]
 
-    @field_validator("long_name", "cell_measures", "realm", mode="after")
+    @field_validator("long_name", "comment", "cell_measures", "realm", mode="after")
     @classmethod
     def validate_optional_metadata_lists(cls, value):
         """

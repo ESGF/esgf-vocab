@@ -271,9 +271,23 @@ def test_description_remains_the_inherited_scalar_field():
         KnownBrandedVariable(**known_branded_variable_data(description=["First", "Second"]))
 
 
+def test_comment_preserves_source_cmor_comments():
+    comments = ["Reported on model levels", "Includes all-sky conditions"]
+
+    model = KnownBrandedVariable(**known_branded_variable_data(comment=comments))
+
+    assert model.comment == comments
+
+
+def test_comment_requires_a_list():
+    with pytest.raises(ValidationError, match="comment"):
+        KnownBrandedVariable(**known_branded_variable_data(comment="Reported on model levels"))
+
+
 def test_cell_metadata_and_flags_have_proposal_defaults():
     model = KnownBrandedVariable(**known_branded_variable_data())
 
+    assert model.comment is None
     assert model.cell_methods is None
     assert model.cell_measures is None
     assert model.flag_values is None
@@ -375,6 +389,8 @@ def test_flag_values_and_meanings_must_be_provided_together(flag_values, flag_me
         ("long_name", " "),
         ("long_name", []),
         ("long_name", [" "]),
+        ("comment", []),
+        ("comment", [" "]),
         ("branding_suffix_name", " "),
         ("out_name", ""),
         ("variable_root_name", ""),
@@ -421,6 +437,7 @@ def test_known_branded_variable_fields_match_proposal():
     proposal_fields = {
         "cf_standard_name",
         "long_name",
+        "comment",
         "units",
         "var_def_qualifier",
         "history",
