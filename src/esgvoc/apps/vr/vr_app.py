@@ -8,6 +8,12 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.data_descriptors.known_branded_variable import KnownBrandedVariable
 
 
+def _value_keys(value: Any) -> List[Any]:
+    """Return scalar comparison/grouping keys for scalar or list metadata."""
+    values = value if isinstance(value, list) else [value]
+    return [getattr(item, "id", item) for item in values if item is not None]
+
+
 def create_nested_structure(
     terms: List[KnownBrandedVariable], group_by_keys: List[str], metadata_config: Optional[Dict[str, List[str]]] = None
 ) -> Dict[str, Any]:
@@ -41,8 +47,7 @@ def create_nested_structure(
         metadata_by_group = {}
 
         for term in current_terms:
-            group_value = getattr(term, current_key, None)
-            if group_value is not None:
+            for group_value in _value_keys(getattr(term, current_key, None)):
                 grouped[group_value].append(term)
 
                 if level in metadata_config and group_value not in metadata_by_group:
@@ -186,12 +191,9 @@ class VRApp:
         for term in all_terms:
             match = True
             for field, value in filters.items():
-                term_value = getattr(term, field, None)
-                if isinstance(value, list):
-                    if term_value not in value:
-                        match = False
-                        break
-                elif term_value != value:
+                term_values = _value_keys(getattr(term, field, None))
+                expected_values = _value_keys(value)
+                if not any(term_value in expected_values for term_value in term_values):
                     match = False
                     break
 
@@ -280,11 +282,12 @@ class VRApp:
         if terms is None:
             terms = self.get_all_branded_variables()
 
+        realm_values = [realm for term in terms for realm in _value_keys(term.realm)]
         stats = {
             "total_terms": len(terms),
             "unique_cf_standard_names": len(set(term.cf_standard_name for term in terms)),
             "unique_variable_root_names": len(set(term.variable_root_name for term in terms)),
-            "unique_realms": len(set(term.realm for term in terms)),
+            "unique_realms": len(set(realm_values)),
             "status_distribution": {},
             "realm_distribution": {},
         }
@@ -295,8 +298,7 @@ class VRApp:
             stats["status_distribution"][status] = stats["status_distribution"].get(status, 0) + 1
 
         # Realm distribution
-        for term in terms:
-            realm = term.realm
+        for realm in realm_values:
             stats["realm_distribution"][realm] = stats["realm_distribution"].get(realm, 0) + 1
 
         return stats
