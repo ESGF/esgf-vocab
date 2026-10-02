@@ -285,20 +285,20 @@ class TestGetTermFromUniverseTermId:
                 continue
             first_term_id = terms[0].id if hasattr(terms[0], "id") else terms[0]["id"]
             # Try looking up by universe term id
-            result = projects.get_term_from_universe_term_id_in_project("cmip7", dd, first_term_id)
-            if result is not None:
-                found_coll_id, found_term = result
-                assert isinstance(found_coll_id, str)
-                assert found_term is not None
+            result = projects.get_terms_from_universe_term_id_in_project("cmip7", dd, first_term_id)
+            if result:
+                for found_coll_id, found_term in result:
+                    assert isinstance(found_coll_id, str)
+                    assert found_term is not None
                 return
         pytest.skip("No collection in cmip7 links to a universe data descriptor with accessible terms")
 
-    def test_unknown_term_returns_none(self, installed_dbs):
+    def test_unknown_term_returns_empty(self, installed_dbs):
         import esgvoc.api.projects as projects
 
-        # institution is a common universe dd; nonexistent term should return None
-        result = projects.get_term_from_universe_term_id_in_project("cmip7", "institution", "nonexistent_xyz_abc")
-        assert result is None
+        # institution is a common universe dd; nonexistent term should return an empty list
+        result = projects.get_terms_from_universe_term_id_in_project("cmip7", "institution", "nonexistent_xyz_abc")
+        assert result == []
 
     def test_get_term_from_universe_id_in_all_projects(self, installed_dbs):
         import esgvoc.api.projects as projects
