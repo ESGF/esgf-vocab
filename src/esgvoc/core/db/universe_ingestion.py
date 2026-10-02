@@ -120,11 +120,23 @@ def ingest_data_descriptor(
         data_descriptor = UDataDescriptor(id=data_descriptor_id, context=context, term_kind="")
         term_kind_dd = None
         error_count = 0
+        # Duplicate ids and drs_names are only reported here: they fail project builds, not the universe one.
+        term_files_by_id: dict[str, Path] = dict()
+        term_files_by_drs_name: dict[str, Path] = dict()
 
         _LOGGER.debug(f"add data_descriptor : {data_descriptor_id}")
-        for term_file_path in data_descriptor_path.iterdir():
+        for term_file_path in sorted(data_descriptor_path.iterdir()):
             _LOGGER.debug(f"found term path : {term_file_path}, {term_file_path.suffix}")
             if term_file_path.is_file() and term_file_path.suffix == ".json":
+                if term_file_path.name != term_file_path.name.lower():
+                    _LOGGER.error(
+                        f"❌ UNIVERSE INGESTION FAILURE - Term skipped\n"
+                        f"   File: {term_file_path}\n"
+                        f"   Descriptor: {data_descriptor_id}\n"
+                        f"   Error Message: term file names must be lowercase"
+                    )
+                    error_count += 1
+                    continue
                 try:
                     locally_available = {
                         "https://esgvoc.ipsl.fr/resource/universe": universe_local_path
@@ -166,6 +178,22 @@ def ingest_data_descriptor(
                     )
                     error_count += 1
                     continue
+                if term_id in term_files_by_id:
+                    _LOGGER.warning(
+                        f"⚠️  term id '{term_id}' of {term_file_path.name} is already defined by "
+                        f"{term_files_by_id[term_id].name} in data descriptor '{data_descriptor_id}'"
+                    )
+                else:
+                    term_files_by_id[term_id] = term_file_path
+                drs_name = json_specs.get(esgvoc.core.constants.DRS_SPECS_JSON_KEY)
+                if drs_name:
+                    if drs_name in term_files_by_drs_name:
+                        _LOGGER.warning(
+                            f"⚠️  drs_name '{drs_name}' of {term_file_path.name} is already used by "
+                            f"{term_files_by_drs_name[drs_name].name} in data descriptor '{data_descriptor_id}'"
+                        )
+                    else:
+                        term_files_by_drs_name[drs_name] = term_file_path
                 if term_id and json_specs and data_descriptor and term_kind:
                     _LOGGER.debug(f"adding {term_id}")
                     term = UTerm(
