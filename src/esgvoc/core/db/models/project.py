@@ -46,7 +46,11 @@ class PTerm(SQLModel, PkMixin, IdMixin, table=True):
     kind: TermKind = Field(sa_column=Column(sa.Enum(TermKind)))
     collection_pk: int | None = Field(default=None, foreign_key="pcollections.pk")
     collection: PCollection = Relationship(back_populates="terms")
-    __table_args__ = (sa.Index("drs_name_index", specs.sa_column["drs_name"]), )  # type: ignore
+    # A term id is unique within its collection, but may appear in other collections.
+    __table_args__ = (
+        sa.Index("drs_name_index", specs.sa_column["drs_name"]),  # type: ignore
+        sa.UniqueConstraint("collection_pk", "id", name="pterm_id_unique_in_collection"),
+    )
 
 
 # Well, the following instructions are not data duplication. It is more building an index.

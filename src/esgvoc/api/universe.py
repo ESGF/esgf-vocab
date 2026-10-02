@@ -1,6 +1,7 @@
 from typing import Iterable, Sequence
 
 from sqlalchemy import text
+from sqlalchemy.exc import MultipleResultsFound
 from sqlmodel import Session, col, select
 
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
@@ -16,6 +17,15 @@ from esgvoc.api.search import (
     process_expression,
 )
 from esgvoc.core.db.models.universe import UDataDescriptor, UDataDescriptorFTS5, UTerm, UTermFTS5
+from esgvoc.core.exceptions import EsgvocDbError
+
+
+def _one_or_none(session: Session, statement, what: str):
+    """Run a single-row lookup; a duplicate row in the database raises EsgvocDbError."""
+    try:
+        return session.exec(statement).one_or_none()
+    except MultipleResultsFound as e:
+        raise EsgvocDbError(f"duplicate {what} in the universe") from e
 
 
 def _get_all_terms_in_data_descriptor(
@@ -102,9 +112,7 @@ def get_all_terms_in_universe(selected_term_fields: Iterable[str] | None = None)
 
 def _get_term_in_data_descriptor(data_descriptor_id: str, term_id: str, session: Session) -> UTerm | None:
     statement = select(UTerm).join(UDataDescriptor).where(UDataDescriptor.id == data_descriptor_id, UTerm.id == term_id)
-    results = session.exec(statement)
-    result = results.one_or_none()
-    return result
+    return _one_or_none(session, statement, f"term '{term_id}' in data descriptor '{data_descriptor_id}'")
 
 
 def get_term_in_data_descriptor(
@@ -173,9 +181,7 @@ def get_term_in_universe(term_id: str, selected_term_fields: Iterable[str] | Non
 
 def _get_data_descriptor_in_universe(data_descriptor_id: str, session: Session) -> UDataDescriptor | None:
     statement = select(UDataDescriptor).where(UDataDescriptor.id == data_descriptor_id)
-    results = session.exec(statement)
-    result = results.one_or_none()
-    return result
+    return _one_or_none(session, statement, f"data descriptor '{data_descriptor_id}'")
 
 
 def get_data_descriptor_in_universe(data_descriptor_id: str) -> tuple[str, dict] | None:

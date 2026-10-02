@@ -34,6 +34,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from esgvoc.admin.builder import BuildResult, DBBuilder, _resolve_repo_url, _sha256
+from esgvoc.core.exceptions import EsgvocDbError
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -793,7 +794,7 @@ class TestIngestionErrorTracking:
         conn.close()
         assert rows["ingestion_errors"] == "0"
 
-    def test_run_build_stores_nonzero_errors_in_metadata(self, tmp_path):
+    def test_run_build_fails_on_ingestion_errors(self, tmp_path):
         builder = DBBuilder(work_dir=tmp_path, verbose=False)
         output = tmp_path / "out.db"
 
@@ -806,7 +807,8 @@ class TestIngestionErrorTracking:
             return 2
 
         with patch.object(builder, "_build_universe_db", side_effect=_fake_universe_db), \
-             patch.object(builder, "_build_project_db", side_effect=_fake_project_db):
+             patch.object(builder, "_build_project_db", side_effect=_fake_project_db), \
+             pytest.raises(EsgvocDbError, match=r"5 term\(s\) failed to ingest \(universe: 3, project: 2\)"):
             builder._run_build(
                 project_path=tmp_path,
                 universe_path=tmp_path,
@@ -816,13 +818,9 @@ class TestIngestionErrorTracking:
                 tmp=tmp_path,
                 manifest_overrides={"project_id": "test", "cv_version": "1.0"},
             )
+        assert not output.exists()
 
-        conn = sqlite3.connect(str(output))
-        rows = dict(conn.execute("SELECT key, value FROM _esgvoc_metadata").fetchall())
-        conn.close()
-        assert rows["ingestion_errors"] == "5"
-
-    def test_build_universe_stores_errors_in_metadata(self, tmp_path):
+    def test_build_universe_fails_on_ingestion_errors(self, tmp_path):
         builder = DBBuilder(work_dir=tmp_path / "work", verbose=False)
         output = tmp_path / "universe.db"
 
@@ -831,17 +829,14 @@ class TestIngestionErrorTracking:
             return 7
 
         with patch.object(builder, "_clone"), \
-             patch.object(builder, "_build_universe_db", side_effect=_fake_build_universe_db):
+             patch.object(builder, "_build_universe_db", side_effect=_fake_build_universe_db), \
+             pytest.raises(EsgvocDbError, match=r"7 term\(s\) failed to ingest"):
             builder.build_universe(
                 universe_repo="WCRP-CMIP/WCRP-universe",
                 universe_ref="main",
                 output_path=output,
             )
-
-        conn = sqlite3.connect(str(output))
-        rows = dict(conn.execute("SELECT key, value FROM _esgvoc_metadata").fetchall())
-        conn.close()
-        assert rows["ingestion_errors"] == "7"
+        assert not output.exists()
 
     def test_build_universe_db_returns_error_count(self, tmp_path):
         builder = DBBuilder(fail_on_missing_links=False, verbose=False)
