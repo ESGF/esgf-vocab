@@ -27,7 +27,7 @@ from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import PCollection, PCollectionFTS5, Project, PTerm, PTermFTS5
 from esgvoc.core.db.models.universe import UTerm
-from esgvoc.core.db_compat import check_db_compatibility
+from esgvoc.core.db_compat import check_db_compatibility, check_db_file
 from esgvoc.core.exceptions import (
     EsgvocDbError,
     EsgvocIncompatibleDBError,
@@ -61,6 +61,7 @@ def _resolve_project_connection(project_id: str, version: str | None = None) -> 
     2. Active version from pointer file → open that DB file.
     3. None (no database found for this project).
 
+    :raises EsgvocDbError: If the database file is empty or is not an esgvoc database.
     :raises EsgvocIncompatibleDBError: If the database requires a more recent esgvoc.
     """
     from esgvoc.core.service.user_state import UserState
@@ -72,6 +73,7 @@ def _resolve_project_connection(project_id: str, version: str | None = None) -> 
     db_path = UserState.db_path(project_id, version)
     if not db_path.exists():
         return None
+    check_db_file(project_id, version, db_path)
     check_db_compatibility(project_id, version, db_path)
     return DBConnection(db_path)
 

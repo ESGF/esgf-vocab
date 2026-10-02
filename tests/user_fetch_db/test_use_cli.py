@@ -128,7 +128,7 @@ class TestUseRegistryVersion:
 class TestUseLocalVersion:
     def test_use_local_already_present(self, tmp_path, monkeypatch):
         monkeypatch.setenv("ESGVOC_HOME", str(tmp_path))
-        make_db(UserState.db_path("universe", "my-exp"))
+        make_db(UserState.db_path("universe", "my-exp"), "universe")
         result = runner.invoke(use_app, ["universe@my-exp"])
         assert result.exit_code == 0, result.output
         assert UserState.load().get_active("universe") == "my-exp"
@@ -141,7 +141,7 @@ class TestUseLocalVersion:
     def test_use_no_name_activates_newest_installed(self, tmp_path, monkeypatch):
         monkeypatch.setenv("ESGVOC_HOME", str(tmp_path))
         for ver in ["v1.0.0", "v2.0.0"]:
-            make_db(UserState.db_path("universe", ver))
+            make_db(UserState.db_path("universe", ver), "universe")
         result = runner.invoke(use_app, ["universe"])
         assert result.exit_code == 0, result.output
         # Should activate the last sorted version

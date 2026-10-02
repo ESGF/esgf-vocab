@@ -1,6 +1,9 @@
 """
 Compatibility between a project database and the installed esgvoc.
 
+A database file must first be a valid esgvoc database: an empty or damaged file
+would otherwise only fail later, on the first query, with "no such table".
+
 Each database embeds the ``esgvoc_min_version`` of its CV (``esgvoc.min_version`` in
 ``esgvoc_manifest.yaml``, default: the esgvoc version that built it) in its
 ``_esgvoc_metadata`` table. A database requiring a more recent esgvoc must not be used,
@@ -17,9 +20,53 @@ from pathlib import Path
 import esgvoc
 from esgvoc.core.db_fetcher import DBFetcher, _parse_version
 from esgvoc.core.db_snapshot import DBSnapshot
-from esgvoc.core.exceptions import EsgvocIncompatibleDBError
+from esgvoc.core.exceptions import EsgvocDbError, EsgvocIncompatibleDBError
 
 _LOGGER = logging.getLogger(__name__)
+
+
+@functools.lru_cache(maxsize=None)
+def _read_db_file_problem(db_path: str, mtime_ns: int, size: int, terms_table: str) -> str | None:
+    # mtime_ns and size only invalidate the cache when the file is replaced.
+    if size == 0:
+        return "the file is empty"
+    try:
+        conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+        try:
+            row = conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?", (terms_table,)
+            ).fetchone()
+        finally:
+            conn.close()
+    except sqlite3.Error as e:
+        return f"the file is not a valid SQLite database ({e})"
+    return None if row else f"it has no '{terms_table}' table"
+
+
+def db_file_problem_message(project_id: str, version: str, db_path: Path) -> str | None:
+    """
+    Return a message explaining why *db_path* is not a usable esgvoc database of
+    *project_id* (empty, not SQLite, or without terms table), or None if it is usable.
+    """
+    terms_table = "uterms" if project_id == "universe" else "pterms"
+    stat = db_path.stat()
+    problem = _read_db_file_problem(str(db_path), stat.st_mtime_ns, stat.st_size, terms_table)
+    if problem is None:
+        return None
+    return (
+        f"{project_id}@{version} is not a valid esgvoc database: {problem}.\n"
+        f"  File: {db_path}\n"
+        f"Reinstall it: 'esgvoc use {project_id}@{version}' re-downloads a registry version; "
+        f"rebuild and 'esgvoc admin install' a local one."
+    )
+
+
+def check_db_file(project_id: str, version: str, db_path: Path) -> None:
+    """
+    :raises EsgvocDbError: If *db_path* is empty, not a SQLite database, or has no terms table.
+    """
+    if message := db_file_problem_message(project_id, version, db_path):
+        raise EsgvocDbError(message)
 
 
 @functools.lru_cache(maxsize=None)

@@ -38,6 +38,7 @@ class Item(BaseModel):
 
 def get_universe_session() -> Session:
     from esgvoc.core.db.connection import DBConnection
+    from esgvoc.core.db_compat import check_db_file
     from esgvoc.core.service.user_state import UserState
 
     state = UserState.load()
@@ -45,6 +46,7 @@ def get_universe_session() -> Session:
     if active:
         db_path = UserState.db_path("universe", active)
         if db_path.exists():
+            check_db_file("universe", active, db_path)
             return DBConnection(db_path).create_session()
     raise EsgvocDbError(
         "Universe database is not installed or active.\n"

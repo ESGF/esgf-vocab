@@ -193,10 +193,13 @@ def _activate(
     checksum: Optional[str],
 ) -> None:
     """Write the pointer file and report success."""
-    from esgvoc.core.db_compat import get_min_version, incompatibility_message
+    from esgvoc.core.db_compat import db_file_problem_message, get_min_version, incompatibility_message
     from esgvoc.core.service.user_state import UserState
 
-    message = incompatibility_message(project_id, name, get_min_version(UserState.db_path(project_id, name)))
+    db_path = UserState.db_path(project_id, name)
+    message = db_file_problem_message(project_id, name, db_path) or incompatibility_message(
+        project_id, name, get_min_version(db_path)
+    )
     if message:
         console.print(f"[red]Cannot activate {project_id}@{name}.[/red]\n{message}")
         raise typer.Exit(1)
