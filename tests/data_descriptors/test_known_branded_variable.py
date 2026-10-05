@@ -105,13 +105,17 @@ def resolved_labels():
 
 def test_known_branded_variable_accepts_reference_ids():
     model = KnownBrandedVariable(
-        **known_branded_variable_data(cell_measures="area: areacella")
+        **known_branded_variable_data(
+            cell_methods="area: mean time: mean",
+            cell_measures="area: areacella",
+        )
     )
 
     assert model.variable_root_name == "ta"
     assert model.out_name == "ta"
     assert model.dimensions == ["longitude", "latitude", "plev19", "time"]
     assert model.long_name == ["Air Temperature"]
+    assert model.cell_methods == ["area: mean time: mean"]
     assert model.cell_measures == ["area: areacella"]
     assert model.realm == ["atmos"]
 
@@ -120,12 +124,14 @@ def test_list_metadata_accepts_and_preserves_multiple_values():
     model = KnownBrandedVariable(
         **known_branded_variable_data(
             long_name=["Air Temperature", "Atmospheric Temperature"],
+            cell_methods=["area: mean time: mean", "time: mean"],
             cell_measures=["area: areacella", "volume: volcello"],
             realm=["atmos", "land"],
         )
     )
 
     assert model.long_name == ["Air Temperature", "Atmospheric Temperature"]
+    assert model.cell_methods == ["area: mean time: mean", "time: mean"]
     assert model.cell_measures == ["area: areacella", "volume: volcello"]
     assert model.realm == ["atmos", "land"]
 
@@ -400,6 +406,8 @@ def test_flag_values_and_meanings_must_be_provided_together(flag_values, flag_me
         ("area_label", ""),
         ("dimensions", []),
         ("dimensions", [""]),
+        ("cell_methods", []),
+        ("cell_methods", [""]),
         ("cell_measures", []),
         ("cell_measures", [""]),
         ("realm", []),

@@ -122,9 +122,9 @@ class KnownBrandedVariable(PlainTermDataDescriptor):
     References any unresolved :class:`Realm` term by ID.
     """
 
-    cell_methods: NonEmptyString | None = None
+    cell_methods: list[NonEmptyString] | None = None
     """
-    CF cell-methods string describing statistical processing along each axis.
+    CF cell-methods strings describing possible statistical processing along each axis.
     """
 
     cell_measures: list[NonEmptyString] | None = None
@@ -186,7 +186,7 @@ class KnownBrandedVariable(PlainTermDataDescriptor):
     not been resolved.
     """
 
-    @field_validator("long_name", "cell_measures", "realm", mode="before")
+    @field_validator("long_name", "cell_methods", "cell_measures", "realm", mode="before")
     @classmethod
     def normalize_list_metadata(cls, value):
         """
@@ -196,7 +196,7 @@ class KnownBrandedVariable(PlainTermDataDescriptor):
             return value
         return [value]
 
-    @field_validator("long_name", "comment", "cell_measures", "realm", mode="after")
+    @field_validator("long_name", "comment", "cell_methods", "cell_measures", "realm", mode="after")
     @classmethod
     def validate_optional_metadata_lists(cls, value):
         """
