@@ -1,4 +1,5 @@
 import itertools
+import json
 import logging
 import re
 from typing import Iterable, Sequence, cast
@@ -756,13 +757,16 @@ def _get_term_in_collection(collection_id: str, term_id: str, session: Session) 
 def _get_terms_by_key_value_in_collection(
     key: str, value: str, collection_id: str, session: Session
 ) -> Sequence[PTerm]:
-    where_expression = and_(PCollection.id == collection_id, PTerm.specs[key] == f'"{value}"')
+    where_expression = and_(
+        PCollection.id == collection_id,
+        PTerm.specs[key] == json.dumps(value),
+    )
     statement = select(PTerm).join(PCollection).where(where_expression)
     return session.exec(statement).all()
 
 
 def _get_terms_by_key_value_in_project(key: str, value: str, session: Session) -> Sequence[PTerm]:
-    statement = select(PTerm).where(PTerm.specs[key] == f'"{value}"')
+    statement = select(PTerm).where(PTerm.specs[key] == json.dumps(value))
     return session.exec(statement).all()
 
 
