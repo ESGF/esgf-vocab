@@ -81,10 +81,23 @@ def ingest_collection(
     # (hypothesis all term have the same kind in a collection) # noqa E116
     term_kind_collection = None
     error_count = 0
+    # Term ids must be unique within a collection (the same id may appear in other collections).
+    term_files_by_id: dict[str, Path] = dict()
+    term_files_by_drs_name: dict[str, Path] = dict()
 
-    for term_file_path in collection_dir_path.iterdir():
+    for term_file_path in sorted(collection_dir_path.iterdir()):
         _LOGGER.debug(f"found term path : {term_file_path}")
         if term_file_path.is_file() and term_file_path.suffix == ".json":
+            if term_file_path.name != term_file_path.name.lower():
+                _LOGGER.error(
+                    f"❌ INGESTION FAILURE - Term skipped\n"
+                    f"   File: {term_file_path}\n"
+                    f"   Collection: {collection_id}\n"
+                    f"   Project: {project.id}\n"
+                    f"   Error Message: term file names must be lowercase"
+                )
+                error_count += 1
+                continue
             try:
                 # Map both universe and project URLs to their local paths
                 locally_avail = {
@@ -139,6 +152,28 @@ def ingest_collection(
                 )
                 error_count += 1
                 continue
+            if term_id in term_files_by_id:
+                _LOGGER.error(
+                    f"❌ INGESTION FAILURE - Term skipped\n"
+                    f"   File: {term_file_path}\n"
+                    f"   Collection: {collection_id}\n"
+                    f"   Project: {project.id}\n"
+                    f"   Error Message: duplicate term id '{term_id}', already defined by "
+                    f"{term_files_by_id[term_id].name}"
+                )
+                error_count += 1
+                continue
+            term_files_by_id[term_id] = term_file_path
+            drs_name = json_specs.get(esgvoc.core.constants.DRS_SPECS_JSON_KEY)
+            if drs_name:
+                if drs_name in term_files_by_drs_name:
+                    _LOGGER.warning(
+                        f"⚠️  drs_name '{drs_name}' of {term_file_path.name} is already used by "
+                        f"{term_files_by_drs_name[drs_name].name} in collection '{collection_id}' "
+                        f"of project '{project.id}'"
+                    )
+                else:
+                    term_files_by_drs_name[drs_name] = term_file_path
             try:
                 term = PTerm(
                     id=term_id,

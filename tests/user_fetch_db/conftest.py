@@ -52,6 +52,8 @@ def make_db(
     """Helper: create a minimal SQLite DB at *path* (requiring esgvoc >= *min_version* if given)."""
     path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(path))
+    # A terms table, as in every database built by esgvoc: without it the DB is rejected.
+    conn.execute(f"CREATE TABLE {'uterms' if project_id == 'universe' else 'pterms'} (pk INTEGER PRIMARY KEY)")
     conn.execute(
         "CREATE TABLE _esgvoc_metadata (key TEXT PRIMARY KEY, value TEXT)"
     )

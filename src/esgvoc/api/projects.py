@@ -1,9 +1,11 @@
 import itertools
 import logging
 import re
+import warnings
 from typing import Iterable, Sequence, cast
 
 from sqlalchemy import text
+from sqlalchemy.exc import MultipleResultsFound
 from sqlmodel import Session, and_, col, select
 
 import esgvoc.core.constants as constants
@@ -25,7 +27,7 @@ from esgvoc.core.db.connection import DBConnection
 from esgvoc.core.db.models.mixins import TermKind
 from esgvoc.core.db.models.project import PCollection, PCollectionFTS5, Project, PTerm, PTermFTS5
 from esgvoc.core.db.models.universe import UTerm
-from esgvoc.core.db_compat import check_db_compatibility
+from esgvoc.core.db_compat import check_db_compatibility, check_db_file
 from esgvoc.core.exceptions import (
     EsgvocDbError,
     EsgvocIncompatibleDBError,
@@ -41,6 +43,15 @@ _VALID_TERM_IN_COLLECTION_CACHE: dict[str, list[MatchingTerm]] = dict()
 _VALID_VALUE_AGAINST_GIVEN_TERM_CACHE: dict[str, list[UniverseTermError | ProjectTermError]] = dict()
 
 
+def _one_or_none(session: Session, statement, what: str):
+    """Run a single-row lookup; a duplicate row in the database raises EsgvocDbError."""
+    try:
+        return session.exec(statement).one_or_none()
+    except MultipleResultsFound as e:
+        project_id = session.exec(select(Project.id)).first()
+        raise EsgvocDbError(f"duplicate {what} of project '{project_id}'") from e
+
+
 def _resolve_project_connection(project_id: str, version: str | None = None) -> DBConnection | None:
     """
     Resolve which DB connection to use for *project_id*.
@@ -50,6 +61,7 @@ def _resolve_project_connection(project_id: str, version: str | None = None) -> 
     2. Active version from pointer file → open that DB file.
     3. None (no database found for this project).
 
+    :raises EsgvocDbError: If the database file is empty or is not an esgvoc database.
     :raises EsgvocIncompatibleDBError: If the database requires a more recent esgvoc.
     """
     from esgvoc.core.service.user_state import UserState
@@ -61,6 +73,7 @@ def _resolve_project_connection(project_id: str, version: str | None = None) -> 
     db_path = UserState.db_path(project_id, version)
     if not db_path.exists():
         return None
+    check_db_file(project_id, version, db_path)
     check_db_compatibility(project_id, version, db_path)
     return DBConnection(db_path)
 
@@ -291,11 +304,11 @@ def _check_value(value: str) -> str:
         return value
 
 
-def _search_plain_term_and_valid_value(value: str, collection_id: str, project_session: Session) -> str | None:
+def _search_plain_terms_and_valid_value(value: str, collection_id: str, project_session: Session) -> list[str]:
+    # Several terms of a collection may share a drs_name: return all of them.
     where_expression = and_(PCollection.id == collection_id, PTerm.specs[constants.DRS_SPECS_JSON_KEY] == f'"{value}"')
-    statement = select(PTerm).join(PCollection).where(where_expression)
-    term = project_session.exec(statement).one_or_none()
-    return term.id if term else None
+    statement = select(PTerm.id).join(PCollection).where(where_expression)
+    return list(project_session.exec(statement).all())
 
 
 def _valid_value_against_all_terms_of_collection(
@@ -381,8 +394,8 @@ def _valid_term_in_collection(
         if collection:
             match collection.term_kind:
                 case TermKind.PLAIN:
-                    term_id_found = _search_plain_term_and_valid_value(value, collection_id, project_session)
-                    if term_id_found:
+                    term_ids_found = _search_plain_terms_and_valid_value(value, collection_id, project_session)
+                    for term_id_found in term_ids_found:
                         result.append(
                             MatchingTerm(project_id=project_id, collection_id=collection_id, term_id=term_id_found)
                         )
@@ -748,9 +761,7 @@ def get_term_in_project(
 
 def _get_term_in_collection(collection_id: str, term_id: str, session: Session) -> PTerm | None:
     statement = select(PTerm).join(PCollection).where(PCollection.id == collection_id, PTerm.id == term_id)
-    results = session.exec(statement)
-    result = results.one_or_none()
-    return result
+    return _one_or_none(session, statement, f"term '{term_id}' in collection '{collection_id}'")
 
 
 def _get_terms_by_key_value_in_collection(
@@ -913,9 +924,7 @@ def get_term_in_collection(
 
 def _get_collection_in_project(collection_id: str, session: Session) -> PCollection | None:
     statement = select(PCollection).where(PCollection.id == collection_id)
-    results = session.exec(statement)
-    result = results.one_or_none()
-    return result
+    return _one_or_none(session, statement, f"collection '{collection_id}'")
 
 
 def get_collection_in_project(project_id: str, collection_id: str, version: str | None = None) -> tuple[str, dict] | None:
@@ -1041,12 +1050,7 @@ def get_collection_from_data_descriptor_in_all_projects(data_descriptor_id: str)
 
 def _get_data_descriptor_from_collection_in_project(collection_id: str, session: Session) -> str | None:
     statement = select(PCollection.data_descriptor_id).where(PCollection.id == collection_id)
-    try:
-        result = session.exec(statement).one()
-    except Exception as e:
-        _LOGGER.debug("Could not resolve data_descriptor for collection %s: %s", collection_id, e)
-        result = None
-    return result
+    return _one_or_none(session, statement, f"collection '{collection_id}'")
 
 
 def get_data_descriptor_from_collection_in_project(project_id: str, collection_id: str, version: str | None = None) -> str | None:
@@ -1116,16 +1120,55 @@ def get_model_from_collection(
     return None
 
 
-def _get_term_from_universe_term_id_in_project(
+def _get_terms_from_universe_term_id_in_project(
     data_descriptor_id: str, universe_term_id: str, project_session: Session
-) -> PTerm | None:
+) -> list[PTerm]:
+    # Several collections of a project may be linked to the same data descriptor,
+    # and each may contain the universe term.
     statement = (
         select(PTerm)
         .join(PCollection)
         .where(PCollection.data_descriptor_id == data_descriptor_id, PTerm.id == universe_term_id)
     )
-    results = project_session.exec(statement)
-    result = results.one_or_none()
+    return list(project_session.exec(statement).all())
+
+
+def get_terms_from_universe_term_id_in_project(
+    project_id: str, data_descriptor_id: str, universe_term_id: str, selected_term_fields: Iterable[str] | None = None
+) -> list[tuple[str, DataDescriptor | DataDescriptorSubSet]]:
+    """
+    Returns the terms, in the given project, that correspond to the given term in the universe.
+    Several collections of a project may be linked to the same data descriptor, so the universe
+    term may be used by more than one collection: one result is returned per collection.
+    This function performs an exact match on the `project_id`, `data_descriptor_id`
+    and `universe_term_id`, and does not search for similar or related projects, data descriptors
+    and terms. If any of the provided ids (`project_id`, `data_descriptor_id` or `universe_term_id`)
+    is not found, or if there is no project term corresponding to the given universe term
+    the function returns an empty list.
+
+    :param project_id: The id of the given project.
+    :type project_id: str
+    :param data_descriptor_id: The id of the data descriptor that contains the given universe term.
+    :type data_descriptor_id: str
+    :param universe_term_id: The id of the given universe term.
+    :type universe_term_id: str
+    :param selected_term_fields: A list of term fields to select or `None`. If `None`, all the \
+    fields of the terms are returned (full DataDescriptor). If provided, only the selected fields \
+    are included (returns DataDescriptorSubSet with id + selected fields that exist).
+    :type selected_term_fields: Iterable[str] | None
+    :returns: A list of tuples containing (collection_id, term). The term is a full DataDescriptor \
+    when selected_term_fields is None, or a DataDescriptorSubSet when selected_term_fields is provided. \
+    Returns an empty list if no matches are found.
+    :rtype: list[tuple[str, DataDescriptor | DataDescriptorSubSet]]
+    """
+    result: list[tuple[str, DataDescriptor | DataDescriptorSubSet]] = list()
+    if connection := _get_project_connection(project_id):
+        with connection.create_session() as session:
+            for term_found in _get_terms_from_universe_term_id_in_project(
+                data_descriptor_id, universe_term_id, session
+            ):
+                pydantic_term = instantiate_pydantic_term(term_found, selected_term_fields)
+                result.append((term_found.collection.id, pydantic_term))
     return result
 
 
@@ -1133,6 +1176,8 @@ def get_term_from_universe_term_id_in_project(
     project_id: str, data_descriptor_id: str, universe_term_id: str, selected_term_fields: Iterable[str] | None = None
 ) -> tuple[str, DataDescriptor | DataDescriptorSubSet] | None:
     """
+    Deprecated: use :func:`get_terms_from_universe_term_id_in_project`, which returns every match.
+
     Returns the term, in the given project, that corresponds to the given term in the universe.
     This function performs an exact match on the `project_id`, `data_descriptor_id`
     and `universe_term_id`, and does not search for similar or related projects, data descriptors
@@ -1154,15 +1199,25 @@ def get_term_from_universe_term_id_in_project(
     selected_term_fields is None, or a DataDescriptorSubSet when selected_term_fields is provided. \
     Returns `None` if no matches are found.
     :rtype: tuple[str, DataDescriptor | DataDescriptorSubSet] | None
+    :raises EsgvocValueError: If the universe term is used by several collections of the project.
     """
-    result: tuple[str, DataDescriptor | DataDescriptorSubSet] | None = None
-    if connection := _get_project_connection(project_id):
-        with connection.create_session() as session:
-            term_found = _get_term_from_universe_term_id_in_project(data_descriptor_id, universe_term_id, session)
-            if term_found:
-                pydantic_term = instantiate_pydantic_term(term_found, selected_term_fields)
-                result = (term_found.collection.id, pydantic_term)
-    return result
+    warnings.warn(
+        "get_term_from_universe_term_id_in_project is deprecated and will be removed in esgvoc 7; "
+        "use get_terms_from_universe_term_id_in_project, which returns every match",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    terms_found = get_terms_from_universe_term_id_in_project(
+        project_id, data_descriptor_id, universe_term_id, selected_term_fields
+    )
+    if len(terms_found) > 1:
+        collection_ids = ", ".join(f"'{collection_id}'" for collection_id, _ in terms_found)
+        raise EsgvocValueError(
+            f"universe term '{universe_term_id}' of data descriptor '{data_descriptor_id}' is used by "
+            f"several collections of project '{project_id}' ({collection_ids}); "
+            "use get_terms_from_universe_term_id_in_project()"
+        )
+    return terms_found[0] if terms_found else None
 
 
 def get_term_from_universe_term_id_in_all_projects(
@@ -1170,6 +1225,7 @@ def get_term_from_universe_term_id_in_all_projects(
 ) -> list[tuple[str, str, DataDescriptor | DataDescriptorSubSet]]:
     """
     Returns the terms, in all projects, that correspond to the given term in the universe.
+    A project returns one result per collection that uses the universe term.
     This function performs an exact match on the `data_descriptor_id`
     and `universe_term_id`, and does not search for similar or related data descriptors
     and terms. If any of the provided ids (`data_descriptor_id` or `universe_term_id`)
@@ -1192,11 +1248,10 @@ def get_term_from_universe_term_id_in_all_projects(
     result: list[tuple[str, str, DataDescriptor | DataDescriptorSubSet]] = list()
     project_ids = get_all_projects()
     for project_id in project_ids:
-        term_found = get_term_from_universe_term_id_in_project(
+        for collection_id, term in get_terms_from_universe_term_id_in_project(
             project_id, data_descriptor_id, universe_term_id, selected_term_fields
-        )
-        if term_found:
-            result.append((project_id, term_found[0], term_found[1]))
+        ):
+            result.append((project_id, collection_id, term))
     return result
 
 
