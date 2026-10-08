@@ -13,6 +13,7 @@ from esgvoc.api.data_descriptors.known_branded_variable import (
     KnownBrandedVariableLegacy,
     KnownBrandedVariableModel,
 )
+from esgvoc.api.data_descriptors.realm import Realm
 from esgvoc.api.data_descriptors.temporal_label import TemporalLabel
 from esgvoc.api.data_descriptors.variable import Variable
 from esgvoc.api.data_descriptors.vertical_label import VerticalLabel
@@ -103,12 +104,49 @@ def resolved_labels():
 
 
 def test_known_branded_variable_accepts_reference_ids():
-    model = KnownBrandedVariable(**known_branded_variable_data())
+    model = KnownBrandedVariable(
+        **known_branded_variable_data(
+            cell_methods="area: mean time: mean",
+            cell_measures="area: areacella",
+        )
+    )
 
     assert model.variable_root_name == "ta"
     assert model.out_name == "ta"
     assert model.dimensions == ["longitude", "latitude", "plev19", "time"]
-    assert model.realm == "atmos"
+    assert model.long_name == ["Air Temperature"]
+    assert model.cell_methods == ["area: mean time: mean"]
+    assert model.cell_measures == ["area: areacella"]
+    assert model.realm == ["atmos"]
+
+
+def test_list_metadata_accepts_and_preserves_multiple_values():
+    model = KnownBrandedVariable(
+        **known_branded_variable_data(
+            long_name=["Air Temperature", "Atmospheric Temperature"],
+            cell_methods=["area: mean time: mean", "time: mean"],
+            cell_measures=["area: areacella", "volume: volcello"],
+            realm=["atmos", "land"],
+        )
+    )
+
+    assert model.long_name == ["Air Temperature", "Atmospheric Temperature"]
+    assert model.cell_methods == ["area: mean time: mean", "time: mean"]
+    assert model.cell_measures == ["area: areacella", "volume: volcello"]
+    assert model.realm == ["atmos", "land"]
+
+
+def test_realm_normalizer_accepts_resolved_scalar_reference():
+    realm = Realm(
+        id="atmos",
+        type="realm",
+        drs_name="atmos",
+        description="Atmosphere",
+    )
+
+    model = KnownBrandedVariable(**known_branded_variable_data(realm=realm))
+
+    assert model.realm == [realm]
 
 
 def test_out_name_matches_resolved_variable_drs_name():
@@ -239,9 +277,23 @@ def test_description_remains_the_inherited_scalar_field():
         KnownBrandedVariable(**known_branded_variable_data(description=["First", "Second"]))
 
 
+def test_comment_preserves_source_cmor_comments():
+    comments = ["Reported on model levels", "Includes all-sky conditions"]
+
+    model = KnownBrandedVariable(**known_branded_variable_data(comment=comments))
+
+    assert model.comment == comments
+
+
+def test_comment_requires_a_list():
+    with pytest.raises(ValidationError, match="comment"):
+        KnownBrandedVariable(**known_branded_variable_data(comment="Reported on model levels"))
+
+
 def test_cell_metadata_and_flags_have_proposal_defaults():
     model = KnownBrandedVariable(**known_branded_variable_data())
 
+    assert model.comment is None
     assert model.cell_methods is None
     assert model.cell_measures is None
     assert model.flag_values is None
@@ -341,6 +393,10 @@ def test_flag_values_and_meanings_must_be_provided_together(flag_values, flag_me
     [
         ("cf_standard_name", ""),
         ("long_name", " "),
+        ("long_name", []),
+        ("long_name", [" "]),
+        ("comment", []),
+        ("comment", [" "]),
         ("branding_suffix_name", " "),
         ("out_name", ""),
         ("variable_root_name", ""),
@@ -350,6 +406,12 @@ def test_flag_values_and_meanings_must_be_provided_together(flag_values, flag_me
         ("area_label", ""),
         ("dimensions", []),
         ("dimensions", [""]),
+        ("cell_methods", []),
+        ("cell_methods", [""]),
+        ("cell_measures", []),
+        ("cell_measures", [""]),
+        ("realm", []),
+        ("realm", [" "]),
         ("compound_name", [""]),
         ("table_id", [" "]),
         ("frequency", [""]),
@@ -383,6 +445,7 @@ def test_known_branded_variable_fields_match_proposal():
     proposal_fields = {
         "cf_standard_name",
         "long_name",
+        "comment",
         "units",
         "var_def_qualifier",
         "history",
