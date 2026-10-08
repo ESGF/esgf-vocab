@@ -380,7 +380,7 @@ def _resolved_branded_variable(**updates):
         "vertical_label": vertical,
         "horizontal_label": horizontal,
         "area_label": area,
-        "realm": Realm.model_construct(id="atmos"),
+        "realm": [Realm.model_construct(id="atmos")],
         "table_id": [Table.model_construct(id="Amon")],
         "frequency": [Frequency.model_construct(id="mon")],
     }
@@ -450,8 +450,8 @@ class TestResolvedReferences:
                 "area_label",
             ),
             (
-                KnownBrandedVariable.model_construct(id="ta_tavg", realm="atmos"),
-                "realm",
+                KnownBrandedVariable.model_construct(id="ta_tavg", realm=["atmos"]),
+                "realm[0]",
             ),
             (
                 KnownBrandedVariable.model_construct(id="ta_tavg", table_id=["Amon"]),
@@ -596,7 +596,7 @@ class TestProjectRequiredMetadata:
             FormulaTerm.model_construct(id="ap", long_name="formula term: ap"),
             GridAxis.model_construct(id="i", long_name="first grid index"),
             ModelLevelCoordinate.model_construct(id="lev", long_name="model level"),
-            KnownBrandedVariable.model_construct(id="ta_tavg", long_name="Air Temperature"),
+            KnownBrandedVariable.model_construct(id="ta_tavg", long_name=["Air Temperature"]),
         ]
         result = ValidationResult()
 
@@ -610,6 +610,15 @@ class TestProjectRequiredMetadata:
                 "5 term(s) checked",
             )
         ]
+
+    def test_empty_branded_variable_long_name_list_fails(self):
+        result = ValidationResult()
+        term = KnownBrandedVariable.model_construct(id="ta_tavg", long_name=[])
+
+        DBValidator._check_project_required_metadata([term], result)
+
+        assert not result.passed
+        assert "KnownBrandedVariable[ta_tavg].long_name is missing" in result.checks[0][2]
 
     def test_grid_axis_standard_name_satisfies_name_requirement(self):
         result = ValidationResult()

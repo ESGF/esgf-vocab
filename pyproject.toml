@@ -58,7 +58,7 @@ dev = [
     "ruff>=0.11.0",
     "pyright>=1.1.396",
     "mypy>=1.13.0",
-    "pytest>=8.3.5",
+    "pytest>=9.1.1",
     "pytest-mock>=3.14.0",
     "pytest-cov>=6.0.0",
     "jsonschema>=4.24.0",
@@ -76,6 +76,7 @@ packages = ["src/esgvoc"]
 path = "src/esgvoc/__init__.py"
 
 [tool.pytest.ini_options]
+minversion = "9.1"
 log_cli = true
 log_cli_level = "ERROR"
 log_cli_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"

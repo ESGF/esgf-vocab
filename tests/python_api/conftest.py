@@ -8,7 +8,7 @@ DB resolution strategy (in order):
      hint on how to pre-install.
   3. DBs absent and network available → download once to a session tmp dir.
 
-In practice: run `esgvoc use universe@v1.0.0 && esgvoc use cmip7@v1.0.0` once
+In practice: run `esgvoc use universe@3.2.5 && esgvoc use cmip7@2.4.0` once
 and the tests will run offline from that point on.
 """
 from __future__ import annotations
@@ -25,9 +25,13 @@ from esgvoc.core.service.user_state import UserState
 # Projects the API test suite requires
 # ---------------------------------------------------------------------------
 
+# Registry releases readable by this esgvoc (cmip7 >= 2.4.0: catalog regex_title, esgvoc >= 6.2.0).
+UNIVERSE_TEST_VERSION = "3.2.5"
+CMIP7_TEST_VERSION = "2.4.0"
+
 PROJECTS_TO_INSTALL = [
-    ("universe", "v1.0.0"),
-    ("cmip7", "v1.0.0"),
+    ("universe", UNIVERSE_TEST_VERSION),
+    ("cmip7", CMIP7_TEST_VERSION),
 ]
 
 
@@ -38,7 +42,7 @@ PROJECTS_TO_INSTALL = [
 @pytest.fixture(scope="session")
 def installed_dbs(tmp_path_factory, test_registry_url, local_test_dbs):
     """
-    Ensure universe@v1.0.0 and cmip7@v1.0.0 are available for the session.
+    Ensure universe and cmip7 (PROJECTS_TO_INSTALL versions) are available for the session.
 
     Resolution order:
       1. ESGVOC_HOME already set and all DB files present → reuse, no network.

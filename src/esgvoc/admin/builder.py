@@ -29,9 +29,33 @@ from typing import Optional
 
 import esgvoc
 from esgvoc.admin.manifest import Manifest
+from esgvoc.core.exceptions import EsgvocDbError
 from esgvoc.core.service.missing_links import MissingLinksTracker
 
 _LOGGER = logging.getLogger(__name__)
+
+
+@contextmanager
+def _show_ingestion_warnings():
+    # The esgvoc logger only shows errors by default; ingestion warnings (duplicate
+    # drs_names, duplicate universe term ids) must be visible in build output.
+    esgvoc_logger = logging.getLogger("esgvoc")
+    previous_level = esgvoc_logger.level
+    esgvoc_logger.setLevel(min(previous_level, logging.WARNING))
+    try:
+        yield
+    finally:
+        esgvoc_logger.setLevel(previous_level)
+
+
+def _check_ingestion_errors(universe_errors: int, project_errors: int = 0) -> None:
+    # A database missing terms must never be published: fail the build loudly rather than
+    # letting users of the database discover it through obscure errors.
+    if universe_errors + project_errors > 0:
+        raise EsgvocDbError(
+            f"{universe_errors + project_errors} term(s) failed to ingest "
+            f"(universe: {universe_errors}, project: {project_errors}); see the errors above"
+        )
 
 
 @dataclass
@@ -275,6 +299,7 @@ class DBBuilder:
             universe_db = tmp / "universe.db"
             self._log("Building universe DB…")
             ingestion_errors = self._build_universe_db(universe_path, universe_db, universe_sha)
+            _check_ingestion_errors(ingestion_errors)
 
             output_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(str(universe_db), str(output_path))
@@ -361,6 +386,7 @@ class DBBuilder:
             project_sha=project_sha,
         )
         ingestion_errors = universe_errors + project_errors
+        _check_ingestion_errors(universe_errors, project_errors)
 
         # 3. Copy project DB to output
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -415,7 +441,8 @@ class DBBuilder:
         ingest_metadata_universe(conn, universe_sha or "unknown")
 
         tracker = MissingLinksTracker() if self.fail_on_missing_links else None
-        errors = ingest_universe(universe_path, universe_db, tracker)
+        with _show_ingestion_warnings():
+            errors = ingest_universe(universe_path, universe_db, tracker)
 
         if tracker and tracker.has_missing_links():
             tracker.print_summary()
@@ -446,7 +473,8 @@ class DBBuilder:
         # is no prior row — which is what the API expects (SQLITE_FIRST_PK = 1).
 
         tracker = MissingLinksTracker() if self.fail_on_missing_links else None
-        errors = ingest_project(project_path, project_db, project_sha or "unknown", str(universe_path), tracker)
+        with _show_ingestion_warnings():
+            errors = ingest_project(project_path, project_db, project_sha or "unknown", str(universe_path), tracker)
 
         if tracker and tracker.has_missing_links():
             tracker.print_summary()

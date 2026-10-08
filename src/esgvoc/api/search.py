@@ -38,6 +38,7 @@ class Item(BaseModel):
 
 def get_universe_session() -> Session:
     from esgvoc.core.db.connection import DBConnection
+    from esgvoc.core.db_compat import check_db_file
     from esgvoc.core.service.user_state import UserState
 
     state = UserState.load()
@@ -45,6 +46,7 @@ def get_universe_session() -> Session:
     if active:
         db_path = UserState.db_path("universe", active)
         if db_path.exists():
+            check_db_file("universe", active, db_path)
             return DBConnection(db_path).create_session()
     raise EsgvocDbError(
         "Universe database is not installed or active.\n"
@@ -68,6 +70,11 @@ def instantiate_pydantic_terms(
             raise ValueError(f"Failed to instantiate term with ID: '{db_term.id}', type: '{term_type}', data_descriptor: '{dd_id}'. Original error: {e}") from e
 
 
+def _is_bareword_char(char: str) -> bool:
+    # Read: https://sqlite.org/fts5.html#fts5_strings
+    return (char.isascii() and (char.isalnum() or char == "_")) or ord(char) > 127 or char == "\x1a"
+
+
 def process_expression(expression: str) -> str:
     """
     Allows only SQLite FST operators AND OR NOT and perform prefix search for single word expressions.
@@ -76,15 +83,10 @@ def process_expression(expression: str) -> str:
     result = expression.replace('"', "")
     result = result.replace("'", "")
 
-    # 2. Escape keywords.
+    # 2. Escape the characters not allowed in FTS5 barewords (e.g. '-', '.', '/', ':', '('),
+    #    except the prefix operator '*', then the NEAR keyword.
+    result = "".join(c if _is_bareword_char(c) or c.isspace() or c == "*" else f'"{c}"' for c in result)
     result = result.replace("NEAR", '"NEAR"')
-    result = result.replace("+", '"+"')
-    result = result.replace("-", '"-"')
-    result = result.replace(":", '":"')
-    result = result.replace("^", '"^"')
-    result = result.replace("(", '"("')
-    result = result.replace(")", '")"')
-    result = result.replace(",", '","')
 
     # 3. Make single word request a prefix search.
     if not result.endswith("*"):
