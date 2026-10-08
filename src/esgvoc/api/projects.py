@@ -1206,7 +1206,7 @@ def get_term_from_universe_term_id_in_project(
     :raises EsgvocValueError: If the universe term is used by several collections of the project.
     """
     warnings.warn(
-        "get_term_from_universe_term_id_in_project is deprecated and will be removed in esgvoc 7; "
+        "get_term_from_universe_term_id_in_project is deprecated and will be removed in esgvoc 8; "
         "use get_terms_from_universe_term_id_in_project, which returns every match",
         DeprecationWarning,
         stacklevel=2,
