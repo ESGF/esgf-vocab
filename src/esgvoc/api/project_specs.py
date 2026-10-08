@@ -114,8 +114,8 @@ class CatalogProperties(BaseModel):
     """The extensions of the catalog."""
     regex_id: str
     """ simple constrainst regex for dataset_id str (with version)"""
-    regex_base_id: str
-    """ simple constrainst regex for base_id str (without version)"""
+    regex_title: str
+    """ simple constrainst regex for title str (same as id without version)"""
 
 
 AttributeSpecification = list[AttributeProperty]

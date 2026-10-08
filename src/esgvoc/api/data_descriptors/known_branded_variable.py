@@ -39,9 +39,18 @@ class KnownBrandedVariable(PlainTermDataDescriptor):
     Branding suffix encoding temporal, vertical, horizontal, and area sampling.
     """
 
-    long_name: NonEmptyString | None = None
+    long_name: list[NonEmptyString] | None = None
     """
-    Descriptive name of the branded variable.
+    Descriptive names of the branded variable.
+    """
+
+    comment: list[NonEmptyString] | None = None
+    """
+    List of comments representing possible values of the ``comment`` field of CMOR
+    table entries for a respective ``known_branded_variable``.
+
+    The inherited ``description`` field contains the canonical comment when
+    one has been selected.
     """
 
     cf_standard_name: NonEmptyString
@@ -106,21 +115,21 @@ class KnownBrandedVariable(PlainTermDataDescriptor):
     References an :class:`AreaLabel` term by ID when it has not been resolved.
     """
 
-    realm: Realm | NonEmptyString | None = None
+    realm: list[Realm | NonEmptyString] | None = None
     """
-    Earth-system realm.
+    Earth-system realms.
 
-    References a :class:`Realm` term by ID when it has not been resolved.
-    """
-
-    cell_methods: NonEmptyString | None = None
-    """
-    CF cell-methods string describing statistical processing along each axis.
+    References any unresolved :class:`Realm` term by ID.
     """
 
-    cell_measures: NonEmptyString | None = None
+    cell_methods: list[NonEmptyString] | None = None
     """
-    CF cell-measures string identifying measure variables such as cell areas.
+    CF cell-methods strings describing possible statistical processing along each axis.
+    """
+
+    cell_measures: list[NonEmptyString] | None = None
+    """
+    CF cell-measures strings identifying measure variables such as cell areas.
     """
 
     flag_values: list[int] | None = None
@@ -176,6 +185,26 @@ class KnownBrandedVariable(PlainTermDataDescriptor):
     String entries reference :class:`Frequency` terms by ID when they have
     not been resolved.
     """
+
+    @field_validator("long_name", "cell_methods", "cell_measures", "realm", mode="before")
+    @classmethod
+    def normalize_list_metadata(cls, value):
+        """
+        Preserve compatibility with records that use a single scalar value.
+        """
+        if value is None or isinstance(value, list):
+            return value
+        return [value]
+
+    @field_validator("long_name", "comment", "cell_methods", "cell_measures", "realm", mode="after")
+    @classmethod
+    def validate_optional_metadata_lists(cls, value):
+        """
+        Represent absent optional metadata with ``None``, not an empty list.
+        """
+        if value == []:
+            raise ValueError("optional metadata lists cannot be empty")
+        return value
 
     @field_validator("dimensions")
     @classmethod

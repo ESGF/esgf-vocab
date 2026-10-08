@@ -195,6 +195,7 @@ def import_cmd(
     Example:
       esgvoc import /media/usb/bundle.tar.gz
     """
+    from esgvoc.core.db_compat import get_min_version, incompatibility_message
     from esgvoc.core.service.configuration.home import EsgvocHome
     from esgvoc.core.service.user_state import UserState
 
@@ -284,8 +285,12 @@ def import_cmd(
         # Apply active-version mappings from the bundle (if --activate)
         if activate:
             for pid, ver in imported + skipped:
-                if bundle_active.get(pid) == ver:
-                    state.set_active(pid, ver)
+                if bundle_active.get(pid) != ver:
+                    continue
+                if message := incompatibility_message(pid, ver, get_min_version(UserState.db_path(pid, ver))):
+                    console.print(f"  [red]{pid}@{ver} imported but not activated.[/red]\n{message}")
+                    continue
+                state.set_active(pid, ver)
 
         state.save()
 

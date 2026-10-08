@@ -64,3 +64,6 @@ ZZZ_Apydantise
 
 # Built DB artifacts
 *.db
+
+# Local notes and drafts
+md_file/

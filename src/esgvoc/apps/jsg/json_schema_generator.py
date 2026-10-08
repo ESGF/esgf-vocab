@@ -67,14 +67,21 @@ def _process_link_property(link_prop: LinkProperty) -> _LinkProperty:
 def _process_col_plain_terms(collection: PCollection, source_collection_key: str) -> tuple[str, list[str]]:
     property_values: set[str] = set()
     for term in collection.terms:
-        property_key, property_value = _process_plain_term(term, source_collection_key)
-        property_values.add(property_value)
-    # Filter out None values before sorting to avoid TypeError
-    filtered_values = [v for v in property_values if v is not None]
-    return property_key, sorted(filtered_values)  # type: ignore
+        property_key, value = _process_plain_term(term, source_collection_key)
+        values = value if isinstance(value, list) else [value]
+        for item in values:
+            if item is None:
+                continue
+            if not isinstance(item, str):
+                raise EsgvocValueError(
+                    f"Expected a string in '{source_collection_key}' "
+                    f"for term '{term.id}', got {type(item).__name__}"
+                )
+            property_values.add(item)
+    return property_key, sorted(property_values)  # type: ignore
 
 
-def _process_plain_term(term: PTerm, source_collection_key: str) -> tuple[str, str]:
+def _process_plain_term(term: PTerm, source_collection_key: str) -> tuple[str, str | list[str] | None]:
     if source_collection_key in term.specs:
         property_value = term.specs[source_collection_key]
     else:
@@ -305,13 +312,81 @@ class CatalogPropertiesJsonTranslator:
         return f"{project_id}{KEY_SEPARATOR}{attribute_name}"
 
 
+def _merge_field_values(left: dict, right: dict) -> dict:
+    if left.get("type") != right.get("type"):
+        raise EsgvocValueError("Cannot merge different JSON types")
+    if left.keys() != right.keys():
+        raise EsgvocValueError("Cannot merge different constraint keywords")
+    if left == right:
+        return left
+    # Array fields: merge the constraints of their items.
+    if left.get("type") == "array":
+        left_constraints = {k: v for k, v in left.items() if k != "items"}
+        right_constraints = {k: v for k, v in right.items() if k != "items"}
+        if left_constraints != right_constraints:
+            raise EsgvocValueError("Cannot merge different array constraints")
+        return {
+            **left_constraints,
+            "items": _merge_field_values(left["items"], right["items"]),
+        }
+    # Keep a single enum when only its values differ.
+    if "enum" in left:
+        left_constraints = {k: v for k, v in left.items() if k != "enum"}
+        right_constraints = {k: v for k, v in right.items() if k != "enum"}
+
+        if left_constraints == right_constraints:
+            values = list(left["enum"])
+            for value in right["enum"]:
+                if value not in values:
+                    values.append(value)
+
+            return {**left_constraints, "enum": values}
+    # General case: accept either definition.
+    return {
+        "type": left["type"],
+        "anyOf": [
+            {k: v for k, v in left.items() if k != "type"},
+            {k: v for k, v in right.items() if k != "type"},
+        ],
+    }
+
+
 def _catalog_properties_json_processor(
     property_translator: CatalogPropertiesJsonTranslator, properties: list[CatalogProperty]
 ) -> list[_CatalogProperty]:
-    result: list[_CatalogProperty] = list()
-    for dataset_property_spec in properties:
-        catalog_property = property_translator.translate_property(dataset_property_spec)
-        result.append(catalog_property)
+    grouped: dict[str, list[_CatalogProperty]] = {}
+    for spec in properties:
+        prop = property_translator.translate_property(spec)
+        grouped.setdefault(prop.field_name, []).append(prop)
+    result = []
+    for name, definitions in grouped.items():
+        first = definitions[0]
+        merged_value = first.field_value
+        for current in definitions[1:]:
+            # Check the compatibility with the first definition.
+            try:
+                checked_value = _merge_field_values(first.field_value, current.field_value)
+            except EsgvocValueError as e:
+                raise EsgvocValueError(f"cannot merge the definitions of '{name}': {e}") from e
+            # Merge the alternatives without comparing their transformed forms.
+            if merged_value == first.field_value:
+                merged_value = checked_value
+            else:
+                merged_value = {
+                    "type": first.field_value["type"],
+                    "anyOf": [
+                        definition.field_value for definition in definitions
+                    ],
+                }
+                break
+        result.append(
+            _CatalogProperty(
+                field_name=name,
+                field_value=merged_value,
+                is_required=any(prop.is_required for prop in definitions),
+            )
+        )
+
     return result
 
 
@@ -340,7 +415,7 @@ def generate_json_schema(project_id: str) -> dict:
                 extension_specs[f"{catalog_extension_name}_extension_version"] = catalog_extension.version
             # drs_dataset_id_regex = project_specs.drs_specs[DrsType.DATASET_ID].regex
             dataset_id_regex = catalog_specs.catalog_properties.regex_id
-            base_id_regex = catalog_specs.catalog_properties.regex_base_id
+            title_regex = catalog_specs.catalog_properties.regex_title
             property_translator = CatalogPropertiesJsonTranslator(project_id)
             catalog_dataset_properties = _catalog_properties_json_processor(
                 property_translator, catalog_specs.dataset_properties
@@ -364,7 +439,7 @@ def generate_json_schema(project_id: str) -> dict:
                 project_id=project_specs.drs_name,
                 catalog_version=stac_version,
                 dataset_id_regex=dataset_id_regex,
-                base_id_regex=base_id_regex,
+                title_regex=title_regex,
                 catalog_dataset_properties=catalog_dataset_properties,
                 catalog_file_properties=catalog_file_properties,
                 catalog_link_properties=catalog_link_properties,

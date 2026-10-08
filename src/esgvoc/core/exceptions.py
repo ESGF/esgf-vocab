@@ -26,6 +26,13 @@ class EsgvocDbError(EsgvocException):
     pass
 
 
+class EsgvocIncompatibleDBError(EsgvocException):
+    """
+    Represents a project database that requires a more recent esgvoc.
+    """
+    pass
+
+
 class EsgvocNotImplementedError(EsgvocException):
     """
     Represents not implemented errors.

@@ -441,7 +441,12 @@ def admin_install(
         )
         raise typer.Exit(1)
 
+    from esgvoc.core.db_compat import db_file_problem_message, get_min_version, incompatibility_message
     from esgvoc.core.service.user_state import UserState
+
+    if message := db_file_problem_message(project_id, name, db_path):
+        console.print(f"[red]Not installed.[/red]\n{message}")
+        raise typer.Exit(1)
 
     target = UserState.db_path(project_id, name)
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -454,6 +459,9 @@ def admin_install(
     )
 
     if activate:
+        if message := incompatibility_message(project_id, name, get_min_version(target)):
+            console.print(f"[red]Not activated.[/red]\n{message}")
+            raise typer.Exit(1)
         state = UserState.load()
         state.set_active(project_id, name, source="local")
         console.print(f"[green]Active:[/green] {project_id} → {name}")

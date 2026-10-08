@@ -464,17 +464,22 @@ class DBValidator:
         if not relevant_terms:
             return
 
+        def has_non_empty_text(value) -> bool:
+            if isinstance(value, str):
+                return bool(value.strip())
+            if isinstance(value, (list, tuple)):
+                return bool(value) and all(isinstance(item, str) and item.strip() for item in value)
+            return False
+
         errors = [
             f"{type(term).__name__}[{term.id}].long_name is missing"
             for term in relevant_terms
-            if not isinstance(term, GridAxis) and (not isinstance(term.long_name, str) or not term.long_name.strip())
+            if not isinstance(term, GridAxis) and not has_non_empty_text(term.long_name)
         ]
         for term in relevant_terms:
             if not isinstance(term, GridAxis):
                 continue
-            has_name = any(
-                isinstance(value, str) and value.strip() for value in (term.long_name, term.cf_standard_name)
-            )
+            has_name = any(has_non_empty_text(value) for value in (term.long_name, term.cf_standard_name))
             axis_metadata = (
                 term.axis,
                 term.data_type,

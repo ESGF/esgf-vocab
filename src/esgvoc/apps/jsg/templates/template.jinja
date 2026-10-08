@@ -35,9 +35,7 @@
       "type": "object",
       "required": [
         "collection",
-        "id",
-        "base_id",
-        "version"
+        "id"
       ],
       "properties": {
         "type": {
@@ -46,14 +44,6 @@
         "id": {
           "type": "string",
           "pattern": {{ dataset_id_regex|tojson }}
-        },
-        "base_id": {
-          "type": "string",
-          "pattern": {{ base_id_regex|tojson }}
-        },
-        "version": {
-          "type": "string",
-          "pattern": "^\\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$"
         },
         "collection": {
           "const": "{{ project_id }}"
@@ -151,12 +141,32 @@
         },
         {
           "required": [
+            "title"
+          ]
+        },
+        {
+          "required": [
+            "version"
+          ]
+        },
+        {
+          "required": [
+            "project"
+          ]
+        },
+        {
+          "required": [
             "retracted"
           ]
         },
         {
           "required": [
             "size"
+          ]
+        },
+        {
+          "required": [
+            "access"
           ]
         },
         {
@@ -258,6 +268,29 @@
       "properties": {
         "latest": {
           "type": "boolean"
+        },
+        "title": {
+          "type": "string",
+          "pattern": {{ title_regex|tojson }}
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$"
+        },
+        "project": {
+          "const": {{ project_id|tojson }}
+        },
+        "access": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "HTTPServer",
+              "Globus"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
         },
         "retracted": {
           "type": "boolean"

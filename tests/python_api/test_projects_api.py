@@ -1,5 +1,5 @@
 """
-Tests for esgvoc.api.projects — uses real cmip7@v1.0.0 and universe@v1.0.0.
+Tests for esgvoc.api.projects — uses real cmip7 and universe DBs (see conftest.py).
 
 Marked `needs_db`: network is only required on the very first run to download
 the DBs.  Once installed (ESGVOC_HOME set with the DBs present) tests run offline.
@@ -7,6 +7,8 @@ the DBs.  Once installed (ESGVOC_HOME set with the DBs present) tests run offlin
 
 
 import pytest
+
+from tests.python_api.conftest import CMIP7_TEST_VERSION
 
 pytestmark = pytest.mark.needs_db
 
@@ -42,7 +44,7 @@ class TestGetProject:
     def test_version_param(self, installed_dbs):
         import esgvoc.api.projects as projects
 
-        result = projects.get_project("cmip7", version="v1.0.0")
+        result = projects.get_project("cmip7", version=CMIP7_TEST_VERSION)
         assert result is not None
 
 
@@ -77,7 +79,7 @@ class TestGetAllTermsInProject:
         import esgvoc.api.projects as projects
 
         terms_default = projects.get_all_terms_in_project("cmip7")
-        terms_v1 = projects.get_all_terms_in_project("cmip7", version="v1.0.0")
+        terms_v1 = projects.get_all_terms_in_project("cmip7", version=CMIP7_TEST_VERSION)
         assert len(terms_default) == len(terms_v1)
 
 
@@ -283,20 +285,20 @@ class TestGetTermFromUniverseTermId:
                 continue
             first_term_id = terms[0].id if hasattr(terms[0], "id") else terms[0]["id"]
             # Try looking up by universe term id
-            result = projects.get_term_from_universe_term_id_in_project("cmip7", dd, first_term_id)
-            if result is not None:
-                found_coll_id, found_term = result
-                assert isinstance(found_coll_id, str)
-                assert found_term is not None
+            result = projects.get_terms_from_universe_term_id_in_project("cmip7", dd, first_term_id)
+            if result:
+                for found_coll_id, found_term in result:
+                    assert isinstance(found_coll_id, str)
+                    assert found_term is not None
                 return
         pytest.skip("No collection in cmip7 links to a universe data descriptor with accessible terms")
 
-    def test_unknown_term_returns_none(self, installed_dbs):
+    def test_unknown_term_returns_empty(self, installed_dbs):
         import esgvoc.api.projects as projects
 
-        # institution is a common universe dd; nonexistent term should return None
-        result = projects.get_term_from_universe_term_id_in_project("cmip7", "institution", "nonexistent_xyz_abc")
-        assert result is None
+        # institution is a common universe dd; nonexistent term should return an empty list
+        result = projects.get_terms_from_universe_term_id_in_project("cmip7", "institution", "nonexistent_xyz_abc")
+        assert result == []
 
     def test_get_term_from_universe_id_in_all_projects(self, installed_dbs):
         import esgvoc.api.projects as projects
@@ -523,6 +525,18 @@ class TestFindTermsInProject:
         term_id = first.id if hasattr(first, "id") else first["id"]
         results = projects.find_terms_in_project(term_id, "cmip7", selected_term_fields=[])
         assert len(results) > 0
+
+    def test_find_term_id_with_special_characters(self, installed_dbs):
+        # e.g. 'cf-1.11': '.' used to raise "unable to interpret expression".
+        import esgvoc.api.projects as projects
+
+        term_ids = [t.id for t in projects.get_all_terms_in_project("cmip7")]
+        special = [term_id for term_id in term_ids if "." in term_id or "/" in term_id]
+        if not special:
+            pytest.skip("No term id with '.' or '/' in cmip7")
+        for term_id in special[:5]:
+            results = projects.find_terms_in_project(term_id, "cmip7", selected_term_fields=[])
+            assert term_id in [t.id for t in results]
 
     def test_find_no_match_returns_empty(self, installed_dbs):
         import esgvoc.api.projects as projects
