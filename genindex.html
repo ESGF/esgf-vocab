@@ -751,6 +751,8 @@
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.Unparsable.column">(esgvoc.apps.drs.report.Unparsable attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.comment">comment (esgvoc.api.data_descriptors.KnownBrandedVariable attribute)</a>
+</li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.ComplianceIssueVisitor">ComplianceIssueVisitor (class in esgvoc.apps.drs.report)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.EMDModelComponent.component">component (esgvoc.api.data_descriptors.EMDModelComponent attribute)</a>
@@ -1317,6 +1319,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.embedded_components">embedded_components (esgvoc.api.data_descriptors.Model attribute)</a>
 </li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Grid.empty_string_to_none">empty_string_to_none() (esgvoc.api.data_descriptors.Grid class method)</a>
+</li>
       <li><a href="api_documentation/projects.html#esgvoc.api.report.ValidationReport.errors">errors (esgvoc.api.report.ValidationReport attribute)</a>
 
       <ul>
@@ -1416,6 +1420,8 @@
       <li><a href="api_documentation/miscellaneous.html#esgvoc.core.exceptions.EsgvocDbError">EsgvocDbError</a>
 </li>
       <li><a href="api_documentation/miscellaneous.html#esgvoc.core.exceptions.EsgvocException">EsgvocException</a>
+</li>
+      <li><a href="api_documentation/miscellaneous.html#esgvoc.core.exceptions.EsgvocIncompatibleDBError">EsgvocIncompatibleDBError</a>
 </li>
       <li><a href="api_documentation/miscellaneous.html#esgvoc.core.exceptions.EsgvocMissingLinksError">EsgvocMissingLinksError</a>
 </li>
@@ -1551,10 +1557,10 @@
 </li>
       <li><a href="api_documentation/universe.html#esgvoc.api.universe.get_all_terms_in_universe">get_all_terms_in_universe() (in module esgvoc.api.universe)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_collection_from_data_descriptor_in_all_projects">get_collection_from_data_descriptor_in_all_projects() (in module esgvoc.api.projects)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_collection_from_data_descriptor_in_project">get_collection_from_data_descriptor_in_project() (in module esgvoc.api.projects)</a>
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_collection_in_project">get_collection_in_project() (in module esgvoc.api.projects)</a>
@@ -1583,6 +1589,8 @@
 </li>
       <li><a href="api_documentation/universe.html#esgvoc.api.universe.get_term_in_universe">get_term_in_universe() (in module esgvoc.api.universe)</a>
 </li>
+      <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_terms_from_universe_term_id_in_project">get_terms_from_universe_term_id_in_project() (in module esgvoc.api.projects)</a>
+</li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_terms_in_all_projects_by_key_value">get_terms_in_all_projects_by_key_value() (in module esgvoc.api.projects)</a>
 </li>
       <li><a href="api_documentation/projects.html#esgvoc.api.projects.get_terms_in_collection_by_key_value">get_terms_in_collection_by_key_value() (in module esgvoc.api.projects)</a>
@@ -1591,10 +1599,18 @@
 </li>
       <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsGenerationReport.given_mapping_or_bag_of_terms">given_mapping_or_bag_of_terms (esgvoc.apps.drs.report.DrsGenerationReport attribute)</a>
 </li>
-      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalGridCells.grid_mapping">grid_mapping (esgvoc.api.data_descriptors.HorizontalGridCells attribute)</a>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Grid.grid_mapping">grid_mapping (esgvoc.api.data_descriptors.Grid attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalGridCells.grid_mapping">(esgvoc.api.data_descriptors.HorizontalGridCells attribute)</a>
 </li>
-      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalGridCells.grid_type">grid_type (esgvoc.api.data_descriptors.HorizontalGridCells attribute)</a>
+      </ul></li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Grid.grid_type">grid_type (esgvoc.api.data_descriptors.Grid attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalGridCells.grid_type">(esgvoc.api.data_descriptors.HorizontalGridCells attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1964,8 +1980,12 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalGridCells.n_cells">n_cells (esgvoc.api.data_descriptors.HorizontalGridCells attribute)</a>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Grid.n_cells">n_cells (esgvoc.api.data_descriptors.Grid attribute)</a>
+
+      <ul>
+        <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalGridCells.n_cells">(esgvoc.api.data_descriptors.HorizontalGridCells attribute)</a>
 </li>
+      </ul></li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Arrangement.n_sub_grid">n_sub_grid (esgvoc.api.data_descriptors.Arrangement attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.VerticalComputationalGrid.n_z">n_z (esgvoc.api.data_descriptors.VerticalComputationalGrid attribute)</a>
@@ -2006,6 +2026,8 @@
         <li><a href="api_documentation/drs.html#esgvoc.apps.drs.report.DrsValidationReport.nb_warnings">(esgvoc.apps.drs.report.DrsValidationReport property)</a>
 </li>
       </ul></li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.normalize_list_metadata">normalize_list_metadata() (esgvoc.api.data_descriptors.KnownBrandedVariable class method)</a>
+</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Table.normalize_variable_entry">normalize_variable_entry() (esgvoc.api.data_descriptors.Table class method)</a>
 </li>
   </ul></td>
@@ -2158,9 +2180,9 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.CatalogProperties.regex_base_id">regex_base_id (esgvoc.api.project_specs.CatalogProperties attribute)</a>
-</li>
       <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.CatalogProperties.regex_id">regex_id (esgvoc.api.project_specs.CatalogProperties attribute)</a>
+</li>
+      <li><a href="api_documentation/project_specs.html#esgvoc.api.project_specs.CatalogProperties.regex_title">regex_title (esgvoc.api.project_specs.CatalogProperties attribute)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Grid.region">region (esgvoc.api.data_descriptors.Grid attribute)</a>
 
@@ -2620,6 +2642,8 @@
         <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.Model.validate_non_empty_strings">(esgvoc.api.data_descriptors.Model class method)</a>
 </li>
       </ul></li>
+      <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.KnownBrandedVariable.validate_optional_metadata_lists">validate_optional_metadata_lists() (esgvoc.api.data_descriptors.KnownBrandedVariable class method)</a>
+</li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.NominalResolution.validate_range">validate_range() (esgvoc.api.data_descriptors.NominalResolution class method)</a>
 </li>
       <li><a href="api_documentation/data_descriptors.html#esgvoc.api.data_descriptors.HorizontalGridCells.validate_resolution_range">validate_resolution_range() (esgvoc.api.data_descriptors.HorizontalGridCells class method)</a>
