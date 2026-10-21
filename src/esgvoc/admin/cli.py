@@ -6,7 +6,7 @@ Commands:
   build-universe  Build a standalone universe-only DB
   validate        Validate an existing DB file
   test            Quick sanity test on a DB file
-  diff            Compare two DB files (metadata + term counts)
+  diff            Compare two DB files (metadata + term counts, --terms: term by term)
 """
 
 from __future__ import annotations
@@ -79,7 +79,10 @@ def build(
     ),
     esgvoc_min_version: Optional[str] = typer.Option(
         None, "--esgvoc-min-version",
-        help="Override esgvoc compatibility min_version (default: current esgvoc version).",
+        help=(
+            "Override esgvoc compatibility min_version (default: the CV manifest's, else the current esgvoc "
+            "version). Never lower than the universe manifest's min_version."
+        ),
     ),
     validate: bool = typer.Option(
         False, "--validate",
@@ -293,6 +296,14 @@ def diff(
     baseline: Path = typer.Argument(..., help="Baseline .db file."),
     updated: Path = typer.Argument(..., help="Updated .db file to compare against baseline."),
     format: str = typer.Option("text", "--format", help="Output format: text or json."),
+    terms: bool = typer.Option(
+        False, "--terms",
+        help=(
+            "Also compare the project terms one by one (added, removed, modified, with the changed fields). "
+            "Project terms include the universe data they link to, so this shows which terms a universe "
+            "release changes in a project."
+        ),
+    ),
 ):
     """
     Compare two database files: metadata differences and term count changes.
@@ -301,6 +312,7 @@ def diff(
     Example:
       esgvoc admin diff v2.0.0.db v2.1.0.db
       esgvoc admin diff baseline.db updated.db --format json
+      esgvoc admin diff published.db rebuilt.db --terms --format json
     """
     def read_metadata(path: Path) -> dict:
         try:
@@ -337,6 +349,16 @@ def diff(
         for t in tables
     }
 
+    term_diff = None
+    if terms:
+        from esgvoc.admin.term_diff import diff_project_terms
+
+        try:
+            term_diff = diff_project_terms(baseline, updated)
+        except sqlite3.Error as e:
+            console.print(f"[red]Cannot compare the terms (not project DBs?):[/red] {e}")
+            raise typer.Exit(1) from e
+
     if format == "json":
         import json
 
@@ -353,6 +375,8 @@ def diff(
                 for t, (a, b) in counts.items()
             },
         }
+        if term_diff is not None:
+            out["terms"] = term_diff.to_dict()
         console.print_json(json.dumps(out, indent=2))
         return
 
@@ -385,6 +409,31 @@ def diff(
         count_table.add_row(t, str(a), str(b), delta_str, style=style)
 
     console.print(count_table)
+
+    if term_diff is None:
+        return
+    if not term_diff.has_changes:
+        console.print("[green]No project term changed.[/green]")
+        return
+    term_table = Table(title="Project term changes")
+    term_table.add_column("Collection", style="cyan")
+    term_table.add_column("Added", justify="right")
+    term_table.add_column("Removed", justify="right")
+    term_table.add_column("Modified", justify="right")
+    term_table.add_column("Changed fields")
+    for c in term_diff.collections:
+        changed_fields = sorted({f for m in c.modified for f in m.fields})
+        term_table.add_row(
+            c.collection_id, str(len(c.added)), str(len(c.removed)), str(len(c.modified)), ", ".join(changed_fields)
+        )
+    console.print(term_table)
+    for label, ids in (
+        ("New collections", term_diff.collections_added),
+        ("Removed collections", term_diff.collections_removed),
+        ("Updated collection models", term_diff.collections_modified),
+    ):
+        if ids:
+            console.print(f"{label}: {', '.join(ids)}")
 
 
 # ---------------------------------------------------------------------------

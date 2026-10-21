@@ -29,6 +29,7 @@ from typing import Optional
 
 import esgvoc
 from esgvoc.admin.manifest import Manifest
+from esgvoc.core.db_fetcher import _parse_version
 from esgvoc.core.exceptions import EsgvocDbError
 from esgvoc.core.service.missing_links import MissingLinksTracker
 
@@ -388,6 +389,16 @@ class DBBuilder:
         ingestion_errors = universe_errors + project_errors
         _check_ingestion_errors(universe_errors, project_errors)
 
+        # The project DB embeds universe data, so it needs at least the esgvoc
+        # version the universe requires.
+        universe_min_version = Manifest.load_or_default(universe_path, project_id="universe").esgvoc.min_version
+        min_version = _effective_min_version(manifest.esgvoc.min_version, universe_min_version)
+        if min_version != manifest.esgvoc.min_version:
+            self._log(
+                f"esgvoc min_version raised to {min_version} by the universe manifest "
+                f"(project manifest: {manifest.esgvoc.min_version or 'none'})"
+            )
+
         # 3. Copy project DB to output
         output_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(str(project_db), str(output_path))
@@ -403,7 +414,7 @@ class DBBuilder:
             "universe_commit_sha": universe_sha or "unknown",
             "build_date": build_date.isoformat(),
             "esgvoc_version": esgvoc_version,
-            "esgvoc_min_version": manifest.esgvoc.min_version or esgvoc_version,
+            "esgvoc_min_version": min_version or esgvoc_version,
             "release_notes": manifest.release_notes or "",
             "ingestion_errors": str(ingestion_errors),
         }
@@ -562,6 +573,22 @@ class DBBuilder:
 # ------------------------------------------------------------------
 # Module-level helpers
 # ------------------------------------------------------------------
+
+
+def _effective_min_version(project_min: Optional[str], universe_min: Optional[str]) -> Optional[str]:
+    """
+    The project min_version, raised to the universe one when that is higher.
+
+    A value that can't be parsed as a version is kept as given.
+    """
+    if not universe_min:
+        return project_min
+    if not project_min:
+        return universe_min
+    project_key, universe_key = _parse_version(project_min), _parse_version(universe_min)
+    if project_key is not None and universe_key is not None and universe_key > project_key:
+        return universe_min
+    return project_min
 
 
 def _sha256(path: Path) -> str:
