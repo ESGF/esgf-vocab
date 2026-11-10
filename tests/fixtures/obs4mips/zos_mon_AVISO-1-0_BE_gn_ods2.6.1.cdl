@@ -1,0 +1,73 @@
+netcdf zos_mon_AVISO-1-0_BE_gn_199210-201012 {
+dimensions:
+	time = UNLIMITED ; // (219 currently)
+	lat = 180 ;
+	lon = 360 ;
+	bnds = 2 ;
+variables:
+	double time(time) ;
+		time:bounds = "time_bnds" ;
+		time:units = "days since 1950-01-01 00:00:00" ;
+		time:calendar = "standard" ;
+		time:axis = "T" ;
+		time:long_name = "time" ;
+		time:standard_name = "time" ;
+	double time_bnds(time, bnds) ;
+	double lat(lat) ;
+		lat:bounds = "lat_bnds" ;
+		lat:units = "degrees_north" ;
+		lat:axis = "Y" ;
+		lat:long_name = "latitude" ;
+		lat:standard_name = "latitude" ;
+	double lat_bnds(lat, bnds) ;
+	double lon(lon) ;
+		lon:bounds = "lon_bnds" ;
+		lon:units = "degrees_east" ;
+		lon:axis = "X" ;
+		lon:long_name = "longitude" ;
+		lon:standard_name = "longitude" ;
+	double lon_bnds(lon, bnds) ;
+	float zos(time, lat, lon) ;
+		zos:standard_name = "sea_surface_height_above_geoid" ;
+		zos:long_name = "Sea Surface Height Above Geoid" ;
+		zos:units = "m" ;
+		zos:original_name = "maps_of_absolute_dynamic_topography" ;
+		zos:history = "2011-02-11, 12:02:38, AVISO, Aviso2Cmor 2009-01-01 2009-12-31 2011-08-24T20:50:25Z altered by CMOR: Converted units from \'cm\' to \'m\'. 2011-08-24T20:50:25Z altered by CMOR: Converted type from \'d\' to \'f\'." ;
+		zos:original_units = "cm" ;
+		zos:cell_methods = "time: mean" ;
+		zos:cell_measures = "area: areacello" ;
+		zos:missing_value = 1.e+20f ;
+		zos:_FillValue = 1.e+20f ;
+		zos:associated_files = "baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_ocean_fx_Obs-AVISO_obs_r0i0p0.nc areacello: areacello_fx_Obs-AVISO_obs_r0i0p0.nc" ;
+
+// global attributes:
+		:Conventions = "CF-1.11 ODS-2.6.1" ;
+		:activity_id = "obs4MIPs" ;
+		:contact = "AVISO User Service, aviso@altimetry.fr" ;
+		:creation_date = "2026-11-10T09:00:00Z" ;
+		:dataset_contributor = "Synthetic fixture for esgvoc tests" ;
+		:data_specs_version = "ODS-2.6.1" ;
+		:frequency = "mon" ;
+		:grid = "data reported on a model's native grid" ;
+		:grid_label = "gn" ;
+		:has_aux_unc = "FALSE" ;
+		:history = "2026-11-10T09:00:00Z ; synthetic header derived from zos_mon_AVISO-1-0_BE_gn_199210-201012" ;
+		:institution = "NASA Jet Propulsion Laboratory, Pasadena, CA 91109, USA" ;
+		:institution_id = "NASA-JPL" ;
+		:license = "Data in this file produced by NASA-JPL is licensed under a Creative Commons Attribution 4.0 International License (https://creativecommons.org/licenses/by/4.0/)." ;
+		:nominal_resolution = "100 km" ;
+		:processing_code_location = "https://github.com/PCMDI/obs4MIPs-cmor-tables" ;
+		:product = "observations" ;
+		:realm = "ocean" ;
+		:references = "https://www.aviso.altimetry.fr/en/data/products/sea-surface-height-products/global.html" ;
+		:region = "global" ;
+		:source = "Sea Surface Height Above Geoid" ;
+		:source_id = "AVISO-1-0" ;
+		:source_label = "AVISO-1-0" ;
+		:source_type = "satellite_retrieval" ;
+		:source_version_number = "1.0" ;
+		:title = "AVISO-1-0 sea surface height above geoid prepared for obs4MIPs" ;
+		:tracking_id = "hdl:21.14102/5a28bcf2-f863-4a32-9340-da8ea0d3df61" ;
+		:variable_id = "zos" ;
+		:variant_label = "BE" ;
+}
