@@ -79,6 +79,7 @@ _REGISTRY: dict[str, ProjectInfo] = {
         ProjectInfo("cmip6plus", "CMIP6Plus Controlled Vocabulary"),
         ProjectInfo("input4mips", "input4MIPs Controlled Vocabulary"),
         ProjectInfo("obs4ref", "obs4REF Controlled Vocabulary"),
+        ProjectInfo("obs4mips", "obs4MIPs Controlled Vocabulary"),
         ProjectInfo("cordex-cmip6", "CORDEX-CMIP6 Controlled Vocabulary"),
         ProjectInfo("cordex-cmip5", "CORDEX-CMIP5 Controlled Vocabulary"),
         ProjectInfo("emd", "EMD Controlled Vocabulary"),
