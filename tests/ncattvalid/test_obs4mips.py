@@ -62,7 +62,8 @@ class TestObs4mipsGlobalAttributes:
         report = GAValidator(PROJECT_ID).validate_ncdump(LEGACY_HEADER.read_text())
         assert not report.is_valid
         errors = {r.name for r in report.errors}
-        assert {"nominal_resolution", "tracking_id", "Conventions"} <= errors
+        # tracking_id is left out: a bare UUID is accepted too (obs4MIPs_CVs tracking_id/uuid.json)
+        assert {"nominal_resolution", "Conventions"} <= errors
         assert {"activity_id", "institution_id", "variable_id", "license"} <= set(report.missing)
 
 
