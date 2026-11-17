@@ -18,7 +18,7 @@ console = Console()
 
 _KNOWN_PROJECTS = [
     "universe", "cmip7", "cmip6", "cmip6plus",
-    "input4mips", "obs4ref", "cordex-cmip6", "cordex-cmip5", "emd",
+    "input4mips", "obs4ref", "obs4mips", "cordex-cmip6", "cordex-cmip5", "emd",
 ]
 
 

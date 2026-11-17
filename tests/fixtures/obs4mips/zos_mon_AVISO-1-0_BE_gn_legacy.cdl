@@ -1,0 +1,80 @@
+netcdf zos_mon_AVISO-1-0_BE_gn_199210-201012 {
+dimensions:
+	time = UNLIMITED ; // (219 currently)
+	lat = 180 ;
+	lon = 360 ;
+	bnds = 2 ;
+variables:
+	double time(time) ;
+		time:bounds = "time_bnds" ;
+		time:units = "days since 1950-01-01 00:00:00" ;
+		time:calendar = "standard" ;
+		time:axis = "T" ;
+		time:long_name = "time" ;
+		time:standard_name = "time" ;
+	double time_bnds(time, bnds) ;
+	double lat(lat) ;
+		lat:bounds = "lat_bnds" ;
+		lat:units = "degrees_north" ;
+		lat:axis = "Y" ;
+		lat:long_name = "latitude" ;
+		lat:standard_name = "latitude" ;
+	double lat_bnds(lat, bnds) ;
+	double lon(lon) ;
+		lon:bounds = "lon_bnds" ;
+		lon:units = "degrees_east" ;
+		lon:axis = "X" ;
+		lon:long_name = "longitude" ;
+		lon:standard_name = "longitude" ;
+	double lon_bnds(lon, bnds) ;
+	float zos(time, lat, lon) ;
+		zos:standard_name = "sea_surface_height_above_geoid" ;
+		zos:long_name = "Sea Surface Height Above Geoid" ;
+		zos:units = "m" ;
+		zos:original_name = "maps_of_absolute_dynamic_topography" ;
+		zos:history = "2011-02-11, 12:02:38, AVISO, Aviso2Cmor 2009-01-01 2009-12-31 2011-08-24T20:50:25Z altered by CMOR: Converted units from \'cm\' to \'m\'. 2011-08-24T20:50:25Z altered by CMOR: Converted type from \'d\' to \'f\'." ;
+		zos:original_units = "cm" ;
+		zos:cell_methods = "time: mean" ;
+		zos:cell_measures = "area: areacello" ;
+		zos:missing_value = 1.e+20f ;
+		zos:_FillValue = 1.e+20f ;
+		zos:associated_files = "baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_ocean_fx_Obs-AVISO_obs_r0i0p0.nc areacello: areacello_fx_Obs-AVISO_obs_r0i0p0.nc" ;
+
+// global attributes:
+		:institution = "NASA\'s Jet Propulsion Laboratory, Pasadena, CA 91109, USA" ;
+		:institute_id = "CNES" ;
+		:experiment_id = "obs" ;
+		:source = "SSALTO/DUACS" ;
+		:model_id = "Obs-AVISO" ;
+		:contact = "AVISO User Service, aviso@oceanobs.com" ;
+		:history = "2011-04-13, 16:44:26, AVISO, Aviso2Cmor 2009-01-01 2009-12-31 2011-08-24T20:50:25Z CMOR rewrotedata to comply with CF standards and obs4MIPs requirements." ;
+		:comment = "gridded sea surface heights above geoid" ;
+		:references = "http://www.aviso.oceanobs.com/en/data/product-information/duacs/" ;
+		:tracking_id = "5a28bcf2-f863-4a32-9340-da8ea0d3df61" ;
+		:instrument = "altimeter" ;
+		:obs_project = "merged data" ;
+		:source_type = "satellite_retrieval" ;
+		:data_structure = "grid" ;
+		:processing_level = "L4" ;
+		:processing_version = "n/a" ;
+		:mip_specs = "CMIP5" ;
+		:realm = "ocean" ;
+		:source_id = "AVISO-1-0" ;
+		:product = "observations" ;
+		:frequency = "mon" ;
+		:creation_date = "2011-08-24T20:50:25Z" ;
+		:Conventions = "CF-1.4" ;
+		:project_id = "obs4MIPs" ;
+		:table_id = "Table Omon_obs (31 January 2011) 3852a2b3aff8bddd40fa764d07bb2bdb" ;
+		:title = "Obs-AVISO model output prepared for obs4MIPs NASA-JPL observation" ;
+		:modeling_realm = "ocean" ;
+		:cmor_version = "2.5.3" ;
+		:region = "global" ;
+		:source_version_number = "1.0" ;
+		:original_drsFilename = "/work/gleckler1/processed_data/JPL_obs4MIPs_data/AVISO/zos_AVISO_L4_199210-201012.nc" ;
+		:grid_label = "gn" ;
+		:variant_label = "BE" ;
+		:data_specs_version = "ODSv2.1" ;
+		:nominal_resolution = "1x1 degree" ;
+		:further_info_url = "hdl:21.14102/5a28bcf2-f863-4a32-9340-da8ea0d3df61" ;
+}
