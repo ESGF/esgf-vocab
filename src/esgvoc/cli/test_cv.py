@@ -49,6 +49,7 @@ _PROJECT_REPOS: dict[str, str] = {
     "cmip6": "WCRP-CMIP/CMIP6_Cvs",
     "input4mips": "PCMDI/input4MIPs_Cvs",
     "obs4ref": "Climate-REF/Obs4REF_CVs",
+    "obs4mips": "WCRP-ESMO/obs4MIPs_CVs",
     "cordex-cmip6": "WCRP-CORDEX/cordex-cmip6-cv",
     "cordex-cmip5": "WCRP-CORDEX/cordex-cmip5",
     "emd": "WCRP-CMIP/Essential-Model-Documentation",
@@ -275,6 +276,15 @@ def _api_smoke_test(project_id: str) -> bool:
 
     console.print(table)
     console.print(f"  [green]✓[/green] {total_terms} terms instantiated across {len(collections)} collections")
+
+    # 3. Project specs (drs, attr, catalog): esgvoc ignores a project whose specs do not parse
+    try:
+        if ev.get_project(project_id) is None:
+            raise ValueError("invalid project specifications, see the error logged above")
+        console.print("  [green]✓[/green] project specifications loaded")
+    except Exception as exc:
+        errors.append(f"get_project: {exc}")
+        console.print(f"  [red]✗[/red] get_project: {exc}")
 
     _print_api_summary(errors)
     return len(errors) == 0
